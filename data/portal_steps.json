@@ -1,0 +1,2410 @@
+{
+  "ITR-1": [
+    {
+      "step": 1,
+      "portalPage": "Login",
+      "fieldLabel": "User ID & password",
+      "action": "Sign in at incometax.gov.in with your PAN as user ID.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 2,
+      "portalPage": "Dashboard",
+      "fieldLabel": "e-File menu",
+      "action": "Click e-File in the top navigation bar.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 3,
+      "portalPage": "e-File",
+      "fieldLabel": "Income Tax Return",
+      "action": "Select Income Tax Return from the e-File submenu.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 4,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Assessment Year",
+      "action": "Choose AY 2026-27 (FY 2025-26).",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 5,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Filing mode",
+      "action": "Select Prepare and submit online.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 6,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Status",
+      "action": "Choose Individual as taxpayer status.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 7,
+      "portalPage": "ITR filing",
+      "fieldLabel": "ITR form",
+      "action": "Select ITR-1 (SAHAJ).",
+      "engineField": "profile.itr_form",
+      "plainEnglish": "The correct return form based on your income mix and business type.",
+      "proofRequired": [],
+      "govSection": "itr_form"
+    },
+    {
+      "step": 8,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Reason for filing",
+      "action": "Pick the applicable reason (e.g. taxable income exceeds basic exemption).",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 9,
+      "portalPage": "Personal info",
+      "fieldLabel": "PAN",
+      "action": "Verify PAN matches your card \u2014 pre-filled from account.",
+      "engineField": null,
+      "plainEnglish": "Your 10-character Permanent Account Number from your PAN card.",
+      "proofRequired": [
+        "PAN card"
+      ],
+      "govSection": "A1"
+    },
+    {
+      "step": 10,
+      "portalPage": "Personal info",
+      "fieldLabel": "Date of birth",
+      "action": "Confirm DOB \u2014 affects senior-citizen slabs.",
+      "engineField": null,
+      "plainEnglish": "Used to determine senior-citizen slab benefits and 80TTB eligibility.",
+      "proofRequired": [],
+      "govSection": "A4"
+    },
+    {
+      "step": 11,
+      "portalPage": "Personal info",
+      "fieldLabel": "Address",
+      "action": "Confirm current address matches Aadhaar.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 12,
+      "portalPage": "Bank details",
+      "fieldLabel": "Refund bank account",
+      "action": "Select or add bank account for refund credit.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 13,
+      "portalPage": "Tax regime",
+      "fieldLabel": "Opt out of new regime",
+      "action": "Select based on our regime recommendation.",
+      "engineField": "regime_comparison.recommended_regime",
+      "plainEnglish": "Higher slabs but full Chapter VI-A deductions and HRA exemption.",
+      "proofRequired": [],
+      "govSection": "regime_old"
+    },
+    {
+      "step": 14,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Gross salary u/s 17(1)",
+      "action": "Enter total salary from Form 16 Part-B.",
+      "engineField": "income_heads.gross_salary",
+      "plainEnglish": "Core salary component \u2014 used to calculate HRA exemption.",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1_ia"
+    },
+    {
+      "step": 15,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Exempt allowances u/s 10",
+      "action": "Enter HRA + LTA exemptions.",
+      "engineField": "income_heads.hra_exemption",
+      "plainEnglish": "HRA, LTA, and other allowances exempt under Section 10.",
+      "proofRequired": [
+        "Rent receipts",
+        "Form 16"
+      ],
+      "govSection": "B1_ii"
+    },
+    {
+      "step": 16,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Standard deduction u/s 16(ia)",
+      "action": "Enter standard deduction amount.",
+      "engineField": "income_heads.standard_deduction",
+      "plainEnglish": "Flat deduction from salary \u2014 \u20b950,000 (old) or \u20b975,000 (new regime).",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1_iva"
+    },
+    {
+      "step": 17,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Professional tax u/s 16(iii)",
+      "action": "Enter professional tax deducted.",
+      "engineField": "income_heads.professional_tax",
+      "plainEnglish": "State professional tax deducted from salary \u2014 fully deductible.",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1_ivc"
+    },
+    {
+      "step": 18,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "LTA exemption",
+      "action": "Enter LTA exempt amount if claimed.",
+      "engineField": "income_heads.lta_exemption",
+      "plainEnglish": "HRA, LTA, and other allowances exempt under Section 10.",
+      "proofRequired": [
+        "Travel bills"
+      ],
+      "govSection": "B1_ii"
+    },
+    {
+      "step": 19,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Net salary income",
+      "action": "Verify computed net salary head total.",
+      "engineField": "income_heads.net_salary_income",
+      "plainEnglish": "Taxable salary after standard deduction, HRA/LTA exemptions, and professional tax.",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1"
+    },
+    {
+      "step": 20,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Property type",
+      "action": "Select self-occupied, let-out, or none.",
+      "engineField": null,
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [],
+      "govSection": "B2"
+    },
+    {
+      "step": 21,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Annual rent received",
+      "action": "Enter gross rent if let-out.",
+      "engineField": null,
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [
+        "Rent agreement"
+      ],
+      "govSection": "B2"
+    },
+    {
+      "step": 22,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Municipal taxes paid",
+      "action": "Enter municipal tax paid on property.",
+      "engineField": null,
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [],
+      "govSection": "B2"
+    },
+    {
+      "step": 23,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Interest u/s 24(b)",
+      "action": "Enter home-loan interest from bank certificate.",
+      "engineField": "income_heads.interest_on_loan_24b",
+      "plainEnglish": "Interest paid on home loan \u2014 capped at \u20b92 lakh for self-occupied property (old regime).",
+      "proofRequired": [
+        "Home loan interest certificate"
+      ],
+      "govSection": "B2_1h"
+    },
+    {
+      "step": 24,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Net house property income",
+      "action": "Verify net HP income (can be loss).",
+      "engineField": "income_heads.net_house_property_income",
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [
+        "Home loan interest certificate"
+      ],
+      "govSection": "B2"
+    },
+    {
+      "step": 25,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "FD / term deposit interest",
+      "action": "Enter total FD interest (match AIS/26AS).",
+      "engineField": "income_heads.fd_interest",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "Bank interest certificate",
+        "AIS"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 26,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "Savings account interest",
+      "action": "Enter savings interest \u2014 gross before 80TTA.",
+      "engineField": "income_heads.savings_interest_gross",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "Bank statement"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 27,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "Dividend income",
+      "action": "Enter dividend income from shares/MFs.",
+      "engineField": "income_heads.dividend_income",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "Broker statement",
+        "AIS"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 28,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "Total other sources",
+      "action": "Verify total other-income head.",
+      "engineField": "income_heads.total_other_income",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "AIS"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 29,
+      "portalPage": "Part B \u2014 Total",
+      "fieldLabel": "Gross total income",
+      "action": "Verify GTI before deductions.",
+      "engineField": "income_heads.gross_total_income",
+      "plainEnglish": "Sum of all income heads before Chapter VI-A deductions.",
+      "proofRequired": [],
+      "govSection": "B4"
+    },
+    {
+      "step": 30,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80C",
+      "action": "Enter EPF+PPF+ELSS+LIC+principal \u2014 cap \u20b91.5L.",
+      "engineField": "deductions.capped_80c",
+      "plainEnglish": "EPF, PPF, ELSS, LIC, tuition fees, home-loan principal \u2014 combined cap \u20b91.5 lakh.",
+      "proofRequired": [
+        "Investment proofs",
+        "Form 16"
+      ],
+      "govSection": "80C"
+    },
+    {
+      "step": 31,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80CCD(1B)",
+      "action": "Enter additional NPS contribution.",
+      "engineField": "deductions.deduction_80ccd_1b",
+      "plainEnglish": "Additional NPS contribution by you \u2014 extra \u20b950,000 over and above 80C cap.",
+      "proofRequired": [
+        "NPS statement"
+      ],
+      "govSection": "80CCD_1B"
+    },
+    {
+      "step": 32,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80CCD(2)",
+      "action": "Enter employer NPS \u2014 allowed in both regimes.",
+      "engineField": "deductions.deduction_80ccd_2",
+      "plainEnglish": "Employer's NPS contribution \u2014 allowed in both old and new regime (up to 10% of basic).",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "80CCD_2"
+    },
+    {
+      "step": 33,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80D",
+      "action": "Enter health insurance premium.",
+      "engineField": "deductions.deduction_80d",
+      "plainEnglish": "Health insurance premium for self/family and parents \u2014 limits vary by age.",
+      "proofRequired": [
+        "Premium receipts"
+      ],
+      "govSection": "80D"
+    },
+    {
+      "step": 34,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80TTA / 80TTB",
+      "action": "Enter savings-interest deduction.",
+      "engineField": "deductions.deduction_80tta_ttb",
+      "plainEnglish": "Deduction on savings account interest \u2014 up to \u20b910,000 (below 60 years).",
+      "proofRequired": [
+        "Bank statement"
+      ],
+      "govSection": "80TTA"
+    },
+    {
+      "step": 35,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80U",
+      "action": "Enter disability deduction if applicable.",
+      "engineField": "deductions.deduction_80u",
+      "plainEnglish": "Deduction for taxpayer with disability \u2014 \u20b975,000 or \u20b91.25 lakh if severe.",
+      "proofRequired": [
+        "Disability certificate"
+      ],
+      "govSection": "80U"
+    },
+    {
+      "step": 36,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Total Chapter VI-A",
+      "action": "Verify total deductions (old regime).",
+      "engineField": "deductions.total_chapter_via",
+      "plainEnglish": "Investments and expenses that reduce taxable income (old regime).",
+      "proofRequired": [],
+      "govSection": "C1"
+    },
+    {
+      "step": 37,
+      "portalPage": "Tax computation",
+      "fieldLabel": "Total income (taxable)",
+      "action": "Verify taxable income after deductions.",
+      "engineField": null,
+      "plainEnglish": "Gross total income minus deductions \u2014 your taxable income base.",
+      "proofRequired": [],
+      "govSection": "C2"
+    },
+    {
+      "step": 38,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Tax on total income",
+      "action": "Verify slab + special-rate tax.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "Tax calculated on slab rates plus special-rate capital gains.",
+      "proofRequired": [],
+      "govSection": "D1"
+    },
+    {
+      "step": 39,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Rebate u/s 87A",
+      "action": "Verify rebate amount.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "Tax rebate for lower incomes \u2014 up to \u20b912,500 (old) or full rebate up to \u20b912L (new).",
+      "proofRequired": [],
+      "govSection": "D2"
+    },
+    {
+      "step": 40,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Health & education cess",
+      "action": "Verify 4% cess.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "4% surcharge on income tax and surcharge.",
+      "proofRequired": [],
+      "govSection": "D4"
+    },
+    {
+      "step": 41,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Total taxes paid",
+      "action": "Enter TDS + advance + self-assessment.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "TDS from Form 16/26AS plus advance tax and self-assessment tax.",
+      "proofRequired": [
+        "Form 16",
+        "Form 26AS"
+      ],
+      "govSection": "D12"
+    },
+    {
+      "step": 42,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Tax payable",
+      "action": "Verify amount due if positive.",
+      "engineField": "regime_comparison.recommended_regime_net_payable",
+      "plainEnglish": "Amount you still owe after TDS credits.",
+      "proofRequired": [],
+      "govSection": "D13"
+    },
+    {
+      "step": 43,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Refund",
+      "action": "Verify refund if TDS exceeds liability.",
+      "engineField": "regime_comparison.recommended_regime_net_payable",
+      "plainEnglish": "Excess TDS/advance tax \u2014 money returned by the department.",
+      "proofRequired": [],
+      "govSection": "D14"
+    },
+    {
+      "step": 44,
+      "portalPage": "Schedule TDS",
+      "fieldLabel": "TDS on salary",
+      "action": "Match Form 16 Part-A TDS with 26AS.",
+      "engineField": "taxes_paid.tds_salary",
+      "plainEnglish": "Tax already deducted by employer, bank, or broker \u2014 matched against 26AS.",
+      "proofRequired": [
+        "Form 16",
+        "Form 26AS"
+      ],
+      "govSection": "Schedule_TDS"
+    },
+    {
+      "step": 45,
+      "portalPage": "Schedule TDS",
+      "fieldLabel": "TDS on other income",
+      "action": "Enter FD/dividend TDS from 26AS.",
+      "engineField": "taxes_paid.tds_other",
+      "plainEnglish": "Tax already deducted by employer, bank, or broker \u2014 matched against 26AS.",
+      "proofRequired": [
+        "Form 26AS"
+      ],
+      "govSection": "Schedule_TDS"
+    },
+    {
+      "step": 46,
+      "portalPage": "Schedule IT",
+      "fieldLabel": "Advance / self-assessment tax",
+      "action": "Enter challan payments if any.",
+      "engineField": "taxes_paid.advance_tax_paid",
+      "plainEnglish": "Tax you paid directly via challan before filing.",
+      "proofRequired": [
+        "Challan receipt"
+      ],
+      "govSection": "Schedule_IT"
+    },
+    {
+      "step": 47,
+      "portalPage": "Preview",
+      "fieldLabel": "Return preview",
+      "action": "Download JSON/PDF preview and compare every head with our values.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 48,
+      "portalPage": "Validate",
+      "fieldLabel": "Validate return",
+      "action": "Click Validate \u2014 fix any portal errors before submit.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 49,
+      "portalPage": "Submit",
+      "fieldLabel": "Submit return",
+      "action": "Submit only after all mismatches resolved in LastMinute ITR.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 50,
+      "portalPage": "E-verify",
+      "fieldLabel": "E-verification",
+      "action": "Complete e-verify within 30 days via Aadhaar OTP or net banking.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    }
+  ],
+  "ITR-2": [
+    {
+      "step": 1,
+      "portalPage": "Login",
+      "fieldLabel": "User ID & password",
+      "action": "Sign in at incometax.gov.in with your PAN as user ID.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 2,
+      "portalPage": "Dashboard",
+      "fieldLabel": "e-File menu",
+      "action": "Click e-File in the top navigation bar.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 3,
+      "portalPage": "e-File",
+      "fieldLabel": "Income Tax Return",
+      "action": "Select Income Tax Return from the e-File submenu.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 4,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Assessment Year",
+      "action": "Choose AY 2026-27 (FY 2025-26).",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 5,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Filing mode",
+      "action": "Select Prepare and submit online.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 6,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Status",
+      "action": "Choose Individual as taxpayer status.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 7,
+      "portalPage": "ITR filing",
+      "fieldLabel": "ITR form",
+      "action": "Select ITR-2.",
+      "engineField": "profile.itr_form",
+      "plainEnglish": "For capital gains, foreign income, director status, or income above \u20b950L.",
+      "proofRequired": [],
+      "govSection": "itr_form"
+    },
+    {
+      "step": 8,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Reason for filing",
+      "action": "Pick the applicable reason (e.g. taxable income exceeds basic exemption).",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 9,
+      "portalPage": "Personal info",
+      "fieldLabel": "PAN",
+      "action": "Verify PAN matches your card \u2014 pre-filled from account.",
+      "engineField": null,
+      "plainEnglish": "Your 10-character Permanent Account Number from your PAN card.",
+      "proofRequired": [
+        "PAN card"
+      ],
+      "govSection": "A1"
+    },
+    {
+      "step": 10,
+      "portalPage": "Personal info",
+      "fieldLabel": "Date of birth",
+      "action": "Confirm DOB \u2014 affects senior-citizen slabs.",
+      "engineField": null,
+      "plainEnglish": "Used to determine senior-citizen slab benefits and 80TTB eligibility.",
+      "proofRequired": [],
+      "govSection": "A4"
+    },
+    {
+      "step": 11,
+      "portalPage": "Personal info",
+      "fieldLabel": "Address",
+      "action": "Confirm current address matches Aadhaar.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 12,
+      "portalPage": "Bank details",
+      "fieldLabel": "Refund bank account",
+      "action": "Select or add bank account for refund credit.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 13,
+      "portalPage": "Tax regime",
+      "fieldLabel": "Opt out of new regime",
+      "action": "Select based on our regime recommendation.",
+      "engineField": "regime_comparison.recommended_regime",
+      "plainEnglish": "Higher slabs but full Chapter VI-A deductions and HRA exemption.",
+      "proofRequired": [],
+      "govSection": "regime_old"
+    },
+    {
+      "step": 14,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Gross salary u/s 17(1)",
+      "action": "Enter total salary from Form 16 Part-B.",
+      "engineField": "income_heads.gross_salary",
+      "plainEnglish": "Core salary component \u2014 used to calculate HRA exemption.",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1_ia"
+    },
+    {
+      "step": 15,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Exempt allowances u/s 10",
+      "action": "Enter HRA + LTA exemptions.",
+      "engineField": "income_heads.hra_exemption",
+      "plainEnglish": "HRA, LTA, and other allowances exempt under Section 10.",
+      "proofRequired": [
+        "Rent receipts",
+        "Form 16"
+      ],
+      "govSection": "B1_ii"
+    },
+    {
+      "step": 16,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Standard deduction u/s 16(ia)",
+      "action": "Enter standard deduction amount.",
+      "engineField": "income_heads.standard_deduction",
+      "plainEnglish": "Flat deduction from salary \u2014 \u20b950,000 (old) or \u20b975,000 (new regime).",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1_iva"
+    },
+    {
+      "step": 17,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Professional tax u/s 16(iii)",
+      "action": "Enter professional tax deducted.",
+      "engineField": "income_heads.professional_tax",
+      "plainEnglish": "State professional tax deducted from salary \u2014 fully deductible.",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1_ivc"
+    },
+    {
+      "step": 18,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "LTA exemption",
+      "action": "Enter LTA exempt amount if claimed.",
+      "engineField": "income_heads.lta_exemption",
+      "plainEnglish": "HRA, LTA, and other allowances exempt under Section 10.",
+      "proofRequired": [
+        "Travel bills"
+      ],
+      "govSection": "B1_ii"
+    },
+    {
+      "step": 19,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Net salary income",
+      "action": "Verify computed net salary head total.",
+      "engineField": "income_heads.net_salary_income",
+      "plainEnglish": "Taxable salary after standard deduction, HRA/LTA exemptions, and professional tax.",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1"
+    },
+    {
+      "step": 20,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Property type",
+      "action": "Select self-occupied, let-out, or none.",
+      "engineField": null,
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [],
+      "govSection": "B2"
+    },
+    {
+      "step": 21,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Annual rent received",
+      "action": "Enter gross rent if let-out.",
+      "engineField": null,
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [
+        "Rent agreement"
+      ],
+      "govSection": "B2"
+    },
+    {
+      "step": 22,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Municipal taxes paid",
+      "action": "Enter municipal tax paid on property.",
+      "engineField": null,
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [],
+      "govSection": "B2"
+    },
+    {
+      "step": 23,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Interest u/s 24(b)",
+      "action": "Enter home-loan interest from bank certificate.",
+      "engineField": "income_heads.interest_on_loan_24b",
+      "plainEnglish": "Interest paid on home loan \u2014 capped at \u20b92 lakh for self-occupied property (old regime).",
+      "proofRequired": [
+        "Home loan interest certificate"
+      ],
+      "govSection": "B2_1h"
+    },
+    {
+      "step": 24,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Net house property income",
+      "action": "Verify net HP income (can be loss).",
+      "engineField": "income_heads.net_house_property_income",
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [
+        "Home loan interest certificate"
+      ],
+      "govSection": "B2"
+    },
+    {
+      "step": 25,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "FD / term deposit interest",
+      "action": "Enter total FD interest (match AIS/26AS).",
+      "engineField": "income_heads.fd_interest",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "Bank interest certificate",
+        "AIS"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 26,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "Savings account interest",
+      "action": "Enter savings interest \u2014 gross before 80TTA.",
+      "engineField": "income_heads.savings_interest_gross",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "Bank statement"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 27,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "Dividend income",
+      "action": "Enter dividend income from shares/MFs.",
+      "engineField": "income_heads.dividend_income",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "Broker statement",
+        "AIS"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 28,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "Total other sources",
+      "action": "Verify total other-income head.",
+      "engineField": "income_heads.total_other_income",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "AIS"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 51,
+      "portalPage": "Schedule CG",
+      "fieldLabel": "STCG u/s 111A",
+      "action": "Enter listed equity STCG.",
+      "engineField": "income_heads.stcg_111a_net",
+      "plainEnglish": "Gains/losses from shares, mutual funds, property, and other assets.",
+      "proofRequired": [
+        "Capital gains statement"
+      ],
+      "govSection": "Schedule_CG"
+    },
+    {
+      "step": 52,
+      "portalPage": "Schedule CG",
+      "fieldLabel": "LTCG u/s 112A",
+      "action": "Enter listed equity LTCG after \u20b91.25L exemption.",
+      "engineField": "income_heads.ltcg_112a_net",
+      "plainEnglish": "Gains/losses from shares, mutual funds, property, and other assets.",
+      "proofRequired": [
+        "Capital gains statement"
+      ],
+      "govSection": "Schedule_CG"
+    },
+    {
+      "step": 53,
+      "portalPage": "Schedule CG",
+      "fieldLabel": "Other capital gains",
+      "action": "Enter other CG at slab/special rates.",
+      "engineField": "income_heads.ltcg_other_net",
+      "plainEnglish": "Gains/losses from shares, mutual funds, property, and other assets.",
+      "proofRequired": [
+        "Capital gains statement"
+      ],
+      "govSection": "Schedule_CG"
+    },
+    {
+      "step": 29,
+      "portalPage": "Part B \u2014 Total",
+      "fieldLabel": "Gross total income",
+      "action": "Verify GTI before deductions.",
+      "engineField": "income_heads.gross_total_income",
+      "plainEnglish": "Sum of all income heads before Chapter VI-A deductions.",
+      "proofRequired": [],
+      "govSection": "B4"
+    },
+    {
+      "step": 30,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80C",
+      "action": "Enter EPF+PPF+ELSS+LIC+principal \u2014 cap \u20b91.5L.",
+      "engineField": "deductions.capped_80c",
+      "plainEnglish": "EPF, PPF, ELSS, LIC, tuition fees, home-loan principal \u2014 combined cap \u20b91.5 lakh.",
+      "proofRequired": [
+        "Investment proofs",
+        "Form 16"
+      ],
+      "govSection": "80C"
+    },
+    {
+      "step": 31,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80CCD(1B)",
+      "action": "Enter additional NPS contribution.",
+      "engineField": "deductions.deduction_80ccd_1b",
+      "plainEnglish": "Additional NPS contribution by you \u2014 extra \u20b950,000 over and above 80C cap.",
+      "proofRequired": [
+        "NPS statement"
+      ],
+      "govSection": "80CCD_1B"
+    },
+    {
+      "step": 32,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80CCD(2)",
+      "action": "Enter employer NPS \u2014 allowed in both regimes.",
+      "engineField": "deductions.deduction_80ccd_2",
+      "plainEnglish": "Employer's NPS contribution \u2014 allowed in both old and new regime (up to 10% of basic).",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "80CCD_2"
+    },
+    {
+      "step": 33,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80D",
+      "action": "Enter health insurance premium.",
+      "engineField": "deductions.deduction_80d",
+      "plainEnglish": "Health insurance premium for self/family and parents \u2014 limits vary by age.",
+      "proofRequired": [
+        "Premium receipts"
+      ],
+      "govSection": "80D"
+    },
+    {
+      "step": 34,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80TTA / 80TTB",
+      "action": "Enter savings-interest deduction.",
+      "engineField": "deductions.deduction_80tta_ttb",
+      "plainEnglish": "Deduction on savings account interest \u2014 up to \u20b910,000 (below 60 years).",
+      "proofRequired": [
+        "Bank statement"
+      ],
+      "govSection": "80TTA"
+    },
+    {
+      "step": 35,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80U",
+      "action": "Enter disability deduction if applicable.",
+      "engineField": "deductions.deduction_80u",
+      "plainEnglish": "Deduction for taxpayer with disability \u2014 \u20b975,000 or \u20b91.25 lakh if severe.",
+      "proofRequired": [
+        "Disability certificate"
+      ],
+      "govSection": "80U"
+    },
+    {
+      "step": 36,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Total Chapter VI-A",
+      "action": "Verify total deductions (old regime).",
+      "engineField": "deductions.total_chapter_via",
+      "plainEnglish": "Investments and expenses that reduce taxable income (old regime).",
+      "proofRequired": [],
+      "govSection": "C1"
+    },
+    {
+      "step": 37,
+      "portalPage": "Tax computation",
+      "fieldLabel": "Total income (taxable)",
+      "action": "Verify taxable income after deductions.",
+      "engineField": null,
+      "plainEnglish": "Gross total income minus deductions \u2014 your taxable income base.",
+      "proofRequired": [],
+      "govSection": "C2"
+    },
+    {
+      "step": 38,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Tax on total income",
+      "action": "Verify slab + special-rate tax.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "Tax calculated on slab rates plus special-rate capital gains.",
+      "proofRequired": [],
+      "govSection": "D1"
+    },
+    {
+      "step": 39,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Rebate u/s 87A",
+      "action": "Verify rebate amount.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "Tax rebate for lower incomes \u2014 up to \u20b912,500 (old) or full rebate up to \u20b912L (new).",
+      "proofRequired": [],
+      "govSection": "D2"
+    },
+    {
+      "step": 40,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Health & education cess",
+      "action": "Verify 4% cess.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "4% surcharge on income tax and surcharge.",
+      "proofRequired": [],
+      "govSection": "D4"
+    },
+    {
+      "step": 41,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Total taxes paid",
+      "action": "Enter TDS + advance + self-assessment.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "TDS from Form 16/26AS plus advance tax and self-assessment tax.",
+      "proofRequired": [
+        "Form 16",
+        "Form 26AS"
+      ],
+      "govSection": "D12"
+    },
+    {
+      "step": 42,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Tax payable",
+      "action": "Verify amount due if positive.",
+      "engineField": "regime_comparison.recommended_regime_net_payable",
+      "plainEnglish": "Amount you still owe after TDS credits.",
+      "proofRequired": [],
+      "govSection": "D13"
+    },
+    {
+      "step": 43,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Refund",
+      "action": "Verify refund if TDS exceeds liability.",
+      "engineField": "regime_comparison.recommended_regime_net_payable",
+      "plainEnglish": "Excess TDS/advance tax \u2014 money returned by the department.",
+      "proofRequired": [],
+      "govSection": "D14"
+    },
+    {
+      "step": 44,
+      "portalPage": "Schedule TDS",
+      "fieldLabel": "TDS on salary",
+      "action": "Match Form 16 Part-A TDS with 26AS.",
+      "engineField": "taxes_paid.tds_salary",
+      "plainEnglish": "Tax already deducted by employer, bank, or broker \u2014 matched against 26AS.",
+      "proofRequired": [
+        "Form 16",
+        "Form 26AS"
+      ],
+      "govSection": "Schedule_TDS"
+    },
+    {
+      "step": 45,
+      "portalPage": "Schedule TDS",
+      "fieldLabel": "TDS on other income",
+      "action": "Enter FD/dividend TDS from 26AS.",
+      "engineField": "taxes_paid.tds_other",
+      "plainEnglish": "Tax already deducted by employer, bank, or broker \u2014 matched against 26AS.",
+      "proofRequired": [
+        "Form 26AS"
+      ],
+      "govSection": "Schedule_TDS"
+    },
+    {
+      "step": 46,
+      "portalPage": "Schedule IT",
+      "fieldLabel": "Advance / self-assessment tax",
+      "action": "Enter challan payments if any.",
+      "engineField": "taxes_paid.advance_tax_paid",
+      "plainEnglish": "Tax you paid directly via challan before filing.",
+      "proofRequired": [
+        "Challan receipt"
+      ],
+      "govSection": "Schedule_IT"
+    },
+    {
+      "step": 47,
+      "portalPage": "Preview",
+      "fieldLabel": "Return preview",
+      "action": "Download JSON/PDF preview and compare every head with our values.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 48,
+      "portalPage": "Validate",
+      "fieldLabel": "Validate return",
+      "action": "Click Validate \u2014 fix any portal errors before submit.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 49,
+      "portalPage": "Submit",
+      "fieldLabel": "Submit return",
+      "action": "Submit only after all mismatches resolved in LastMinute ITR.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 50,
+      "portalPage": "E-verify",
+      "fieldLabel": "E-verification",
+      "action": "Complete e-verify within 30 days via Aadhaar OTP or net banking.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    }
+  ],
+  "ITR-3": [
+    {
+      "step": 1,
+      "portalPage": "Login",
+      "fieldLabel": "User ID & password",
+      "action": "Sign in at incometax.gov.in with your PAN as user ID.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 2,
+      "portalPage": "Dashboard",
+      "fieldLabel": "e-File menu",
+      "action": "Click e-File in the top navigation bar.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 3,
+      "portalPage": "e-File",
+      "fieldLabel": "Income Tax Return",
+      "action": "Select Income Tax Return from the e-File submenu.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 4,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Assessment Year",
+      "action": "Choose AY 2026-27 (FY 2025-26).",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 5,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Filing mode",
+      "action": "Select Prepare and submit online.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 6,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Status",
+      "action": "Choose Individual as taxpayer status.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 7,
+      "portalPage": "ITR filing",
+      "fieldLabel": "ITR form",
+      "action": "Select ITR-3.",
+      "engineField": "profile.itr_form",
+      "plainEnglish": "For business/profession with regular books of account.",
+      "proofRequired": [],
+      "govSection": "itr_form"
+    },
+    {
+      "step": 8,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Reason for filing",
+      "action": "Pick the applicable reason (e.g. taxable income exceeds basic exemption).",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 9,
+      "portalPage": "Personal info",
+      "fieldLabel": "PAN",
+      "action": "Verify PAN matches your card \u2014 pre-filled from account.",
+      "engineField": null,
+      "plainEnglish": "Your 10-character Permanent Account Number from your PAN card.",
+      "proofRequired": [
+        "PAN card"
+      ],
+      "govSection": "A1"
+    },
+    {
+      "step": 10,
+      "portalPage": "Personal info",
+      "fieldLabel": "Date of birth",
+      "action": "Confirm DOB \u2014 affects senior-citizen slabs.",
+      "engineField": null,
+      "plainEnglish": "Used to determine senior-citizen slab benefits and 80TTB eligibility.",
+      "proofRequired": [],
+      "govSection": "A4"
+    },
+    {
+      "step": 11,
+      "portalPage": "Personal info",
+      "fieldLabel": "Address",
+      "action": "Confirm current address matches Aadhaar.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 12,
+      "portalPage": "Bank details",
+      "fieldLabel": "Refund bank account",
+      "action": "Select or add bank account for refund credit.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 13,
+      "portalPage": "Tax regime",
+      "fieldLabel": "Opt out of new regime",
+      "action": "Select based on our regime recommendation.",
+      "engineField": "regime_comparison.recommended_regime",
+      "plainEnglish": "Higher slabs but full Chapter VI-A deductions and HRA exemption.",
+      "proofRequired": [],
+      "govSection": "regime_old"
+    },
+    {
+      "step": 14,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Gross salary u/s 17(1)",
+      "action": "Enter total salary from Form 16 Part-B.",
+      "engineField": "income_heads.gross_salary",
+      "plainEnglish": "Core salary component \u2014 used to calculate HRA exemption.",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1_ia"
+    },
+    {
+      "step": 15,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Exempt allowances u/s 10",
+      "action": "Enter HRA + LTA exemptions.",
+      "engineField": "income_heads.hra_exemption",
+      "plainEnglish": "HRA, LTA, and other allowances exempt under Section 10.",
+      "proofRequired": [
+        "Rent receipts",
+        "Form 16"
+      ],
+      "govSection": "B1_ii"
+    },
+    {
+      "step": 16,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Standard deduction u/s 16(ia)",
+      "action": "Enter standard deduction amount.",
+      "engineField": "income_heads.standard_deduction",
+      "plainEnglish": "Flat deduction from salary \u2014 \u20b950,000 (old) or \u20b975,000 (new regime).",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1_iva"
+    },
+    {
+      "step": 17,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Professional tax u/s 16(iii)",
+      "action": "Enter professional tax deducted.",
+      "engineField": "income_heads.professional_tax",
+      "plainEnglish": "State professional tax deducted from salary \u2014 fully deductible.",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1_ivc"
+    },
+    {
+      "step": 18,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "LTA exemption",
+      "action": "Enter LTA exempt amount if claimed.",
+      "engineField": "income_heads.lta_exemption",
+      "plainEnglish": "HRA, LTA, and other allowances exempt under Section 10.",
+      "proofRequired": [
+        "Travel bills"
+      ],
+      "govSection": "B1_ii"
+    },
+    {
+      "step": 19,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Net salary income",
+      "action": "Verify computed net salary head total.",
+      "engineField": "income_heads.net_salary_income",
+      "plainEnglish": "Taxable salary after standard deduction, HRA/LTA exemptions, and professional tax.",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1"
+    },
+    {
+      "step": 20,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Property type",
+      "action": "Select self-occupied, let-out, or none.",
+      "engineField": null,
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [],
+      "govSection": "B2"
+    },
+    {
+      "step": 21,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Annual rent received",
+      "action": "Enter gross rent if let-out.",
+      "engineField": null,
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [
+        "Rent agreement"
+      ],
+      "govSection": "B2"
+    },
+    {
+      "step": 22,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Municipal taxes paid",
+      "action": "Enter municipal tax paid on property.",
+      "engineField": null,
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [],
+      "govSection": "B2"
+    },
+    {
+      "step": 23,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Interest u/s 24(b)",
+      "action": "Enter home-loan interest from bank certificate.",
+      "engineField": "income_heads.interest_on_loan_24b",
+      "plainEnglish": "Interest paid on home loan \u2014 capped at \u20b92 lakh for self-occupied property (old regime).",
+      "proofRequired": [
+        "Home loan interest certificate"
+      ],
+      "govSection": "B2_1h"
+    },
+    {
+      "step": 24,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Net house property income",
+      "action": "Verify net HP income (can be loss).",
+      "engineField": "income_heads.net_house_property_income",
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [
+        "Home loan interest certificate"
+      ],
+      "govSection": "B2"
+    },
+    {
+      "step": 25,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "FD / term deposit interest",
+      "action": "Enter total FD interest (match AIS/26AS).",
+      "engineField": "income_heads.fd_interest",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "Bank interest certificate",
+        "AIS"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 26,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "Savings account interest",
+      "action": "Enter savings interest \u2014 gross before 80TTA.",
+      "engineField": "income_heads.savings_interest_gross",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "Bank statement"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 27,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "Dividend income",
+      "action": "Enter dividend income from shares/MFs.",
+      "engineField": "income_heads.dividend_income",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "Broker statement",
+        "AIS"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 28,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "Total other sources",
+      "action": "Verify total other-income head.",
+      "engineField": "income_heads.total_other_income",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "AIS"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 51,
+      "portalPage": "Schedule BP",
+      "fieldLabel": "Gross receipts (books)",
+      "action": "Enter actual revenue from P&L.",
+      "engineField": "business.actual_gross_receipts",
+      "plainEnglish": "Profit from business or profession \u2014 presumptive (44AD/44ADA) or regular books.",
+      "proofRequired": [
+        "P&L statement"
+      ],
+      "govSection": "Schedule_BP"
+    },
+    {
+      "step": 52,
+      "portalPage": "Schedule BP",
+      "fieldLabel": "Total expenses",
+      "action": "Enter allowable business expenses.",
+      "engineField": "business.actual_expenses",
+      "plainEnglish": "Profit from business or profession \u2014 presumptive (44AD/44ADA) or regular books.",
+      "proofRequired": [
+        "P&L statement"
+      ],
+      "govSection": "Schedule_BP"
+    },
+    {
+      "step": 53,
+      "portalPage": "Schedule BP",
+      "fieldLabel": "Net profit from business",
+      "action": "Verify books profit.",
+      "engineField": "business_income.books_profit",
+      "plainEnglish": "Profit from business or profession \u2014 presumptive (44AD/44ADA) or regular books.",
+      "proofRequired": [
+        "P&L statement"
+      ],
+      "govSection": "Schedule_BP"
+    },
+    {
+      "step": 54,
+      "portalPage": "Schedule BP",
+      "fieldLabel": "Net business income",
+      "action": "Verify net business head.",
+      "engineField": "business_income.net_business_income",
+      "plainEnglish": "Profit from business or profession \u2014 presumptive (44AD/44ADA) or regular books.",
+      "proofRequired": [],
+      "govSection": "Schedule_BP"
+    },
+    {
+      "step": 55,
+      "portalPage": "Schedule CG",
+      "fieldLabel": "STCG u/s 111A",
+      "action": "Enter listed equity STCG.",
+      "engineField": "income_heads.stcg_111a_net",
+      "plainEnglish": "Gains/losses from shares, mutual funds, property, and other assets.",
+      "proofRequired": [
+        "Capital gains statement"
+      ],
+      "govSection": "Schedule_CG"
+    },
+    {
+      "step": 56,
+      "portalPage": "Schedule CG",
+      "fieldLabel": "LTCG u/s 112A",
+      "action": "Enter listed equity LTCG after \u20b91.25L exemption.",
+      "engineField": "income_heads.ltcg_112a_net",
+      "plainEnglish": "Gains/losses from shares, mutual funds, property, and other assets.",
+      "proofRequired": [
+        "Capital gains statement"
+      ],
+      "govSection": "Schedule_CG"
+    },
+    {
+      "step": 57,
+      "portalPage": "Schedule CG",
+      "fieldLabel": "Other capital gains",
+      "action": "Enter other CG at slab/special rates.",
+      "engineField": "income_heads.ltcg_other_net",
+      "plainEnglish": "Gains/losses from shares, mutual funds, property, and other assets.",
+      "proofRequired": [
+        "Capital gains statement"
+      ],
+      "govSection": "Schedule_CG"
+    },
+    {
+      "step": 29,
+      "portalPage": "Part B \u2014 Total",
+      "fieldLabel": "Gross total income",
+      "action": "Verify GTI before deductions.",
+      "engineField": "income_heads.gross_total_income",
+      "plainEnglish": "Sum of all income heads before Chapter VI-A deductions.",
+      "proofRequired": [],
+      "govSection": "B4"
+    },
+    {
+      "step": 30,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80C",
+      "action": "Enter EPF+PPF+ELSS+LIC+principal \u2014 cap \u20b91.5L.",
+      "engineField": "deductions.capped_80c",
+      "plainEnglish": "EPF, PPF, ELSS, LIC, tuition fees, home-loan principal \u2014 combined cap \u20b91.5 lakh.",
+      "proofRequired": [
+        "Investment proofs",
+        "Form 16"
+      ],
+      "govSection": "80C"
+    },
+    {
+      "step": 31,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80CCD(1B)",
+      "action": "Enter additional NPS contribution.",
+      "engineField": "deductions.deduction_80ccd_1b",
+      "plainEnglish": "Additional NPS contribution by you \u2014 extra \u20b950,000 over and above 80C cap.",
+      "proofRequired": [
+        "NPS statement"
+      ],
+      "govSection": "80CCD_1B"
+    },
+    {
+      "step": 32,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80CCD(2)",
+      "action": "Enter employer NPS \u2014 allowed in both regimes.",
+      "engineField": "deductions.deduction_80ccd_2",
+      "plainEnglish": "Employer's NPS contribution \u2014 allowed in both old and new regime (up to 10% of basic).",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "80CCD_2"
+    },
+    {
+      "step": 33,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80D",
+      "action": "Enter health insurance premium.",
+      "engineField": "deductions.deduction_80d",
+      "plainEnglish": "Health insurance premium for self/family and parents \u2014 limits vary by age.",
+      "proofRequired": [
+        "Premium receipts"
+      ],
+      "govSection": "80D"
+    },
+    {
+      "step": 34,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80TTA / 80TTB",
+      "action": "Enter savings-interest deduction.",
+      "engineField": "deductions.deduction_80tta_ttb",
+      "plainEnglish": "Deduction on savings account interest \u2014 up to \u20b910,000 (below 60 years).",
+      "proofRequired": [
+        "Bank statement"
+      ],
+      "govSection": "80TTA"
+    },
+    {
+      "step": 35,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80U",
+      "action": "Enter disability deduction if applicable.",
+      "engineField": "deductions.deduction_80u",
+      "plainEnglish": "Deduction for taxpayer with disability \u2014 \u20b975,000 or \u20b91.25 lakh if severe.",
+      "proofRequired": [
+        "Disability certificate"
+      ],
+      "govSection": "80U"
+    },
+    {
+      "step": 36,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Total Chapter VI-A",
+      "action": "Verify total deductions (old regime).",
+      "engineField": "deductions.total_chapter_via",
+      "plainEnglish": "Investments and expenses that reduce taxable income (old regime).",
+      "proofRequired": [],
+      "govSection": "C1"
+    },
+    {
+      "step": 37,
+      "portalPage": "Tax computation",
+      "fieldLabel": "Total income (taxable)",
+      "action": "Verify taxable income after deductions.",
+      "engineField": null,
+      "plainEnglish": "Gross total income minus deductions \u2014 your taxable income base.",
+      "proofRequired": [],
+      "govSection": "C2"
+    },
+    {
+      "step": 38,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Tax on total income",
+      "action": "Verify slab + special-rate tax.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "Tax calculated on slab rates plus special-rate capital gains.",
+      "proofRequired": [],
+      "govSection": "D1"
+    },
+    {
+      "step": 39,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Rebate u/s 87A",
+      "action": "Verify rebate amount.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "Tax rebate for lower incomes \u2014 up to \u20b912,500 (old) or full rebate up to \u20b912L (new).",
+      "proofRequired": [],
+      "govSection": "D2"
+    },
+    {
+      "step": 40,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Health & education cess",
+      "action": "Verify 4% cess.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "4% surcharge on income tax and surcharge.",
+      "proofRequired": [],
+      "govSection": "D4"
+    },
+    {
+      "step": 41,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Total taxes paid",
+      "action": "Enter TDS + advance + self-assessment.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "TDS from Form 16/26AS plus advance tax and self-assessment tax.",
+      "proofRequired": [
+        "Form 16",
+        "Form 26AS"
+      ],
+      "govSection": "D12"
+    },
+    {
+      "step": 42,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Tax payable",
+      "action": "Verify amount due if positive.",
+      "engineField": "regime_comparison.recommended_regime_net_payable",
+      "plainEnglish": "Amount you still owe after TDS credits.",
+      "proofRequired": [],
+      "govSection": "D13"
+    },
+    {
+      "step": 43,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Refund",
+      "action": "Verify refund if TDS exceeds liability.",
+      "engineField": "regime_comparison.recommended_regime_net_payable",
+      "plainEnglish": "Excess TDS/advance tax \u2014 money returned by the department.",
+      "proofRequired": [],
+      "govSection": "D14"
+    },
+    {
+      "step": 44,
+      "portalPage": "Schedule TDS",
+      "fieldLabel": "TDS on salary",
+      "action": "Match Form 16 Part-A TDS with 26AS.",
+      "engineField": "taxes_paid.tds_salary",
+      "plainEnglish": "Tax already deducted by employer, bank, or broker \u2014 matched against 26AS.",
+      "proofRequired": [
+        "Form 16",
+        "Form 26AS"
+      ],
+      "govSection": "Schedule_TDS"
+    },
+    {
+      "step": 45,
+      "portalPage": "Schedule TDS",
+      "fieldLabel": "TDS on other income",
+      "action": "Enter FD/dividend TDS from 26AS.",
+      "engineField": "taxes_paid.tds_other",
+      "plainEnglish": "Tax already deducted by employer, bank, or broker \u2014 matched against 26AS.",
+      "proofRequired": [
+        "Form 26AS"
+      ],
+      "govSection": "Schedule_TDS"
+    },
+    {
+      "step": 46,
+      "portalPage": "Schedule IT",
+      "fieldLabel": "Advance / self-assessment tax",
+      "action": "Enter challan payments if any.",
+      "engineField": "taxes_paid.advance_tax_paid",
+      "plainEnglish": "Tax you paid directly via challan before filing.",
+      "proofRequired": [
+        "Challan receipt"
+      ],
+      "govSection": "Schedule_IT"
+    },
+    {
+      "step": 47,
+      "portalPage": "Preview",
+      "fieldLabel": "Return preview",
+      "action": "Download JSON/PDF preview and compare every head with our values.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 48,
+      "portalPage": "Validate",
+      "fieldLabel": "Validate return",
+      "action": "Click Validate \u2014 fix any portal errors before submit.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 49,
+      "portalPage": "Submit",
+      "fieldLabel": "Submit return",
+      "action": "Submit only after all mismatches resolved in LastMinute ITR.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 50,
+      "portalPage": "E-verify",
+      "fieldLabel": "E-verification",
+      "action": "Complete e-verify within 30 days via Aadhaar OTP or net banking.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    }
+  ],
+  "ITR-4": [
+    {
+      "step": 1,
+      "portalPage": "Login",
+      "fieldLabel": "User ID & password",
+      "action": "Sign in at incometax.gov.in with your PAN as user ID.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 2,
+      "portalPage": "Dashboard",
+      "fieldLabel": "e-File menu",
+      "action": "Click e-File in the top navigation bar.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 3,
+      "portalPage": "e-File",
+      "fieldLabel": "Income Tax Return",
+      "action": "Select Income Tax Return from the e-File submenu.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 4,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Assessment Year",
+      "action": "Choose AY 2026-27 (FY 2025-26).",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 5,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Filing mode",
+      "action": "Select Prepare and submit online.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 6,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Status",
+      "action": "Choose Individual as taxpayer status.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 8,
+      "portalPage": "ITR filing",
+      "fieldLabel": "Reason for filing",
+      "action": "Pick the applicable reason (e.g. taxable income exceeds basic exemption).",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 9,
+      "portalPage": "Personal info",
+      "fieldLabel": "PAN",
+      "action": "Verify PAN matches your card \u2014 pre-filled from account.",
+      "engineField": null,
+      "plainEnglish": "Your 10-character Permanent Account Number from your PAN card.",
+      "proofRequired": [
+        "PAN card"
+      ],
+      "govSection": "A1"
+    },
+    {
+      "step": 10,
+      "portalPage": "Personal info",
+      "fieldLabel": "Date of birth",
+      "action": "Confirm DOB \u2014 affects senior-citizen slabs.",
+      "engineField": null,
+      "plainEnglish": "Used to determine senior-citizen slab benefits and 80TTB eligibility.",
+      "proofRequired": [],
+      "govSection": "A4"
+    },
+    {
+      "step": 11,
+      "portalPage": "Personal info",
+      "fieldLabel": "Address",
+      "action": "Confirm current address matches Aadhaar.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 12,
+      "portalPage": "Bank details",
+      "fieldLabel": "Refund bank account",
+      "action": "Select or add bank account for refund credit.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 13,
+      "portalPage": "Tax regime",
+      "fieldLabel": "Opt out of new regime",
+      "action": "Select based on our regime recommendation.",
+      "engineField": "regime_comparison.recommended_regime",
+      "plainEnglish": "Higher slabs but full Chapter VI-A deductions and HRA exemption.",
+      "proofRequired": [],
+      "govSection": "regime_old"
+    },
+    {
+      "step": 14,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Gross salary u/s 17(1)",
+      "action": "Enter total salary from Form 16 Part-B.",
+      "engineField": "income_heads.gross_salary",
+      "plainEnglish": "Core salary component \u2014 used to calculate HRA exemption.",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1_ia"
+    },
+    {
+      "step": 15,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Exempt allowances u/s 10",
+      "action": "Enter HRA + LTA exemptions.",
+      "engineField": "income_heads.hra_exemption",
+      "plainEnglish": "HRA, LTA, and other allowances exempt under Section 10.",
+      "proofRequired": [
+        "Rent receipts",
+        "Form 16"
+      ],
+      "govSection": "B1_ii"
+    },
+    {
+      "step": 16,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Standard deduction u/s 16(ia)",
+      "action": "Enter standard deduction amount.",
+      "engineField": "income_heads.standard_deduction",
+      "plainEnglish": "Flat deduction from salary \u2014 \u20b950,000 (old) or \u20b975,000 (new regime).",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1_iva"
+    },
+    {
+      "step": 17,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Professional tax u/s 16(iii)",
+      "action": "Enter professional tax deducted.",
+      "engineField": "income_heads.professional_tax",
+      "plainEnglish": "State professional tax deducted from salary \u2014 fully deductible.",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1_ivc"
+    },
+    {
+      "step": 18,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "LTA exemption",
+      "action": "Enter LTA exempt amount if claimed.",
+      "engineField": "income_heads.lta_exemption",
+      "plainEnglish": "HRA, LTA, and other allowances exempt under Section 10.",
+      "proofRequired": [
+        "Travel bills"
+      ],
+      "govSection": "B1_ii"
+    },
+    {
+      "step": 19,
+      "portalPage": "Schedule Salary",
+      "fieldLabel": "Net salary income",
+      "action": "Verify computed net salary head total.",
+      "engineField": "income_heads.net_salary_income",
+      "plainEnglish": "Taxable salary after standard deduction, HRA/LTA exemptions, and professional tax.",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "B1"
+    },
+    {
+      "step": 20,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Property type",
+      "action": "Select self-occupied, let-out, or none.",
+      "engineField": null,
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [],
+      "govSection": "B2"
+    },
+    {
+      "step": 21,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Annual rent received",
+      "action": "Enter gross rent if let-out.",
+      "engineField": null,
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [
+        "Rent agreement"
+      ],
+      "govSection": "B2"
+    },
+    {
+      "step": 22,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Municipal taxes paid",
+      "action": "Enter municipal tax paid on property.",
+      "engineField": null,
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [],
+      "govSection": "B2"
+    },
+    {
+      "step": 23,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Interest u/s 24(b)",
+      "action": "Enter home-loan interest from bank certificate.",
+      "engineField": "income_heads.interest_on_loan_24b",
+      "plainEnglish": "Interest paid on home loan \u2014 capped at \u20b92 lakh for self-occupied property (old regime).",
+      "proofRequired": [
+        "Home loan interest certificate"
+      ],
+      "govSection": "B2_1h"
+    },
+    {
+      "step": 24,
+      "portalPage": "Schedule HP",
+      "fieldLabel": "Net house property income",
+      "action": "Verify net HP income (can be loss).",
+      "engineField": "income_heads.net_house_property_income",
+      "plainEnglish": "Income or loss from owned property \u2014 rent minus 30% repairs minus home-loan interest.",
+      "proofRequired": [
+        "Home loan interest certificate"
+      ],
+      "govSection": "B2"
+    },
+    {
+      "step": 25,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "FD / term deposit interest",
+      "action": "Enter total FD interest (match AIS/26AS).",
+      "engineField": "income_heads.fd_interest",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "Bank interest certificate",
+        "AIS"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 26,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "Savings account interest",
+      "action": "Enter savings interest \u2014 gross before 80TTA.",
+      "engineField": "income_heads.savings_interest_gross",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "Bank statement"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 27,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "Dividend income",
+      "action": "Enter dividend income from shares/MFs.",
+      "engineField": "income_heads.dividend_income",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "Broker statement",
+        "AIS"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 28,
+      "portalPage": "Schedule OS",
+      "fieldLabel": "Total other sources",
+      "action": "Verify total other-income head.",
+      "engineField": "income_heads.total_other_income",
+      "plainEnglish": "Bank FD interest, savings interest, dividends, and family pension.",
+      "proofRequired": [
+        "AIS"
+      ],
+      "govSection": "B3"
+    },
+    {
+      "step": 51,
+      "portalPage": "Schedule BP",
+      "fieldLabel": "Nature of business",
+      "action": "Select business or profession type.",
+      "engineField": null,
+      "plainEnglish": "Profit from business or profession \u2014 presumptive (44AD/44ADA) or regular books.",
+      "proofRequired": [],
+      "govSection": "Schedule_BP"
+    },
+    {
+      "step": 52,
+      "portalPage": "Schedule BP",
+      "fieldLabel": "Turnover / gross receipts",
+      "action": "Enter total turnover or professional receipts.",
+      "engineField": "business.turnover",
+      "plainEnglish": "Profit from business or profession \u2014 presumptive (44AD/44ADA) or regular books.",
+      "proofRequired": [
+        "Bank statements"
+      ],
+      "govSection": "Schedule_BP"
+    },
+    {
+      "step": 53,
+      "portalPage": "Schedule BP",
+      "fieldLabel": "Digital receipts %",
+      "action": "Enter share of digital receipts for 6% rate.",
+      "engineField": "business.digital_turnover_pct",
+      "plainEnglish": "8% of turnover (6% if digital) when turnover \u2264 \u20b92 crore \u2014 no books required.",
+      "proofRequired": [],
+      "govSection": "E2_44AD"
+    },
+    {
+      "step": 54,
+      "portalPage": "Schedule BP",
+      "fieldLabel": "Presumptive income u/s 44AD",
+      "action": "Enter 8%/6% of turnover \u2014 verify eligibility.",
+      "engineField": "business_income.presumptive_44ad",
+      "plainEnglish": "8% of turnover (6% if digital) when turnover \u2264 \u20b92 crore \u2014 no books required.",
+      "proofRequired": [
+        "Bank statements"
+      ],
+      "govSection": "E2_44AD"
+    },
+    {
+      "step": 55,
+      "portalPage": "Schedule BP",
+      "fieldLabel": "Presumptive income u/s 44ADA",
+      "action": "Enter 50% of professional receipts.",
+      "engineField": "business_income.presumptive_44ada",
+      "plainEnglish": "50% of gross receipts when receipts \u2264 \u20b950 lakh \u2014 for doctors, lawyers, consultants, etc.",
+      "proofRequired": [
+        "Receipts summary"
+      ],
+      "govSection": "E3_44ADA"
+    },
+    {
+      "step": 56,
+      "portalPage": "Schedule BP",
+      "fieldLabel": "Cash receipts check",
+      "action": "Confirm cash receipts \u2264 5% \u2014 else presumptive not allowed.",
+      "engineField": "business.cash_receipts_pct",
+      "plainEnglish": "Profit from business or profession \u2014 presumptive (44AD/44ADA) or regular books.",
+      "proofRequired": [],
+      "govSection": "Schedule_BP"
+    },
+    {
+      "step": 57,
+      "portalPage": "Schedule BP",
+      "fieldLabel": "Net business income",
+      "action": "Verify net business head total.",
+      "engineField": "business_income.net_business_income",
+      "plainEnglish": "Profit from business or profession \u2014 presumptive (44AD/44ADA) or regular books.",
+      "proofRequired": [],
+      "govSection": "Schedule_BP"
+    },
+    {
+      "step": 29,
+      "portalPage": "Part B \u2014 Total",
+      "fieldLabel": "Gross total income",
+      "action": "Verify GTI before deductions.",
+      "engineField": "income_heads.gross_total_income",
+      "plainEnglish": "Sum of all income heads before Chapter VI-A deductions.",
+      "proofRequired": [],
+      "govSection": "B4"
+    },
+    {
+      "step": 30,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80C",
+      "action": "Enter EPF+PPF+ELSS+LIC+principal \u2014 cap \u20b91.5L.",
+      "engineField": "deductions.capped_80c",
+      "plainEnglish": "EPF, PPF, ELSS, LIC, tuition fees, home-loan principal \u2014 combined cap \u20b91.5 lakh.",
+      "proofRequired": [
+        "Investment proofs",
+        "Form 16"
+      ],
+      "govSection": "80C"
+    },
+    {
+      "step": 31,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80CCD(1B)",
+      "action": "Enter additional NPS contribution.",
+      "engineField": "deductions.deduction_80ccd_1b",
+      "plainEnglish": "Additional NPS contribution by you \u2014 extra \u20b950,000 over and above 80C cap.",
+      "proofRequired": [
+        "NPS statement"
+      ],
+      "govSection": "80CCD_1B"
+    },
+    {
+      "step": 32,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80CCD(2)",
+      "action": "Enter employer NPS \u2014 allowed in both regimes.",
+      "engineField": "deductions.deduction_80ccd_2",
+      "plainEnglish": "Employer's NPS contribution \u2014 allowed in both old and new regime (up to 10% of basic).",
+      "proofRequired": [
+        "Form 16"
+      ],
+      "govSection": "80CCD_2"
+    },
+    {
+      "step": 33,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80D",
+      "action": "Enter health insurance premium.",
+      "engineField": "deductions.deduction_80d",
+      "plainEnglish": "Health insurance premium for self/family and parents \u2014 limits vary by age.",
+      "proofRequired": [
+        "Premium receipts"
+      ],
+      "govSection": "80D"
+    },
+    {
+      "step": 34,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80TTA / 80TTB",
+      "action": "Enter savings-interest deduction.",
+      "engineField": "deductions.deduction_80tta_ttb",
+      "plainEnglish": "Deduction on savings account interest \u2014 up to \u20b910,000 (below 60 years).",
+      "proofRequired": [
+        "Bank statement"
+      ],
+      "govSection": "80TTA"
+    },
+    {
+      "step": 35,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Section 80U",
+      "action": "Enter disability deduction if applicable.",
+      "engineField": "deductions.deduction_80u",
+      "plainEnglish": "Deduction for taxpayer with disability \u2014 \u20b975,000 or \u20b91.25 lakh if severe.",
+      "proofRequired": [
+        "Disability certificate"
+      ],
+      "govSection": "80U"
+    },
+    {
+      "step": 36,
+      "portalPage": "Schedule VI-A",
+      "fieldLabel": "Total Chapter VI-A",
+      "action": "Verify total deductions (old regime).",
+      "engineField": "deductions.total_chapter_via",
+      "plainEnglish": "Investments and expenses that reduce taxable income (old regime).",
+      "proofRequired": [],
+      "govSection": "C1"
+    },
+    {
+      "step": 37,
+      "portalPage": "Tax computation",
+      "fieldLabel": "Total income (taxable)",
+      "action": "Verify taxable income after deductions.",
+      "engineField": null,
+      "plainEnglish": "Gross total income minus deductions \u2014 your taxable income base.",
+      "proofRequired": [],
+      "govSection": "C2"
+    },
+    {
+      "step": 38,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Tax on total income",
+      "action": "Verify slab + special-rate tax.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "Tax calculated on slab rates plus special-rate capital gains.",
+      "proofRequired": [],
+      "govSection": "D1"
+    },
+    {
+      "step": 39,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Rebate u/s 87A",
+      "action": "Verify rebate amount.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "Tax rebate for lower incomes \u2014 up to \u20b912,500 (old) or full rebate up to \u20b912L (new).",
+      "proofRequired": [],
+      "govSection": "D2"
+    },
+    {
+      "step": 40,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Health & education cess",
+      "action": "Verify 4% cess.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "4% surcharge on income tax and surcharge.",
+      "proofRequired": [],
+      "govSection": "D4"
+    },
+    {
+      "step": 41,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Total taxes paid",
+      "action": "Enter TDS + advance + self-assessment.",
+      "engineField": "regime_comparison.old",
+      "plainEnglish": "TDS from Form 16/26AS plus advance tax and self-assessment tax.",
+      "proofRequired": [
+        "Form 16",
+        "Form 26AS"
+      ],
+      "govSection": "D12"
+    },
+    {
+      "step": 42,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Tax payable",
+      "action": "Verify amount due if positive.",
+      "engineField": "regime_comparison.recommended_regime_net_payable",
+      "plainEnglish": "Amount you still owe after TDS credits.",
+      "proofRequired": [],
+      "govSection": "D13"
+    },
+    {
+      "step": 43,
+      "portalPage": "Part D \u2014 Tax",
+      "fieldLabel": "Refund",
+      "action": "Verify refund if TDS exceeds liability.",
+      "engineField": "regime_comparison.recommended_regime_net_payable",
+      "plainEnglish": "Excess TDS/advance tax \u2014 money returned by the department.",
+      "proofRequired": [],
+      "govSection": "D14"
+    },
+    {
+      "step": 44,
+      "portalPage": "Schedule TDS",
+      "fieldLabel": "TDS on salary",
+      "action": "Match Form 16 Part-A TDS with 26AS.",
+      "engineField": "taxes_paid.tds_salary",
+      "plainEnglish": "Tax already deducted by employer, bank, or broker \u2014 matched against 26AS.",
+      "proofRequired": [
+        "Form 16",
+        "Form 26AS"
+      ],
+      "govSection": "Schedule_TDS"
+    },
+    {
+      "step": 45,
+      "portalPage": "Schedule TDS",
+      "fieldLabel": "TDS on other income",
+      "action": "Enter FD/dividend TDS from 26AS.",
+      "engineField": "taxes_paid.tds_other",
+      "plainEnglish": "Tax already deducted by employer, bank, or broker \u2014 matched against 26AS.",
+      "proofRequired": [
+        "Form 26AS"
+      ],
+      "govSection": "Schedule_TDS"
+    },
+    {
+      "step": 46,
+      "portalPage": "Schedule IT",
+      "fieldLabel": "Advance / self-assessment tax",
+      "action": "Enter challan payments if any.",
+      "engineField": "taxes_paid.advance_tax_paid",
+      "plainEnglish": "Tax you paid directly via challan before filing.",
+      "proofRequired": [
+        "Challan receipt"
+      ],
+      "govSection": "Schedule_IT"
+    },
+    {
+      "step": 47,
+      "portalPage": "Preview",
+      "fieldLabel": "Return preview",
+      "action": "Download JSON/PDF preview and compare every head with our values.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 48,
+      "portalPage": "Validate",
+      "fieldLabel": "Validate return",
+      "action": "Click Validate \u2014 fix any portal errors before submit.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 49,
+      "portalPage": "Submit",
+      "fieldLabel": "Submit return",
+      "action": "Submit only after all mismatches resolved in LastMinute ITR.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    },
+    {
+      "step": 50,
+      "portalPage": "E-verify",
+      "fieldLabel": "E-verification",
+      "action": "Complete e-verify within 30 days via Aadhaar OTP or net banking.",
+      "engineField": null,
+      "plainEnglish": "",
+      "proofRequired": [],
+      "govSection": ""
+    }
+  ]
+}

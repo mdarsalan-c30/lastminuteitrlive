@@ -1,0 +1,1189 @@
+{
+  "ITR-1": [
+    {
+      "id": "login",
+      "order": 1,
+      "title": "Log in to incometax.gov.in",
+      "portalScreenTitle": "e-Filing → Login",
+      "portalPath": "Home → Login with PAN + password or Aadhaar OTP",
+      "screenshotRef": "itr1/login/dashboard",
+      "screenTips": [
+        "Use the same PAN as your Form 16 and AIS — mismatched PAN blocks prefill.",
+        "Enable two-factor authentication before starting data entry."
+      ],
+      "warnings": [
+        "Never share OTP or password with third parties claiming to file for you.",
+        "Use only https://www.incometax.gov.in — check the padlock in your browser."
+      ],
+      "fields": [
+        {
+          "id": "pan_login",
+          "label": "PAN (User ID)",
+          "ourValueKey": "profile.pan",
+          "action": "enter",
+          "copyValue": false,
+          "plainEnglishWhy": "Your government login ID must match the PAN on this return.",
+          "whyWeAsk": "The portal authenticates you by PAN before showing any prefill or ITR forms.",
+          "validationTips": [
+            "PAN is 10 characters: five letters, four digits, one letter.",
+            "Use uppercase; the portal usually accepts either case."
+          ],
+          "itrFormCrossLink": "Part A · General Information"
+        },
+        {
+          "id": "password_or_otp",
+          "label": "Password or Aadhaar OTP",
+          "ourValueKey": "",
+          "action": "verify",
+          "copyValue": false,
+          "plainEnglishWhy": "Complete login yourself — we never store or enter your portal credentials.",
+          "whyWeAsk": "Only you should authenticate on the official portal.",
+          "validationTips": [
+            "If OTP fails, wait 30 seconds before requesting a new one.",
+            "Reset password via 'Forgot Password' if locked out."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prefill",
+      "order": 2,
+      "title": "Download prefill and confirm AIS",
+      "portalScreenTitle": "e-File → Income Tax Return → Prefill",
+      "portalPath": "Dashboard → Download Prefilled Data",
+      "screenshotRef": "itr1/prefill/download",
+      "screenTips": [
+        "Download prefill before entering salary — it pulls Form 26AS/AIS TDS credits.",
+        "Compare prefill TDS totals with our computed taxes-paid figures."
+      ],
+      "warnings": [
+        "Prefill can be incomplete — always verify against Form 16 and broker statements.",
+        "Do not submit until every schedule matches your documents."
+      ],
+      "fields": [
+        {
+          "id": "download_prefill",
+          "label": "Download pre-filled JSON / XML",
+          "ourValueKey": "",
+          "action": "verify",
+          "copyValue": false,
+          "plainEnglishWhy": "Prefill saves time but must be reconciled with your LastMinute summary.",
+          "whyWeAsk": "Government prefill pulls employer and bank TDS — starting here reduces manual typing.",
+          "validationTips": [
+            "After download, note TDS salary and TDS other totals for cross-check with our guide.",
+            "If prefill shows wrong employer, update AIS feedback before filing."
+          ],
+          "itrFormCrossLink": "Schedule TDS · Part A"
+        },
+        {
+          "id": "select_itr_form",
+          "label": "Select ITR-1 (Sahaj)",
+          "ourValueKey": "profile.itr_form",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Pick the form our engine recommended for your income mix.",
+          "whyWeAsk": "Wrong form selection causes validation errors or missed schedules.",
+          "validationTips": [
+            "ITR-1 applies to salary, one house, and other sources within limits.",
+            "If you have capital gains or foreign income, stop and switch to ITR-2."
+          ],
+          "itrFormCrossLink": "Return selection"
+        },
+        {
+          "id": "regime_toggle",
+          "label": "Tax regime (old vs new)",
+          "ourValueKey": "regime_comparison.recommended_regime",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Regime choice locks which deductions apply for this assessment year.",
+          "whyWeAsk": "Old vs new regime changes every deduction field downstream.",
+          "validationTips": [
+            "Set regime before entering Chapter VI-A deductions.",
+            "Default new regime opt-out requires explicit old regime selection."
+          ],
+          "itrFormCrossLink": "Part A · Tax Regime"
+        }
+      ]
+    },
+    {
+      "id": "salary",
+      "order": 3,
+      "title": "Salary details",
+      "portalScreenTitle": "Income Sources → Salary",
+      "portalPath": "Gross Total Income → Income from Salary/Pension",
+      "screenshotRef": "itr1/salary/schedule-s",
+      "skipWhen": "no_salary_income",
+      "screenTips": [
+        "Open Form 16 Part B beside this screen — enter annual totals only."
+      ],
+      "warnings": [
+        "Do not type rounded lakh values from memory; copy exact rupee amounts.",
+        "If Form 16 has multiple rows, use total annual values, not monthly."
+      ],
+      "fields": [
+        {
+          "id": "gross_salary_17_1",
+          "label": "Gross salary u/s 17(1)",
+          "ourValueKey": "income_heads.gross_salary",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Base salary drives taxable salary and downstream tax.",
+          "whyWeAsk": "This is the starting point for salary tax — portal validates against Form 16 TDS.",
+          "validationTips": [
+            "Match Form 16 'Gross Salary' line — not net pay credited to bank.",
+            "Exclude employer PF if already shown separately per Form 16."
+          ],
+          "itrFormCrossLink": "Schedule S · 1(a)"
+        },
+        {
+          "id": "exempt_us10",
+          "label": "Exempt allowances u/s 10 (HRA/LTA)",
+          "ourValueKey": "income_heads.hra_exemption",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "This keeps exempt allowances out of taxable income.",
+          "whyWeAsk": "HRA/LTA exemptions reduce taxable salary when old regime and proofs exist.",
+          "validationTips": [
+            "HRA exemption requires rent receipts for old regime.",
+            "LTA is exempt only for eligible travel — keep tickets."
+          ],
+          "itrFormCrossLink": "Schedule S · Exempt u/s 10"
+        },
+        {
+          "id": "standard_deduction",
+          "label": "Standard deduction u/s 16(ia)",
+          "ourValueKey": "income_heads.standard_deduction",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Portal should match computed standard deduction exactly.",
+          "whyWeAsk": "Standard deduction is automatic for salaried — wrong amount triggers mismatch.",
+          "validationTips": [
+            "Do not add standard deduction twice (Form 16 may already net it).",
+            "Use our computed value — cap changes by assessment year."
+          ],
+          "itrFormCrossLink": "Schedule S · 16(ia)"
+        },
+        {
+          "id": "professional_tax",
+          "label": "Professional tax u/s 16(iii)",
+          "ourValueKey": "income_heads.professional_tax",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Only deducted professional tax should be entered.",
+          "whyWeAsk": "Professional tax paid by employer is deductible from salary income.",
+          "validationTips": [
+            "Max ₹2,500 per year — match Form 16 deduction line.",
+            "Enter zero if employer did not deduct professional tax."
+          ],
+          "itrFormCrossLink": "Schedule S · 16(iii)"
+        },
+        {
+          "id": "agricultural_income",
+          "label": "Agricultural income field",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "For this scope path, leave empty when there is no agricultural income.",
+          "whyWeAsk": "Agricultural income is exempt but may affect slab rate if above threshold.",
+          "validationTips": ["Leave blank unless you have documented agricultural income."]
+        }
+      ]
+    },
+    {
+      "id": "deductions",
+      "order": 4,
+      "title": "Deductions and tax benefits",
+      "portalScreenTitle": "Deductions → Chapter VI-A",
+      "portalPath": "Total Deductions",
+      "screenshotRef": "itr1/deductions/chapter-via",
+      "screenTips": [
+        "Confirm tax regime toggle before entering any deduction amount."
+      ],
+      "warnings": [
+        "Do not re-enter 80C sub-items if portal auto-sums from detailed schedule.",
+        "Entering old-regime only deductions in wrong regime causes mismatch."
+      ],
+      "fields": [
+        {
+          "id": "deduction_80c",
+          "label": "Section 80C",
+          "ourValueKey": "deductions.capped_80c",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Use capped final 80C amount, not raw investment sum.",
+          "whyWeAsk": "80C reduces taxable income in old regime — portal caps at ₹1.5 lakh.",
+          "validationTips": [
+            "Enter capped total after ELSS, PPF, LIC limits.",
+            "Skip or zero in new regime."
+          ],
+          "itrFormCrossLink": "Schedule VI-A · 80C",
+          "skipWhen": "old_regime_only_deduction"
+        },
+        {
+          "id": "deduction_80d",
+          "label": "Section 80D",
+          "ourValueKey": "deductions.deduction_80d",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Health insurance deduction impacts final tax payable.",
+          "whyWeAsk": "Medical insurance premiums for self/parents reduce tax in old regime.",
+          "validationTips": [
+            "Keep premium receipts and policy copy.",
+            "Senior citizen parents allow higher limits."
+          ],
+          "itrFormCrossLink": "Schedule VI-A · 80D",
+          "skipWhen": "old_regime_only_deduction"
+        },
+        {
+          "id": "deduction_80ccd_1b",
+          "label": "Section 80CCD(1B)",
+          "ourValueKey": "deductions.deduction_80ccd_1b",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Additional NPS deduction is separate from 80C.",
+          "whyWeAsk": "Extra ₹50,000 NPS contribution has its own field — do not bundle into 80C.",
+          "validationTips": [
+            "Requires NPS transaction statement.",
+            "Available in both regimes when eligible."
+          ],
+          "itrFormCrossLink": "Schedule VI-A · 80CCD(1B)"
+        },
+        {
+          "id": "deduction_80ccd_2",
+          "label": "Section 80CCD(2)",
+          "ourValueKey": "deductions.deduction_80ccd_2",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Employer NPS has a separate field and limit treatment.",
+          "whyWeAsk": "Employer NPS contribution is deductible within statutory limits.",
+          "validationTips": ["Match Form 16 employer NPS line if present."],
+          "itrFormCrossLink": "Schedule VI-A · 80CCD(2)"
+        },
+        {
+          "id": "deduction_80g",
+          "label": "Section 80G",
+          "ourValueKey": "deductions.deduction_80g",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Use computed eligible donation value after limits.",
+          "whyWeAsk": "Donations to approved charities reduce tax in old regime only.",
+          "validationTips": [
+            "Keep donation receipt with 80G registration number.",
+            "Enter eligible amount after donee-specific limits."
+          ],
+          "itrFormCrossLink": "Schedule VI-A · 80G",
+          "skipWhen": "old_regime_only_deduction"
+        },
+        {
+          "id": "deduction_80u",
+          "label": "Section 80U",
+          "ourValueKey": "deductions.deduction_80u",
+          "action": "select_no",
+          "copyValue": false,
+          "plainEnglishWhy": "Select No when disability deduction is not applicable.",
+          "whyWeAsk": "Disability deduction requires medical certificate — select No if not claimed.",
+          "validationTips": ["Selecting Yes without certificate triggers scrutiny."]
+        },
+        {
+          "id": "deduction_80tta",
+          "label": "Section 80TTA / 80TTB toggle",
+          "ourValueKey": "deductions.deduction_80tta_ttb",
+          "action": "deselect",
+          "copyValue": false,
+          "plainEnglishWhy": "Deselect any default selection if your computed value is zero.",
+          "whyWeAsk": "Savings interest deduction applies only when interest income exists.",
+          "validationTips": [
+            "80TTB for seniors replaces 80TTA — pick the correct section.",
+            "Deselect portal default when our value is zero."
+          ],
+          "skipWhen": "old_regime_only_deduction"
+        }
+      ]
+    },
+    {
+      "id": "verification",
+      "order": 5,
+      "title": "Validate and preview",
+      "portalScreenTitle": "Validate → Preview & Submit",
+      "portalPath": "Validate Return → Preview",
+      "screenshotRef": "itr1/verification/preview",
+      "screenTips": [
+        "Run portal validation before submit — fix errors in the schedule it names.",
+        "Compare net tax payable on preview with our summary."
+      ],
+      "warnings": [
+        "Validation errors often point to a specific schedule — fix there, not in Part D only.",
+        "Preview PDF is not filed until you click Submit."
+      ],
+      "fields": [
+        {
+          "id": "validate_return",
+          "label": "Click Validate on portal",
+          "ourValueKey": "",
+          "action": "verify",
+          "copyValue": false,
+          "plainEnglishWhy": "Portal validation catches arithmetic and cross-schedule mismatches.",
+          "whyWeAsk": "Validation is mandatory before submit — it surfaces missing schedules.",
+          "validationTips": [
+            "Note each error code and schedule name.",
+            "Re-run validate after every fix."
+          ]
+        },
+        {
+          "id": "net_tax_check",
+          "label": "Net tax payable / refund (sanity check)",
+          "ourValueKey": "regime_comparison.recommended_regime_net_payable",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Preview should match our computed net payable within rounding.",
+          "whyWeAsk": "Large variance means a missed schedule or wrong regime.",
+          "validationTips": [
+            "Difference under ₹100 may be rounding — larger gaps need schedule review.",
+            "Check TDS credit schedule if refund looks too high."
+          ],
+          "itrFormCrossLink": "Part D · Tax Payable"
+        }
+      ]
+    },
+    {
+      "id": "submit",
+      "order": 6,
+      "title": "Submit and e-verify",
+      "portalScreenTitle": "Submit → E-Verify",
+      "portalPath": "Submit Return → E-Verification",
+      "screenshotRef": "itr1/submit/everify",
+      "screenTips": [
+        "Download acknowledgement (ITR-V) immediately after e-verify.",
+        "Refund processing starts only after successful e-verification."
+      ],
+      "warnings": [
+        "Return is not complete until e-verified within the statutory window.",
+        "Aadhaar OTP is the fastest e-verify method for most residents."
+      ],
+      "fields": [
+        {
+          "id": "submit_return",
+          "label": "Submit return on portal",
+          "ourValueKey": "",
+          "action": "verify",
+          "copyValue": false,
+          "plainEnglishWhy": "You submit on incometax.gov.in — we guide only.",
+          "whyWeAsk": "Submission locks the return for this assessment year.",
+          "validationTips": [
+            "Double-check bank account for refund credit.",
+            "Save acknowledgement number."
+          ]
+        },
+        {
+          "id": "everify",
+          "label": "E-verify (Aadhaar OTP / net banking)",
+          "ourValueKey": "",
+          "action": "verify",
+          "copyValue": false,
+          "plainEnglishWhy": "E-verification completes filing — without it the return is invalid.",
+          "whyWeAsk": "ITD requires e-verify within 30 days of filing.",
+          "validationTips": [
+            "Aadhaar must be linked to PAN for OTP method.",
+            "If OTP fails, try net banking e-verify."
+          ],
+          "itrFormCrossLink": "E-Verification"
+        }
+      ]
+    }
+  ],
+  "ITR-2": [
+    {
+      "id": "salary",
+      "title": "Salary (if applicable)",
+      "portalScreenTitle": "Income Sources → Salary",
+      "portalPath": "Gross Total Income → Income from Salary/Pension",
+      "warnings": [
+        "Skip the entire salary schedule if you had no employer salary this year.",
+        "Investors with only capital gains should not enter salary fields."
+      ],
+      "fields": [
+        {
+          "label": "Gross salary u/s 17(1)",
+          "ourValueKey": "income_heads.gross_salary",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Enter only when Form 16 exists; otherwise skip this schedule."
+        },
+        {
+          "label": "Exempt allowances u/s 10 (HRA/LTA)",
+          "ourValueKey": "income_heads.hra_exemption",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Match Form 16 exempt totals when salary is present."
+        },
+        {
+          "label": "Standard deduction u/s 16(ia)",
+          "ourValueKey": "income_heads.standard_deduction",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Required when salary head is active; copy exact computed amount."
+        },
+        {
+          "label": "Net salary income",
+          "ourValueKey": "income_heads.net_salary_income",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Verify portal net salary matches our head total."
+        },
+        {
+          "label": "Entire salary schedule",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Skip all salary rows when gross salary is zero in our summary."
+        }
+      ]
+    },
+    {
+      "id": "capital_gains",
+      "title": "Capital gains schedule",
+      "portalScreenTitle": "Income Sources → Capital Gains",
+      "portalPath": "Schedule CG → STCG / LTCG",
+      "warnings": [
+        "Use broker tax P&L or capital gains statement — not sale proceeds alone.",
+        "LTCG u/s 112A exemption of ₹1.25L is applied before entering taxable LTCG."
+      ],
+      "fields": [
+        {
+          "label": "STCG u/s 111A (listed equity/MF)",
+          "ourValueKey": "income_heads.stcg_111a_net",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Listed equity short-term gains taxed at 15% — net after set-off."
+        },
+        {
+          "label": "LTCG u/s 112A (listed equity/MF)",
+          "ourValueKey": "income_heads.ltcg_112a_net",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Taxable LTCG after ₹1.25L annual exemption on listed equity."
+        },
+        {
+          "label": "Other capital gains (property, debt MF, etc.)",
+          "ourValueKey": "income_heads.ltcg_other_net",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Non-112A gains use slab or special rates — enter net taxable amount."
+        },
+        {
+          "label": "Presumptive business u/s 44AD",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "ITR-2 has no presumptive business schedule — use ITR-4 if applicable."
+        },
+        {
+          "label": "Schedule FA (foreign assets)",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Skip unless our profile flags foreign assets — expert review recommended."
+        }
+      ]
+    },
+    {
+      "id": "other_income",
+      "title": "Other sources income",
+      "portalScreenTitle": "Income Sources → Other Sources",
+      "portalPath": "Schedule OS → Interest, Dividends",
+      "warnings": [
+        "Cross-check FD and dividend lines with AIS before entering.",
+        "Enter gross savings interest before 80TTA/80TTB deduction."
+      ],
+      "fields": [
+        {
+          "label": "FD / term deposit interest",
+          "ourValueKey": "income_heads.fd_interest",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Fully taxable interest — must match 26AS TDS credits."
+        },
+        {
+          "label": "Savings account interest (gross)",
+          "ourValueKey": "income_heads.savings_interest_gross",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Enter gross interest; 80TTA/80TTB is claimed in deductions."
+        },
+        {
+          "label": "Dividend income",
+          "ourValueKey": "income_heads.dividend_income",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Dividends are taxable in your hands even if TDS was deducted."
+        },
+        {
+          "label": "Total other sources",
+          "ourValueKey": "income_heads.total_other_income",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Verify portal OS total matches our computed head."
+        },
+        {
+          "label": "Lottery / game winnings",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Skip unless you reported such income in our questionnaire."
+        }
+      ]
+    },
+    {
+      "id": "deductions",
+      "title": "Deductions and tax benefits",
+      "portalScreenTitle": "Deductions → Chapter VI-A",
+      "portalPath": "Total Deductions",
+      "warnings": [
+        "Capital gains tax rates are separate — do not offset CG with 80C.",
+        "New regime blocks most Chapter VI-A deductions except 80CCD(2)."
+      ],
+      "fields": [
+        {
+          "label": "Section 80C",
+          "ourValueKey": "deductions.capped_80c",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Old regime only — capped at ₹1.5 lakh combined."
+        },
+        {
+          "label": "Section 80D",
+          "ourValueKey": "deductions.deduction_80d",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Health insurance premium deduction when old regime selected."
+        },
+        {
+          "label": "Section 80CCD(1B)",
+          "ourValueKey": "deductions.deduction_80ccd_1b",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Additional NPS up to ₹50,000 — separate from 80C cap."
+        },
+        {
+          "label": "Section 80CCD(2)",
+          "ourValueKey": "deductions.deduction_80ccd_2",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Employer NPS allowed in both old and new regime."
+        },
+        {
+          "label": "Section 80G",
+          "ourValueKey": "deductions.deduction_80g",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Enter eligible donation amount after qualifying limits."
+        },
+        {
+          "label": "Section 80U",
+          "ourValueKey": "deductions.deduction_80u",
+          "action": "select_no",
+          "copyValue": false,
+          "plainEnglishWhy": "Select No when no disability deduction applies."
+        },
+        {
+          "label": "Section 80TTA / 80TTB",
+          "ourValueKey": "deductions.deduction_80tta_ttb",
+          "action": "deselect",
+          "copyValue": false,
+          "plainEnglishWhy": "Deselect portal default if our computed savings-interest deduction is zero."
+        }
+      ]
+    },
+    {
+      "id": "tax_computation",
+      "title": "Tax computation",
+      "portalScreenTitle": "Tax Paid and Verification → Part D",
+      "portalPath": "Tax on Total Income → Taxes Paid",
+      "warnings": [
+        "Special-rate CG tax is added to slab tax — compare full Part D, not salary alone.",
+        "Refund and payable are mutually exclusive — verify sign matches our net payable."
+      ],
+      "fields": [
+        {
+          "label": "Gross total income",
+          "ourValueKey": "income_heads.gross_total_income",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Sum of all heads before Chapter VI-A — must match before deductions."
+        },
+        {
+          "label": "Total Chapter VI-A deductions",
+          "ourValueKey": "deductions.total_chapter_via",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Old-regime deductions reduce taxable income on portal."
+        },
+        {
+          "label": "Net tax payable / refund",
+          "ourValueKey": "regime_comparison.recommended_regime_net_payable",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Positive = pay more; negative = refund — use recommended regime result."
+        },
+        {
+          "label": "TDS on salary",
+          "ourValueKey": "taxes_paid.tds_salary",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Must reconcile with Form 16 Part-A and Form 26AS."
+        },
+        {
+          "label": "TDS on other income",
+          "ourValueKey": "taxes_paid.tds_other",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "FD, dividend, and broker TDS from 26AS."
+        },
+        {
+          "label": "Advance / self-assessment tax",
+          "ourValueKey": "taxes_paid.advance_tax_paid",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Enter challan payments you made during the year."
+        },
+        {
+          "label": "Surcharge on tax",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Leave blank unless our summary shows surcharge — rare below ₹50L income."
+        }
+      ]
+    }
+  ],
+  "ITR-3": [
+    {
+      "id": "business_pl",
+      "title": "Business P&L (books of account)",
+      "portalScreenTitle": "Income Sources → Business & Profession",
+      "portalPath": "Schedule BP → Part A-P&L",
+      "warnings": [
+        "Use audited or signed P&L figures — not bank credits alone.",
+        "Do not enter presumptive 44AD/44ADA percentages here — ITR-3 requires actual books."
+      ],
+      "fields": [
+        {
+          "label": "Gross receipts / turnover (books)",
+          "ourValueKey": "business.actual_gross_receipts",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Total revenue per P&L before expenses."
+        },
+        {
+          "label": "Total business expenses",
+          "ourValueKey": "business.actual_expenses",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Allowable expenses from books — must support net profit."
+        },
+        {
+          "label": "Net profit from business",
+          "ourValueKey": "business_income.books_profit",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Receipts minus expenses per our P&L mapping."
+        },
+        {
+          "label": "Net business income (head total)",
+          "ourValueKey": "business_income.net_business_income",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Final business head after adjustments — verify on portal."
+        },
+        {
+          "label": "Presumptive income u/s 44AD",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "ITR-3 uses regular books, not presumptive turnover percentages."
+        },
+        {
+          "label": "Presumptive income u/s 44ADA",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Professionals on presumptive scheme should file ITR-4, not ITR-3."
+        }
+      ]
+    },
+    {
+      "id": "capital_gains",
+      "title": "Capital gains (if applicable)",
+      "portalScreenTitle": "Income Sources → Capital Gains",
+      "portalPath": "Schedule CG → STCG / LTCG",
+      "warnings": [
+        "Many ITR-3 filers have no capital gains — skip entire schedule when all CG values are zero.",
+        "Separate business income from investment gains — wrong schedule causes defective return."
+      ],
+      "fields": [
+        {
+          "label": "STCG u/s 111A",
+          "ourValueKey": "income_heads.stcg_111a_net",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Enter when broker reported listed equity short-term gains."
+        },
+        {
+          "label": "LTCG u/s 112A",
+          "ourValueKey": "income_heads.ltcg_112a_net",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Taxable listed equity LTCG after annual exemption."
+        },
+        {
+          "label": "Other capital gains",
+          "ourValueKey": "income_heads.ltcg_other_net",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Property, unlisted, or debt fund gains at applicable rates."
+        },
+        {
+          "label": "Entire Schedule CG",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Skip all CG rows when our summary shows zero across STCG and LTCG."
+        }
+      ]
+    },
+    {
+      "id": "salary",
+      "title": "Salary (if mixed income)",
+      "portalScreenTitle": "Income Sources → Salary",
+      "portalPath": "Gross Total Income → Income from Salary/Pension",
+      "warnings": [
+        "Business-only filers should skip salary entirely.",
+        "Side employment while running a business still needs Form 16 values entered."
+      ],
+      "fields": [
+        {
+          "label": "Gross salary u/s 17(1)",
+          "ourValueKey": "income_heads.gross_salary",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Enter when you also had salary alongside business income."
+        },
+        {
+          "label": "Standard deduction u/s 16(ia)",
+          "ourValueKey": "income_heads.standard_deduction",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Apply when salary head is active."
+        },
+        {
+          "label": "Net salary income",
+          "ourValueKey": "income_heads.net_salary_income",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Verify combined salary head matches our computation."
+        },
+        {
+          "label": "Entire salary schedule",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Skip when gross salary is zero — business-only return."
+        }
+      ]
+    },
+    {
+      "id": "deductions",
+      "title": "Deductions and tax benefits",
+      "portalScreenTitle": "Deductions → Chapter VI-A",
+      "portalPath": "Total Deductions",
+      "warnings": [
+        "Business expenses belong in Schedule BP, not 80C — do not double-count.",
+        "New regime limits most deductions; confirm regime toggle first."
+      ],
+      "fields": [
+        {
+          "label": "Section 80C",
+          "ourValueKey": "deductions.capped_80c",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Personal investments — separate from business P&L expenses."
+        },
+        {
+          "label": "Section 80D",
+          "ourValueKey": "deductions.deduction_80d",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Health insurance for self and parents when old regime applies."
+        },
+        {
+          "label": "Section 80CCD(1B)",
+          "ourValueKey": "deductions.deduction_80ccd_1b",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Additional NPS contribution beyond 80C."
+        },
+        {
+          "label": "Section 80CCD(2)",
+          "ourValueKey": "deductions.deduction_80ccd_2",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Employer NPS — allowed in both regimes."
+        },
+        {
+          "label": "Section 80G",
+          "ourValueKey": "deductions.deduction_80g",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Charitable donations after eligible limits."
+        },
+        {
+          "label": "Section 80U",
+          "ourValueKey": "deductions.deduction_80u",
+          "action": "select_no",
+          "copyValue": false,
+          "plainEnglishWhy": "Select No when disability deduction does not apply."
+        },
+        {
+          "label": "Section 80TTA / 80TTB",
+          "ourValueKey": "deductions.deduction_80tta_ttb",
+          "action": "deselect",
+          "copyValue": false,
+          "plainEnglishWhy": "Deselect if savings-interest deduction is zero in our summary."
+        }
+      ]
+    },
+    {
+      "id": "balance_sheet",
+      "title": "Balance sheet (Part A-BS)",
+      "portalScreenTitle": "Financial Particulars → Balance Sheet",
+      "portalPath": "Part A-BS → Assets and Liabilities",
+      "warnings": [
+        "LastMinute ITR does not compute balance sheet figures yet.",
+        "Consult your CA or use audited books — do not invent asset values."
+      ],
+      "fields": [
+        {
+          "label": "Fixed assets",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Not computed in our engine — enter from your books or skip if portal allows."
+        },
+        {
+          "label": "Current assets (cash, debtors, stock)",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Requires full books — outside current companion scope."
+        },
+        {
+          "label": "Capital account / liabilities",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Balance sheet is mandatory for ITR-3 audit cases — use professional help."
+        },
+        {
+          "label": "Schedule AL (assets & liabilities)",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Skip unless income exceeds ₹50L threshold requiring AL disclosure."
+        }
+      ]
+    },
+    {
+      "id": "tax_computation",
+      "title": "Tax computation",
+      "portalScreenTitle": "Tax Paid and Verification → Part D",
+      "portalPath": "Tax on Total Income → Taxes Paid",
+      "warnings": [
+        "Business income plus CG may trigger advance-tax interest — verify Part D carefully.",
+        "Match TDS on professional receipts with 26AS before claiming credit."
+      ],
+      "fields": [
+        {
+          "label": "Gross total income",
+          "ourValueKey": "income_heads.gross_total_income",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "All heads combined — salary, business, CG, and other sources."
+        },
+        {
+          "label": "Total Chapter VI-A deductions",
+          "ourValueKey": "deductions.total_chapter_via",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Chapter VI-A total in old regime."
+        },
+        {
+          "label": "Net tax payable / refund",
+          "ourValueKey": "regime_comparison.recommended_regime_net_payable",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Final amount owed or refunded after all credits."
+        },
+        {
+          "label": "TDS on salary",
+          "ourValueKey": "taxes_paid.tds_salary",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Form 16 TDS when salary is present."
+        },
+        {
+          "label": "TDS on other income",
+          "ourValueKey": "taxes_paid.tds_other",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "26AS credits on FD, contracts, and brokerage."
+        },
+        {
+          "label": "Advance / self-assessment tax",
+          "ourValueKey": "taxes_paid.advance_tax_paid",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Challan payments for business advance tax."
+        }
+      ]
+    }
+  ],
+  "ITR-4": [
+    {
+      "id": "presumptive_business",
+      "title": "Presumptive business (44AD / 44ADA)",
+      "portalScreenTitle": "Income Sources → Business & Profession",
+      "portalPath": "Schedule BP → Presumptive Income",
+      "warnings": [
+        "Cash receipts above 5% of turnover disqualify presumptive scheme.",
+        "Turnover above ₹2Cr (business) or receipts above ₹50L (profession) needs ITR-3."
+      ],
+      "fields": [
+        {
+          "label": "Turnover / gross receipts",
+          "ourValueKey": "business.turnover",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Base figure for 44AD presumptive rate — match bank summary."
+        },
+        {
+          "label": "Digital receipts percentage",
+          "ourValueKey": "business.digital_turnover_pct",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Higher digital share qualifies for 6% rate instead of 8% under 44AD."
+        },
+        {
+          "label": "Presumptive income u/s 44AD",
+          "ourValueKey": "business_income.presumptive_44ad",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "8% or 6% of turnover — our computed presumptive business profit."
+        },
+        {
+          "label": "Gross professional receipts (44ADA)",
+          "ourValueKey": "business.gross_professional_receipts",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Required when profession uses 44ADA instead of trade turnover."
+        },
+        {
+          "label": "Presumptive income u/s 44ADA",
+          "ourValueKey": "business_income.presumptive_44ada",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "50% of professional receipts when 44ADA applies."
+        },
+        {
+          "label": "Net business income (head total)",
+          "ourValueKey": "business_income.net_business_income",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Final business head after presumptive computation."
+        },
+        {
+          "label": "Detailed P&L / expense breakup",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "ITR-4 presumptive scheme does not require expense schedules."
+        },
+        {
+          "label": "44AE (goods carriage)",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Not supported in our engine yet — consult CA if you operate goods carriages."
+        }
+      ]
+    },
+    {
+      "id": "salary",
+      "title": "Salary (if mixed income)",
+      "portalScreenTitle": "Income Sources → Salary",
+      "portalPath": "Gross Total Income → Income from Salary/Pension",
+      "warnings": [
+        "ITR-4 allows salary plus presumptive business — enter salary only if Form 16 exists.",
+        "Do not skip salary when employer TDS appears in 26AS."
+      ],
+      "fields": [
+        {
+          "label": "Gross salary u/s 17(1)",
+          "ourValueKey": "income_heads.gross_salary",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Salaried side income alongside presumptive business."
+        },
+        {
+          "label": "Exempt allowances u/s 10",
+          "ourValueKey": "income_heads.hra_exemption",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "HRA and LTA exemptions reduce taxable salary."
+        },
+        {
+          "label": "Standard deduction u/s 16(ia)",
+          "ourValueKey": "income_heads.standard_deduction",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Mandatory when salary schedule is active."
+        },
+        {
+          "label": "Net salary income",
+          "ourValueKey": "income_heads.net_salary_income",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Verify portal salary head matches our total."
+        },
+        {
+          "label": "Entire salary schedule",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Skip all salary fields when you had no employment income."
+        }
+      ]
+    },
+    {
+      "id": "deductions",
+      "title": "Deductions and tax benefits",
+      "portalScreenTitle": "Deductions → Chapter VI-A",
+      "portalPath": "Total Deductions",
+      "warnings": [
+        "Business presumptive income is not an 80C investment — keep schedules separate.",
+        "New regime blocks most deductions except 80CCD(2)."
+      ],
+      "fields": [
+        {
+          "label": "Section 80C",
+          "ourValueKey": "deductions.capped_80c",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Personal tax-saving investments capped at ₹1.5 lakh."
+        },
+        {
+          "label": "Section 80D",
+          "ourValueKey": "deductions.deduction_80d",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Health insurance premiums when old regime selected."
+        },
+        {
+          "label": "Section 80CCD(1B)",
+          "ourValueKey": "deductions.deduction_80ccd_1b",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Extra NPS deduction beyond 80C."
+        },
+        {
+          "label": "Section 80CCD(2)",
+          "ourValueKey": "deductions.deduction_80ccd_2",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Employer NPS — available in both regimes."
+        },
+        {
+          "label": "Section 80G",
+          "ourValueKey": "deductions.deduction_80g",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Eligible charitable donations."
+        },
+        {
+          "label": "Section 80U",
+          "ourValueKey": "deductions.deduction_80u",
+          "action": "select_no",
+          "copyValue": false,
+          "plainEnglishWhy": "Select No when disability deduction is not claimed."
+        },
+        {
+          "label": "Section 80TTA / 80TTB",
+          "ourValueKey": "deductions.deduction_80tta_ttb",
+          "action": "deselect",
+          "copyValue": false,
+          "plainEnglishWhy": "Deselect portal default when our savings-interest deduction is zero."
+        }
+      ]
+    },
+    {
+      "id": "tax_computation",
+      "title": "Tax computation",
+      "portalScreenTitle": "Tax Paid and Verification → Part D",
+      "portalPath": "Tax on Total Income → Taxes Paid",
+      "warnings": [
+        "Presumptive income is fully taxable — do not subtract business expenses again in Part D.",
+        "Verify 26AS TDS on both salary and business receipts."
+      ],
+      "fields": [
+        {
+          "label": "Gross total income",
+          "ourValueKey": "income_heads.gross_total_income",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Salary plus presumptive business plus other heads."
+        },
+        {
+          "label": "Total Chapter VI-A deductions",
+          "ourValueKey": "deductions.total_chapter_via",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Old-regime deductions before taxable income."
+        },
+        {
+          "label": "Net tax payable / refund",
+          "ourValueKey": "regime_comparison.recommended_regime_net_payable",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Amount still due or refundable after TDS credits."
+        },
+        {
+          "label": "TDS on salary",
+          "ourValueKey": "taxes_paid.tds_salary",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Employer TDS when salary is present."
+        },
+        {
+          "label": "TDS on other income",
+          "ourValueKey": "taxes_paid.tds_other",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Bank and client TDS from 26AS."
+        },
+        {
+          "label": "Advance / self-assessment tax",
+          "ourValueKey": "taxes_paid.advance_tax_paid",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Direct tax payments via challan."
+        },
+        {
+          "label": "Schedule CG (capital gains)",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "ITR-4 cannot report capital gains — upgrade to ITR-2 if you sold shares or property."
+        }
+      ]
+    }
+  ]
+}

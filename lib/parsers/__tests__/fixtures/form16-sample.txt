@@ -1,0 +1,32 @@
+FORM NO. 16
+[See rule 31(1)(a)]
+PART A
+Certificate under section 203 of the Income-tax Act, 1961 for tax deducted at source
+
+Name and address of the Employer/Deductor
+TECHCORP INDIA PRIVATE LIMITED
+123 Business Park, Bengaluru
+
+Name and address of the Employee
+Sample Employee Name
+
+PAN of the Deductor
+AABCT1234D
+
+PAN of the Employee
+ABCDE1234F
+
+Assessment Year
+2025-26
+
+Total amount of tax deducted/collected (Rs.)
+85,000.00
+
+PART B (Annexure)
+Details of salary paid and any other income and tax deducted
+
+(1) Gross Salary
+12,00,000.00
+
+(iii) Aggregate amount deductible under section 80C
+1,50,000.00
