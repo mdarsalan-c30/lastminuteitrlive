@@ -21,11 +21,11 @@ async function proxyToPythonServerless(
 }
 
 function spawnLocalPython(payload: string): Promise<string> {
-  const scriptPath = path.join(process.cwd(), "scripts", "compute_cli.py");
+  const scriptPath = path.join(process.cwd(), "..", "backend", "scripts", "compute_cli.py");
 
   return new Promise<string>((resolve, reject) => {
     const proc = spawn("python3", [scriptPath], {
-      cwd: process.cwd(),
+      cwd: path.join(process.cwd(), "..", "backend"),
       stdio: ["pipe", "pipe", "pipe"],
     });
 
