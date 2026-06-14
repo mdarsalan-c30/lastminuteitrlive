@@ -38,7 +38,7 @@ export function PresubmitChecklist({
     eVerifyMethod,
     setEVerifyMethod,
   } = useDraftStore();
-  const { loading, confidence, engineUnavailable } = useDraftTaxCompute();
+  const { loading, confidence, engineUnavailable } = useDraftTaxCompute({ readOnly: true });
 
   const checks = CHECKLIST.map((c) => {
     if (c.id === "form") {

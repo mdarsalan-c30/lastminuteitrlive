@@ -25,7 +25,7 @@ export function shouldShowSummaryRail(pathname: string): boolean {
 export function FilingSummaryRail({ className }: { className?: string }) {
   const pathname = usePathname();
   const regime = useDraftStore((s) => s.regime);
-  const { loading, result, confidence, isEstimated } = useDraftTaxCompute();
+  const { loading, result, confidence, isEstimated } = useDraftTaxCompute({ readOnly: true });
 
   if (!shouldShowSummaryRail(pathname)) {
     return null;

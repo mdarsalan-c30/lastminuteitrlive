@@ -32,7 +32,7 @@ export interface UseDraftTaxComputeResult {
   recommendations: RecommendationBundle | null;
 }
 
-export function useDraftTaxCompute(): UseDraftTaxComputeResult {
+export function useDraftTaxCompute(options?: { readOnly?: boolean }): UseDraftTaxComputeResult {
   const filingMode = useDraftStore((s) => s.filingMode);
   const profile = useDraftStore((s) => s.profile);
   const matrix = useDraftStore((s) => s.matrix);
@@ -116,6 +116,7 @@ export function useDraftTaxCompute(): UseDraftTaxComputeResult {
   const effectiveLoading = loading || awaitingCompute;
 
   useEffect(() => {
+    if (options?.readOnly) return;
     const count =
       result?.regime_comparison.recommended_regime === "old"
         ? result.recommendations.filter(
@@ -129,17 +130,20 @@ export function useDraftTaxCompute(): UseDraftTaxComputeResult {
     result,
     engineRecommendationCount,
     setEngineRecommendationCount,
+    options?.readOnly,
   ]);
 
   useEffect(() => {
+    if (options?.readOnly) return;
     if (!result) return;
     const engineForm = result.profile.itr_form;
     if (engineForm === recommendedForm) return;
     const caseId = `${engineForm}-${matrix.income}${matrix.age}-${matrix.business}`;
     setRecommendedForm(engineForm, caseId);
-  }, [result, recommendedForm, matrix, setRecommendedForm]);
+  }, [result, recommendedForm, matrix, setRecommendedForm, options?.readOnly]);
 
   useEffect(() => {
+    if (options?.readOnly) return;
     if (!result) return;
     const key = `${result.profile.itr_form}:${result.regime_comparison.recommended_regime}:${result.regime_comparison[result.regime_comparison.recommended_regime].net_payable}`;
     if (lastLoggedResultRef.current === key) return;
@@ -148,7 +152,7 @@ export function useDraftTaxCompute(): UseDraftTaxComputeResult {
       draft: draftSnapshotForLog(useDraftStore.getState()),
       computeResult: result as unknown as Record<string, unknown>,
     });
-  }, [result]);
+  }, [result, options?.readOnly]);
 
   const fallback = useMemo(
     () =>

@@ -44,9 +44,13 @@ export async function appendSessionLog(
     meta: entry.meta,
   };
 
-  const filePath = sessionLogFilePath();
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.appendFile(filePath, `${JSON.stringify(record)}\n`, "utf-8");
+  try {
+    const filePath = sessionLogFilePath();
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
+    await fs.appendFile(filePath, `${JSON.stringify(record)}\n`, "utf-8");
+  } catch (err) {
+    console.warn("Failed to write session log to disk (read-only filesystem?):", err);
+  }
   memoryStore.push(record);
   return record;
 }
