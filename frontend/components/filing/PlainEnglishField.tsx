@@ -79,7 +79,6 @@ export function PlainEnglishField({
           type={type}
           maxLength={maxLength}
           onFocus={() => setActiveField?.(activeId)}
-          onBlur={() => setActiveField?.(null)}
         />
       )}
 

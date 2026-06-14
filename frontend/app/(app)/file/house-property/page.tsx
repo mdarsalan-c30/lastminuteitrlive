@@ -72,7 +72,6 @@ export default function HousePropertyPage() {
                 { value: "let_out", label: "Let-out (Rented to tenant)" },
               ]}
               onFocus={() => setActiveField?.("propertyType")}
-              onBlur={() => setActiveField?.(null)}
             />
           </PlainEnglishField>
 
