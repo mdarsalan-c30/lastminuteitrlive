@@ -1,15 +1,15 @@
 import { LAUNCH_OFFER } from "@/lib/marketing/offer";
 import { formatPlanPriceLabel } from "@/lib/marketing/pricing";
 
-export const HERO_HEADLINE = "File ITR before the deadline — without the guesswork.";
+export const HERO_HEADLINE = "Your friendly AI CA for last-minute ITR filing.";
 
-export const HERO_HEADLINE_ACCENT = "Reconcile Form 16 & AIS. You submit on incometax.gov.in.";
+export const HERO_HEADLINE_ACCENT = "Prep with AI. You file on the portal.";
 
 export const HERO_EMOTIONAL_HOOK =
-  "Reconcile Form 16, AIS, and 26AS, pick the right regime, and get a copy-ready guide — you file and e-verify yourself on incometax.gov.in.";
+  "Deadline stress? Upload Form 16, fix mismatches, pick the right regime — then follow our guide on incometax.gov.in yourself.";
 
 export const HERO_TRUST_LINE =
-  "Estimate only — ITD confirms your final refund · You file on incometax.gov.in · Not a government service";
+  "Lawful tax saving · Proof-based claims · DPDP compliant · Not affiliated with ITD";
 
 export const HERO_CTAS = {
   uploadForm16: {

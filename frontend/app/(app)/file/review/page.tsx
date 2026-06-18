@@ -2,7 +2,6 @@
 
 import { Suspense, useMemo } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useShallow } from "zustand/react/shallow";
 import { useDraftStore } from "@/lib/store/draft";
@@ -713,18 +712,11 @@ function ReconcileHero({
     [connectedConnectors, income.grossSalary, income.tds, income.fdInterest, mismatchResolved]
   );
 
-  const rc = result?.regime_comparison;
-  const slab = rc?.[selectedRegime];
+  const slab = result?.regime_comparison[selectedRegime];
   const netPayable = slab?.net_payable ?? 0;
   const isRefund = netPayable < 0;
   const hasResult = Boolean(result && slab);
   const openItems = rowSummary.attention + rowSummary.missing;
-  const regimeSavings =
-    rc && rc.tax_saving > 0
-      ? `${rc.recommended_regime === "old" ? "Old" : "New"} regime saves ${formatINR(
-          rc.tax_saving
-        )} on your numbers.`
-      : null;
 
   return (
     <Card className="overflow-hidden bg-gradient-to-br from-white to-slate-50/80">
@@ -739,7 +731,7 @@ function ReconcileHero({
                 isRefund ? "text-emerald-700" : "text-slate-900"
               }`}
             >
-              {isRefund ? "Estimated refund " : "Estimated tax to pay "}
+              {isRefund ? "Est. refund " : "Est. tax due "}
               {formatINR(Math.abs(netPayable))}
             </p>
           ) : (
@@ -747,12 +739,9 @@ function ReconcileHero({
               Add income to see your estimate
             </p>
           )}
-          {regimeSavings && (
-            <p className="mt-1 text-sm font-medium text-emerald-700">{regimeSavings}</p>
-          )}
           <p className="mt-1 text-xs text-slate-500">
-            An estimate, not a promise — the CPC (Centralised Processing Centre) decides
-            your final refund after you file and e-verify on incometax.gov.in.
+            An estimate, not guaranteed — incometax.gov.in confirms the final amount when
+            you file and e-verify yourself.
           </p>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white/80 p-3.5">
@@ -775,15 +764,6 @@ function ReconcileHero({
             {rowSummary.matched} matched · {rowSummary.attention} attention ·{" "}
             {rowSummary.missing} to add
           </p>
-          {openItems > 0 && (
-            <Link
-              href="/file/import/mismatch"
-              className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
-            >
-              Fix mismatches
-              <ArrowRight className="size-3.5" aria-hidden />
-            </Link>
-          )}
         </div>
       </div>
     </Card>
@@ -823,7 +803,10 @@ function ReviewDashboard() {
 
   return (
     <FilingLayout mirrorText="This dashboard is your reconcile-and-review hub. Confirm imports, income, and deductions, then compare regimes before you file on the portal.">
-      <ScreenTitle title="Your filing snapshot" />
+      <ScreenTitle
+        title="Review & reconcile"
+        subtitle="Check every section in one place. Your tax estimate and progress update live above."
+      />
 
       <ReconcileHero result={effectiveResult} selectedRegime={selectedRegime} />
 
@@ -893,7 +876,7 @@ export default function ReviewPage() {
     <Suspense
       fallback={
         <FilingLayout>
-          <ScreenTitle title="Your filing snapshot" subtitle="Loading your draft…" />
+          <ScreenTitle title="Review & reconcile" subtitle="Loading your draft…" />
           <SkeletonRows />
         </FilingLayout>
       }
