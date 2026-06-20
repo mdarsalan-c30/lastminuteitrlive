@@ -41,8 +41,8 @@ export default function HomePage() {
         <ScrollReveal delay={0}>
           <section className="hero-mesh relative overflow-hidden border-b border-border/40 px-4 sm:px-6 lg:px-8">
             <div className="mx-auto w-full max-w-6xl min-w-0 py-6 lg:py-8">
-              <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-8">
-                <div className="min-w-0 text-center lg:text-left">
+              <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(260px,0.68fr)] xl:grid-cols-[minmax(0,1.28fr)_minmax(280px,0.6fr)] lg:gap-6 xl:gap-8">
+                <div className="min-w-0 text-center lg:text-left lg:pr-2 xl:pr-4">
                   <h1
                     className={`landing-reveal landing-reveal-delay-1 font-heading font-semibold text-foreground ${TYPOGRAPHY_SCALE.display}`}
                   >
@@ -62,8 +62,11 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <HeroParallax className="landing-reveal landing-reveal-delay-2 relative min-w-0">
-                  <RegimeCompareCard className="relative w-full" compact />
+                <HeroParallax className="landing-reveal landing-reveal-delay-2 relative min-w-0 lg:justify-self-end lg:pl-2 xl:pl-6">
+                  <RegimeCompareCard
+                    className="relative ml-auto w-full max-w-[18.5rem] sm:max-w-[19rem] xl:max-w-[20rem]"
+                    compact
+                  />
                 </HeroParallax>
               </div>
             </div>

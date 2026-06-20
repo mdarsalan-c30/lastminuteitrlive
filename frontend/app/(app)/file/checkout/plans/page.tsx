@@ -141,7 +141,7 @@ function PlansContent() {
         </div>
       )}
 
-      <div className="filing-card-grid mb-4">
+      <div className="filing-workspace-card-grid mb-4">
         {paidPlans.map((p) => (
           <PlanCard
             key={p.id}

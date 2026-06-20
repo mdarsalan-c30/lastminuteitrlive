@@ -11,7 +11,7 @@ import { trackEvent } from "@/lib/analytics";
 import { buildDocumentsFastPathUrl } from "@/lib/filing/routes";
 
 interface HeroNameFormProps {
-  /** Hide duplicate Form 16 CTA when header already shows Upload Form 16 */
+  /** Hide duplicate Form 16 CTA when a sibling hero action row already shows it */
   showForm16Cta?: boolean;
   /** Hide micro-disclaimer when the parent renders trust copy below */
   showDisclaimer?: boolean;

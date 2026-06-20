@@ -31,3 +31,15 @@ export const TYPOGRAPHY_SCALE = {
   caption: "text-[length:var(--text-caption)] leading-[1.5] tracking-[0.002em]",
   micro: "text-[length:var(--text-micro)] leading-[1.4] tracking-[0.01em]",
 } as const;
+
+/** Filing workspace — wider than marketing compact shell; uses horizontal space beside nav + Genie. */
+export const FILING_WORKSPACE = {
+  /** Outer grid: main workspace + Genie companion rail */
+  grid: "filing-workspace-grid",
+  /** Full-width inner content; no marketing max-w-3xl cap */
+  content: "filing-workspace-content",
+  /** Import documents: upload + ITR summary split (responsive to Genie rail) */
+  importLayout: "filing-import-layout",
+  /** Connector / mode cards — denser multi-column grid in workspace */
+  cardGrid: "filing-workspace-card-grid",
+} as const;

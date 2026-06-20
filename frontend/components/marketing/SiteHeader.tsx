@@ -15,14 +15,14 @@ const NAV_ITEMS = [
   { href: "/file/import/documents?source=form16", label: "Import" },
   { href: "/#pricing", label: "Pricing" },
   { href: "/for-professionals", label: "For Tax Professionals" },
+  { href: "/tools", label: "Tools" },
+  { href: "/blogs", label: "Blogs" },
 ] as const;
 
 const RESOURCE_ITEMS = [
   { href: "/learn", label: "Learn" },
   { href: "/help", label: "Help" },
-  { href: "/tools", label: "Tools" },
   { href: "/glossary", label: "Glossary" },
-  { href: "/blogs", label: "Blogs" },
 ] as const;
 
 const PRIMARY_NAV_ITEMS = NAV_ITEMS;
@@ -146,15 +146,6 @@ export function SiteHeader() {
               </nav>
             </SheetContent>
           </Sheet>
-          <Link
-            href="/file/import/documents?source=form16"
-            className={cn(
-              buttonVariants({ size: "sm" }),
-              "h-8 rounded-lg px-3 text-[13px] font-semibold shadow-sm max-[380px]:hidden sm:px-4 lg:h-9 lg:px-5 lg:text-sm"
-            )}
-          >
-            <span className="hidden sm:inline">Upload </span>Form 16
-          </Link>
         </div>
       </div>
     </header>

@@ -155,7 +155,7 @@ export default function RegimePage() {
         )
       )}
 
-      <div className="filing-card-grid mb-4">
+      <div className="filing-workspace-card-grid mb-4">
         {loading ? (
           <>
             <RegimeCardSkeleton />

@@ -20,8 +20,8 @@ import { CheckCircle2, TrendingDown } from "lucide-react";
 
 const DEFAULT_SALARY = 1_200_000;
 const SALARY_MIN = 300_000;
-const SALARY_MAX = 5_000_000;
-const SALARY_STEP = 50_000;
+const SALARY_MAX = 50_000_000;
+const SALARY_STEP = 100_000;
 const DEFAULT_AGE = 32;
 const DEFAULT_FILING_MODE = "estimate";
 const DEFAULT_PROFILE = {
@@ -59,6 +59,18 @@ type CompareEngineSource = "api" | "fallback";
 function formatSalaryLakhs(amount: number): string {
   const lakhs = amount / 100_000;
   return lakhs >= 10 ? `₹${lakhs.toFixed(0)}L` : `₹${lakhs.toFixed(1)}L`;
+}
+
+function formatSalaryAmount(amount: number): string {
+  if (amount >= 10_000_000) {
+    const crores = amount / 10_000_000;
+    const formatted =
+      crores >= 10 || Number.isInteger(crores)
+        ? crores.toFixed(0)
+        : crores.toFixed(1);
+    return `₹${formatted}Cr`;
+  }
+  return formatSalaryLakhs(amount);
 }
 
 function buildDemoInput(grossSalary: number): UserInput {
@@ -372,7 +384,7 @@ export function RegimeCompareCard({
         <div className="flex items-center justify-between text-sm">
           <span className="font-medium text-foreground">Annual salary</span>
           <span className="font-bold tabular-nums text-primary">
-            {formatSalaryLakhs(salary)}
+            {formatSalaryAmount(salary)}
           </span>
         </div>
         <Slider
@@ -387,8 +399,8 @@ export function RegimeCompareCard({
           className="mt-3"
         />
         <div className="mt-1.5 flex justify-between text-[11px] text-muted-foreground">
-          <span>{formatSalaryLakhs(SALARY_MIN)}</span>
-          <span>{formatSalaryLakhs(SALARY_MAX)}</span>
+          <span>{formatSalaryAmount(SALARY_MIN)}</span>
+          <span>{formatSalaryAmount(SALARY_MAX)}</span>
         </div>
         {showProfileToggle && (
           <button

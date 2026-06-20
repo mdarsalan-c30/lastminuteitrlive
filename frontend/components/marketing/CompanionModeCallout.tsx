@@ -1,4 +1,5 @@
 import { HeroNameForm } from "@/components/marketing/HeroNameForm";
+import { HeroSecondaryActions } from "@/components/marketing/HeroSecondaryActions";
 import { TrustBar } from "@/components/marketing/TrustBar";
 import {
   COMPANION_HOW_IT_WORKS,
@@ -41,6 +42,7 @@ export function CompanionModeCallout({
           className="mx-0 max-w-none"
         />
         <TrustBar variant="hero-inline" showBetaBadge={false} />
+        <HeroSecondaryActions />
         <p className="text-center text-[10px] leading-snug text-muted-foreground lg:text-left">
           {COMPANION_ITD_DISCLAIMER} · ✨ {HERO_TRUST_DISCLAIMER}
         </p>

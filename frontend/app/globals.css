@@ -302,7 +302,7 @@
   background: #2563eb;
 }
 
-/* Filing page shell — consistent padding & max-width with marketing */
+/* Filing page shell — legacy; prefer filing-workspace-content in workspace routes */
 .filing-page-shell {
   @apply mx-auto w-full min-w-0 max-w-3xl;
 }
@@ -312,8 +312,45 @@
   @apply max-w-none;
 }
 
+/* Filing workspace — main content uses full width between sidebar and Genie */
+.filing-workspace-content {
+  @apply w-full min-w-0;
+}
+
+.filing-workspace-grid {
+  @apply grid w-full flex-1 content-start items-start gap-5 p-4 sm:gap-6 sm:p-6 lg:gap-6 lg:p-8 min-w-0 pb-[calc(5rem+env(safe-area-inset-bottom,0px))];
+}
+
+.filing-workspace-grid--default {
+  @apply grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(15rem,17.5rem)];
+}
+
+.filing-workspace-grid--wide {
+  @apply grid-cols-1;
+}
+
+/*
+ * Import documents: avoid triple-rail squeeze (sidebar | upload | summary | Genie).
+ * Stack upload + summary on xl when Genie rail is visible; side-by-side only when Genie is hidden.
+ */
+.filing-import-layout {
+  @apply grid w-full gap-6 grid-cols-1 items-start;
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .filing-import-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  }
+}
+
+@media (min-width: 1536px) {
+  .filing-import-layout {
+    grid-template-columns: minmax(0, 1.4fr) minmax(320px, 420px);
+  }
+}
+
 .companion-page-grid {
-  @apply grid w-full gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,300px)] lg:items-start xl:grid-cols-[minmax(0,1fr)_minmax(280px,320px)];
+  @apply grid w-full gap-5 lg:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(260px,300px)] lg:items-start xl:grid-cols-[minmax(0,1.15fr)_minmax(280px,320px)] 2xl:grid-cols-[minmax(0,1.25fr)_minmax(300px,340px)];
 }
 
 .companion-summary-rail {
@@ -841,6 +878,15 @@ a.macro-process-step:focus-visible {
 }
 
 .filing-card-grid > * {
+  @apply h-full min-h-0;
+}
+
+/* Workspace connector grids — more columns when horizontal space is available */
+.filing-workspace-card-grid {
+  @apply grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-2 2xl:grid-cols-3;
+}
+
+.filing-workspace-card-grid > * {
   @apply h-full min-h-0;
 }
 
