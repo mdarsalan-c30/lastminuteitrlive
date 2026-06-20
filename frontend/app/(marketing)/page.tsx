@@ -40,12 +40,17 @@ export default function HomePage() {
       <SiteHeader />
       <main>
         <ScrollReveal delay={0}>
-          <section className="hero-mesh relative overflow-hidden border-b border-border/40 px-4 sm:px-6 lg:px-8">
+          <section className="hero-mesh relative overflow-hidden border-b border-border/40">
             <div className={cn("mx-auto w-full min-w-0", HERO_LAYOUT.container, HERO_LAYOUT.shell)}>
               <div className={HERO_LAYOUT.grid}>
-                <div className={cn("min-w-0 text-center lg:text-left lg:pr-4 xl:pr-8", HERO_LAYOUT.content)}>
+                <div className={cn("min-w-0 text-center lg:text-left", HERO_LAYOUT.content)}>
                   <h1
-                    className={`landing-reveal landing-reveal-delay-1 font-heading font-semibold text-foreground ${TYPOGRAPHY_SCALE.display}`}
+                    className={cn(
+                      "landing-reveal landing-reveal-delay-1 font-heading font-semibold text-foreground",
+                      TYPOGRAPHY_SCALE.display,
+                      HERO_LAYOUT.headline,
+                      "mx-auto lg:mx-0"
+                    )}
                   >
                     {HERO_HEADLINE}
                     <br />
@@ -54,11 +59,15 @@ export default function HomePage() {
                     </span>
                   </h1>
                   <p
-                    className={`landing-reveal landing-reveal-delay-2 mx-auto max-w-xl text-muted-foreground lg:mx-0 ${TYPOGRAPHY_SCALE.body} sm:max-w-2xl`}
+                    className={cn(
+                      "landing-reveal landing-reveal-delay-2 mx-auto text-muted-foreground lg:mx-0",
+                      TYPOGRAPHY_SCALE.body,
+                      HERO_LAYOUT.subhead
+                    )}
                   >
                     {HERO_EMOTIONAL_HOOK}
                   </p>
-                  <div className="landing-reveal landing-reveal-delay-3 mx-auto max-w-xl lg:mx-0 lg:max-w-2xl">
+                  <div className="landing-reveal landing-reveal-delay-3 mx-auto w-full lg:mx-0">
                     <CompanionModeCallout variant="cta-only" />
                   </div>
                 </div>

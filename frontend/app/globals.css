@@ -413,22 +413,28 @@
 }
 
 /*
- * Import documents: avoid triple-rail squeeze (sidebar | upload | summary | Genie).
- * Stack upload + summary on xl when Genie rail is visible; side-by-side only when Genie is hidden.
+ * Import documents — Figma spec: upload ~520px, summary ~280px, 16px gap (1440 canvas)
  */
 .filing-import-layout {
-  @apply grid w-full gap-6 grid-cols-1 items-start;
+  @apply grid w-full grid-cols-1 items-start gap-4;
 }
 
 @media (min-width: 1024px) and (max-width: 1279px) {
   .filing-import-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 280px);
   }
 }
 
-@media (min-width: 1536px) {
+@media (min-width: 1280px) and (max-width: 1407px) {
   .filing-import-layout {
-    grid-template-columns: minmax(0, 1.4fr) minmax(320px, 420px);
+    @apply grid-cols-1;
+  }
+}
+
+@media (min-width: 1408px) {
+  .filing-import-layout {
+    grid-template-columns: minmax(0, 520fr) minmax(260px, 280px);
+    gap: 1rem;
   }
 }
 

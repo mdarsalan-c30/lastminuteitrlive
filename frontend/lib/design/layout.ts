@@ -24,13 +24,21 @@ export const COMPACT_GRID = {
 
 export const COMPACT_PAGE_SHELL = "py-6 sm:py-8";
 
-/** Landing hero — airy left column + calculator anchored on the right */
+/**
+ * Landing hero — proportions from Figma layout spec (file 2udbxcHbjth38mlLOKFfyD)
+ * Canvas 1440: left col 772px, right rail 517px, gap 23px, calculator card 448px
+ */
 export const HERO_LAYOUT = {
-  shell: "py-8 sm:py-10 lg:py-12 xl:py-14",
-  container: "max-w-7xl",
-  grid: "grid items-start gap-8 sm:gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12 xl:gap-16 2xl:gap-20",
-  content: "space-y-5 sm:space-y-6 lg:space-y-7",
-  calculatorRail: "w-full lg:w-[min(100%,26rem)] xl:w-[min(100%,28rem)] lg:shrink-0 lg:justify-self-end",
+  shell: "py-6 sm:py-8 lg:py-10",
+  container: "max-w-[90rem] px-4 sm:px-6 lg:px-16",
+  grid: "grid items-start gap-8 lg:grid-cols-[minmax(0,772fr)_minmax(280px,517fr)] lg:gap-6 xl:gap-[23px]",
+  content: "flex min-w-0 flex-col gap-4 lg:max-w-[772px] lg:gap-5",
+  headline: "max-w-[720px]",
+  subhead: "max-w-[680px]",
+  ctaRow: "max-w-[696px]",
+  nameForm: "max-w-[520px]",
+  calculatorRail:
+    "w-full max-w-[28rem] lg:shrink-0 lg:justify-self-end lg:ml-auto",
 } as const;
 
 export const TYPOGRAPHY_SCALE = {
