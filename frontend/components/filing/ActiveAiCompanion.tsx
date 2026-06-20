@@ -350,7 +350,7 @@ export function ActiveAiCompanion() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
         {/* Active Input Genie Card */}
         {activeField && currentFieldGuidance ? (
-          <div className="bg-gradient-to-br from-blue-50/70 to-blue-50/30 border border-blue-100/60 rounded-2xl p-4 shadow-sm space-y-3 relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="bg-gradient-to-br from-blue-100/90 to-blue-100/60 border border-blue-300/60 rounded-2xl p-4 shadow-sm space-y-3 relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
             {/* Sparkling corner effect */}
             <span className="absolute right-2 top-2 text-blue-400 opacity-20">
               <Sparkles className="size-8" />
@@ -369,7 +369,7 @@ export function ActiveAiCompanion() {
               </div>
             </div>
             
-            <p className="text-xs text-slate-700 leading-relaxed bg-white/70 rounded-xl p-3 border border-blue-50/50">
+            <p className="text-xs text-slate-700 leading-relaxed bg-white/80 rounded-xl p-3 border border-blue-200/60">
               {currentFieldGuidance.tip}
             </p>
             
@@ -419,7 +419,7 @@ export function ActiveAiCompanion() {
                     "flex flex-col gap-1 rounded-xl p-2.5 max-w-[90%] leading-relaxed",
                     msg.role === "user"
                       ? "bg-slate-100 text-slate-900 self-end ml-auto"
-                      : "bg-blue-50/50 text-slate-700 border border-blue-100/20 self-start mr-auto"
+                      : "bg-blue-100/80 text-slate-700 border border-blue-200/50 self-start mr-auto"
                   )}
                 >
                   <p className="font-medium text-[10px] uppercase text-slate-400">
@@ -429,7 +429,7 @@ export function ActiveAiCompanion() {
                 </div>
               ))}
               {loading && (
-                <div className="bg-blue-50/30 text-slate-500 border border-blue-100/10 rounded-xl p-2.5 max-w-[90%] self-start mr-auto animate-pulse">
+                <div className="bg-blue-100/70 text-slate-500 border border-blue-200/40 rounded-xl p-2.5 max-w-[90%] self-start mr-auto animate-pulse">
                   Genie is writing…
                 </div>
               )}
@@ -442,7 +442,7 @@ export function ActiveAiCompanion() {
                 <button
                   key={q}
                   onClick={() => handleSendQuestion(q)}
-                  className="text-[10px] font-medium text-blue-600 bg-blue-50/50 hover:bg-blue-50 hover:text-blue-700 border border-blue-100/40 rounded-lg px-2 py-1 text-left transition-colors"
+                  className="text-[10px] font-medium text-blue-600 bg-blue-100/80 hover:bg-blue-100 hover:text-blue-700 border border-blue-200/60 rounded-lg px-2 py-1 text-left transition-colors"
                 >
                   {q}
                 </button>

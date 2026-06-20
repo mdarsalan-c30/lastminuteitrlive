@@ -8,7 +8,7 @@ export function FinalCta() {
   return (
     <CompactSection
       variant="ctaBand"
-      className="border-b border-border/40 bg-primary/5"
+      className="border-b border-border/40 bg-blue-100/90"
     >
       <div
         className={cn(

@@ -24,7 +24,7 @@ export function HeroSecondaryActions({ className }: HeroSecondaryActionsProps) {
       <Link
         href={HERO_CTAS.uploadForm16.href}
         onClick={handleForm16Click}
-        className="group flex min-h-[4.5rem] flex-col justify-center rounded-2xl border border-primary/20 bg-primary px-3.5 py-3.5 text-left shadow-sm transition-all hover:bg-primary/90 sm:min-h-[5rem] sm:px-4 sm:py-4"
+        className="group flex min-h-[4.5rem] flex-col justify-center rounded-2xl border border-blue-300/70 bg-primary px-3.5 py-3.5 text-left shadow-sm transition-all hover:bg-primary/90 sm:min-h-[5rem] sm:px-4 sm:py-4"
       >
         <span className="flex items-center gap-2 text-sm font-semibold text-primary-foreground sm:text-[15px]">
           <FileUp className="size-4 shrink-0" aria-hidden />
@@ -42,7 +42,7 @@ export function HeroSecondaryActions({ className }: HeroSecondaryActionsProps) {
       <Link
         href={HERO_CTAS.howItWorks.href}
         onClick={handleHowItWorksClick}
-        className="group flex min-h-[4.5rem] flex-col justify-center rounded-2xl border border-border/70 bg-white px-3.5 py-3.5 text-left shadow-sm transition-all hover:border-primary/25 hover:bg-muted/30 sm:min-h-[5rem] sm:px-4 sm:py-4"
+        className="group flex min-h-[4.5rem] flex-col justify-center rounded-2xl border-2 border-slate-200 bg-white px-3.5 py-3.5 text-left shadow-sm transition-all hover:border-blue-400 hover:bg-blue-100/80 sm:min-h-[5rem] sm:px-4 sm:py-4"
       >
         <span className="flex items-center gap-2 text-sm font-semibold text-foreground sm:text-[15px]">
           <PlayCircle className="size-4 shrink-0 text-primary" aria-hidden />

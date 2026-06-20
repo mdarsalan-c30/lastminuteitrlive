@@ -94,7 +94,7 @@ export function ScenarioHooksSection() {
 /** Composite: post-payment + portal filing explainers. */
 export function FilingJourneySection() {
   return (
-    <section className="section-compact border-b border-border/40 bg-primary/5 px-4 sm:px-6 lg:px-8">
+    <section className="section-compact border-b border-border/40 bg-blue-100/90 px-4 sm:px-6 lg:px-8">
       <div className={cn("mx-auto w-full min-w-0", CONTENT_MAX)}>
         <ScrollReveal className="text-center">
           <p className={cn("font-semibold uppercase tracking-[0.14em] text-primary", TYPOGRAPHY_SCALE.caption)}>

@@ -7,7 +7,7 @@ import { ExternalLink } from "lucide-react";
 
 export function PortalCompanionSection() {
   return (
-    <section className="section-compact border-b border-border/40 bg-primary/5 px-4 sm:px-6 lg:px-8">
+    <section className="section-compact border-b border-border/40 bg-blue-100/90 px-4 sm:px-6 lg:px-8">
       <div className={cn("mx-auto w-full min-w-0", CONTENT_MAX)}>
         <div className="grid items-center gap-8 lg:grid-cols-2">
           <ScrollReveal>

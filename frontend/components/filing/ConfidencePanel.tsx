@@ -159,7 +159,7 @@ export function ConfidencePanel({
     return (
       <div
         className={cn(
-          "rounded-xl border border-blue-200/60 bg-blue-50/50 p-4",
+          "rounded-xl border border-blue-200/60 bg-blue-100/80 p-4",
           className
         )}
       >

@@ -72,7 +72,7 @@ export function PopularGuides() {
           ))}
         </ul>
 
-        <div className="mt-4 flex flex-col items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 sm:flex-row sm:justify-between">
+        <div className="mt-4 flex flex-col items-center gap-2 rounded-xl border border-blue-300/70 bg-blue-100/90 px-4 py-3 sm:flex-row sm:justify-between">
           <div className="text-center sm:text-left">
             <p className="text-sm font-medium">Ready to import your documents?</p>
             <p className={`mt-0.5 text-muted-foreground ${TYPOGRAPHY_SCALE.caption}`}>

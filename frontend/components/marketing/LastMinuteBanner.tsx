@@ -60,7 +60,7 @@ export function LastMinuteBanner({ className }: { className?: string }) {
         "flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3",
         isUrgent
           ? "border-amber-300/80 bg-amber-50/80"
-          : "border-primary/20 bg-primary/5",
+          : "border-blue-300/70 bg-blue-100/90",
         className
       )}
     >

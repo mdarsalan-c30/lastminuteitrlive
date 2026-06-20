@@ -46,7 +46,7 @@ export function GlossaryTermFooter({ term }: GlossaryTermFooterProps) {
         </div>
       )}
 
-      <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6">
+      <div className="rounded-2xl border border-blue-300/70 bg-blue-100/90 p-6">
         <h2 className="text-lg font-semibold">Check this on your return</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Import Form 16 and AIS — we flag mismatches and compare regimes before you file on

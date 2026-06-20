@@ -12,7 +12,7 @@ export function BlogCTA({ className }: BlogCTAProps) {
   return (
     <aside
       className={cn(
-        "rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-6 sm:p-8",
+        "rounded-2xl border border-blue-300/70 bg-gradient-to-br from-blue-100 via-blue-100/90 to-white p-6 sm:p-8",
         className
       )}
     >

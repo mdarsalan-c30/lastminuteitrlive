@@ -28,7 +28,7 @@ export function PlainEnglishHelp({
   return (
     <section
       className={cn(
-        "card-premium mb-4 border-blue-100/80 bg-blue-50/30 p-4 sm:p-5",
+        "card-premium mb-4 border-blue-200/80 bg-blue-100/70 p-4 sm:p-5",
         className
       )}
     >

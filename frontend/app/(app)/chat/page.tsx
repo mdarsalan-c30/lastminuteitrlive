@@ -80,7 +80,7 @@ export default function ChatPage() {
       <SiteHeader />
       <main className="mx-auto flex w-full max-w-2xl min-w-0 flex-1 flex-col px-4 py-4 sm:px-6 sm:py-6">
         <div className="mb-3 shrink-0 text-center sm:mb-4">
-          <div className="mx-auto mb-2 flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <div className="mx-auto mb-2 flex size-10 items-center justify-center rounded-full bg-blue-100 text-primary">
             <MessageCircle className="size-5" />
           </div>
           <h1 className="text-xl font-bold">Support chat</h1>

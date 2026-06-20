@@ -9,7 +9,7 @@ export function HeroCharacterIllustration({ className }: HeroCharacterIllustrati
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-blue-50/80 via-white to-orange-50/60 p-4 shadow-sm",
+        "overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-blue-100/80 via-white to-orange-50/60 p-4 shadow-sm",
         className
       )}
       aria-hidden

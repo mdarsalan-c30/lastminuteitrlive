@@ -80,7 +80,7 @@ const STATUS_STYLES: Record<
   },
   manual: {
     label: "Manual",
-    className: "bg-blue-50 text-blue-800",
+    className: "bg-blue-100 text-blue-800",
   },
   coming_soon: {
     label: "Coming soon",

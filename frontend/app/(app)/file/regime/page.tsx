@@ -277,7 +277,7 @@ function RegimeOption({
       className={cn(
         "relative flex h-full flex-col rounded-2xl border p-5 text-left transition-all sm:p-6",
         selected
-          ? "border-primary/40 bg-primary/5 shadow-md ring-2 ring-primary/10"
+          ? "border-primary/40 bg-blue-100/90 shadow-md ring-2 ring-blue-300/60"
           : "border-slate-200/80 bg-white shadow-sm hover:shadow-md",
         recommended && selected && "regime-winner"
       )}

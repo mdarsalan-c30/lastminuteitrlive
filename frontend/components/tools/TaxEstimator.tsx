@@ -180,7 +180,7 @@ export function TaxEstimator() {
                 key={key}
                 className={`rounded-2xl border p-4 text-center ${
                   summary.recommended === key
-                    ? "border-primary/40 bg-primary/5 ring-2 ring-primary/15"
+                    ? "border-primary/40 bg-blue-100/90 ring-2 ring-primary/15"
                     : "border-border/70 bg-white"
                 }`}
               >

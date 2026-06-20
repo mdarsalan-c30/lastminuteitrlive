@@ -600,7 +600,7 @@ function SummaryTab({
               <div
                 key={regime}
                 className={`rounded-2xl border p-4 text-center ${
-                  winner ? "border-primary/40 bg-primary/5 ring-2 ring-primary/15" : "border-slate-200"
+                  winner ? "border-primary/40 bg-blue-100/90 ring-2 ring-primary/15" : "border-slate-200"
                 }`}
               >
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">

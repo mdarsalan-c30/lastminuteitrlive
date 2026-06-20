@@ -62,11 +62,11 @@
   --secondary-foreground: #0c1222;
   --muted: #f4f6f9;
   --muted-foreground: #5b6478;
-  --accent: #eff6ff;
-  --accent-foreground: #1e40af;
+  --accent: #dbeafe;
+  --accent-foreground: #1e3a8a;
   --destructive: #dc2626;
-  --border: #e4e8ef;
-  --input: #e4e8ef;
+  --border: #cdd5e1;
+  --input: #cdd5e1;
   --ring: #2563eb;
   --chart-1: #2563eb;
   --chart-2: #059669;
@@ -102,6 +102,17 @@
   --text-body: clamp(1rem, 0.96rem + 0.16vw, 1.125rem);
   --text-caption: clamp(0.8125rem, 0.78rem + 0.1vw, 0.875rem);
   --text-micro: 0.6875rem;
+  /* Actionable surfaces — richer than blue-50 so CTAs/info read clearly */
+  --surface-info: #dbeafe;
+  --surface-info-muted: #e8f0fe;
+  --surface-selected: #bfdbfe;
+  --surface-cta-subtle: #dbeafe;
+  --surface-action-hover: #bfdbfe;
+  --border-info: #93c5fd;
+  --border-info-subtle: #bfdbfe;
+  --border-action: #60a5fa;
+  --text-on-info: #1e3a8a;
+  --text-on-info-muted: #1e40af;
 }
 
 .text-tier-feature {
@@ -138,10 +149,10 @@
   display: flex;
   height: 100%;
   border-radius: 1rem;
-  border: 1px solid rgb(229 231 235);
+  border: 1px solid rgb(203 213 225);
   background: rgb(255 255 255);
   padding: 1.5rem;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
 }
 
 .dark {
@@ -245,9 +256,81 @@
 /* Premium card utilities */
 .card-premium {
   border-radius: 1rem;
-  border: 1px solid rgba(228, 232, 239, 0.8);
+  border: 1px solid rgba(205, 213, 225, 0.95);
   background: #ffffff;
   box-shadow: var(--shadow-card);
+}
+
+/* Info banners, tooltips, parsing status — use instead of bg-blue-100/90 */
+.surface-info {
+  background-color: var(--surface-info);
+  border: 1px solid var(--border-info-subtle);
+  color: var(--text-on-info);
+}
+
+.surface-info-banner {
+  border-radius: 1rem;
+  border: 1px solid var(--border-info-subtle);
+  background-color: var(--surface-info);
+  color: var(--text-on-info);
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.625;
+}
+
+.surface-selected {
+  background-color: var(--surface-selected);
+  color: #1d4ed8;
+}
+
+.surface-cta-subtle {
+  background-color: var(--surface-cta-subtle);
+  border: 1px solid var(--border-info-subtle);
+}
+
+.surface-action-chip {
+  background-color: var(--surface-info);
+  border: 1px solid var(--border-info-subtle);
+  color: var(--text-on-info-muted);
+  font-weight: 500;
+}
+
+.surface-action-chip:hover {
+  background-color: var(--surface-action-hover);
+  border-color: var(--border-info);
+  color: var(--text-on-info);
+}
+
+.btn-action-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: 2px solid var(--border-info);
+  background: #ffffff;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-on-info);
+  box-shadow: 0 1px 2px rgba(12, 18, 34, 0.06);
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.btn-action-secondary:hover {
+  background-color: var(--surface-action-hover);
+  border-color: var(--border-action);
+  box-shadow: 0 2px 6px rgba(29, 78, 216, 0.12);
+}
+
+.drop-zone {
+  border: 2px dashed #cbd5e1;
+  background-color: #f1f5f9;
+}
+
+.drop-zone[data-active="true"],
+.drop-zone-active {
+  border-color: var(--border-action);
+  background-color: var(--surface-info);
 }
 
 .card-premium-dark {
@@ -971,7 +1054,10 @@ a.macro-process-step:focus-visible {
 
 /* Plain English tooltip */
 .field-tooltip {
-  @apply rounded-xl border border-blue-100 bg-blue-50/80 px-3 py-2 text-xs leading-relaxed text-blue-900;
+  @apply rounded-xl border px-3 py-2 text-xs leading-relaxed;
+  border-color: var(--border-info-subtle);
+  background-color: var(--surface-info);
+  color: var(--text-on-info);
 }
 
 .prose-article h2 {

@@ -469,7 +469,7 @@ function EligibilityContent() {
         </FormSection>
       )}
 
-      <Card className="flex items-center gap-3 bg-primary/5">
+      <Card className="flex items-center gap-3 bg-blue-100/90">
         <FileCheck2 className="size-5 shrink-0 text-primary" />
         <div>
           <p className="text-sm font-semibold text-slate-900">

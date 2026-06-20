@@ -50,7 +50,7 @@ export function PlanCard({
       : "landing-card flex h-full flex-col transition-shadow hover:shadow-md",
     isCheckout &&
       (selected
-        ? "border-blue-500 ring-1 ring-blue-200 bg-blue-50/30"
+        ? "border-blue-500 ring-1 ring-blue-200 bg-blue-100/70"
         : "border-slate-200 hover:border-slate-300"),
     !isCheckout && plan.recommended && "card-glow ring-2 ring-primary/20",
     isCheckout && engineRecommended && !selected && "border-blue-300 ring-1 ring-blue-100",

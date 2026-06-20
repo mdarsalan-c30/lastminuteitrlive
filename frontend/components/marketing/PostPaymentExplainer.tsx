@@ -21,7 +21,7 @@ export function PostPaymentExplainer() {
             key={step.title}
             className="flex gap-3 rounded-xl border border-border/60 bg-white/80 p-4"
           >
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-primary">
               {index + 1}
             </span>
             <div>

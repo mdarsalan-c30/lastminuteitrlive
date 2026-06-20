@@ -250,7 +250,7 @@ export function FilingLayout({
         <span className="font-semibold text-slate-900 tracking-tight text-base">
           TaxSaathi
         </span>
-        <span className="inline-flex items-center rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+        <span className="inline-flex items-center rounded-md bg-blue-100 px-1.5 py-0.5 text-[10px] font-semibold text-blue-800 ring-1 ring-inset ring-blue-400/30">
           MVP
         </span>
       </div>
@@ -276,8 +276,8 @@ export function FilingLayout({
                     className={cn(
                       "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all relative group",
                       active
-                        ? "bg-blue-50/70 font-semibold text-blue-600 shadow-[inset_1px_0_0_rgba(37,99,235,0.05)]"
-                        : "text-slate-600 hover:bg-slate-50/50 hover:text-slate-900"
+                        ? "surface-selected font-semibold text-blue-700 shadow-[inset_1px_0_0_rgba(37,99,235,0.12)] ring-1 ring-blue-300/40"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     )}
                   >
                     {/* Active Left Indicator Bar */}
@@ -316,8 +316,8 @@ export function FilingLayout({
                               className={cn(
                                 "flex items-center justify-between rounded-lg px-2.5 py-2 text-[13px] transition-all",
                                 subActive
-                                  ? "font-semibold text-blue-600 bg-blue-50/30"
-                                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/40"
+                                  ? "font-semibold text-blue-700 bg-blue-200/50 ring-1 ring-blue-300/30"
+                                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                               )}
                             >
                               <span>{sub.label}</span>

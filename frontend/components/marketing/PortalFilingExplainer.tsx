@@ -24,7 +24,7 @@ export function PortalFilingExplainer() {
             key={step.step}
             className="flex items-start gap-3 rounded-xl border border-border/60 bg-white/80 px-4 py-3"
           >
-            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[11px] font-bold text-primary">
               {step.step}
             </span>
             <div>

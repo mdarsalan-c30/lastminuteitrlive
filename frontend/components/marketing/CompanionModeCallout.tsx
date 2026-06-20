@@ -64,7 +64,7 @@ export function CompanionModeCallout({
               key={item.step}
               className="flex items-start gap-2.5 rounded-xl border border-border/60 bg-white/80 px-3 py-2.5 shadow-sm backdrop-blur-sm sm:gap-3 sm:px-3.5 sm:py-3"
             >
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary sm:size-7 sm:text-sm">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-primary sm:size-7 sm:text-sm">
                 {item.step}
               </span>
               <div className="min-w-0 flex-1">

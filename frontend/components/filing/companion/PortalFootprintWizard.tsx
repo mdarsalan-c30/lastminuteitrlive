@@ -308,7 +308,7 @@ export function PortalFootprintWizard({
                     className={cn(
                       "rounded-full border px-2.5 py-1 text-[11px] font-medium transition",
                       active
-                        ? "border-primary bg-primary/10 text-primary"
+                        ? "border-primary bg-blue-100 text-primary"
                         : "border-slate-200 text-slate-600 hover:border-primary/30 hover:text-primary"
                     )}
                   >
@@ -334,14 +334,14 @@ export function PortalFootprintWizard({
           </p>
           <p className="mt-1 text-xs text-slate-500">{currentScreen.portalPath}</p>
           {(currentScreen.personalizedTips?.length ?? 0) > 0 && (
-            <ul className="mt-2 space-y-1 rounded-lg border border-blue-100 bg-blue-50/80 px-3 py-2 text-xs text-blue-900">
+            <ul className="mt-2 space-y-1 rounded-lg border border-blue-200 bg-blue-100/90 px-3 py-2 text-xs text-blue-900">
               {currentScreen.personalizedTips!.map((tip) => (
                 <li key={tip}>{tip}</li>
               ))}
             </ul>
           )}
         </div>
-        <span className="shrink-0 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-primary">
+        <span className="shrink-0 rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-primary">
           Screen {screenIndex + 1} of {screens.length}
         </span>
       </div>
@@ -379,7 +379,7 @@ export function PortalFootprintWizard({
               key={`${currentScreen.id}-${field.id ?? field.label}`}
               className={cn(
                 "rounded-xl border border-slate-200 p-3",
-                field.emphasized && "border-primary/30 bg-blue-50/40",
+                field.emphasized && "border-primary/30 bg-blue-100/75",
                 currentScreen.fields.length === 1 && "md:col-span-2"
               )}
             >

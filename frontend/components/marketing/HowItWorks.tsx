@@ -22,7 +22,7 @@ export function HowItWorks() {
           {HOW_IT_WORKS.steps.map((step, i) => (
             <ScrollReveal key={step.step} delay={1}>
               <li className="card-premium h-full p-5">
-                <span className="inline-flex size-8 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                <span className="inline-flex size-8 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-primary">
                   {step.step}
                 </span>
                 <h3 className="mt-3 font-semibold text-foreground">{step.title}</h3>

@@ -71,7 +71,7 @@ const PILL_TONES: Record<string, string> = {
   amber: "bg-amber-50 text-amber-700 border-amber-200",
   red: "bg-red-50 text-red-700 border-red-200",
   rose: "bg-rose-50 text-rose-700 border-rose-200",
-  blue: "bg-blue-50 text-blue-700 border-blue-200",
+  blue: "bg-blue-100 text-blue-700 border-blue-200",
   gray: "bg-slate-100 text-slate-600 border-slate-200",
 };
 

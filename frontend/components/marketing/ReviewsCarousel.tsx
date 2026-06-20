@@ -19,7 +19,7 @@ function getInitials(name: string): string {
 function Avatar({ name }: { name: string }) {
   return (
     <span
-      className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary"
+      className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-primary"
       aria-hidden
     >
       {getInitials(name)}
@@ -73,7 +73,7 @@ function CompactReviewCard({
         </p>
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
           {testimonial.plan && (
-            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-tier-feature font-medium text-primary">
+            <span className="rounded-full bg-blue-100 px-2 py-0.5 text-tier-feature font-medium text-primary">
               {testimonial.plan}
             </span>
           )}

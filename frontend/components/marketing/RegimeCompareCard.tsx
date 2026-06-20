@@ -352,7 +352,7 @@ export function RegimeCompareCard({
     <div id="regime-compare" className={cn("card-premium card-glow overflow-hidden", className)}>
       <div
         className={cn(
-          "flex flex-wrap items-start justify-between gap-2 border-b border-border/60 bg-gradient-to-r from-blue-50/80 to-white sm:px-5",
+          "flex flex-wrap items-start justify-between gap-2 border-b border-border/60 bg-gradient-to-r from-blue-100/80 to-white sm:px-5",
           compact ? "px-3 py-3" : "px-4 py-4"
         )}
       >
@@ -367,7 +367,7 @@ export function RegimeCompareCard({
         <div className="flex flex-wrap items-center gap-2">
           <Badge
             variant="secondary"
-            className="shrink-0 border-0 bg-primary/10 font-medium text-primary"
+            className="shrink-0 border border-blue-300/60 bg-blue-100 font-semibold text-blue-900"
           >
             {computeSource === "api" ? "Live" : "Estimated"} · {formatSalaryLakhs(salary)}
           </Badge>

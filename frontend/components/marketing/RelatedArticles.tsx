@@ -19,7 +19,7 @@ export function RelatedArticles({ slug, basePath = "/learn" }: RelatedArticlesPr
           <li key={article.slug}>
             <Link
               href={`${basePath}/${article.slug}`}
-              className="group flex items-start justify-between gap-3 rounded-xl border border-border/60 bg-muted/30 p-4 transition-colors hover:border-primary/30 hover:bg-primary/5"
+              className="group flex items-start justify-between gap-3 rounded-xl border border-border/60 bg-muted/30 p-4 transition-colors hover:border-primary/30 hover:bg-blue-100/90"
             >
               <div className="min-w-0">
                 <p className="font-medium text-foreground group-hover:text-primary">

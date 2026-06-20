@@ -163,7 +163,7 @@ export function ItrAnalyticsPanel({
                     </ul>
                   )}
                   {(aiSummary.regimeHint || taxSnapshot?.recommendedRegime) && (
-                    <p className="rounded-md border border-blue-100 bg-blue-50/80 px-2 py-1.5 text-xs text-blue-900">
+                    <p className="rounded-md border border-blue-200 bg-blue-100/90 px-2 py-1.5 text-xs text-blue-900">
                       {aiSummary.regimeHint ??
                         `Engine suggests ${taxSnapshot?.recommendedRegime} regime`}
                     </p>

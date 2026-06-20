@@ -45,7 +45,7 @@ export function PlainEnglishField({
           <button
             type="button"
             onClick={() => setShowGovTooltip((prev) => !prev)}
-            className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-blue-50 hover:text-primary"
+            className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-blue-100 hover:text-primary"
             aria-label={`Government portal name for ${simpleLabel}`}
             title={`On the Income Tax portal, this is called: ${govLabel}`}
           >
@@ -55,7 +55,7 @@ export function PlainEnglishField({
             <button
               type="button"
               onClick={() => setShowGlossaryTooltip((prev) => !prev)}
-              className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-blue-50 hover:text-primary"
+              className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-blue-100 hover:text-primary"
               aria-label={`What is ${glossaryTerm}?`}
             >
               <HelpCircle className="size-4" />
@@ -95,7 +95,7 @@ export function PlainEnglishField({
       )}
 
       {useDraftStore((s) => s.activeField) === activeId && FIELD_GUIDANCE[activeId] && (
-        <div className="mt-2 flex items-start gap-2.5 rounded-xl border border-blue-100/60 bg-blue-50/60 p-3 shadow-sm animate-in fade-in slide-in-from-top-1 duration-200">
+        <div className="mt-2 flex items-start gap-2.5 rounded-xl border border-blue-200/70 bg-blue-100/60 p-3 shadow-sm animate-in fade-in slide-in-from-top-1 duration-200">
           <Sparkles className="mt-0.5 size-4 shrink-0 animate-bounce text-blue-600" />
           <div className="space-y-0.5">
             <p className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-blue-900">

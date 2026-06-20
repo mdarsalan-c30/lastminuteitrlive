@@ -327,7 +327,7 @@ export function FloatingGenie({
             {/* TAB CONTENT: Guide */}
             {activeTab === "guide" && (
               <div className="space-y-3 animate-in fade-in duration-200">
-                <p className="text-xs text-slate-600 leading-relaxed bg-blue-50/20 border border-blue-100/20 rounded-xl p-3">
+                <p className="text-xs text-slate-600 leading-relaxed bg-blue-100/60 border border-blue-200/50 rounded-xl p-3">
                   {currentGuidance.desc}
                 </p>
 
@@ -438,8 +438,8 @@ export function FloatingGenie({
                 </div>
 
                 {hraResult && (
-                  <div className="bg-blue-50/50 border border-blue-100/60 rounded-xl p-3 space-y-1.5 text-xs text-blue-950">
-                    <div className="flex justify-between font-bold border-b border-blue-100 pb-1 mb-1">
+                  <div className="bg-blue-100/80 border border-blue-200/70 rounded-xl p-3 space-y-1.5 text-xs text-blue-950">
+                    <div className="flex justify-between font-bold border-b border-blue-200 pb-1 mb-1">
                       <span>Exempt HRA (Tax Free):</span>
                       <span className="text-emerald-600">{formatINR(hraResult.exempt)}</span>
                     </div>
@@ -541,7 +541,7 @@ export function FloatingGenie({
                   </div>
                 </div>
 
-                <div className="bg-blue-50/50 border border-blue-100/60 rounded-xl p-3 flex justify-between items-center text-xs">
+                <div className="bg-blue-100/80 border border-blue-200/70 rounded-xl p-3 flex justify-between items-center text-xs">
                   <span className="font-semibold text-blue-900">Total Deductible Sum:</span>
                   <span className="font-bold text-emerald-600">{formatINR(sum80C)}</span>
                 </div>
@@ -558,7 +558,7 @@ export function FloatingGenie({
           </div>
         ) : (
           <div className="text-center py-6 space-y-3 animate-in fade-in duration-200">
-            <div className="inline-flex size-12 items-center justify-center rounded-full bg-blue-50 text-blue-600 mb-2 relative">
+            <div className="inline-flex size-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 mb-2 relative">
               <Sparkles className="size-6 animate-pulse" />
               <span className="absolute inset-0 bg-blue-200/20 rounded-full animate-ping" />
             </div>

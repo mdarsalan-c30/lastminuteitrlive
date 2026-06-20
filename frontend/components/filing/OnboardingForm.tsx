@@ -113,8 +113,8 @@ export function WhyWeNeedThis({
   defaultOpen?: boolean;
 }) {
   return (
-    <Collapsible defaultOpen={defaultOpen} className="rounded-xl border border-blue-100 bg-blue-50/50">
-      <CollapsibleTrigger className="border-0 bg-transparent px-4 py-3 hover:bg-blue-50/80">
+    <Collapsible defaultOpen={defaultOpen} className="rounded-xl border border-blue-200 bg-blue-100/80">
+      <CollapsibleTrigger className="border-0 bg-transparent px-4 py-3 hover:bg-blue-100/90">
         Why we need this
       </CollapsibleTrigger>
       <CollapsibleContent className="px-4 pb-4">

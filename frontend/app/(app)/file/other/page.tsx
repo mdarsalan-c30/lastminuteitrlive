@@ -68,7 +68,7 @@ export default function OtherIncomePage() {
         {isSenior && (
           <div
             className={cn(
-              "mb-6 rounded-2xl border border-blue-100 bg-blue-50/40 p-5 shadow-sm transition-all",
+              "mb-6 rounded-2xl border border-blue-200 bg-blue-100/75 p-5 shadow-sm transition-all",
               seniorMode && "p-6 border-blue-200"
             )}
           >

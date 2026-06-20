@@ -10,7 +10,7 @@ export function Form16QuickCard() {
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <Link
           href={FORM16_QUICK.yes.href}
-          className="group flex flex-col rounded-xl border border-primary/30 bg-primary/5 p-4 transition hover:border-primary/50 hover:bg-primary/10"
+          className="group flex flex-col rounded-xl border border-primary/30 bg-blue-100/90 p-4 transition hover:border-primary/50 hover:bg-blue-100"
         >
           <span className="flex items-center gap-2 text-sm font-semibold text-primary">
             <FileText className="size-4" />

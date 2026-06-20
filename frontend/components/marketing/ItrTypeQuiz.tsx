@@ -71,7 +71,7 @@ export function ItrTypeQuiz() {
                     className={cn(
                       "w-full rounded-lg border px-2.5 py-1.5 text-left text-xs font-medium transition",
                       selected
-                        ? "border-primary bg-primary/10 text-primary"
+                        ? "border-primary bg-blue-100 text-primary"
                         : "border-gray-200 bg-white text-foreground shadow-sm hover:border-gray-300 hover:bg-muted/40"
                     )}
                   >

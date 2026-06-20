@@ -68,9 +68,9 @@ export function Button({
     "inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-all outline-none focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:border-ring active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-y-0";
   const variants = {
     primary:
-      "min-h-11 border border-transparent bg-primary text-white shadow-sm hover:bg-primary/90 hover:shadow-md",
+      "min-h-11 border border-transparent bg-primary text-white shadow-md hover:bg-primary/90 hover:shadow-lg",
     secondary:
-      "border border-slate-200/80 bg-white text-slate-800 shadow-sm hover:bg-slate-50 hover:shadow-md",
+      "border-2 border-slate-300 bg-white text-slate-900 shadow-sm hover:border-blue-300 hover:bg-blue-100/80 hover:shadow-md",
     ghost:
       "border border-transparent text-muted-foreground hover:bg-slate-100 hover:text-slate-800 px-3 py-1.5 font-medium",
   };
@@ -99,10 +99,10 @@ export function Banner({
   variant?: "info" | "success" | "warning" | "critical";
 }) {
   const styles = {
-    info: "bg-blue-50/80 text-blue-900 border-blue-100",
-    success: "bg-emerald-50/80 text-emerald-900 border-emerald-100",
-    warning: "bg-amber-50/80 text-amber-900 border-amber-100",
-    critical: "bg-red-50/80 text-red-900 border-red-100",
+    info: "border-blue-300/80 bg-blue-100 text-blue-950",
+    success: "bg-emerald-100/90 text-emerald-950 border-emerald-200",
+    warning: "bg-amber-100/90 text-amber-950 border-amber-200",
+    critical: "bg-red-100/90 text-red-950 border-red-200",
   };
   return (
     <div
@@ -178,7 +178,7 @@ export function ResetStepButton({
   const styles =
     variant === "ghost"
       ? "border-transparent bg-transparent text-muted-foreground shadow-none hover:bg-slate-100 hover:text-slate-800"
-      : "border-slate-200/80 bg-white text-slate-700 shadow-sm hover:border-slate-300 hover:bg-slate-50";
+      : "border-2 border-slate-300 bg-white text-slate-800 shadow-sm hover:border-blue-300 hover:bg-blue-100/80";
 
   return (
     <button
@@ -206,8 +206,8 @@ export function Chip({
       onClick={onClick}
       className={`rounded-full border px-3.5 py-1.5 text-[length:var(--text-caption)] font-medium transition-all ${
         selected
-          ? "border-primary bg-primary/10 text-primary shadow-sm"
-          : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:shadow-sm"
+          ? "border-blue-500 bg-blue-200/70 text-blue-950 shadow-sm ring-1 ring-blue-300/50"
+          : "border-slate-300 bg-white text-slate-800 hover:border-blue-300 hover:bg-blue-50/80 hover:shadow-sm"
       }`}
     >
       {label}
@@ -303,7 +303,7 @@ export function ModeCard({
       onClick={onClick}
       className={`flex h-full min-h-11 w-full flex-col rounded-2xl border p-4 text-left transition-all sm:p-5 ${
         selected
-          ? "border-primary/40 bg-primary/5 shadow-md ring-2 ring-primary/10"
+          ? "border-primary/40 bg-blue-100/90 shadow-md ring-2 ring-blue-300/60"
           : "border-slate-200/80 bg-white shadow-sm hover:border-slate-300 hover:shadow-md"
       }`}
     >

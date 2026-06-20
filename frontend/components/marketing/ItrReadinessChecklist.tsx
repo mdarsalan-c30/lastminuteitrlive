@@ -18,7 +18,7 @@ export function ItrReadinessChecklist() {
           <h3 className="text-base font-semibold text-foreground">{READINESS_CHECKLIST.headline}</h3>
           <p className="mt-1 text-sm text-muted-foreground">{READINESS_CHECKLIST.subhead}</p>
         </div>
-        <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+        <span className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-primary">
           {doneCount}/{total} ready
         </span>
       </div>

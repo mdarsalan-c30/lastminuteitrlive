@@ -45,7 +45,7 @@ export function OptimizationTips({
   return (
     <div
       className={cn(
-        "rounded-xl border border-blue-200/70 bg-blue-50/40 p-4",
+        "rounded-xl border border-blue-200/70 bg-blue-100/75 p-4",
         className
       )}
     >

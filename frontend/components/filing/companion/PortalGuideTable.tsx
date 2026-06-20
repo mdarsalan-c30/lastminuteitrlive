@@ -158,7 +158,7 @@ export function PortalGuideTable({
 
       {paymentLocked && (
         <div
-          className="mb-4 flex flex-col gap-3 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-4 text-sm text-blue-900 print:hidden sm:flex-row sm:items-center sm:justify-between"
+          className="mb-4 flex flex-col gap-3 rounded-2xl border border-blue-200 bg-blue-100 px-4 py-4 text-sm text-blue-900 print:hidden sm:flex-row sm:items-center sm:justify-between"
           role="status"
         >
           <div className="flex items-start gap-3">

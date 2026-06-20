@@ -104,7 +104,7 @@ export function PaywallValueStack({
     <section
       ref={sectionRef}
       className={cn(
-        "mb-6 rounded-2xl border border-blue-100 bg-gradient-to-b from-blue-50/80 to-white p-5",
+        "mb-6 rounded-2xl border border-blue-200 bg-gradient-to-b from-blue-100/80 to-white p-5",
         className
       )}
       aria-label="Your earned value before checkout"

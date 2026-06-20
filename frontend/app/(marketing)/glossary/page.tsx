@@ -23,7 +23,7 @@ export default function GlossaryPage() {
           delay={0}
           className="rounded-2xl border border-border/70 bg-white/90 p-5 shadow-sm sm:p-7"
         >
-          <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+          <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
             Filing-friendly glossary
           </span>
           <h1 className={`mt-3 font-heading font-semibold text-foreground ${TYPOGRAPHY_SCALE.display}`}>

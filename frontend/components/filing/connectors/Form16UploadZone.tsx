@@ -125,10 +125,10 @@ export function Form16UploadZone({
           </p>
         </div>
         <span
-          className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+          className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ${
             isConnected
-              ? "bg-emerald-100 text-emerald-800"
-              : "bg-blue-50 text-blue-800"
+              ? "bg-emerald-100 text-emerald-900 ring-emerald-300/60"
+              : "surface-action-chip ring-blue-300/50"
           }`}
         >
           {isConnected ? "Connected" : "Manual"}
@@ -136,10 +136,8 @@ export function Form16UploadZone({
       </div>
 
       <div
-        className={`mt-3 rounded-lg border-2 border-dashed px-4 py-5 text-center transition ${
-          dragOver
-            ? "border-primary bg-primary/5"
-            : "border-zinc-200 bg-zinc-50/50"
+        className={`drop-zone mt-3 rounded-lg px-4 py-5 text-center transition ${
+          dragOver ? "drop-zone-active" : ""
         }`}
         onDragOver={(e) => {
           e.preventDefault();
@@ -160,7 +158,7 @@ export function Form16UploadZone({
         <p className="mt-1 text-xs text-zinc-500">
           1–{MAX_FILES} PDF files · parsing starts automatically
         </p>
-        <label className="mt-3 inline-flex cursor-pointer items-center justify-center rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50">
+        <label className="btn-action-secondary mt-3 cursor-pointer">
           <input
             ref={inputRef}
             type="file"
@@ -202,7 +200,7 @@ export function Form16UploadZone({
       {isProcessing && (
         <div
           role="status"
-          className="mt-3 flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-900"
+          className="surface-info mt-3 flex items-center gap-2 rounded-lg px-3 py-2 text-sm"
         >
           <Loader2 className="size-4 shrink-0 animate-spin" />
           Reading and parsing Form 16…
@@ -235,7 +233,7 @@ export function Form16UploadZone({
       <button
         type="button"
         disabled={isProcessing || selectedFiles.length === 0}
-        className="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground shadow-md transition hover:bg-primary/90 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
         onClick={() => {
           lastAutoAttemptFingerprint.current = "";
           void runUpload();

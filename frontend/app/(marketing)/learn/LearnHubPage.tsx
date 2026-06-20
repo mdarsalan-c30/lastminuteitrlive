@@ -56,7 +56,7 @@ export function LearnHubPage() {
             className={cn(
               "rounded-full border px-3 py-1 text-xs font-medium transition",
               pillar === "all"
-                ? "border-primary bg-primary/10 text-primary"
+                ? "border-primary bg-blue-100 text-primary"
                 : "border-border/70 text-muted-foreground hover:bg-muted/40"
             )}
           >
@@ -70,7 +70,7 @@ export function LearnHubPage() {
               className={cn(
                 "rounded-full border px-3 py-1 text-xs font-medium transition",
                 pillar === p.id
-                  ? "border-primary bg-primary/10 text-primary"
+                  ? "border-primary bg-blue-100 text-primary"
                   : "border-border/70 text-muted-foreground hover:bg-muted/40"
               )}
             >

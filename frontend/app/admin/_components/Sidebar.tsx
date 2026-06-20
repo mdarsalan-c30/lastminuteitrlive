@@ -48,7 +48,7 @@ export function Sidebar({ email, role }: { email: string; role: string }) {
     <aside className="flex h-full w-56 shrink-0 flex-col border-r border-border bg-sidebar">
       <div className="flex h-14 items-center gap-2 border-b border-border px-4">
         <span className="text-sm font-semibold text-foreground">TaxSaathi</span>
-        <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">
+        <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">
           Admin
         </span>
       </div>
