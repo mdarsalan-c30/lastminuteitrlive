@@ -7,12 +7,10 @@ import { useDraftStore } from "@/lib/store/draft";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
 import { formatINR } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { getIncomeSectionStatuses, statusDotClass } from "@/lib/filing/navStatus";
+import { getIncomeSectionStatuses, statusDotClass, type IncomeSectionId } from "@/lib/filing/navStatus";
 import { ProfileNavLink } from "@/components/marketing/ProfileNavLink";
 import { ActiveAiCompanion } from "./ActiveAiCompanion";
 import { FloatingGenie } from "./FloatingGenie";
-import { FilingWorkspaceContent } from "./FilingWorkspaceContent";
-import { FILING_WORKSPACE } from "@/lib/design/layout";
 import {
   UserCheck,
   UploadCloud,
@@ -34,7 +32,16 @@ import {
   Sparkles,
 } from "lucide-react";
 
-const SIDEBAR_STEPS = [
+type SidebarStep = {
+  id: string;
+  label: string;
+  href: string;
+  match: string[];
+  icon: any;
+  subItems?: { id: string; label: string; href: string; statusKey: IncomeSectionId }[];
+};
+
+const SIDEBAR_STEPS: SidebarStep[] = [
   {
     id: "onboarding",
     label: "Get Started",
@@ -50,37 +57,26 @@ const SIDEBAR_STEPS = [
     icon: UploadCloud,
   },
   {
-    id: "income",
-    label: "Income Details",
-    href: "/file/income",
+    id: "comprehensive",
+    label: "Comprehensive Profile",
+    href: "/file/comprehensive",
     match: [
+      "/file/comprehensive",
       "/file/income",
       "/file/house-property",
       "/file/other",
-      "/file/import/mismatch",
-      "/file/import/tds",
-      "/file/import/bank",
+      "/file/deductions",
+      "/file/regime",
+      "/file/cabrain",
     ],
     icon: Coins,
-    subItems: [
-      { id: "salary", label: "Salary details", href: "/file/income", statusKey: "salary" as const },
-      { id: "house", label: "House property", href: "/file/house-property", statusKey: "house" as const },
-      { id: "other", label: "Other sources", href: "/file/other", statusKey: "other" as const },
-    ],
   },
   {
-    id: "deductions",
-    label: "Deductions (80C/80D)",
-    href: "/file/deductions",
-    match: ["/file/deductions"],
-    icon: PiggyBank,
-  },
-  {
-    id: "regime",
-    label: "Tax Regime",
-    href: "/file/regime",
-    match: ["/file/regime", "/file/cabrain"],
-    icon: GitCompare,
+    id: "advisor",
+    label: "AI Smart CA",
+    href: "/file/advisor",
+    match: ["/file/advisor"],
+    icon: Sparkles,
   },
   {
     id: "review",
@@ -140,15 +136,8 @@ function getBreadcrumbs(pathname: string) {
     parts.push({ label: "Get Started", href: "/file/onboarding/eligibility" });
   } else if (pathname.startsWith("/file/import")) {
     parts.push({ label: "Import Documents", href: "/file/import/documents" });
-  } else if (pathname.startsWith("/file/income") || pathname.startsWith("/file/house-property") || pathname.startsWith("/file/other")) {
-    parts.push({ label: "Income Details", href: "/file/income" });
-    if (pathname.startsWith("/file/income")) parts.push({ label: "Salary Details", href: "/file/income" });
-    if (pathname.startsWith("/file/house-property")) parts.push({ label: "House Property", href: "/file/house-property" });
-    if (pathname.startsWith("/file/other")) parts.push({ label: "Other Sources", href: "/file/other" });
-  } else if (pathname.startsWith("/file/deductions")) {
-    parts.push({ label: "Deductions", href: "/file/deductions" });
-  } else if (pathname.startsWith("/file/regime")) {
-    parts.push({ label: "Tax Regime", href: "/file/regime" });
+  } else if (pathname.startsWith("/file/comprehensive")) {
+    parts.push({ label: "Comprehensive Profile", href: "/file/comprehensive" });
   } else if (pathname.startsWith("/file/review")) {
     parts.push({ label: "Audit & Review", href: "/file/review" });
   } else if (pathname.startsWith("/file/checkout")) {
@@ -166,6 +155,7 @@ export function FilingLayout({
   activeNavSection,
   mirrorText = "Government forms use legal terms. We explain each field in plain English so you know what you are declaring.",
   variant = "default",
+  noPadding = false,
 }: {
   children: ReactNode;
   showNavRail?: boolean;
@@ -173,6 +163,8 @@ export function FilingLayout({
   mirrorText?: string;
   /** wide: full content width; companion: wide + hide right mirror aside */
   variant?: "default" | "wide" | "companion";
+  /** Removes padding from the main workspace card to allow full bleed content */
+  noPadding?: boolean;
 }) {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -216,14 +208,12 @@ export function FilingLayout({
           ? "partial"
           : "missing";
     }
-    if (stepId === "income") {
-      const statuses = [sectionStatuses.salary, sectionStatuses.house, sectionStatuses.other];
+    if (stepId === "comprehensive") {
+      const statuses = [sectionStatuses.salary, sectionStatuses.house, sectionStatuses.other, sectionStatuses.deductions];
       if (statuses.every((s) => s === "complete")) return "complete";
       if (statuses.every((s) => s === "missing")) return "missing";
       return "partial";
     }
-    if (stepId === "deductions") return sectionStatuses.deductions;
-    if (stepId === "regime") return sectionStatuses.regime;
     if (stepId === "review") {
       return mismatchResolved ? "complete" : "partial";
     }
@@ -248,7 +238,7 @@ export function FilingLayout({
           <FileText className="size-4" />
         </span>
         <span className="font-semibold text-slate-900 tracking-tight text-base">
-          TaxSaathi
+          LastMinuteITR
         </span>
         <span className="inline-flex items-center rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
           MVP
@@ -443,8 +433,8 @@ export function FilingLayout({
           </div>
         )}
 
-        {/* Exit link / User Profile indicator */}
-        <div className="flex items-center justify-between px-2 text-xs">
+        {/* Exit link */}
+        <div className="flex items-center justify-center px-2 text-xs">
           <Link
             href="/"
             className="flex items-center gap-1.5 font-medium text-slate-500 hover:text-slate-900 transition-colors"
@@ -452,8 +442,6 @@ export function FilingLayout({
             <LogOut className="size-3.5" />
             <span>Exit to home</span>
           </Link>
-          <span className="text-slate-300">|</span>
-          <ProfileNavLink className="font-semibold text-slate-600 hover:text-blue-600" />
         </div>
       </div>
     </div>
@@ -462,7 +450,7 @@ export function FilingLayout({
   return (
     <div className="flex min-h-screen bg-slate-50/50">
       {/* 1. Desktop Sidebar Navigation (lg & up) */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:h-screen lg:sticky lg:top-0 lg:border-r lg:border-slate-100/80 lg:shrink-0">
+      <aside className="hidden lg:flex lg:flex-col lg:w-56 lg:h-screen lg:sticky lg:top-0 lg:border-r lg:border-slate-100/80 lg:shrink-0">
         {sidebarContent}
       </aside>
 
@@ -484,7 +472,7 @@ export function FilingLayout({
                 <FileText className="size-3.5" />
               </span>
               <span className="font-semibold text-slate-900 text-sm">
-                TaxSaathi
+                LastMinuteITR
               </span>
             </Link>
           </div>
@@ -492,7 +480,7 @@ export function FilingLayout({
           {/* Desktop Breadcrumbs */}
           <nav className="hidden lg:flex items-center gap-1.5 text-xs text-slate-500" aria-label="Breadcrumb">
             {breadcrumbs.map((crumb, i) => (
-              <span key={crumb.href} className="flex items-center gap-1.5">
+              <span key={`${crumb.href}-${i}`} className="flex items-center gap-1.5">
                 {i > 0 && <ChevronRight className="size-3 text-slate-300" />}
                 <Link
                   href={crumb.href}
@@ -522,34 +510,33 @@ export function FilingLayout({
         {/* 3. Main Workspace Grid */}
         <div
           className={cn(
-            FILING_WORKSPACE.grid,
+            "grid w-full flex-1 content-start items-start gap-2 min-w-0",
+            !noPadding && "p-2 sm:p-3 lg:p-4 pb-[calc(5rem+env(safe-area-inset-bottom,0px))]",
             isWideLayout
-              ? "filing-workspace-grid--wide"
-              : "filing-workspace-grid--default"
+              ? "grid-cols-1"
+              : isCompanionLayout
+                ? "grid-cols-1"
+                : "grid-cols-1 xl:grid-cols-[1fr_20rem] max-w-[90rem] mx-auto"
           )}
         >
           {/* Main workspace card */}
-          <main className="bg-white rounded-2xl border border-slate-100/80 shadow-[0_1px_2px_rgba(0,0,0,0.02)] p-6 sm:p-8 min-w-0 w-full">
-            <FilingWorkspaceContent>{children}</FilingWorkspaceContent>
+          <main className={cn(
+            "bg-white min-w-0 w-full",
+            !noPadding ? "rounded-2xl border border-slate-100/80 shadow-[0_1px_2px_rgba(0,0,0,0.02)] p-4 sm:p-5" : "h-full"
+          )}>
+            {children}
           </main>
 
           {/* Context helper rail */}
           {!isCompanionLayout && (
             <aside className="hidden xl:block w-full shrink-0 self-start xl:sticky xl:top-20 xl:h-[calc(100vh-6rem)] xl:overflow-y-auto">
-              <div className="relative h-full overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
+              <div className="h-full border border-slate-100 bg-white rounded-2xl shadow-sm overflow-hidden">
                 <ActiveAiCompanion />
-                <FloatingGenie placement="panel" />
               </div>
             </aside>
           )}
         </div>
       </div>
-
-      {/* Mobile / no-rail: genie pinned to viewport bottom-right */}
-      {!isCompanionLayout && (
-        <FloatingGenie placement="viewport" className="xl:hidden" />
-      )}
-      {isCompanionLayout && <FloatingGenie placement="viewport" />}
 
       {/* 4. Responsive Mobile Sidebar Drawer Overlay */}
       {isSidebarOpen && (
@@ -577,6 +564,7 @@ export function FilingLayout({
           </div>
         </div>
       )}
+      <FloatingGenie />
     </div>
   );
 }

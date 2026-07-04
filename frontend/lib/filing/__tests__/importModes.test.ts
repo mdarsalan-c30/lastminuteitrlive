@@ -2,22 +2,22 @@ import { describe, expect, it } from "vitest";
 import { getImportContinueHref } from "../importModes";
 
 describe("importModes", () => {
-  it("routes form16 fast path to eligibility", () => {
+  it("routes form16 fast path to GATE", () => {
     expect(
       getImportContinueHref("form16", {
         form16Connected: false,
         form16FastPath: true,
       })
-    ).toBe("/file/onboarding/eligibility?source=form16&step=additional-income");
+    ).toBe("/file/start?source=form16&step=additional-income");
   });
 
-  it("routes standard form16 path to parsing", () => {
+  it("routes standard form16 path to COLLECT documents", () => {
     expect(
       getImportContinueHref("form16", {
         form16Connected: true,
         form16FastPath: false,
       })
-    ).toBe("/file/import/parsing");
+    ).toBe("/file/import/documents");
   });
 
   it("routes manual estimates to regime compare", () => {
@@ -29,9 +29,9 @@ describe("importModes", () => {
     ).toBe("/file/regime");
   });
 
-  it("returns null for ITD until ERI connect ships", () => {
+  it("returns null for capital gains (dedicated flow handles routing)", () => {
     expect(
-      getImportContinueHref("itd", {
+      getImportContinueHref("capital_gains", {
         form16Connected: false,
         form16FastPath: false,
       })

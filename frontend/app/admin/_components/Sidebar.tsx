@@ -21,6 +21,7 @@ const NAV: NavGroup[] = [
     items: [
       { href: "/admin/crm", label: "CRM" },
       { href: "/admin/coupons", label: "Coupons" },
+      { href: "/admin/referrals", label: "Referrals" },
       { href: "/admin/payments", label: "Payments" },
       { href: "/admin/pricing", label: "Pricing" },
       { href: "/admin/analytics", label: "Analytics" },
@@ -33,10 +34,17 @@ const NAV: NavGroup[] = [
     items: [{ href: "/admin/partners", label: "Partners" }],
   },
   {
+    heading: "Content",
+    items: [
+      { href: "/admin/blogs", label: "Blogs" },
+    ],
+  },
+  {
     heading: "System",
     items: [
       { href: "/admin/compliance", label: "Compliance" },
       { href: "/admin/settings", label: "Team & roles" },
+      { href: "/admin/credentials", label: "Credentials (Dev)" },
     ],
   },
 ];
@@ -44,17 +52,26 @@ const NAV: NavGroup[] = [
 export function Sidebar({ email, role }: { email: string; role: string }) {
   const pathname = usePathname();
 
+  const isContentRole = ["content", "content_writer", "intern"].includes(role.toLowerCase());
+
+  const displayedNav = NAV.filter((group) => {
+    if (isContentRole) {
+      return !group.heading || group.heading === "Content";
+    }
+    return true;
+  });
+
   return (
     <aside className="flex h-full w-56 shrink-0 flex-col border-r border-border bg-sidebar">
       <div className="flex h-14 items-center gap-2 border-b border-border px-4">
-        <span className="text-sm font-semibold text-foreground">TaxSaathi</span>
+        <span className="text-sm font-semibold text-foreground">LastMinuteITR</span>
         <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">
           Admin
         </span>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2 py-3">
-        {NAV.map((group, i) => (
+        {displayedNav.map((group, i) => (
           <div key={group.heading ?? `g${i}`} className="mb-3">
             {group.heading && (
               <p className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">

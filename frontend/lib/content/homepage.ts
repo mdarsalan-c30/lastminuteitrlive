@@ -23,37 +23,27 @@ export const PAIN_POINTS = {
 
 export const HOW_IT_WORKS = {
   eyebrow: "How it works",
-  headline: "Six steps from upload to portal submit",
+  headline: "Four steps from upload to portal submit",
   steps: [
     {
       step: "1",
-      title: "Upload documents",
-      detail: "Form 16, AIS, broker statements — we parse what you already have.",
+      title: "Upload Form 16 & AIS",
+      detail: "Securely upload your documents. We automatically parse salary, TDS, and interest, setting up your user persona perfectly.",
     },
     {
       step: "2",
-      title: "Confirm income",
-      detail: "Review pre-filled salary, interest, and other heads line by line.",
+      title: "Real-time AI Calculations",
+      detail: "Our robust backend AI reconciles your data against AIS & 26AS, identifying any mismatches instantly.",
     },
     {
       step: "3",
-      title: "Fix mismatches",
-      detail: "AIS / 26AS checks catch TDS gaps before you reach the portal.",
+      title: "AI Guided ITR Filing",
+      detail: "Compare the Old vs New regime interactively based on your numbers. Fix any discrepancies with our AI assistant.",
     },
     {
       step: "4",
-      title: "Pick regime & deductions",
-      detail: "Compare old vs new and claim only proof-based eligible deductions.",
-    },
-    {
-      step: "5",
-      title: "Pre-submit review",
-      detail: "Confidence score and risk flags — review before you pay to unlock.",
-    },
-    {
-      step: "6",
-      title: "File on incometax.gov.in",
-      detail: "Follow your personalized guide — copy values, submit, e-verify yourself.",
+      title: "ITR Portal Guide Support",
+      detail: "Follow our interactive, copy-ready companion guide to submit and e-verify directly on incometax.gov.in.",
     },
   ],
 } as const;

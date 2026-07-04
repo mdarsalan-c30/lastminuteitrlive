@@ -1,6 +1,7 @@
 /** Server-only — import from API routes and server modules only. */
 
 import type { z } from "zod";
+import { aiDegradedReason, isAiKillSwitchOn } from "./killSwitch";
 import { validateLlmTextFields } from "./outputValidator";
 import {
   completeGeminiRaw,
@@ -137,6 +138,15 @@ export function isAnyLlmConfigured(): boolean {
 export async function completeJson<TSchema extends z.ZodType>(
   request: CompleteJsonRequest<TSchema>
 ): Promise<LlmSuccess<z.infer<TSchema>> | LlmFailure> {
+  // Doc 52: kill switch downgrades to template-only instantly.
+  if (isAiKillSwitchOn()) {
+    return {
+      ok: false,
+      error: aiDegradedReason(),
+      fallback: true,
+    };
+  }
+
   const providers = resolveProviders();
   if (providers.length === 0) {
     return {

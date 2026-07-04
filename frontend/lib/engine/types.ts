@@ -74,6 +74,15 @@ export interface TaxPaidInput {
   self_assessment_tax_paid?: number;
 }
 
+export interface DepreciationBlockInput {
+  block: string;
+  rate: number;
+  opening_wdv?: number;
+  additions_180d_plus?: number;
+  additions_under_180d?: number;
+  sale_proceeds?: number;
+}
+
 export interface BusinessInput {
   business_type?:
     | "none"
@@ -87,6 +96,17 @@ export interface BusinessInput {
   actual_expenses?: number;
   profession_name?: string;
   cash_receipts_pct?: number;
+  depreciation_blocks?: DepreciationBlockInput[];
+}
+
+/** Losses brought forward from earlier years (Schedule CFL / BFLA). */
+export interface BroughtForwardLossesInput {
+  hp_loss?: number;
+  stcl?: number;
+  ltcl?: number;
+  business_loss?: number;
+  unabsorbed_depreciation?: number;
+  prior_return_filed_on_time?: boolean;
 }
 
 export interface ProfileFlags {
@@ -115,10 +135,14 @@ export interface UserInput {
   residential_status?: ResidentialStatus;
   assessment_year?: string;
   mode?: FilingMode;
+  late_filing?: boolean;
   salary?: SalaryInput;
   house_property?: HousePropertyInput;
+  /** Multi-property portfolio (ITR-2/3). When set, replaces house_property. */
+  house_properties?: HousePropertyInput[];
   other_income?: OtherIncomeInput;
   capital_gains?: CapitalGainsInput;
+  carry_forward?: BroughtForwardLossesInput;
   deductions?: DeductionsInput;
   taxes_paid?: TaxPaidInput;
   business?: BusinessInput;
@@ -150,6 +174,15 @@ export interface IncomeHeadsResult {
   ltcg_other_net: number;
   gross_total_income: number;
   carry_forward_loss_set_off: number;
+  bf_loss_set_off_total?: number;
+  losses_carried_forward?: {
+    hp?: number;
+    stcl?: number;
+    ltcl?: number;
+    business?: number;
+    unabsorbed_depreciation?: number;
+  };
+  depreciation_allowed?: number;
 }
 
 export interface DeductionsResult {
@@ -165,6 +198,16 @@ export interface DeductionsResult {
   deduction_80u: number;
   total_chapter_via: number;
   new_regime_deductions: number;
+}
+
+/**
+ * Rule-attribution trace entry emitted by the engine (doc 22 §3).
+ * The explanation layer (lib/ai/explainTrace.ts) renders ONLY from these —
+ * every rupee amount shown to the user must resolve from `params`.
+ */
+export interface TraceEntry {
+  rule: string;
+  params: Record<string, number>;
 }
 
 export interface SlabTaxResult {
@@ -183,6 +226,8 @@ export interface SlabTaxResult {
   total_tax: number;
   tds_and_advance_tax: number;
   net_payable: number;
+  late_filing_fee?: number;
+  trace?: TraceEntry[];
 }
 
 export interface RegimeComparisonResult {

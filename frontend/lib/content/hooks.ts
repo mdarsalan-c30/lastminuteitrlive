@@ -156,7 +156,7 @@ export const FORM16_QUICK = {
   },
   no: {
     label: "No — enter income manually",
-    href: "/file/income",
+    href: "/file/review?tab=income",
     detail: "Add gross salary, TDS, and other income line by line.",
   },
   regimeHint: "Not sure about old vs new? Compare regimes in the hero card above.",
@@ -222,7 +222,10 @@ export const ITR_TYPE_QUIZ = {
       prompt: "Residential status?",
       options: [
         { value: "resident", label: "Resident Indian" },
-        { value: "nri", label: "NRI / RNOR" },
+        {
+          value: "nri",
+          label: "NRI / RNOR (not supported in-app yet)",
+        },
       ],
     },
   ],
@@ -238,9 +241,10 @@ export const ITR_TYPE_QUIZ = {
       href: "/file",
     },
     talkToCa: {
-      form: "Talk to a CA",
-      summary: "Business income, foreign assets, very high income, or NRI status usually needs professional help.",
-      href: "/file/onboarding/eligibility",
+      form: "Not supported in-app",
+      summary:
+        "Business income, foreign assets, very high income, or NRI/RNOR status is not supported in this version. Use a CA or the income-tax portal directly.",
+      href: "/file/start",
     },
   },
 } as const;

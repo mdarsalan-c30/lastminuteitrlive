@@ -11,6 +11,8 @@ import {
 describe("payment access helpers", () => {
   it("grants companion export only for paid tiers after verification", () => {
     expect(canExportCompanion("free")).toBe(false);
+    expect(canExportCompanion("normal")).toBe(true);
+    expect(canExportCompanion("pro")).toBe(true);
     expect(canExportCompanion("diy")).toBe(true);
     expect(canExportCompanion("ai_smart")).toBe(true);
 
@@ -31,9 +33,12 @@ describe("payment access helpers", () => {
     ).toBe(true);
   });
 
-  it("gates mismatch engine and regime optimizer to AI Smart and CA", () => {
+  it("gates mismatch engine to AI Smart tiers and CA", () => {
+    expect(canUseMismatchEngine("normal")).toBe(false);
     expect(canUseMismatchEngine("diy")).toBe(false);
+    expect(canUseMismatchEngine("pro")).toBe(true);
     expect(canUseMismatchEngine("ai_smart")).toBe(true);
+    expect(canUseRegimeOptimizer("normal")).toBe(true);
     expect(canUseRegimeOptimizer("ca")).toBe(true);
   });
 

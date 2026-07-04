@@ -5,27 +5,34 @@ Computes business/profession income for ITR-3 (regular books) and ITR-4 (presump
 
 Sections implemented
 --------------------
-44AD  : Presumptive income for small business — 8% of turnover (6% if digital receipts)
-        Turnover threshold: ₹2 crore. Cash receipts > 5% of turnover → not eligible.
-44ADA : Presumptive income for specified profession — 50% of gross receipts
-        Receipt threshold: ₹50 lakh. Cash receipts > 5% → not eligible.
+44AD  : Presumptive income for small business — 8% of turnover (6% for digital
+        receipts). Turnover limit ₹2 crore, ENHANCED to ₹3 crore where cash
+        receipts are ≤ 5% of turnover (Finance Act 2023; retained for AY 2026-27).
+44ADA : Presumptive income for specified profession — 50% of gross receipts.
+        Receipts limit ₹50 lakh, ENHANCED to ₹75 lakh where cash receipts ≤ 5%.
 Books : ITR-3 — actual profit = gross receipts − expenses (caller supplies values).
+
+Note: cash receipts above 5% do NOT disqualify presumptive taxation — they only
+mean the lower (non-enhanced) turnover/receipt limit applies.
 """
 
 from __future__ import annotations
 
+from depreciation import compute_depreciation
 from models import BusinessInput
 
 TURNOVER_LIMIT_44AD = 2_00_00_000
+TURNOVER_LIMIT_44AD_ENHANCED = 3_00_00_000    # cash receipts ≤ 5%
 RECEIPTS_LIMIT_44ADA = 50_00_000
+RECEIPTS_LIMIT_44ADA_ENHANCED = 75_00_000     # cash receipts ≤ 5%
 RATE_44AD_DEFAULT = 0.08
 RATE_44AD_DIGITAL = 0.06
 RATE_44ADA = 0.50
-CASH_RECEIPT_DISQUALIFY_PCT = 0.05
+CASH_ENHANCED_LIMIT_PCT = 0.05
 
 
-def _cash_disqualifies(biz: BusinessInput) -> bool:
-    return biz.cash_receipts_pct > CASH_RECEIPT_DISQUALIFY_PCT
+def _low_cash(biz: BusinessInput) -> bool:
+    return biz.cash_receipts_pct <= CASH_ENHANCED_LIMIT_PCT
 
 
 def compute_business_income(biz: BusinessInput) -> dict:
@@ -43,7 +50,17 @@ def compute_business_income(biz: BusinessInput) -> dict:
         }
 
     if biz.business_type == "regular_books":
-        profit = max(0.0, biz.actual_gross_receipts - biz.actual_expenses)
+        dep = compute_depreciation(biz.depreciation_blocks)
+        raw_profit = (
+            biz.actual_gross_receipts
+            - biz.actual_expenses
+            - dep["total_depreciation"]
+        )
+        # A books loss cannot be set off against salary (Sec 71(2A)); the
+        # engine keeps V1 conservative — income floors at 0 and the loss is
+        # reported for carry-forward (8 AYs) instead of inter-head set-off.
+        profit = max(0.0, raw_profit)
+        current_year_loss_cf = round(max(0.0, -raw_profit), 2)
         return {
             "presumptive_44ad": 0.0,
             "presumptive_44ada": 0.0,
@@ -51,10 +68,15 @@ def compute_business_income(biz: BusinessInput) -> dict:
             "net_business_income": round(profit, 2),
             "section_used": "books",
             "presumptive_eligible": False,
+            "depreciation_allowed": dep["total_depreciation"],
+            "depreciation_schedule": dep["per_block"],
+            "depreciation_st_gain_50": dep["st_gain_50"],
+            "current_year_business_loss_cf": current_year_loss_cf,
         }
 
     if biz.business_type == "presumptive_business":
-        eligible = biz.turnover <= TURNOVER_LIMIT_44AD and not _cash_disqualifies(biz)
+        limit = TURNOVER_LIMIT_44AD_ENHANCED if _low_cash(biz) else TURNOVER_LIMIT_44AD
+        eligible = biz.turnover <= limit
         if not eligible:
             return {
                 "presumptive_44ad": 0.0,
@@ -79,7 +101,8 @@ def compute_business_income(biz: BusinessInput) -> dict:
 
     if biz.business_type == "presumptive_profession":
         receipts = biz.gross_professional_receipts
-        eligible = receipts <= RECEIPTS_LIMIT_44ADA and not _cash_disqualifies(biz)
+        limit = RECEIPTS_LIMIT_44ADA_ENHANCED if _low_cash(biz) else RECEIPTS_LIMIT_44ADA
+        eligible = receipts <= limit
         if not eligible:
             return {
                 "presumptive_44ad": 0.0,

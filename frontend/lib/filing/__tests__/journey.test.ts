@@ -11,37 +11,34 @@ import {
 } from "../journey";
 
 describe("journey step derivation", () => {
-  it("maps onboarding and import routes to step A", () => {
+  it("maps GATE routes to step A", () => {
+    expect(getJourneyStep("/file/start")).toBe("A");
+    expect(getJourneyStep("/file/not-yet")).toBe("A");
     expect(getJourneyStep("/file/onboarding/eligibility")).toBe("A");
-    expect(getJourneyStep("/file/import/documents")).toBe("A");
-    expect(getJourneyStep("/file/income")).toBe("A");
-    expect(getJourneyStep("/file/house-property")).toBe("A");
   });
 
-  it("maps parsing to step B", () => {
-    expect(getJourneyStep("/file/import/parsing")).toBe("B");
+  it("maps COLLECT documents to step B", () => {
+    expect(getJourneyStep("/file/import/documents")).toBe("B");
   });
 
-  it("maps reconciliation routes to step C", () => {
+  it("maps RECONCILE to step C", () => {
     expect(getJourneyStep("/file/import/mismatch")).toBe("C");
-    expect(getJourneyStep("/file/import/tds")).toBe("C");
-    expect(getJourneyStep("/file/import/bank")).toBe("C");
-    expect(getJourneyStep("/file/deductions")).toBe("C");
   });
 
-  it("maps regime and cabrain to step D", () => {
+  it("maps COMPUTE regime to step D", () => {
     expect(getJourneyStep("/file/regime")).toBe("D");
-    expect(getJourneyStep("/file/cabrain")).toBe("D");
   });
 
-  it("maps checkout and review to step E", () => {
+  it("maps CONFIRM / ENTITLE to step E", () => {
     expect(getJourneyStep("/file/checkout/plans")).toBe("E");
     expect(getJourneyStep("/file/checkout/payment")).toBe("E");
     expect(getJourneyStep("/file/review/presubmit")).toBe("E");
+    expect(getJourneyStep("/file/review")).toBe("E");
   });
 
-  it("maps companion and post-file routes to step F", () => {
+  it("maps COMPANION and FILED to step F", () => {
     expect(getJourneyStep("/file/companion")).toBe("F");
+    expect(getJourneyStep("/file/done")).toBe("F");
     expect(getJourneyStep("/file/checkout/everify")).toBe("F");
     expect(getJourneyStep("/file/checkout/tracker")).toBe("F");
     expect(getJourneyStep("/file/support")).toBe("F");

@@ -45,11 +45,12 @@ export function buildEligibilityForm16Url(
     source: FORM16_FAST_PATH_SOURCE,
     step,
   });
-  return `/file/onboarding/eligibility?${params.toString()}`;
+  return `/file/start?${params.toString()}`;
 }
 
+/** @deprecated EXTRACT is inline on COLLECT — use documents URL. */
 export function buildParsingForm16Url(): string {
-  return `/file/import/parsing?source=${FORM16_FAST_PATH_SOURCE}`;
+  return `/file/import/documents?source=${FORM16_FAST_PATH_SOURCE}`;
 }
 
 /** Tabs on the /file/review reconcile dashboard, in display order. */

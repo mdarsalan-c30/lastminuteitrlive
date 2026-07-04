@@ -125,7 +125,7 @@ export function TeamManager({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-md border border-input bg-background px-2 py-1.5"
-                placeholder="teammate@taxsaathi.com"
+                placeholder="teammate@lastminuteitr.com"
               />
             </label>
             <label className="text-sm">

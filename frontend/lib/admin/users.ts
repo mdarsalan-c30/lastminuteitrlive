@@ -1,7 +1,6 @@
-import crypto from "crypto";
 import { all, genId, insert, remove, update } from "@/lib/db/store";
 import type { AdminRoleRow, AdminUserRow, AdminUserStatus } from "@/lib/db/types";
-import { getAdminUsers, hashPassword } from "./auth";
+import { getAdminUsers, hashPassword, verifyPassword } from "./auth";
 import {
   BUILTIN_ROLES,
   DEFAULT_ROLE_PERMISSIONS,
@@ -31,13 +30,6 @@ export interface EffectiveAdminUser {
 
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
-}
-
-function timingSafeEqualStr(a: string, b: string): boolean {
-  const ba = Buffer.from(a);
-  const bb = Buffer.from(b);
-  if (ba.length !== bb.length) return false;
-  return crypto.timingSafeEqual(ba, bb);
 }
 
 // ── Users ─────────────────────────────────────────────────────────────────────
@@ -152,20 +144,21 @@ export async function verifyAdminCredentials(
   password: string
 ): Promise<{ email: string; role: string } | null> {
   const norm = normalizeEmail(email);
-  const candidate = hashPassword(password);
 
   const store = await all("adminUsers");
   const storeUser = store.find((u) => normalizeEmail(u.email) === norm);
   if (storeUser) {
     if (storeUser.status !== "active") return null;
-    if (timingSafeEqualStr(candidate, storeUser.passwordHash)) {
+    // Scrypt hashes are salted: re-hashing the candidate never reproduces the
+    // stored hash. Compare via verifyPassword, which extracts the salt.
+    if (verifyPassword(password, storeUser.passwordHash)) {
       return { email: storeUser.email, role: storeUser.role };
     }
     return null;
   }
 
   const envUser = getAdminUsers().find((u) => normalizeEmail(u.email) === norm);
-  if (envUser && timingSafeEqualStr(candidate, envUser.passwordHash)) {
+  if (envUser && verifyPassword(password, envUser.passwordHash)) {
     return { email: envUser.email, role: envUser.role };
   }
   return null;

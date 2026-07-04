@@ -18,21 +18,24 @@ describe("launch offer pricing", () => {
     expect(isLaunchOfferActive(afterExpiry)).toBe(false);
   });
 
-  it("charges launch price for ai_smart during offer", () => {
-    expect(getEffectivePrice("ai_smart", beforeExpiry)).toBe(349);
+  it("charges launch price for pro during offer", () => {
+    expect(getEffectivePrice("pro", beforeExpiry)).toBe(
+      LAUNCH_OFFER.launchPriceInr
+    );
   });
 
-  it("shows original price for ai_smart after expiry", () => {
-    expect(getEffectivePrice("ai_smart", afterExpiry)).toBe(799);
+  it("uses catalog price for pro after expiry", () => {
+    expect(getEffectivePrice("pro", afterExpiry)).toBe(599);
   });
 
-  it("does not discount diy or free", () => {
-    expect(getEffectivePrice("diy", beforeExpiry)).toBe(499);
+  it("keeps starter and free at catalog prices", () => {
+    expect(getEffectivePrice("normal", beforeExpiry)).toBe(349);
+    expect(getEffectivePrice("diy", beforeExpiry)).toBe(349);
     expect(getEffectivePrice("free", beforeExpiry)).toBe(0);
   });
 
   it("returns strikethrough display during offer", () => {
-    const display = getDisplayPricing("ai_smart", beforeExpiry);
+    const display = getDisplayPricing("pro", beforeExpiry);
     expect(display).toEqual({
       current: LAUNCH_OFFER.launchPriceInr,
       original: LAUNCH_OFFER.originalPriceInr,
@@ -40,10 +43,10 @@ describe("launch offer pricing", () => {
     });
   });
 
-  it("hides offer styling after expiry", () => {
-    const display = getDisplayPricing("ai_smart", afterExpiry);
-    expect(display.current).toBe(799);
-    expect(display.showOffer).toBe(false);
-    expect(display.original).toBeUndefined();
+  it("hides offer styling after expiry when catalog has no original", () => {
+    const display = getDisplayPricing("pro", afterExpiry);
+    expect(display.current).toBe(599);
+    expect(display.showOffer).toBe(true);
+    expect(display.original).toBe(1999);
   });
 });

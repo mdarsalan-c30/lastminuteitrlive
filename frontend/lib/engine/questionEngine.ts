@@ -1,4 +1,5 @@
 import type { DraftState } from "@/lib/store/draft";
+import { generateDeductionDiscoveryQuestions } from "./deductionDiscovery";
 import type { ITRResult, UserInput } from "./types";
 
 export type FollowUpCategory =
@@ -16,6 +17,10 @@ export interface FollowUpQuestion {
   whyWeAsk: string;
   category: FollowUpCategory;
   priority: FollowUpPriority;
+  /** Deterministic "up to ₹X" saving estimate (deduction-discovery questions). */
+  estimatedSaving?: number;
+  /** Statutory anchor, e.g. "80D" (deduction-discovery questions). */
+  section?: string;
 }
 
 export interface QuestionEngineContext {
@@ -31,7 +36,10 @@ export interface QuestionEngineContext {
     | "lastParseResult"
     | "houseProperty"
     | "deductions"
-  >;
+  > &
+    Partial<
+      Pick<DraftState, "extraProperties" | "carryForward" | "depreciationBlocks">
+    >;
   questionAnswers?: Record<string, unknown>;
 }
 
@@ -333,6 +341,7 @@ export function generateFollowUpQuestions(
 
   add(questionsFromDraftProfile(ctx));
   add(questionsFromIncomeChips(ctx));
+  add(generateDeductionDiscoveryQuestions(ctx));
 
   return merged.sort(
     (a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]

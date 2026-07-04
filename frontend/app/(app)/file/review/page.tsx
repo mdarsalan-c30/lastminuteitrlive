@@ -2,6 +2,7 @@
 
 import { Suspense, useMemo } from "react";
 import Link from "next/link";
+import { ArrowRight, Lock } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useShallow } from "zustand/react/shallow";
 import { useDraftStore } from "@/lib/store/draft";
@@ -21,7 +22,6 @@ import {
   parseReviewTab,
   type ReviewTab,
 } from "@/lib/filing/routes";
-import { FILING_REVIEW } from "@/lib/copy/filing";
 import {
   getReviewTabStatuses,
   statusDotClass,
@@ -40,6 +40,7 @@ import {
 } from "@/lib/filing/reconciliation";
 import { PORTAL_ITR1_SECTIONS } from "@/lib/engine/portalSections";
 import type { ITRResult, TaxRegime } from "@/lib/engine/types";
+import { SmartSavingsFinder } from "@/components/filing/SmartSavingsFinder";
 
 const TAB_LABELS: Record<ReviewTab, string> = {
   import: "Import",
@@ -145,6 +146,25 @@ function ReconcileRowCard({ row }: { row: ReconciliationRow }) {
   );
 }
 
+function PaywallOverlay({ title, message }: { title?: string; message?: string }) {
+  return (
+    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-2xl bg-white/60 p-6 text-center backdrop-blur-sm">
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 shadow-sm">
+        <Lock className="h-6 w-6 text-slate-500" aria-hidden />
+      </div>
+      <h3 className="mt-4 text-lg font-bold text-slate-900">
+        {title || "Unlock to see exact details"}
+      </h3>
+      <p className="mt-2 max-w-sm text-sm text-slate-600">
+        {message || "Choose a plan to view your exact tax breakdown and reconcile mismatches."}
+      </p>
+      <Button href="/file/checkout/plans" className="mt-6">
+        View plans & unlock
+      </Button>
+    </div>
+  );
+}
+
 function SkeletonRows() {
   return (
     <div className="space-y-2" aria-hidden>
@@ -178,6 +198,7 @@ function EmptyState({
 }
 
 function ImportTab() {
+  const isPaid = Boolean(useDraftStore((s) => s.paidPlanId));
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
   const income = useDraftStore((s) => s.income);
   const deductions = useDraftStore((s) => s.deductions);
@@ -224,10 +245,10 @@ function ImportTab() {
   if (connectedConnectors.length === 0) {
     return (
       <EmptyState
-        title={FILING_REVIEW.emptyImportTitle}
-        body={FILING_REVIEW.emptyImportBody}
+        title="No documents imported yet"
+        body="Upload your Form 16 and AIS so we can pre-fill salary and TDS, then cross-check against the tax department's records."
         ctaHref="/file/import/documents"
-        ctaLabel={FILING_REVIEW.uploadDocumentsCta}
+        ctaLabel="Import documents"
       />
     );
   }
@@ -443,12 +464,10 @@ function DeductionsTab() {
           .
         </Banner>
       )}
+      <SmartSavingsFinder />
       <Card>
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-slate-900">Deduction checklist</h3>
-          <Link href="/file/deductions" className="text-sm font-medium text-primary hover:underline">
-            Edit
-          </Link>
         </div>
         <p className="mt-1 text-sm text-slate-600">
           {summary.claimed} claimed · {summary.needsProof} need proof ·{" "}
@@ -501,63 +520,63 @@ function TaxesTab({
   result: ITRResult | null;
   selectedRegime: TaxRegime;
 }) {
-  if (!result) {
-    return (
-      <EmptyState
-        title="No computation yet"
-        body="Add income and deductions to compute tax. Your figures update automatically."
-        ctaHref="/file/income"
-        ctaLabel="Add income"
-      />
-    );
-  }
+  const isPaid = Boolean(useDraftStore((s) => s.paidPlanId));
+  if (!result) return null;
 
-  const slab = result.regime_comparison[selectedRegime];
-  const isRefund = slab.net_payable < 0;
-
-  const rows: Array<{ label: string; value: string }> = [
-    { label: "Taxable income", value: formatINR(slab.taxable_income) },
-    { label: "Tax + surcharge", value: formatINR(slab.tax_plus_surcharge) },
-    { label: "Health & education cess", value: formatINR(slab.cess) },
-    { label: "Total tax", value: formatINR(slab.total_tax) },
-    { label: "TDS + advance tax", value: formatINR(slab.tds_and_advance_tax) },
-  ];
+  const rc = result.regime_comparison;
+  const slab = rc[selectedRegime];
+  const netPayable = slab.net_payable ?? 0;
+  const isRefund = netPayable < 0;
 
   return (
-    <div className="space-y-3">
-      <Card>
-        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-          {selectedRegime === "new" ? "New regime" : "Old regime"} · estimate
-        </p>
-        <p
-          className={`mt-1 text-2xl font-bold tabular-nums ${
-            isRefund ? "text-emerald-700" : "text-slate-900"
-          }`}
-        >
-          {isRefund ? "Est. refund " : "Est. tax due "}
-          {formatINR(Math.abs(slab.net_payable))}
-        </p>
-        <p className="mt-1 text-xs text-slate-500">
-          Not guaranteed — incometax.gov.in confirms the final amount.
-        </p>
-      </Card>
+    <div className="relative space-y-4">
+      {!isPaid && (
+        <PaywallOverlay 
+          title="Unlock tax breakdown" 
+          message="See your exact tax calculation, deductions, and regime savings." 
+        />
+      )}
+      <div className={`space-y-4 ${!isPaid ? "pointer-events-none select-none opacity-40 blur-[2px]" : ""}`}>
+        <Card>
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+            {selectedRegime === "new" ? "New regime" : "Old regime"} · estimate
+          </p>
+          <p
+            className={`mt-1 text-2xl font-bold tabular-nums ${
+              isRefund ? "text-emerald-700" : "text-slate-900"
+            }`}
+          >
+            {isRefund ? "Est. refund " : "Est. tax due "}
+            {formatINR(Math.abs(netPayable))}
+          </p>
+          <p className="mt-1 text-xs text-slate-500">
+            Not guaranteed — incometax.gov.in confirms the final amount.
+          </p>
+        </Card>
 
-      <Card>
-        <h3 className="font-semibold text-slate-900">How we got there</h3>
-        <dl className="mt-3 divide-y divide-slate-100">
-          {rows.map((row) => (
-            <div key={row.label} className="flex items-center justify-between py-2">
-              <dt className="text-sm text-slate-600">{row.label}</dt>
-              <dd className="text-sm font-semibold tabular-nums text-slate-900">
-                {row.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-        <Button href="/file/regime" variant="ghost" className="mt-3 self-start">
-          Change regime
-        </Button>
-      </Card>
+        <Card>
+          <h3 className="font-semibold text-slate-900">How we got there</h3>
+          <dl className="mt-3 divide-y divide-slate-100">
+            {[
+              { label: "Taxable income", value: formatINR(slab.taxable_income) },
+              { label: "Tax + surcharge", value: formatINR(slab.tax_plus_surcharge) },
+              { label: "Health & education cess", value: formatINR(slab.cess) },
+              { label: "Total tax", value: formatINR(slab.total_tax) },
+              { label: "TDS + advance tax", value: formatINR(slab.tds_and_advance_tax) },
+            ].map((row) => (
+              <div key={row.label} className="flex items-center justify-between py-2">
+                <dt className="text-sm text-slate-600">{row.label}</dt>
+                <dd className="text-sm font-semibold tabular-nums text-slate-900">
+                  {row.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <Button href="/file/regime" variant="ghost" className="mt-3 self-start">
+            Change regime
+          </Button>
+        </Card>
+      </div>
     </div>
   );
 }
@@ -569,121 +588,122 @@ function SummaryTab({
   result: ITRResult | null;
   selectedRegime: TaxRegime;
 }) {
+  const isPaid = Boolean(useDraftStore((s) => s.paidPlanId));
   const recommendedForm = useDraftStore((s) => s.recommendedForm);
 
-  if (!result) {
-    return (
-      <EmptyState
-        title="Summary not ready"
-        body="Once we have your income and deductions, you'll see a regime comparison and your filing summary here."
-        ctaHref="/file/import/documents"
-        ctaLabel={FILING_REVIEW.uploadDocumentsCta}
-      />
-    );
-  }
+  if (!result) return null;
 
   const rc = result.regime_comparison;
-  const oldPay = rc.old.net_payable;
-  const newPay = rc.new.net_payable;
+  const slab = rc[selectedRegime];
+  const netPayable = slab.net_payable ?? 0;
+  const isRefund = netPayable < 0;
   const recommended = rc.recommended_regime;
 
   return (
-    <div className="space-y-3">
-      <Card>
-        <h3 className="font-semibold text-slate-900">Old vs new regime</h3>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          {(["old", "new"] as const).map((regime) => {
-            const pay = regime === "old" ? oldPay : newPay;
-            const isRefund = pay < 0;
-            const winner = recommended === regime;
-            return (
-              <div
-                key={regime}
-                className={`rounded-2xl border p-4 text-center ${
-                  winner ? "border-primary/40 bg-primary/5 ring-2 ring-primary/15" : "border-slate-200"
-                }`}
-              >
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                  {regime === "old" ? "Old regime" : "New regime"}
-                </p>
-                <p
-                  className={`mt-1 text-xl font-bold tabular-nums ${
-                    isRefund ? "text-emerald-700" : "text-slate-900"
+    <div className="relative space-y-4">
+      {!isPaid && (
+        <PaywallOverlay 
+          title="Unlock filing companion" 
+          message="Choose a plan to view your final summary and file on the portal." 
+        />
+      )}
+      <div className={`space-y-4 ${!isPaid ? "pointer-events-none select-none opacity-40 blur-[2px]" : ""}`}>
+        <Card>
+          <h3 className="font-semibold text-slate-900">Old vs new regime</h3>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            {(["old", "new"] as const).map((regime) => {
+              const pay = rc[regime].net_payable;
+              const isRefund = pay < 0;
+              const winner = recommended === regime;
+              return (
+                <div
+                  key={regime}
+                  className={`rounded-2xl border p-4 text-center ${
+                    winner ? "border-primary/40 bg-primary/5 ring-2 ring-primary/15" : "border-slate-200"
                   }`}
                 >
-                  {isRefund ? "Refund " : ""}
-                  {formatINR(Math.abs(pay))}
-                </p>
-                {winner && (
-                  <span className="mt-1 inline-block rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-white">
-                    Lower tax
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        <p className="mt-3 text-sm text-slate-700">
-          {rc.tax_saving > 0 ? (
-            <>
-              {recommended === "old" ? "Old" : "New"} regime is lower by{" "}
-              <span className="font-semibold text-emerald-700">
-                {formatINR(rc.tax_saving)}
-              </span>{" "}
-              on your numbers.
-            </>
-          ) : (
-            "Both regimes are about the same on your numbers."
-          )}
-        </p>
-        <p className="mt-1 text-xs text-slate-500">
-          You&apos;re currently set to the {selectedRegime} regime. This is an estimate — ITD confirms the final amount when you file.
-        </p>
-        <Button href="/file/regime" variant="ghost" className="mt-2 self-start">
-          Review regime choice
-        </Button>
-      </Card>
-
-      <Card>
-        <h3 className="font-semibold text-slate-900">Filing summary</h3>
-        <p className="mt-2 text-sm text-slate-700">
-          <strong>ITR form:</strong> {result.profile.itr_form || recommendedForm}
-        </p>
-        <p className="mt-1 text-sm text-slate-700">
-          <strong>Completeness:</strong> {Math.round(result.confidence.completeness_score)}%
-          {result.confidence.filing_ready ? " · filing-ready" : " · keep going"}
-        </p>
-        {result.confidence.missing_documents.length > 0 && (
-          <p className="mt-1 text-sm text-slate-600">
-            Still missing: {result.confidence.missing_documents.join(", ")}
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    {regime === "old" ? "Old regime" : "New regime"}
+                  </p>
+                  <p
+                    className={`mt-1 text-xl font-bold tabular-nums ${
+                      isRefund ? "text-emerald-700" : "text-slate-900"
+                    }`}
+                  >
+                    {isRefund ? "Refund " : ""}
+                    {formatINR(Math.abs(pay))}
+                  </p>
+                  {winner && (
+                    <span className="mt-1 inline-block rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+                      Lower tax
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-sm text-slate-700">
+            {rc.tax_saving > 0 ? (
+              <>
+                {recommended === "old" ? "Old" : "New"} regime is lower by{" "}
+                <span className="font-semibold text-emerald-700">
+                  {formatINR(rc.tax_saving)}
+                </span>{" "}
+                on your numbers.
+              </>
+            ) : (
+              "Both regimes are about the same on your numbers."
+            )}
           </p>
-        )}
-      </Card>
+          <p className="mt-1 text-xs text-slate-500">
+            You&apos;re currently set to the {selectedRegime} regime. This is an estimate — ITD confirms the final amount when you file.
+          </p>
+          <Button href="/file/regime" variant="ghost" className="mt-2 self-start">
+            Review regime choice
+          </Button>
+        </Card>
 
-      <Card>
-        <h3 className="font-semibold text-slate-900">File on the government portal</h3>
-        <p className="mt-1 text-sm text-slate-600">
-          When your draft is ready, open the companion to copy verified values into
-          incometax.gov.in — you submit and e-verify yourself.
-        </p>
-        <Button href="/file/companion" className="mt-3 self-start">
-          Open portal companion
-        </Button>
-        <p className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-          Jump to a portal section
-        </p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {PORTAL_ITR1_SECTIONS.map((section) => (
-            <Link
-              key={section.id}
-              href={`/file/companion?section=${section.id}`}
-              className="rounded-full border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-primary/30 hover:text-primary"
-            >
-              {section.label}
-            </Link>
-          ))}
-        </div>
-      </Card>
+        <Card>
+          <h3 className="font-semibold text-slate-900">Filing summary</h3>
+          <p className="mt-2 text-sm text-slate-700">
+            <strong>ITR form:</strong> {result.profile.itr_form || recommendedForm}
+          </p>
+          <p className="mt-1 text-sm text-slate-700">
+            <strong>Completeness:</strong> {Math.round(result.confidence.completeness_score)}%
+            {result.confidence.filing_ready ? " · filing-ready" : " · keep going"}
+          </p>
+          {result.confidence.missing_documents.length > 0 && (
+            <p className="mt-1 text-sm text-slate-600">
+              Still missing: {result.confidence.missing_documents.join(", ")}
+            </p>
+          )}
+        </Card>
+
+        <Card>
+          <h3 className="font-semibold text-slate-900">File on the government portal</h3>
+          <p className="mt-1 text-sm text-slate-600">
+            When your draft is ready, open the companion to copy verified values into
+            incometax.gov.in — you submit and e-verify yourself.
+          </p>
+          <Button href="/file/companion" className="mt-3 self-start">
+            Open portal companion
+          </Button>
+          <p className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+            Jump to a portal section
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {PORTAL_ITR1_SECTIONS.map((section) => (
+              <Link
+                key={section.id}
+                href={`/file/companion?section=${section.id}`}
+                className="rounded-full border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-primary/30 hover:text-primary"
+              >
+                {section.label}
+              </Link>
+            ))}
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }
@@ -695,6 +715,7 @@ function ReconcileHero({
   result: ITRResult | null;
   selectedRegime: TaxRegime;
 }) {
+  const isPaid = Boolean(useDraftStore((s) => s.paidPlanId));
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
   const income = useDraftStore((s) => s.income);
   const mismatchResolved = useDraftStore((s) => s.mismatchResolved);
@@ -713,56 +734,85 @@ function ReconcileHero({
     [connectedConnectors, income.grossSalary, income.tds, income.fdInterest, mismatchResolved]
   );
 
-  const slab = result?.regime_comparison[selectedRegime];
+  const rc = result?.regime_comparison;
+  const slab = rc?.[selectedRegime];
   const netPayable = slab?.net_payable ?? 0;
   const isRefund = netPayable < 0;
   const hasResult = Boolean(result && slab);
   const openItems = rowSummary.attention + rowSummary.missing;
+  const regimeSavings =
+    rc && rc.tax_saving > 0
+      ? `${rc.recommended_regime === "old" ? "Old" : "New"} regime saves ${formatINR(
+          rc.tax_saving
+        )} on your numbers.`
+      : null;
 
   return (
     <Card className="overflow-hidden bg-gradient-to-br from-white to-slate-50/80">
       <div className="grid gap-4 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] sm:items-center">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-            {FILING_REVIEW.estimateLabel(selectedRegime)}
+            {selectedRegime === "new" ? "New regime" : "Old regime"} · estimate
           </p>
           {hasResult ? (
-            <p
-              className={`mt-1 text-3xl font-bold tabular-nums ${
-                isRefund ? "text-emerald-700" : "text-slate-900"
-              }`}
-            >
-              {isRefund ? "Refund " : ""}
-              {formatINR(Math.abs(netPayable))}
-            </p>
+            <div className="mt-1 flex items-center gap-2">
+              <p
+                className={`text-3xl font-bold tabular-nums ${
+                  isRefund ? "text-emerald-700" : "text-slate-900"
+                }`}
+              >
+                {isRefund ? "Estimated refund " : "Estimated tax to pay "}
+                <span className={!isPaid ? "select-none opacity-70 blur-[5px]" : ""}>
+                  {formatINR(Math.abs(netPayable))}
+                </span>
+              </p>
+              {!isPaid && (
+                <span className="flex items-center gap-1 rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-bold uppercase text-slate-500">
+                  <Lock className="size-3" /> Locked
+                </span>
+              )}
+            </div>
           ) : (
             <p className="mt-1 text-2xl font-bold text-slate-400">
               Add income to see your estimate
             </p>
           )}
+          {regimeSavings && (
+            <p className="mt-1 text-sm font-medium text-emerald-700">{regimeSavings}</p>
+          )}
           <p className="mt-1 text-xs text-slate-500">
-            {FILING_REVIEW.estimateDisclaimer}
+            An estimate, not a promise — the CPC (Centralised Processing Centre) decides
+            your final refund after you file and e-verify on incometax.gov.in.
           </p>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white/80 p-3.5">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Your checklist
+            Reconciliation
           </p>
           <p className="mt-1 text-sm text-slate-700">
             {openItems === 0 ? (
               <span className="font-semibold text-emerald-700">
-                {FILING_REVIEW.allClear}
+                All checked lines reconcile.
               </span>
             ) : (
-              <span className="font-semibold text-amber-700">
-                {FILING_REVIEW.actionRequired(openItems)}
-              </span>
+              <>
+                <span className="font-semibold text-amber-700">{openItems}</span> line
+                {openItems === 1 ? "" : "s"} need a look before you file.
+              </>
             )}
           </p>
+          <p className="mt-1 text-xs text-slate-500">
+            {rowSummary.matched} matched · {rowSummary.attention} attention ·{" "}
+            {rowSummary.missing} to add
+          </p>
           {openItems > 0 && (
-            <p className="mt-1 text-xs text-slate-500">
-              {FILING_REVIEW.actionRequiredSubtext}
-            </p>
+            <Link
+              href="/file/import/mismatch"
+              className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+            >
+              Fix mismatches
+              <ArrowRight className="size-3.5" aria-hidden />
+            </Link>
           )}
         </div>
       </div>
@@ -803,10 +853,7 @@ function ReviewDashboard() {
 
   return (
     <FilingLayout mirrorText="This dashboard is your reconcile-and-review hub. Confirm imports, income, and deductions, then compare regimes before you file on the portal.">
-      <ScreenTitle
-        title={FILING_REVIEW.title}
-        subtitle={FILING_REVIEW.subtitle}
-      />
+      <ScreenTitle title="Your filing snapshot" />
 
       <ReconcileHero result={effectiveResult} selectedRegime={selectedRegime} />
 
@@ -876,7 +923,7 @@ export default function ReviewPage() {
     <Suspense
       fallback={
         <FilingLayout>
-          <ScreenTitle title={FILING_REVIEW.title} subtitle={FILING_REVIEW.loadingSubtitle} />
+          <ScreenTitle title="Your filing snapshot" subtitle="Loading your draft…" />
           <SkeletonRows />
         </FilingLayout>
       }

@@ -13,13 +13,13 @@ export function ScreenTitle({
   badge?: ReactNode;
 }) {
   return (
-    <div className="mb-4 min-w-0 sm:mb-5">
+    <div className="mb-2 min-w-0 sm:mb-3">
       {badge}
-      <h1 className="text-[length:var(--text-headline)] font-semibold tracking-[-0.015em] text-slate-900">
+      <h1 className="text-xl sm:text-2xl font-semibold tracking-[-0.015em] text-slate-900">
         {title}
       </h1>
       {subtitle && (
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:mt-2.5">
+        <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:mt-1.5">
           {subtitle}
         </p>
       )}
@@ -60,7 +60,7 @@ export function Button({
   children: ReactNode;
   href?: string;
   onClick?: () => void;
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: "primary" | "secondary" | "ghost" | "outline";
   disabled?: boolean;
   className?: string;
 }) {
@@ -73,6 +73,8 @@ export function Button({
       "border border-slate-200/80 bg-white text-slate-800 shadow-sm hover:bg-slate-50 hover:shadow-md",
     ghost:
       "border border-transparent text-muted-foreground hover:bg-slate-100 hover:text-slate-800 px-3 py-1.5 font-medium",
+    outline:
+      "border-2 border-blue-600/20 bg-transparent text-blue-700 hover:bg-blue-50/50 hover:border-blue-600/30",
   };
   const cls = `${base} ${variants[variant]} ${className}`;
 
@@ -94,9 +96,11 @@ export function Button({
 export function Banner({
   children,
   variant = "info",
+  className = "",
 }: {
   children: ReactNode;
   variant?: "info" | "success" | "warning" | "critical";
+  className?: string;
 }) {
   const styles = {
     info: "bg-blue-50/80 text-blue-900 border-blue-100",
@@ -106,7 +110,7 @@ export function Banner({
   };
   return (
     <div
-      className={`mb-4 rounded-2xl border px-4 py-3.5 text-sm leading-relaxed ${styles[variant]}`}
+      className={`mb-4 rounded-2xl border px-4 py-3.5 text-sm leading-relaxed ${styles[variant]} ${className}`}
     >
       {children}
     </div>
@@ -255,12 +259,14 @@ export function TextInput({
 }
 
 export function SelectInput({
+  label,
   value,
   onChange,
   options,
   onFocus,
   onBlur,
 }: {
+  label?: string;
   value: string;
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
@@ -268,19 +274,22 @@ export function SelectInput({
   onBlur?: () => void;
 }) {
   return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      className="w-full rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
-    >
-      {options.map((o) => (
-        <option key={o.value} value={o.value}>
-          {o.label}
-        </option>
-      ))}
-    </select>
+    <div className="w-full">
+      {label && <label className="mb-1.5 block text-sm font-semibold text-slate-800">{label}</label>}
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        className="w-full rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
 

@@ -8,7 +8,7 @@ import { draftSnapshotForLog, logSessionEvent } from "@/lib/sessionLogClient";
 
 const DEBOUNCE_MS = 5000;
 
-export function SessionBootstrap() {
+export function SessionBootstrap({ session }: { session: { name: string; email: string } | null }) {
   const resetDraft = useDraftStore((s) => s.reset);
   const clearProfile = useProfileStore((s) => s.clearProfile);
   const draft = useDraftStore();
@@ -19,6 +19,14 @@ export function SessionBootstrap() {
     const isFresh = ensureFreshBrowserSession();
     if (isFresh) {
       resetDraft();
+    }
+
+    if (session) {
+      useProfileStore.getState().setProfile({
+        name: session.name,
+        email: session.email,
+      });
+    } else {
       clearProfile();
     }
 

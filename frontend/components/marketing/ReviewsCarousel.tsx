@@ -3,42 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { TESTIMONIALS, TESTIMONIAL_DISCLOSURE } from "@/lib/content/testimonials";
-import { SECTION_PADDING, TYPOGRAPHY_SCALE } from "@/lib/design/layout";
-import { Star, CheckCircle2 } from "lucide-react";
+import { ASSESSMENT_YEAR } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
-
-function Avatar({ name }: { name: string }) {
-  return (
-    <span
-      className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary"
-      aria-hidden
-    >
-      {getInitials(name)}
-    </span>
-  );
-}
 
 function StarRow({ rating }: { rating: number }) {
   return (
-    <div className="flex gap-0.5">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i}
-          className={cn(
-            "size-4",
-            i < rating ? "fill-amber-400 text-amber-400" : "text-muted"
-          )}
-        />
-      ))}
+    <div className="text-[#74A81F] text-[13px] tracking-[1px] mb-3">
+      {"★".repeat(rating)}{"☆".repeat(5 - rating)}
     </div>
   );
 }
@@ -53,39 +24,30 @@ function ReviewCard({
   return (
     <article
       className={cn(
-        "flex min-h-[260px] w-[min(100%,calc(100vw-2.5rem))] shrink-0 snap-start flex-col rounded-2xl border bg-card p-5 shadow-sm sm:w-[min(100%,340px)]",
-        active ? "border-primary/40 ring-2 ring-primary/15" : "border-border/80"
+        "flex h-full flex-col rounded-[16px] border bg-white p-5 transition-all duration-300",
+        active ? "border-[#0e5f63]/50 shadow-[0_8px_24px_-8px_rgba(29,78,216,0.2)]" : "border-[#E6E8EC]"
       )}
     >
-      <div className="flex items-center justify-between gap-3">
-        <Avatar name={testimonial.name} />
-        <StarRow rating={testimonial.rating} />
-      </div>
-
-      <blockquote className="mt-4 flex-1 text-base leading-relaxed text-foreground">
+      <StarRow rating={testimonial.rating} />
+      <p className="text-[13.5px] text-[#2B3344] leading-[1.55] mb-4 flex-1 min-h-[78px]">
         &ldquo;{testimonial.quote}&rdquo;
-      </blockquote>
-
-      <footer className="mt-5 border-t border-border/60 pt-4">
-        <p className="text-sm font-semibold text-foreground">{testimonial.name}</p>
-        <p className="mt-0.5 text-sm text-muted-foreground">
-          {testimonial.role}, {testimonial.city}
-        </p>
-        {(testimonial.plan || testimonial.outcomeTag) && (
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            {testimonial.plan && (
-              <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
-                {testimonial.plan}
-              </span>
-            )}
-            {testimonial.outcomeTag && (
-              <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
-                {testimonial.outcomeTag}
-              </span>
-            )}
-          </div>
+      </p>
+      <div className="mb-2.5">
+        <p className="text-[13px] font-semibold text-[#0B1220]">{testimonial.name}</p>
+        <p className="text-[12px] text-[#6B7280]">{testimonial.role}, {testimonial.city}</p>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {testimonial.plan && (
+          <span className="rounded-[6px] bg-[#EEF3FF] px-2 py-0.5 text-[10.5px] font-semibold text-[#0e5f63]">
+            {testimonial.plan}
+          </span>
         )}
-      </footer>
+        {testimonial.outcomeTag && (
+          <span className="rounded-[6px] bg-[#EEF3FF] px-2 py-0.5 text-[10.5px] font-semibold text-[#0e5f63]">
+            {testimonial.outcomeTag}
+          </span>
+        )}
+      </div>
     </article>
   );
 }
@@ -106,46 +68,48 @@ export function ReviewsCarousel() {
     if (!container) return;
     const card = container.children[index] as HTMLElement | undefined;
     if (!card) return;
-    const delta =
-      card.getBoundingClientRect().left - container.getBoundingClientRect().left;
+    const delta = card.getBoundingClientRect().left - container.getBoundingClientRect().left;
     container.scrollBy({ left: delta, behavior: "smooth" });
   }, [index]);
 
   return (
-    <section id="trust" className={cn("overflow-hidden px-4 sm:px-6 lg:px-8", SECTION_PADDING)}>
-      <div className="mx-auto max-w-6xl">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <section id="trust" className="section-pad-lg px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1180px]">
+        {/* Header row */}
+        <div className="flex items-flex-end justify-between mb-9 flex-wrap gap-3.5">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-              Reviews
-            </p>
-            <h2
-              className={`mt-1 font-heading font-bold tracking-tight text-foreground ${TYPOGRAPHY_SCALE.headline}`}
-            >
-              What filers are saying this tax season
+            <span className="eyebrow-label">Reviews</span>
+            <h2 className="font-manrope mt-2.5 text-[clamp(24px,3vw,32px)] font-bold tracking-[-0.02em] text-[#0B1220]">
+              What beta filers are saying
             </h2>
-            <p className={`mt-2 max-w-xl text-muted-foreground ${TYPOGRAPHY_SCALE.caption}`}>
-              Real outcomes from salaried professionals, freelancers, and founders filing
-              before the deadline.
-            </p>
           </div>
-          <p className={`text-muted-foreground sm:max-w-xs sm:text-right ${TYPOGRAPHY_SCALE.caption}`}>
-            {TESTIMONIAL_DISCLOSURE}
-            <CheckCircle2 className="ml-1 inline size-3.5 text-primary" aria-hidden />
+          <p className="text-[12.5px] text-[#9CA3AF] text-right self-end max-sm:text-left">
+            {TESTIMONIAL_DISCLOSURE} · {ASSESSMENT_YEAR}
           </p>
         </div>
 
-        <div
-          ref={scrollRef}
-          className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {TESTIMONIALS.map((t, i) => (
+        {/* Desktop 4-col grid (lg+), mobile scroll */}
+        <div className="hidden lg:grid lg:grid-cols-4 gap-4.5">
+          {TESTIMONIALS.slice(0, 4).map((t, i) => (
             <ReviewCard key={t.id} testimonial={t} active={i === index} />
           ))}
         </div>
 
-        <div className="mt-6 flex items-center justify-between gap-4">
-          <div className="flex gap-2">
+        {/* Mobile horizontal scroll */}
+        <div
+          ref={scrollRef}
+          className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 lg:hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {TESTIMONIALS.map((t, i) => (
+            <div key={t.id} className="w-[min(100%,17rem)] shrink-0 snap-start">
+              <ReviewCard testimonial={t} active={i === index} />
+            </div>
+          ))}
+        </div>
+
+        {/* Dots + read all */}
+        <div className="mt-5 flex items-center justify-between gap-3 lg:hidden">
+          <div className="flex gap-1.5">
             {TESTIMONIALS.map((t, i) => (
               <button
                 key={t.id}
@@ -153,16 +117,19 @@ export function ReviewsCarousel() {
                 aria-label={`Show review ${i + 1}`}
                 onClick={() => setIndex(i)}
                 className={cn(
-                  "h-2.5 min-w-[10px] rounded-full transition-all",
-                  i === index ? "w-6 bg-primary" : "w-2.5 bg-muted-foreground/25"
+                  "h-2 min-w-[8px] rounded-full transition-all",
+                  i === index ? "w-5 bg-[#0e5f63]" : "w-2 bg-[#6B7280]/25"
                 )}
               />
             ))}
           </div>
-          <Link
-            href="/reviews"
-            className={`font-semibold text-primary hover:underline ${TYPOGRAPHY_SCALE.body}`}
-          >
+          <Link href="/reviews" className="text-[12.5px] font-semibold text-[#0e5f63] hover:underline">
+            Read all reviews →
+          </Link>
+        </div>
+
+        <div className="mt-5 hidden justify-end lg:flex">
+          <Link href="/reviews" className="text-[12.5px] font-semibold text-[#0e5f63] hover:underline">
             Read all reviews →
           </Link>
         </div>

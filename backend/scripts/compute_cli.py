@@ -18,9 +18,11 @@ ENGINE_DIR = Path(__file__).resolve().parent.parent / "engine"
 sys.path.insert(0, str(ENGINE_DIR))
 
 from models import (  # noqa: E402
+    BroughtForwardLossesInput,
     BusinessInput,
     CapitalGainsInput,
     DeductionsInput,
+    DepreciationBlockInput,
     DocumentFlags,
     HousePropertyInput,
     OtherIncomeInput,
@@ -41,19 +43,38 @@ def _build(cls, data: dict | None) -> Any:
     return cls(**{k: v for k, v in data.items() if k in field_names})
 
 
+def _build_business(data: dict | None) -> BusinessInput:
+    biz = _build(BusinessInput, data)
+    if data and isinstance(data.get("depreciation_blocks"), list):
+        biz.depreciation_blocks = [
+            _build(DepreciationBlockInput, b)
+            for b in data["depreciation_blocks"]
+            if isinstance(b, dict) and "block" in b and "rate" in b
+        ]
+    return biz
+
+
 def dict_to_user_input(data: dict) -> UserInput:
+    house_properties = [
+        _build(HousePropertyInput, p)
+        for p in data.get("house_properties", [])
+        if isinstance(p, dict)
+    ]
     return UserInput(
         age=int(data["age"]),
         residential_status=data.get("residential_status", "resident"),
-        assessment_year=data.get("assessment_year", "2025-26"),
+        assessment_year=data.get("assessment_year", "2026-27"),
         mode=data.get("mode", "estimate"),
+        late_filing=data.get("late_filing", False),
         salary=_build(SalaryInput, data.get("salary")),
         house_property=_build(HousePropertyInput, data.get("house_property")),
+        house_properties=house_properties,
         other_income=_build(OtherIncomeInput, data.get("other_income")),
         capital_gains=_build(CapitalGainsInput, data.get("capital_gains")),
+        carry_forward=_build(BroughtForwardLossesInput, data.get("carry_forward")),
         deductions=_build(DeductionsInput, data.get("deductions")),
         taxes_paid=_build(TaxPaidInput, data.get("taxes_paid")),
-        business=_build(BusinessInput, data.get("business")),
+        business=_build_business(data.get("business")),
         profile_flags=_build(ProfileFlags, data.get("profile_flags")),
         documents=_build(DocumentFlags, data.get("documents")),
     )

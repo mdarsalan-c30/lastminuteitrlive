@@ -36,8 +36,9 @@ export default function MismatchPage() {
       />
 
       {!mismatchResolved && (
-        <Banner variant="critical">
-          Submit stays disabled until critical mismatches are resolved.
+        <Banner variant="info">
+          Mismatches don&apos;t block you — you file on incometax.gov.in yourself. Clearing
+          them now just means fewer refund delays and notices later.
         </Banner>
       )}
 
@@ -59,11 +60,16 @@ export default function MismatchPage() {
           </RiskBadge>
           <strong className="text-sm">Salary</strong>
         </div>
-        <div className="flex flex-wrap gap-3 text-xs text-slate-600 mb-3">
+        <div className="flex flex-wrap gap-3 text-xs text-slate-600 mb-2">
           <span>Form 16: {formatINR(income.grossSalary)}</span>
           <span>AIS: ₹12,15,000</span>
           <span>Draft: {formatINR(income.grossSalary)}</span>
         </div>
+        <p className="text-xs text-slate-600 mb-3">
+          AIS is what the tax department already has on record; Form 16 is your
+          employer&apos;s figure. Keep the one your proof backs up, and raise feedback on
+          the other.
+        </p>
         <div className="flex flex-wrap gap-2">
           <Button href="/file/import/mismatch/salary" variant="primary" className="text-xs px-3 py-1.5">
             Fix now

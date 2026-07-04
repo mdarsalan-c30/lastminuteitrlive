@@ -47,21 +47,25 @@ def compute_capital_gains(cg: CapitalGainsInput) -> dict:
     stcl_remaining = max(0.0, stcl_remaining - stcg_other)
 
     # ── Step 2: Residual STCL set off against LTCG ──
-    ltcg_112a_net = max(0.0, ltcg_112a - stcl_remaining)
-    stcl_remaining = max(0.0, stcl_remaining - ltcg_112a)
-
+    # Taxpayer-beneficial ordering (Sec 70 does not mandate an order):
+    # absorb against LTCG-other (20%) BEFORE LTCG-112A (12.5%), because
+    # 112A also enjoys the ₹1.25L exemption — burning losses there wastes
+    # both the lower rate and the exemption.
     ltcg_other_net = max(0.0, ltcg_other - stcl_remaining)
     stcl_remaining = max(0.0, stcl_remaining - ltcg_other)
 
-    # ── Step 3: Set off LTCL against LTCG only ──
-    ltcl_remaining = ltcl
-    ltcg_112a_absorb = min(ltcl_remaining, ltcg_112a_net)
-    ltcg_112a_net = max(0.0, ltcg_112a_net - ltcg_112a_absorb)
-    ltcl_remaining = max(0.0, ltcl_remaining - ltcg_112a_absorb)
+    ltcg_112a_net = max(0.0, ltcg_112a - stcl_remaining)
+    stcl_remaining = max(0.0, stcl_remaining - ltcg_112a)
 
+    # ── Step 3: Set off LTCL against LTCG only (same beneficial order) ──
+    ltcl_remaining = ltcl
     ltcg_other_absorb = min(ltcl_remaining, ltcg_other_net)
     ltcg_other_net = max(0.0, ltcg_other_net - ltcg_other_absorb)
     ltcl_remaining = max(0.0, ltcl_remaining - ltcg_other_absorb)
+
+    ltcg_112a_absorb = min(ltcl_remaining, ltcg_112a_net)
+    ltcg_112a_net = max(0.0, ltcg_112a_net - ltcg_112a_absorb)
+    ltcl_remaining = max(0.0, ltcl_remaining - ltcg_112a_absorb)
 
     # ── Step 4: Apply LTCG 112A basic exemption ──
     ltcg_112a_taxable = max(0.0, ltcg_112a_net - LTCG_112A_EXEMPTION)

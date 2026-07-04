@@ -44,7 +44,7 @@ function FileWelcomePage() {
       setName(landingName);
       setFilingMode("estimate");
       router.replace(
-        `/file/onboarding/eligibility?step=about-you&name=${encodeURIComponent(landingName)}`
+        `/file/start?name=${encodeURIComponent(landingName)}`
       );
     }
   }, [
@@ -78,7 +78,7 @@ function FileWelcomePage() {
             <Button href="/file/import/documents?source=form16" className="w-full">
               Upload Form 16
             </Button>
-            <Button href="/file/onboarding/eligibility?step=about-you" variant="secondary" className="w-full">
+            <Button href="/file/start" variant="secondary" className="w-full">
               {FILING_START.primaryCta}
             </Button>
             <Button href="/file/companion?demo=1" variant="ghost" className="w-full">

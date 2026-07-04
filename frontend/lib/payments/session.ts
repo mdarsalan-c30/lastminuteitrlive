@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import type { PlanId } from "./plans";
+import { CHECKOUT_PLAN_IDS, type PlanId } from "./plans";
 
 export const PAYMENT_SESSION_COOKIE = "itr_payment_session";
 
@@ -13,6 +13,7 @@ export interface PaymentSessionPayload {
   verifiedAt: number;
   mock: boolean;
   exp: number;
+  sessionId?: string;
 }
 
 export interface PaymentSessionPublic {
@@ -22,9 +23,10 @@ export interface PaymentSessionPublic {
   paymentId: string;
   verifiedAt: number;
   mock: boolean;
+  sessionId?: string;
 }
 
-const VALID_PLAN_IDS: PlanId[] = ["free", "diy", "ai_smart", "ca"];
+const VALID_PLAN_IDS: PlanId[] = CHECKOUT_PLAN_IDS;
 
 function getSessionSecret(): string {
   const secret =
@@ -110,6 +112,7 @@ export function verifyPaymentSessionToken(
     paymentId: payload.paymentId,
     verifiedAt: payload.verifiedAt,
     mock: payload.mock,
+    sessionId: payload.sessionId,
   };
 }
 
@@ -118,6 +121,7 @@ export function buildPaymentSessionPayload(input: {
   orderId: string;
   paymentId: string;
   mock: boolean;
+  sessionId?: string;
 }): Omit<PaymentSessionPayload, "exp"> {
   return {
     planId: input.planId,
@@ -125,6 +129,7 @@ export function buildPaymentSessionPayload(input: {
     paymentId: input.paymentId,
     verifiedAt: Date.now(),
     mock: input.mock,
+    sessionId: input.sessionId,
   };
 }
 

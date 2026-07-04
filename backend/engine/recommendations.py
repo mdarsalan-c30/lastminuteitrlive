@@ -102,6 +102,23 @@ def generate_recommendations(
             benefit=d80d_gap * marginal_rate * 1.04,
         ))
 
+    # ── 80TTA for non-seniors — most-missed deduction ──
+    if not profile.is_senior and is_old_better:
+        savings_int = user.other_income.savings_account_interest
+        tta_gap = min(10_000, savings_int) - deductions.deduction_80tta_ttb
+        if tta_gap > 0:
+            recs.append(_rec(
+                "80TTA_SAVINGS",
+                f"Savings account interest up to ₹10,000 is deductible under Section "
+                f"80TTA. You can claim ₹{tta_gap:,.0f} more — this is one of the most "
+                "commonly missed deductions.",
+                "Section 80TTA",
+                "green",
+                ["Bank interest certificate / passbook"],
+                False,
+                benefit=tta_gap * marginal_rate * 1.04,
+            ))
+
     # ── 80TTB for seniors ──
     if profile.is_senior and is_old_better:
         interest = user.other_income.savings_account_interest + user.other_income.fd_interest
@@ -196,8 +213,9 @@ def generate_recommendations(
         if not business.presumptive_eligible:
             recs.append(_rec(
                 "PRESUMPTIVE_INELIGIBLE",
-                "Presumptive taxation (44AD/44ADA) may not apply — check turnover/receipt "
-                "limits (₹2Cr/₹50L) and cash receipt rules (>5% cash disqualifies).",
+                "Presumptive taxation (44AD/44ADA) may not apply — base limits are "
+                "₹2Cr turnover / ₹50L receipts, enhanced to ₹3Cr / ₹75L when cash "
+                "receipts are 5% or less. Above the limit you must maintain books (ITR-3).",
                 "Section 44AD/44ADA",
                 "yellow",
                 ["Bank statements", "GST returns if applicable"],
@@ -223,6 +241,71 @@ def generate_recommendations(
                 ["Professional receipts summary", "Bank statements"],
                 False,
             ))
+
+    # ── Brought-forward losses applied this year ──
+    if income.bf_loss_set_off_total > 0:
+        recs.append(_rec(
+            "BF_LOSS_APPLIED",
+            f"₹{income.bf_loss_set_off_total:,.0f} of prior-year losses were set off "
+            "this year (Schedule BFLA). Keep last year's ITR acknowledgment and "
+            "Schedule CFL — the ITD matches these figures.",
+            "Sections 70–74 / Schedule CFL",
+            "green",
+            ["Prior-year ITR acknowledgment", "Schedule CFL"],
+            False,
+            benefit=income.bf_loss_set_off_total * 0.2,
+        ))
+    else:
+        cf = user.carry_forward
+        has_cg = any([
+            user.capital_gains.stcg_111a, user.capital_gains.ltcg_112a,
+            user.capital_gains.stcg_other, user.capital_gains.ltcg_other,
+        ])
+        has_hp = (
+            user.house_property.property_type != "none"
+            or len(user.house_properties) > 0
+        )
+        has_biz = biz.business_type != "none"
+        no_bf = not any([
+            cf.hp_loss, cf.stcl, cf.ltcl, cf.business_loss,
+            cf.unabsorbed_depreciation,
+        ])
+        if no_bf and (has_cg or has_hp or has_biz):
+            recs.append(_rec(
+                "CHECK_PRIOR_LOSSES",
+                "Check last year's ITR Schedule CFL for unused capital, house-property, "
+                "or business losses. Carried-forward losses often cut this year's tax "
+                "more than any new deduction.",
+                "Schedule CFL / BFLA",
+                "yellow",
+                ["Prior-year ITR acknowledgment"],
+                True,
+            ))
+
+    # ── Depreciation on books cases ──
+    if income.depreciation_allowed > 0:
+        recs.append(_rec(
+            "DEPRECIATION_CLAIMED",
+            f"Depreciation of ₹{income.depreciation_allowed:,.0f} was allowed under "
+            "Section 32 (WDV block method). Keep the depreciation schedule and "
+            "asset invoices for assessment.",
+            "Section 32",
+            "green",
+            ["Depreciation schedule", "Asset purchase invoices"],
+            False,
+            benefit=income.depreciation_allowed * 0.3,
+        ))
+    elif biz.business_type == "regular_books" and not biz.depreciation_blocks:
+        recs.append(_rec(
+            "DEPRECIATION_MISSING",
+            "Books cases can claim depreciation on business assets (computers 40%, "
+            "plant 15%, furniture 10%). Enter opening WDV from last year's schedule "
+            "if you own equipment used for work.",
+            "Section 32",
+            "yellow",
+            ["Prior-year depreciation schedule"],
+            True,
+        ))
 
     # ── Block fake expense patterns ──
     if biz.business_type == "regular_books" and biz.actual_expenses > biz.actual_gross_receipts * 0.9:

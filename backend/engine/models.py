@@ -8,7 +8,7 @@ Conventions
 - All monetary amounts are in INR (₹), full rupees (no paise), as floats.
 - None means "not provided / not applicable". The engine treats None as 0
   where a zero makes sense, and raises ValueError where the field is mandatory.
-- AY is fixed to 2025-26 (FY 2024-25) for this version.
+- AY defaults to 2026-27 (FY 2025-26); rule constants per AY live in rulesets.py.
 """
 
 from __future__ import annotations
@@ -107,6 +107,47 @@ class DeductionsInput:
 
 
 @dataclass
+class BroughtForwardLossesInput:
+    """
+    Losses carried forward from earlier assessment years (Schedule CFL/BFLA).
+
+    Set-off rules implemented (Sec 70–74, 32(2), 80):
+      hp_loss       → only against current-year house property income (8 AYs)
+      stcl          → against any capital gain, STCG or LTCG (8 AYs)
+      ltcl          → against LTCG only (8 AYs)
+      business_loss → against business income only, not salary (8 AYs)
+      unabsorbed_depreciation → against business income first (no time limit);
+                     remainder carried, non-business set-off left to CA review in V1
+
+    Sec 80 gate: stcl/ltcl/business_loss are claimable only if the return of
+    the loss year was filed by the due date. hp_loss and unabsorbed
+    depreciation are exempt from this rule.
+    """
+    hp_loss: float = 0.0
+    stcl: float = 0.0
+    ltcl: float = 0.0
+    business_loss: float = 0.0
+    unabsorbed_depreciation: float = 0.0
+    prior_return_filed_on_time: bool = True
+
+
+@dataclass
+class DepreciationBlockInput:
+    """
+    One WDV block for ITR-3 books cases (Sec 32, Rule 5 Appendix I rates).
+
+    additions_under_180d get half the block rate in the year of purchase.
+    sale_proceeds reduce the block before depreciation is computed.
+    """
+    block: str                              # e.g. "plant_machinery_15"
+    rate: float                             # 0.15, 0.40, 0.10, 0.25 ...
+    opening_wdv: float = 0.0
+    additions_180d_plus: float = 0.0        # assets put to use ≥ 180 days
+    additions_under_180d: float = 0.0       # assets put to use < 180 days
+    sale_proceeds: float = 0.0
+
+
+@dataclass
 class TaxPaidInput:
     tds_salary: float = 0.0             # Form 16 Part-A
     tds_other: float = 0.0              # 26AS: FD TDS, dividend TDS, etc.
@@ -127,9 +168,12 @@ class BusinessInput:
     digital_turnover_pct: float = 0.0          # share eligible for 6% rate (44AD)
     gross_professional_receipts: float = 0.0   # 44ADA
     actual_gross_receipts: float = 0.0         # ITR-3 books — revenue
-    actual_expenses: float = 0.0               # ITR-3 books — expenses
+    actual_expenses: float = 0.0               # ITR-3 books — expenses (excl. depreciation)
     profession_name: str = ""                  # e.g. doctor, lawyer
-    cash_receipts_pct: float = 0.0             # >5% cash → 44AD/44ADA not allowed
+    cash_receipts_pct: float = 0.0             # ≤5% cash → enhanced 44AD/44ADA limits
+    # ITR-3 books: WDV depreciation blocks (Sec 32). Depreciation is computed
+    # by the engine and deducted from books profit.
+    depreciation_blocks: list[DepreciationBlockInput] = field(default_factory=list)
 
 
 @dataclass
@@ -161,14 +205,24 @@ class UserInput:
     # Identity
     age: int
     residential_status: Literal["resident", "nri", "rnor"] = "resident"
-    assessment_year: str = "2025-26"
+    assessment_year: str = "2026-27"
     mode: Literal["estimate", "exact"] = "estimate"
+    late_filing: bool = False
 
     # Income blocks
     salary: SalaryInput = field(default_factory=lambda: SalaryInput(gross_salary=0, basic_salary=0))
     house_property: HousePropertyInput = field(default_factory=HousePropertyInput)
+    # Multi-property portfolio (ITR-2/3). When non-empty this REPLACES
+    # house_property: up to 2 self-occupied get NIL annual value with a
+    # combined ₹2L interest cap; head-level loss set-off cap applies once.
+    house_properties: list[HousePropertyInput] = field(default_factory=list)
     other_income: OtherIncomeInput = field(default_factory=OtherIncomeInput)
     capital_gains: CapitalGainsInput = field(default_factory=CapitalGainsInput)
+
+    # Losses brought forward from earlier years (Schedule CFL)
+    carry_forward: BroughtForwardLossesInput = field(
+        default_factory=BroughtForwardLossesInput
+    )
 
     # Deductions
     deductions: DeductionsInput = field(default_factory=DeductionsInput)
@@ -237,6 +291,14 @@ class IncomeHeadsResult:
     gross_total_income: float            # before deductions
     carry_forward_loss_set_off: float
 
+    # Brought-forward losses applied this year (Schedule BFLA view)
+    bf_loss_set_off_total: float = 0.0
+    # Losses going out to next year: {"hp": x, "stcl": x, "ltcl": x,
+    #  "business": x, "unabsorbed_depreciation": x}
+    losses_carried_forward: dict = field(default_factory=dict)
+    # Depreciation allowed against books profit (Sec 32)
+    depreciation_allowed: float = 0.0
+
 
 @dataclass
 class DeductionsResult:
@@ -275,6 +337,10 @@ class SlabTaxResult:
     total_tax: float                     # after cess
     tds_and_advance_tax: float
     net_payable: float                   # positive = pay, negative = refund
+    late_filing_fee: float = 0.0
+    # Rule-attribution trace: [{"rule": "rebate_87a.applied", "params": {...}}].
+    # The explanation layer (doc 51) renders only from these entries.
+    trace: list = field(default_factory=list)
 
 
 @dataclass

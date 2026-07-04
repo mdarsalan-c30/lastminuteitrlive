@@ -74,6 +74,10 @@ def compute_net_salary(
     std_deduction = (
         NEW_STANDARD_DEDUCTION if regime == "new" else OLD_STANDARD_DEDUCTION
     )
+    # Standard deduction cannot exceed the salary it is deducted from —
+    # report the effective amount so downstream regime deltas are not
+    # phantom-applied for business-only filers with zero salary.
+    std_deduction = min(std_deduction, salary.gross_salary + salary.perquisites_taxable)
 
     if regime == "old":
         hra_exemption = compute_hra_exemption(

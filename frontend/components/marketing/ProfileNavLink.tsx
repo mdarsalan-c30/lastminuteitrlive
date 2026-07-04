@@ -15,7 +15,7 @@ export function ProfileNavLink({ className }: { className?: string }) {
 
   return (
     <Link
-      href="/profile"
+      href="/file/profile"
       className={cn(
         "flex size-7 items-center justify-center rounded-full bg-primary/10 text-[11px] font-semibold text-primary transition-colors hover:bg-primary/20 sm:size-8 sm:text-xs",
         className

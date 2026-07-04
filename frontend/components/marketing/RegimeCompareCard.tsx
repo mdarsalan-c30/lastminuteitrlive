@@ -10,6 +10,7 @@ import { useTaxCompute } from "@/lib/hooks/useTaxCompute";
 import type { UserInput } from "@/lib/engine/types";
 import {
   describeNetPayable,
+  regimeSavingsHeadline,
   summarizeRegimeComparison,
   summarizeRegimeComparisonFallback,
 } from "@/lib/regimeDisplay";
@@ -20,8 +21,8 @@ import { CheckCircle2, TrendingDown } from "lucide-react";
 
 const DEFAULT_SALARY = 1_200_000;
 const SALARY_MIN = 300_000;
-const SALARY_MAX = 50_000_000;
-const SALARY_STEP = 100_000;
+const SALARY_MAX = 5_000_000;
+const SALARY_STEP = 50_000;
 const DEFAULT_AGE = 32;
 const DEFAULT_FILING_MODE = "estimate";
 const DEFAULT_PROFILE = {
@@ -59,18 +60,6 @@ type CompareEngineSource = "api" | "fallback";
 function formatSalaryLakhs(amount: number): string {
   const lakhs = amount / 100_000;
   return lakhs >= 10 ? `₹${lakhs.toFixed(0)}L` : `₹${lakhs.toFixed(1)}L`;
-}
-
-function formatSalaryAmount(amount: number): string {
-  if (amount >= 10_000_000) {
-    const crores = amount / 10_000_000;
-    const formatted =
-      crores >= 10 || Number.isInteger(crores)
-        ? crores.toFixed(0)
-        : crores.toFixed(1);
-    return `₹${formatted}Cr`;
-  }
-  return formatSalaryLakhs(amount);
 }
 
 function buildDemoInput(grossSalary: number): UserInput {
@@ -340,25 +329,21 @@ export function RegimeCompareCard({ className }: { className?: string }) {
 
   const showProfileToggle = userHasEnteredData;
 
-  const recommendedLabel = recommended === "old" ? "Old" : "New";
-
   return (
     <div id="regime-compare" className={cn("card-premium card-glow overflow-hidden", className)}>
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-border/60 bg-gradient-to-r from-blue-50/80 to-white px-4 py-4 sm:px-5">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
-            Live estimate
+            Regime compare
           </p>
-          <h3 className="mt-0.5 text-base font-bold text-foreground sm:text-lg">
-            Your Smart Tax Estimate
-          </h3>
+          <h3 className="mt-0.5 text-base font-bold text-foreground sm:text-lg">Old vs New tax</h3>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Badge
             variant="secondary"
             className="shrink-0 border-0 bg-primary/10 font-medium text-primary"
           >
-            {computeSource === "api" ? "Live" : "Estimated"} · {formatSalaryAmount(salary)}
+            {computeSource === "api" ? "Live" : "Estimated"} · {formatSalaryLakhs(salary)}
           </Badge>
           <ResetStepButton
             label="Reset"
@@ -373,7 +358,7 @@ export function RegimeCompareCard({ className }: { className?: string }) {
         <div className="flex items-center justify-between text-sm">
           <span className="font-medium text-foreground">Annual salary</span>
           <span className="font-bold tabular-nums text-primary">
-            {formatSalaryAmount(salary)}
+            {formatSalaryLakhs(salary)}
           </span>
         </div>
         <Slider
@@ -388,16 +373,16 @@ export function RegimeCompareCard({ className }: { className?: string }) {
           className="mt-3"
         />
         <div className="mt-1.5 flex justify-between text-[11px] text-muted-foreground">
-          <span>{formatSalaryAmount(SALARY_MIN)}</span>
-          <span>{formatSalaryAmount(SALARY_MAX)}</span>
+          <span>{formatSalaryLakhs(SALARY_MIN)}</span>
+          <span>{formatSalaryLakhs(SALARY_MAX)}</span>
         </div>
         {showProfileToggle && (
           <button
             type="button"
             onClick={() => setUseUserProfile((prev) => !prev)}
-            className="mt-2 w-full text-left text-[11px] font-medium leading-snug text-primary hover:underline"
+            className="mt-2 text-[11px] font-medium text-primary hover:underline"
           >
-            {useUserProfile ? "Using your profile details" : "Using sample profile"} ·{" "}
+            {useUserProfile ? "Using your entered profile" : "Using sample profile"} ·{" "}
             {useUserProfile ? "Switch to sample" : "Switch to your profile"}
           </button>
         )}
@@ -431,18 +416,20 @@ export function RegimeCompareCard({ className }: { className?: string }) {
           </div>
           <div>
             <p className="text-sm font-semibold text-foreground">
-              🏆 Recommended: {recommendedLabel} Regime
+              {savings <= 0 ? (
+                regimeSavingsHeadline(recommended, savings)
+              ) : (
+                <>
+                  {recommended === "old" ? "Old" : "New"} regime saves you{" "}
+                  <span className="tabular-nums text-emerald-600">
+                    {formatINR(savings)}
+                  </span>
+                </>
+              )}
             </p>
-            <p className="mt-1 text-sm text-emerald-700">
-              {savings <= 0
-                ? "Both regimes result in the same tax outcome for this profile."
-                : `Choosing this path legally saves you ${formatINR(savings)} this year.`}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               {disclaimerText}
-              {computeSource === "fallback"
-                ? " · showing estimated comparison while compute is unavailable"
-                : ""}
+              {computeSource === "fallback" ? " · showing estimated comparison while compute is unavailable" : ""}
             </p>
           </div>
         </div>
@@ -472,13 +459,13 @@ function RegimeTile({
       className={cn(
         "relative rounded-2xl border p-4 text-center transition-all duration-300",
         winner
-          ? "border-emerald-300/80 bg-emerald-50/70 regime-winner ring-2 ring-emerald-200/80"
+          ? "border-primary/40 bg-primary/5 regime-winner ring-2 ring-primary/15"
           : "border-border/80 bg-white"
       )}
     >
       {winner && (
-        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
-          Recommended
+        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+          Cheaper
         </span>
       )}
       <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
@@ -487,7 +474,7 @@ function RegimeTile({
       <div
         className={cn(
           "mt-2 text-2xl font-bold tabular-nums tracking-tight",
-          winner ? "text-emerald-700" : "text-foreground",
+          winner ? "text-primary" : "text-foreground",
           display.isRefund && "text-emerald-700",
           !loading && animatedAmount !== null && "count-shimmer"
         )}

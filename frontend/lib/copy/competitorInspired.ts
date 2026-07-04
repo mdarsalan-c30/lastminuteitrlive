@@ -47,8 +47,8 @@ export const IMPORT_STRIP = {
     "Form 16 and AIS first — same activation pattern as leading filers, without promising zero manual entry.",
   connectors: [
     { id: "form16", label: "Form 16", status: "live" as const },
-    { id: "ais", label: "AIS", status: "live" as const },
-    { id: "form26as", label: "Form 26AS", status: "live" as const },
+    { id: "ais", label: "AIS", status: "soon" as const },
+    { id: "form26as", label: "Form 26AS", status: "soon" as const },
     { id: "itd", label: "ITD pre-fill", status: "roadmap" as const },
     { id: "groww", label: "Groww P&L", status: "soon" as const },
   ],

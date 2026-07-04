@@ -413,7 +413,8 @@ async function extractForm16PdfText(
     });
     const result = await parser.getText();
     return result.text?.trim() ?? "";
-  } catch (error) {
+    } catch (error) {
+    console.error("[DEBUG PDFPARSE ERROR]", error);
     if (isPasswordRelatedError(error)) {
       throw new Form16PdfOpenError(PASSWORD_HINT, "password_required");
     }

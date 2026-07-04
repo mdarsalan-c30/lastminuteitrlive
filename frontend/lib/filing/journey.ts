@@ -79,8 +79,8 @@ export function getProductProcessLabel(step: JourneyStepId): string {
  * own journey step so the active highlight stays consistent after navigation.
  */
 const PRODUCT_PROCESS_ROUTES: Record<JourneyStepId, string> = {
-  A: "/file/onboarding/eligibility?step=about-you",
-  B: "/file/import/parsing",
+  A: "/file/start",
+  B: "/file/import/documents",
   C: "/file/import/mismatch",
   D: "/file/regime",
   E: "/file/review",
@@ -97,7 +97,8 @@ export function getJourneyStep(pathname: string): JourneyStepId {
     pathname.startsWith("/file/companion") ||
     pathname.startsWith("/file/checkout/everify") ||
     pathname.startsWith("/file/checkout/tracker") ||
-    pathname.startsWith("/file/support")
+    pathname.startsWith("/file/support") ||
+    pathname.startsWith("/file/done")
   ) {
     return "F";
   }
@@ -110,29 +111,46 @@ export function getJourneyStep(pathname: string): JourneyStepId {
     return "E";
   }
 
-  if (pathname.startsWith("/file/regime") || pathname.startsWith("/file/cabrain")) {
+  if (
+    pathname.startsWith("/file/regime") ||
+    pathname.startsWith("/file/advisor") ||
+    pathname.startsWith("/file/cabrain") ||
+    pathname.startsWith("/file/comprehensive")
+  ) {
     return "D";
   }
 
   if (
     pathname.startsWith("/file/import/mismatch") ||
-    pathname.startsWith("/file/import/tds") ||
     pathname.startsWith("/file/import/bank") ||
-    pathname.startsWith("/file/deductions")
+    pathname.startsWith("/file/import/tds")
   ) {
     return "C";
   }
 
-  if (pathname.startsWith("/file/import/parsing")) {
+  if (
+    pathname.startsWith("/file/import/documents") ||
+    pathname.startsWith("/file/import/parsing")
+  ) {
     return "B";
   }
 
+  // CONFIRM merge targets (doc 40 kill list still resolves for old links)
   if (
-    pathname.startsWith("/file/onboarding") ||
-    pathname.startsWith("/file/import/documents") ||
+    pathname.startsWith("/file/review") ||
     pathname.startsWith("/file/income") ||
     pathname.startsWith("/file/house-property") ||
-    pathname.startsWith("/file/other")
+    pathname.startsWith("/file/other") ||
+    pathname.startsWith("/file/deductions")
+  ) {
+    return "E";
+  }
+
+  if (
+    pathname.startsWith("/file/start") ||
+    pathname.startsWith("/file/not-yet") ||
+    pathname.startsWith("/file/onboarding") ||
+    pathname.startsWith("/file/profile")
   ) {
     return "A";
   }
@@ -151,54 +169,44 @@ export const JOURNEY_ROUTE_MAP: ReadonlyArray<{
 }> = [
   {
     step: "A",
-    routes: [
-      "/file/onboarding/eligibility",
-      "/file/onboarding/signin",
-      "/file/import/documents",
-      "/file/income",
-      "/file/house-property",
-      "/file/other",
-    ],
-    description: "Identity, eligibility, document import, income inputs",
+    routes: ["/file/start", "/file/not-yet", "/file/onboarding/signin"],
+    description: "GATE — persona questions and honest blocked exit",
   },
   {
     step: "B",
-    routes: ["/file/import/parsing"],
-    description: "Form 16 parsing and first engine compute",
+    routes: ["/file/import/documents"],
+    description: "COLLECT / EXTRACT — documents and inline parse",
   },
   {
     step: "C",
-    routes: [
-      "/file/import/mismatch",
-      "/file/import/tds",
-      "/file/import/bank",
-      "/file/deductions",
-    ],
-    description: "Mismatch resolution, TDS/bank follow-ups, deduction questions",
+    routes: ["/file/import/mismatch"],
+    description: "RECONCILE — mismatch cards",
   },
   {
     step: "D",
-    routes: ["/file/regime", "/file/cabrain"],
-    description: "Regime compare, re-compute, analytics panel",
+    routes: ["/file/regime"],
+    description: "COMPUTE — regime verdict and tax number",
   },
   {
     step: "E",
     routes: [
+      "/file/review",
       "/file/review/risk",
       "/file/review/presubmit",
       "/file/checkout/plans",
       "/file/checkout/payment",
     ],
-    description: "Optimization tips, presubmit review, plan selection",
+    description: "CONFIRM / RISK / ENTITLE",
   },
   {
     step: "F",
     routes: [
       "/file/companion",
+      "/file/done",
       "/file/checkout/everify",
       "/file/checkout/tracker",
       "/file/support",
     ],
-    description: "Companion mode, portal guide, e-verify and tracker",
+    description: "COMPANION / FILED / VERIFIED",
   },
 ];

@@ -1,0 +1,108 @@
+# 22 — Service & API Boundaries (Phase 2, Executed)
+
+> Defines the seams between frontend, case service, parsers, deterministic engine, and the AI orchestrator — and what each is *forbidden* to do. No code.
+> Grounding: current Next.js API routes (`frontend/app/api/*`), Python engine (`backend/engine/orchestrator.py: compute_itr(user) -> ITRResult` — already a pure function, keep it), Prisma/Postgres, Razorpay webhook flow.
+
+## 1. Service map
+
+```
+[Web / Mobile client]
+      │  (case-scoped REST, cookie session)
+      ▼
+┌─ BFF: Next.js API ──────────────────────────────────────────┐
+│  Auth & Entitlements   Case Service      Companion Service  │
+│  Document Service      Reconcile Svc     AI Orchestrator    │
+└──────┬──────────────────┬───────────────────────┬───────────┘
+       │                  │                       │ tools only
+       ▼                  ▼                       ▼
+  Object storage    Tax Engine (Python,     LLM provider
+  (encrypted docs)  versioned rules,        (no direct DB/net)
+       │            stateless workers)
+       ▼
+  Postgres (cases, facts, events, payments)  +  Queue (parse jobs)
+```
+
+Boundary rule: **only the Case Service writes Facts.** Parsers propose; reconcile resolves; AI suggests; the user confirms; Case Service commits.
+
+## 2. API surface (case-centric, V1)
+
+All under `/api/cases/:caseId/…` except bootstrap. Every mutating call appends a CaseEvent and returns the new state-machine state.
+
+| Endpoint | Method | Contract highlights |
+|---|---|---|
+| `/api/cases` | POST | Create case for AY; returns caseId + state=GATE |
+| `…/gate` | PUT | Full gate answer set; response = verdict {supported, blockedReasons[], suggestedForm} — deterministic rules, never LLM |
+| `…/documents` | POST | Multipart upload → EvidenceNode(pending) + queued parse job; sync response ≤ 2s, parse async |
+| `…/documents/:docId` | GET | Node status + extractions (confidence per field) |
+| `…/facts` | GET | Confirmed + proposed facts, grouped by registry section |
+| `…/facts/confirm` | POST | Batch confirm/edit; edits create `manual_entry` provenance |
+| `…/reconcile` | GET | Open ReconcileIssues with both-sided provenance |
+| `…/reconcile/:issueId/resolve` | POST | Resolution enum + optional attestation text |
+| `…/compute` | POST | Projects confirmed facts → engine `UserInput`; returns runId + result + warnings. **Idempotent on factset hash** (same facts = same run, cached) |
+| `…/runs/:runId` | GET | Immutable result incl. rulesetVersion — what the UI cites |
+| `…/risk` | GET | Validation catalog output for latest run |
+| `…/entitlement` | GET/POST | Plan status; POST creates Razorpay order (existing fail-closed flow retained) |
+| `…/export/itr1` | GET | Portal-ready JSON, gated on entitlement + zero blocking validations; response headers carry schemaVersion |
+| `…/companion` | GET/PUT | Step definitions (versioned per ITD UI release) + user progress |
+| `…/filed` | POST | Acknowledgement number + date → FILED; starts e-verify countdown |
+| `/api/ai/…` | — | See §4; separate namespace, case-scoped via body |
+
+Webhooks: `/api/webhooks/razorpay` — signature + amount + planId binding (already fixed in P0 work; keep contract).
+
+## 3. Tax Engine contract (the sovereign core)
+
+```
+compute(userInput, rulesetId) -> { result, warnings[], trace }
+```
+
+- **Pure & stateless.** No DB, no network, no clock (`asOfDate` is an input — kills the Date.now class of bugs and makes belated-season logic testable).
+- **Versioned rules:** `rulesetId = "AY2026-27.rN"`; constants from doc 15 live in the ruleset package, never inline.
+- **Trace output:** every line item carries the rule id that produced it (`"rebate_87a: capped at 60000, income 1180000 <= 1200000"`). The trace is what the AI layer is allowed to explain from, and what CONFIRM/COMPUTE screens cite.
+- Transport V1: keep current invocation path (Python via API route/subprocess) but hide it behind an `EngineClient` interface so a move to a dedicated worker service is a config change, not a refactor.
+
+## 4. AI Orchestrator boundary (the fence around the LLM)
+
+The AI layer gets **tools, not access**:
+
+| Tool | Reads | Writes | Forbidden |
+|---|---|---|---|
+| `getFacts(caseId, keys[])` | Fact registry values + provenance | — | raw documents, other cases |
+| `getRunTrace(runId)` | engine trace lines | — | recomputing/altering numbers |
+| `getReconcileIssue(id)` | both sides + deltas | — | resolving it |
+| `proposeQuestion(caseId)` | gate/fact gaps | question queue (user-visible) | auto-answering |
+| `draftExplanation(ruleId | issueId)` | rule text + trace | explanation cache | citing anything without a ruleId/factKey |
+| `escalateToHuman(caseId, reason)` | — | escalation ticket | — |
+
+Hard rules (enforced in the orchestrator, not by prompt):
+1. **No `/ai/compute-tax` exists.** Any numeric output in an AI message must be interpolated by the orchestrator from a Fact or trace line, never generated by the model.
+2. Every AI message stores its citation set (factKeys, ruleIds) — auditable per doc 05's non-hallucination contract.
+3. AI namespace is case-scoped and entitlement-aware (Smart AI CA features gate on the `pro` plan).
+
+## 5. Companion Service
+
+- Step definitions are **data, versioned** (`companion-itd@2026.1`): ITD portal changes yearly; a content update must not require a deploy.
+- Each step: screenshot ref, instruction (EN/HI), and the factKeys whose values display beside it — provenance flows to the last mile.
+
+## 6. Migration map from current API routes
+
+| Current | Disposition |
+|---|---|
+| `api/documents/upload` (sync parse, LIVE/COMING_SOON connectors) | Becomes async `…/documents` + job queue; connector honesty gates kept |
+| `api/itr/export/itr1` | Moves under case, gains schemaVersion header + validation gate |
+| `api/payments/create-order`, `verify` (fail-closed, plan catalog) | Unchanged contracts, re-homed under `…/entitlement` |
+| `api/ai/zerogpt` etc. | Folded into orchestrator tool policy |
+| Client-side draft compute hook | Replaced by `…/compute` + cached runs (client never computes tax) |
+| Partner routes (`api/partners/*`) | Same Case Service, `operator` role — partner dashboard becomes a multi-case view, not a parallel stack |
+
+## 7. Non-functional budgets (season-shaped, doc 10 §3 calendar)
+
+- Upload ack ≤ 2s; parse p95 ≤ 30s (queued); compute p95 ≤ 3s; export ≤ 2s.
+- July peak: parse workers scale horizontally; engine is stateless so replicas are free.
+- Graceful degradation order if overloaded: AI explanations shed first, parsing queues second, **compute and export never shed** (the 31-July escape hatch promised to CAs, doc 11 Finding 7).
+
+## 8. Acceptance criteria (Phase 2 gate)
+
+- [ ] Endpoint table reviewed against every state transition in doc 21 (each transition has exactly one endpoint)
+- [ ] Engine purity + trace contract accepted by whoever owns `orchestrator.py`
+- [ ] AI tool list accepted as exhaustive (anything not listed is denied)
+- [ ] Partner dashboard confirmed as a view over the same Case Service (no fork)

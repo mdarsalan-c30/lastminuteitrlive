@@ -58,10 +58,28 @@ def _has_capital_gains(user: UserInput) -> bool:
     ])
 
 
+def _has_bf_losses(user: UserInput) -> bool:
+    cf = user.carry_forward
+    return any([
+        cf.hp_loss > 0,
+        cf.stcl > 0,
+        cf.ltcl > 0,
+        cf.business_loss > 0,
+        cf.unabsorbed_depreciation > 0,
+    ])
+
+
 def _itr1_exclusions(user: UserInput) -> list[str]:
     """Official ITR-1 SAHAJ exclusion rules (AY 2026-27 form)."""
     reasons: list[str] = []
     pf = user.profile_flags
+    if _has_bf_losses(user):
+        reasons.append(
+            "Brought-forward losses from earlier years — ITR-2 required "
+            "(Schedule CFL/BFLA)"
+        )
+    if len(user.house_properties) > 1:
+        reasons.append("More than one house property — ITR-2 required")
     if pf.is_director:
         reasons.append("Director in a company — ITR-1 not permitted")
     if pf.has_unlisted_equity:
@@ -126,6 +144,21 @@ def route_itr_form(user: UserInput) -> tuple[ITRForm, list[str], bool]:
         return "ITR-3", reasons, expert
 
     if btc == "w" or biz.business_type in ("presumptive_business", "presumptive_profession"):
+        # ITR-4 SUGAM does not support Schedule CFL or multiple properties —
+        # those presumptive filers must step up to ITR-3.
+        if _has_bf_losses(user):
+            reasons.append(
+                "Presumptive income with brought-forward losses — ITR-3 "
+                "(ITR-4 has no Schedule CFL)"
+            )
+            expert = True
+            return "ITR-3", reasons, expert
+        if len(user.house_properties) > 1:
+            reasons.append(
+                "Presumptive income with more than one house property — ITR-3"
+            )
+            expert = True
+            return "ITR-3", reasons, expert
         reasons.append("Presumptive business/profession — ITR-4 (44AD/44ADA)")
         return "ITR-4", reasons, expert
 

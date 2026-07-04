@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FileText, Loader2, X } from "lucide-react";
+import { FileText, Loader2, X, UploadCloud, FileCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const MAX_FILES = 5;
 const AUTO_UPLOAD_DELAY_MS = 700;
@@ -106,41 +107,16 @@ export function Form16UploadZone({
   const isProcessing = uploading || autoUploadPending;
 
   return (
-    <div
-      className={`card-premium flex flex-col p-4 sm:p-5 ${
-        highlighted
-          ? "ring-2 ring-primary/20 border-primary/30 sm:col-span-2 2xl:col-span-3"
-          : ""
-      }`}
-    >
-      <div className="mb-2 flex items-start justify-between gap-2">
-        <div>
-          <h3 className="font-semibold text-zinc-900">
-            Form 16
-            <span className="ml-1 text-xs font-normal text-rose-600">Required</span>
-          </h3>
-          <p className="mt-1 text-sm text-zinc-600">
-            Upload PDF from employer. Files are parsed automatically — add Part A,
-            Part B, and annexure separately if needed.
-          </p>
-        </div>
-        <span
-          className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
-            isConnected
-              ? "bg-emerald-100 text-emerald-800"
-              : "bg-blue-50 text-blue-800"
-          }`}
-        >
-          {isConnected ? "Connected" : "Manual"}
-        </span>
-      </div>
-
+    <div className={cn(
+      "rounded-2xl border-2 transition-all p-1",
+      highlighted ? "border-blue-400 shadow-lg shadow-blue-500/10" : "border-slate-200",
+      isConnected && "border-emerald-300"
+    )}>
       <div
-        className={`mt-3 rounded-lg border-2 border-dashed px-4 py-5 text-center transition ${
-          dragOver
-            ? "border-primary bg-primary/5"
-            : "border-zinc-200 bg-zinc-50/50"
-        }`}
+        className={cn(
+          "rounded-xl flex flex-col items-center text-center transition-all p-8",
+          dragOver ? "bg-blue-50 border-blue-200" : isConnected ? "bg-emerald-50/30" : "bg-slate-50/50 hover:bg-slate-50"
+        )}
         onDragOver={(e) => {
           e.preventDefault();
           setDragOver(true);
@@ -154,13 +130,26 @@ export function Form16UploadZone({
           }
         }}
       >
-        <p className="text-sm text-zinc-700">
-          Drop Part A, Part B, and Annexure (12BA) PDFs here
+        <div className={cn(
+          "rounded-full p-4 mb-4",
+          isConnected ? "bg-emerald-100 text-emerald-600" : dragOver ? "bg-blue-100 text-blue-600" : "bg-white border border-slate-200 text-slate-400"
+        )}>
+          {isConnected ? <FileCheck className="size-8" /> : <UploadCloud className="size-8" />}
+        </div>
+        
+        <h3 className="text-base font-bold text-slate-900">
+          {isConnected ? "Form 16 Uploaded" : "Drag & Drop Form 16 PDF"}
+        </h3>
+        <p className="text-sm text-slate-500 mt-1 max-w-sm mx-auto">
+          {isConnected 
+            ? "Your employer's Form 16 has been successfully read by our AI." 
+            : "Drop Part A, Part B, or your Annexure here. Parsing starts instantly."}
         </p>
-        <p className="mt-1 text-xs text-zinc-500">
-          1–{MAX_FILES} PDF files · parsing starts automatically
-        </p>
-        <label className="mt-3 inline-flex cursor-pointer items-center justify-center rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50">
+
+        <label className={cn(
+          "mt-6 inline-flex cursor-pointer items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition-all shadow-sm",
+          isConnected ? "bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-50" : "bg-slate-900 text-white hover:bg-slate-800"
+        )}>
           <input
             ref={inputRef}
             type="file"
@@ -172,81 +161,78 @@ export function Form16UploadZone({
               if (e.target.files) addFiles(e.target.files);
             }}
           />
-          Choose PDFs
+          {isConnected ? "Upload another Form 16" : "Browse Files"}
         </label>
       </div>
 
-      {selectedFiles.length > 0 && (
-        <ul className="mt-3 space-y-2">
-          {selectedFiles.map((file, index) => (
-            <li
-              key={`${file.name}-${index}`}
-              className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm"
-            >
-              <FileText className="size-4 shrink-0 text-zinc-500" />
-              <span className="min-w-0 flex-1 truncate text-zinc-800">{file.name}</span>
-              <button
-                type="button"
-                aria-label={`Remove ${file.name}`}
-                className="rounded p-1 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-800"
-                disabled={isProcessing}
-                onClick={() => removeFile(index)}
-              >
-                <X className="size-4" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      {(selectedFiles.length > 0 || isProcessing) && (
+        <div className="px-5 py-4 bg-white border-t border-slate-100 rounded-b-xl">
+          {selectedFiles.length > 0 && (
+            <ul className="space-y-2 mb-4">
+              {selectedFiles.map((file, index) => (
+                <li
+                  key={`${file.name}-${index}`}
+                  className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm"
+                >
+                  <FileText className="size-4 shrink-0 text-slate-400" />
+                  <span className="min-w-0 flex-1 truncate font-medium text-slate-700">{file.name}</span>
+                  <button
+                    type="button"
+                    className="rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-colors"
+                    disabled={isProcessing}
+                    onClick={() => removeFile(index)}
+                  >
+                    <X className="size-4" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
 
-      {isProcessing && (
-        <div
-          role="status"
-          className="mt-3 flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-900"
-        >
-          <Loader2 className="size-4 shrink-0 animate-spin" />
-          Reading and parsing Form 16…
+          {isProcessing && (
+            <div className="flex items-center gap-3 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
+              <Loader2 className="size-4 shrink-0 animate-spin" />
+              AI is reading your Form 16...
+            </div>
+          )}
+
+          {!isProcessing && selectedFiles.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-slate-100">
+              <label className="block">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  PDF Password (If Locked)
+                </span>
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="password"
+                    autoComplete="off"
+                    value={password}
+                    disabled={isProcessing}
+                    placeholder="Often your PAN in capitals"
+                    className="flex-1 rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:ring-blue-500"
+                    onChange={(e) => {
+                      lastUploadedFingerprint.current = "";
+                      lastAutoAttemptFingerprint.current = "";
+                      setPassword(e.target.value);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    disabled={isProcessing || selectedFiles.length === 0}
+                    className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700 disabled:opacity-50"
+                    onClick={() => {
+                      lastAutoAttemptFingerprint.current = "";
+                      void runUpload();
+                    }}
+                  >
+                    Re-Parse
+                  </button>
+                </div>
+              </label>
+            </div>
+          )}
         </div>
       )}
-
-      <label className="mt-3 block">
-        <span className="text-xs font-medium text-zinc-700">
-          PDF password (optional)
-        </span>
-        <input
-          type="password"
-          autoComplete="off"
-          value={password}
-          disabled={isProcessing}
-          placeholder="Often your PAN in capitals"
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
-          onChange={(e) => {
-            lastUploadedFingerprint.current = "";
-            lastAutoAttemptFingerprint.current = "";
-            setPassword(e.target.value);
-          }}
-        />
-        <span className="mt-1 block text-xs text-zinc-500">
-          Sent only with upload — never stored on this device. Re-parses when
-          changed.
-        </span>
-      </label>
-
-      <button
-        type="button"
-        disabled={isProcessing || selectedFiles.length === 0}
-        className="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-        onClick={() => {
-          lastAutoAttemptFingerprint.current = "";
-          void runUpload();
-        }}
-      >
-        {isProcessing
-          ? "Processing…"
-          : isConnected
-            ? "Re-parse files"
-            : `Parse ${selectedFiles.length} file${selectedFiles.length === 1 ? "" : "s"}`}
-      </button>
     </div>
   );
 }

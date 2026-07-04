@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPlan, type PlanId } from "@/lib/payments/plans";
+import {
+  getPlan,
+  normalizePlanId,
+  type PlanId,
+} from "@/lib/payments/plans";
 import {
   hasRazorpayKeys,
   verifyPaymentSignature,
@@ -16,10 +20,11 @@ import {
   hashIp,
   recordRedemption,
   validateCoupon,
+  generatePasskey,
 } from "@/lib/admin/coupons";
 import { getPublishedPrice } from "@/lib/pricing/config";
-
-const VALID_PLANS: PlanId[] = ["free", "diy", "ai_smart", "ca"];
+import { genId, insert } from "@/lib/db/store";
+import type { CompanionGrant } from "@/lib/db/types";
 
 /** Best-effort persistence for the admin dashboard — never blocks verification. */
 async function persistVerifiedPayment(input: {
@@ -39,13 +44,19 @@ async function persistVerifiedPayment(input: {
     let couponId: string | undefined;
     if (input.couponCode) {
       const result = await validateCoupon(input.couponCode, input.planId);
-      if (result.valid && result.coupon?.discount === "amount") {
-        await recordRedemption(result.coupon, {
+      if (result.valid) {
+        await recordRedemption(result.coupon!, {
           sessionId: input.sessionId,
           ipHash: input.ipHash,
           planId: input.planId,
         });
-        couponId = result.coupon.id;
+        couponId = result.coupon!.id;
+      } else {
+        const { validateReferralCode, recordReferralRedemption } = await import("@/lib/admin/referrals");
+        const refResult = await validateReferralCode(input.couponCode, input.planId);
+        if (refResult.valid) {
+          await recordReferralRedemption(refResult.referralCodeId, input.sessionId || "b2c", input.paymentId);
+        }
       }
     }
 
@@ -61,6 +72,19 @@ async function persistVerifiedPayment(input: {
     });
 
     if (input.sessionId) {
+      const passkey = generatePasskey();
+      const expiresAt = new Date(Date.now() + 7 * 86_400_000).toISOString();
+      const grant: CompanionGrant = {
+        id: genId("grant"),
+        sessionId: input.sessionId,
+        source: "payment",
+        plan: input.planId,
+        ts: new Date().toISOString(),
+        expiresAt,
+        passkey,
+      };
+      await insert("companionGrants", grant);
+
       await recordSessionEvent({
         sessionId: input.sessionId,
         eventName: "payment_success",
@@ -73,8 +97,7 @@ async function persistVerifiedPayment(input: {
 }
 
 function resolvePlanId(raw: string | undefined): PlanId | null {
-  if (!raw || !VALID_PLANS.includes(raw as PlanId)) return null;
-  return raw as PlanId;
+  return normalizePlanId(raw);
 }
 
 async function verifiedResponse(input: {
@@ -110,6 +133,7 @@ async function verifiedResponse(input: {
       orderId: input.orderId,
       paymentId: input.paymentId,
       mock: input.mock,
+      sessionId: input.sessionId,
     })
   );
 

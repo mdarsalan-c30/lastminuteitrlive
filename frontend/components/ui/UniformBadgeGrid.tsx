@@ -11,14 +11,12 @@ export type UniformBadgeItem = {
 interface UniformBadgeGridProps {
   items: readonly UniformBadgeItem[];
   variant?: "light" | "dark";
-  layout?: "default" | "hero" | "hero-inline";
   className?: string;
 }
 
 export function UniformBadgeGrid({
   items,
   variant = "light",
-  layout = "default",
   className,
 }: UniformBadgeGridProps) {
   const isDark = variant === "dark";
@@ -27,8 +25,6 @@ export function UniformBadgeGrid({
     <div
       className={cn(
         "uniform-badge-grid w-full",
-        layout === "hero" && "uniform-badge-grid-hero",
-        layout === "hero-inline" && "uniform-badge-grid-hero-inline",
         isDark ? "uniform-badge-grid-dark" : "uniform-badge-grid-light",
         className
       )}

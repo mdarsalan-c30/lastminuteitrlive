@@ -124,9 +124,12 @@ export function CouponsManager({
                 className="w-full rounded-md border border-input bg-background px-2 py-1.5"
               >
                 <option value="any">any</option>
-                <option value="diy">diy</option>
-                <option value="ai_smart">ai_smart</option>
-                <option value="ca">ca</option>
+                <option value="normal">Starter (normal)</option>
+                <option value="pro">AI Smart (pro)</option>
+                <option value="b2b_20">20 Applications (b2b_20)</option>
+                <option value="b2b_40">40 Applications (b2b_40)</option>
+                <option value="b2b_100">100 Applications (b2b_100)</option>
+                <option value="ca">CA Review</option>
               </select>
             </label>
             <label className="text-sm">

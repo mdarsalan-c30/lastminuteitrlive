@@ -134,7 +134,7 @@ export async function revenueSeries(days = 30): Promise<RevenuePoint[]> {
   }
   const index = new Map(points.map((p) => [p.date, p]));
   for (const p of payments) {
-    const key = p.ts.slice(0, 10);
+    const key = new Date(p.ts).toISOString().slice(0, 10);
     const point = index.get(key);
     if (!point) continue;
     // B2B payments are tenant-billed; Phase 1A has only B2C, so bucket all to b2c.

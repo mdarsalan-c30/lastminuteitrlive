@@ -11,7 +11,9 @@ Limits (FY 2024-25)
 --------------------
 80C pool cap          : ₹1,50,000
 80CCD(1B) NPS self    : ₹50,000  (over and above 80C)
-80CCD(2) employer NPS : min(employer_contribution, 10% of basic)  — BOTH regimes
+80CCD(2) employer NPS : min(employer_contribution, 10% of basic) old regime,
+                        min(employer_contribution, 14% of basic) new regime
+                        (14% extended to all employers by Finance (No.2) Act 2024)
 80D self+family       : ₹25,000 (₹50,000 if taxpayer is senior)
 80D parents           : ₹25,000 (₹50,000 if parents are senior)
 80E edu loan interest : no cap (only first 8 years of repayment)
@@ -38,6 +40,8 @@ CAP_80TTB = 50_000
 CAP_80U_NORMAL = 75_000
 CAP_80U_SEVERE = 125_000
 CAP_80GG_ANNUAL = 60_000            # ₹5,000 per month
+RATE_80CCD2_OLD = 0.10              # employer NPS cap, old regime (non-govt)
+RATE_80CCD2_NEW = 0.14              # employer NPS cap, new regime (all employers)
 
 
 def _compute_80gg(rent_paid: float, adjusted_total_income: float) -> float:
@@ -66,7 +70,9 @@ def compute_deductions(
     """
 
     # ── 80CCD(2) Employer NPS — allowed in BOTH regimes ──
-    max_ccd2 = salary.basic_salary * 0.10
+    # New regime cap is 14% of basic (Finance (No.2) Act 2024); old regime 10%.
+    ccd2_rate = RATE_80CCD2_NEW if regime == "new" else RATE_80CCD2_OLD
+    max_ccd2 = salary.basic_salary * ccd2_rate
     ccd2 = min(salary.employer_nps_contribution, max_ccd2)
 
     if regime == "new":

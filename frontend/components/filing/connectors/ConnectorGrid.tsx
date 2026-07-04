@@ -3,13 +3,13 @@
 import { useCallback, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, FileCheck2, Sparkles, UploadCloud } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { buildEligibilityForm16Url } from "@/lib/filing/routes";
 import { useDraftStore, type FieldConfidence } from "@/lib/store/draft";
 import type { ParseMode } from "@/lib/parsers/form16";
 import { Form16UploadZone } from "@/components/filing/connectors/Form16UploadZone";
-import { FILING_WORKSPACE } from "@/lib/design/layout";
+import { cn } from "@/lib/utils";
 
 export type ConnectorStatus = "connected" | "manual" | "coming_soon";
 
@@ -22,71 +22,31 @@ export interface Connector {
   accept?: string;
 }
 
-const PRIMARY_CONNECTORS: Connector[] = [
+const SECONDARY_CONNECTORS: Connector[] = [
   {
     id: "ais",
-    name: "AIS",
-    description: "Annual Information Statement from incometax.gov.in",
+    name: "AIS (Annual Information Statement)",
+    description: "Your official tax summary from the ITD",
     status: "manual",
     accept: ".pdf,.json",
   },
-];
-
-const SECONDARY_CONNECTORS: Connector[] = [
   {
     id: "form26as",
     name: "Form 26AS",
-    description: "TDS credit statement — authority for tax credits claimed",
+    description: "Proof of TDS deducted by employers/banks",
     status: "manual",
     accept: ".pdf,.json",
-  },
-  {
-    id: "cams",
-    name: "CAMS",
-    description: "Consolidated capital gains statement (CAMS/KFintech)",
-    status: "manual",
-    accept: ".pdf,.csv",
   },
 ];
 
 const COMING_SOON_CONNECTORS: Connector[] = [
   {
-    id: "mfcentral",
-    name: "MFCentral",
-    description: "Import mutual fund capital gains and dividends",
-    status: "coming_soon",
-  },
-  {
-    id: "groww",
-    name: "Groww",
-    description: "Broker statement for equity and MF transactions",
-    status: "coming_soon",
-  },
-  {
     id: "zerodha",
-    name: "Zerodha",
-    description: "Console tax P&L and contract notes",
+    name: "Zerodha / Groww",
+    description: "Direct broker integration",
     status: "coming_soon",
   },
 ];
-
-const STATUS_STYLES: Record<
-  ConnectorStatus,
-  { label: string; className: string }
-> = {
-  connected: {
-    label: "Connected",
-    className: "bg-emerald-100 text-emerald-800",
-  },
-  manual: {
-    label: "Manual",
-    className: "bg-blue-50 text-blue-800",
-  },
-  coming_soon: {
-    label: "Coming soon",
-    className: "bg-zinc-100 text-zinc-600",
-  },
-};
 
 interface ParsedUpload {
   connectorId: string;
@@ -104,7 +64,6 @@ interface ConnectorGridProps {
   onUploadComplete?: (result: ParsedUpload) => void;
   highlightConnectorId?: string;
   form16FastPath?: boolean;
-  /** Append parsed Form 16 as another employer (job-change flow). */
   appendAsEmployer?: boolean;
 }
 
@@ -119,26 +78,23 @@ function ConnectorCard({
   uploading: boolean;
   onUpload: (connector: Connector, file: File) => void;
 }) {
-  const status: ConnectorStatus = isConnected ? "connected" : connector.status;
-  const badge = STATUS_STYLES[status];
   const isDisabled = connector.status === "coming_soon";
 
   return (
-    <div className="card-premium flex flex-col p-4 sm:p-5">
-      <div className="mb-2 flex items-start justify-between gap-2">
-        <div>
-          <h3 className="font-semibold text-zinc-900">{connector.name}</h3>
-          <p className="mt-1 text-tier-feature text-zinc-600">{connector.description}</p>
-        </div>
-        <span
-          className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${badge.className}`}
-        >
-          {badge.label}
-        </span>
+    <div className={cn(
+      "flex items-center justify-between p-4 rounded-xl border transition-all",
+      isConnected ? "border-emerald-200 bg-emerald-50/50" : "border-slate-200 bg-white hover:border-blue-200"
+    )}>
+      <div className="flex flex-col">
+        <h3 className="font-semibold text-slate-900 text-sm">{connector.name}</h3>
+        <p className="text-xs text-slate-500 mt-0.5">{connector.description}</p>
       </div>
 
       {connector.accept && !isDisabled && (
-        <label className="mt-auto cursor-pointer">
+        <label className={cn(
+          "cursor-pointer flex items-center justify-center rounded-lg px-4 py-2 text-xs font-semibold transition-all shrink-0 ml-4",
+          isConnected ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+        )}>
           <input
             type="file"
             accept={connector.accept}
@@ -149,14 +105,14 @@ function ConnectorCard({
               if (file) void onUpload(connector, file);
             }}
           />
-          <span className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90">
-            {uploading ? "Uploading…" : isConnected ? "Replace file" : "Upload"}
-          </span>
+          {uploading ? "Uploading…" : isConnected ? "Replace File" : "Upload"}
         </label>
       )}
 
       {isDisabled && (
-        <p className="mt-auto text-xs text-zinc-500">Account connect coming soon</p>
+        <span className="text-xs font-semibold text-slate-400 bg-slate-100 px-3 py-1.5 rounded-full shrink-0 ml-4">
+          Coming Soon
+        </span>
       )}
     </div>
   );
@@ -176,6 +132,7 @@ export default function ConnectorGrid({
     ensureIncomeChip,
     setItrConfirmed,
   } = useDraftStore();
+  
   const connected = new Set(connectedConnectors);
   const [uploading, setUploading] = useState<string | null>(null);
   const [lastParsed, setLastParsed] = useState<ParsedUpload | null>(null);
@@ -234,15 +191,7 @@ export default function ConnectorGrid({
       }
       onUploadComplete?.(parsed);
     },
-    [
-      appendAsEmployer,
-      form16FastPath,
-      mergeParsedFields,
-      onUploadComplete,
-      setConnectorConnected,
-      ensureIncomeChip,
-      setItrConfirmed,
-    ]
+    [appendAsEmployer, form16FastPath, mergeParsedFields, onUploadComplete, setConnectorConnected, ensureIncomeChip, setItrConfirmed]
   );
 
   const handleUpload = useCallback(
@@ -263,9 +212,7 @@ export default function ConnectorGrid({
 
         applyParsedResponse(connector.id, data, file.name);
       } catch (error) {
-        setUploadError(
-          error instanceof Error ? error.message : "Upload failed"
-        );
+        setUploadError(error instanceof Error ? error.message : "Upload failed");
       } finally {
         setUploading(null);
       }
@@ -294,10 +241,7 @@ export default function ConnectorGrid({
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "Upload failed");
 
-        const displayName =
-          files.length === 1
-            ? files[0].name
-            : `${files.length} files (${files.map((f) => f.name).join(", ")})`;
+        const displayName = files.length === 1 ? files[0].name : `${files.length} files (${files.map((f) => f.name).join(", ")})`;
 
         trackEvent("form16_upload", {
           fileCount: files.length,
@@ -310,9 +254,7 @@ export default function ConnectorGrid({
           router.push(buildEligibilityForm16Url());
         }
       } catch (error) {
-        setUploadError(
-          error instanceof Error ? error.message : "Upload failed"
-        );
+        setUploadError(error instanceof Error ? error.message : "Upload failed");
         throw error;
       } finally {
         setUploading(null);
@@ -322,44 +264,26 @@ export default function ConnectorGrid({
   );
 
   return (
-    <div className="space-y-6">
-      <div
-        role="status"
-        className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
-      >
-        <strong>Document parsing.</strong> Form 16 PDFs are parsed automatically
-        when possible. Other connectors still use demo sample numbers — verify
-        every figure against your documents before filing.
+    <div className="space-y-8 max-w-2xl">
+
+      {/* Primary Upload (Form 16) */}
+      <div>
+        <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+          Your Form 16 <span className="bg-rose-100 text-rose-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded-md">Required</span>
+        </h2>
+        <Form16UploadZone
+          uploading={uploading === "form16"}
+          isConnected={connected.has("form16")}
+          onUpload={handleForm16Upload}
+        />
       </div>
 
+      {/* Secondary Uploads */}
       <div>
-        <h3 className="mb-3 text-tier-feature font-semibold uppercase tracking-wide text-slate-500">
-          Start here
-        </h3>
-        <div className={FILING_WORKSPACE.cardGrid}>
-          <Form16UploadZone
-            uploading={uploading === "form16"}
-            isConnected={connected.has("form16")}
-            highlighted={highlightConnectorId === "form16"}
-            onUpload={handleForm16Upload}
-          />
-          {PRIMARY_CONNECTORS.map((connector) => (
-            <ConnectorCard
-              key={connector.id}
-              connector={connector}
-              isConnected={connected.has(connector.id)}
-              uploading={uploading === connector.id}
-              onUpload={handleUpload}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="mb-3 text-tier-feature font-semibold uppercase tracking-wide text-slate-500">
-          Also recommended
-        </h3>
-        <div className={FILING_WORKSPACE.cardGrid}>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3">
+          Optional Supporting Documents
+        </h2>
+        <div className="flex flex-col gap-3">
           {SECONDARY_CONNECTORS.map((connector) => (
             <ConnectorCard
               key={connector.id}
@@ -372,124 +296,34 @@ export default function ConnectorGrid({
         </div>
       </div>
 
-      <div className="rounded-xl border border-zinc-200 bg-zinc-50/80">
-        <button
-          type="button"
-          onClick={() => setComingSoonOpen((open) => !open)}
-          className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-zinc-700"
-          aria-expanded={comingSoonOpen}
-        >
-          <span>Connect accounts (coming soon)</span>
-          <ChevronDown
-            className={`size-4 shrink-0 transition-transform ${
-              comingSoonOpen ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-        {comingSoonOpen && (
-          <div className="space-y-3 border-t border-zinc-200 px-4 pb-4 pt-3">
-            {COMING_SOON_CONNECTORS.map((connector) => (
-              <div
-                key={connector.id}
-                className="flex items-start justify-between gap-3 rounded-lg bg-white px-3 py-2.5"
-              >
-                <div>
-                  <p className="text-sm font-medium text-zinc-900">
-                    {connector.name}
-                  </p>
-                  <p className="mt-0.5 text-xs text-zinc-600">
-                    {connector.description}
-                  </p>
-                </div>
-                <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
-                  Coming soon
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
+      {/* Errors & Success Messages */}
       {uploadError && (
-        <div
-          role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900"
-        >
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-900 font-medium flex items-center gap-2">
           {uploadError}
         </div>
       )}
 
       {lastParsed && (
-        <div
-          className={`rounded-lg border p-4 text-sm ${
-            lastParsed.demo
-              ? "border-amber-200 bg-amber-50"
-              : "border-emerald-200 bg-emerald-50"
-          }`}
-        >
-          <p
-            className={`font-medium ${
-              lastParsed.demo ? "text-amber-900" : "text-emerald-900"
-            }`}
-          >
-            {lastParsed.demo ? "Demo fallback" : "Parsed from PDF"} —{" "}
-            {lastParsed.filenames && lastParsed.filenames.length > 1
-              ? `${lastParsed.filenames.length} files uploaded`
-              : lastParsed.filename}
-          </p>
-          {lastParsed.filenames && lastParsed.filenames.length > 1 && (
-            <ul className="mt-1 list-inside list-disc text-xs text-emerald-800/80">
-              {lastParsed.filenames.map((name) => (
-                <li key={name}>{name}</li>
-              ))}
-            </ul>
-          )}
-          <p
-            className={`mt-1 text-xs ${
-              lastParsed.demo ? "text-amber-800/80" : "text-emerald-800/80"
-            }`}
-          >
-            {lastParsed.demo
-              ? "Sample numbers shown — confirm amounts match your actual Form 16."
-              : "Review extracted fields on the next screen before filing."}
-          </p>
-          {lastParsed.warnings && lastParsed.warnings.length > 0 && (
-            <ul className="mt-2 space-y-1 text-xs text-amber-800">
-              {lastParsed.warnings.map((warning) => (
-                <li key={warning}>{warning}</li>
-              ))}
-            </ul>
-          )}
-          {form16FastPath &&
-            lastParsed.connectorId === "form16" &&
-            !lastParsed.demo && (
-              <p className="mt-3 text-sm font-medium text-emerald-900">
-                Next:{" "}
-                <Link
-                  href={buildEligibilityForm16Url()}
-                  className="text-primary underline underline-offset-2 hover:text-primary/80"
-                >
-                  Tell us what else you earned this year
-                </Link>
+        <div className={cn("rounded-xl border p-5", lastParsed.demo ? "border-amber-200 bg-amber-50" : "border-emerald-200 bg-emerald-50")}>
+          <div className="flex items-start gap-3">
+            <FileCheck2 className={cn("size-5 shrink-0 mt-0.5", lastParsed.demo ? "text-amber-600" : "text-emerald-600")} />
+            <div>
+              <p className={cn("font-bold", lastParsed.demo ? "text-amber-900" : "text-emerald-900")}>
+                {lastParsed.demo ? "Demo Data Applied" : "Successfully Parsed"}
               </p>
-            )}
-          <ul
-            className={`mt-2 space-y-1 ${
-              lastParsed.demo ? "text-amber-800" : "text-emerald-800"
-            }`}
-          >
-            {Object.entries(lastParsed.fields).map(([key, value]) => (
-              <li key={key}>
-                {key}: {String(value)}
-                {lastParsed.fieldConfidence?.[key] &&
-                  lastParsed.fieldConfidence[key] !== "high" && (
-                    <span className="ml-1 text-xs opacity-80">
-                      ({lastParsed.fieldConfidence[key]})
-                    </span>
-                  )}
-              </li>
-            ))}
-          </ul>
+              <p className={cn("text-sm mt-1", lastParsed.demo ? "text-amber-800/80" : "text-emerald-800/80")}>
+                {lastParsed.filename}
+              </p>
+              
+              {lastParsed.warnings && lastParsed.warnings.length > 0 && (
+                <ul className="mt-3 space-y-1 text-xs text-amber-800 font-medium bg-amber-100/50 p-3 rounded-lg">
+                  {lastParsed.warnings.map((warning) => (
+                    <li key={warning}>• {warning}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -10,21 +10,44 @@ async function proxyToPythonServerless(
   request: Request,
   payload: string
 ): Promise<NextResponse> {
+  const RAILWAY_URL = process.env.NEXT_PUBLIC_ENGINE_URL || "";
   const origin = new URL(request.url).origin;
-  const res = await fetch(`${origin}/_/backend/api/py-compute`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: payload,
-  });
-  const data = (await res.json()) as Record<string, unknown>;
-  return NextResponse.json(data, { status: res.status });
+  
+  let targetUrl = `${origin}/_/backend/api/py-compute`;
+  if (RAILWAY_URL) {
+    const cleanUrl = RAILWAY_URL.replace(/\/+$/, "");
+    targetUrl = cleanUrl.endsWith("/api/compute") ? cleanUrl : `${cleanUrl}/api/compute`;
+  }
+
+  console.log(`[proxyToPythonServerless] targetUrl: ${targetUrl}, RAILWAY_URL: ${RAILWAY_URL}`);
+
+  try {
+    const res = await fetch(targetUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: payload,
+    });
+    
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      console.error(`[proxyToPythonServerless] Expected JSON, got ${contentType}: ${text.substring(0, 200)}`);
+      return NextResponse.json({ ok: false, error: `Invalid proxy response from ${targetUrl}: ${res.status}` }, { status: 502 });
+    }
+
+    const data = (await res.json()) as Record<string, unknown>;
+    return NextResponse.json(data, { status: res.status });
+  } catch (error) {
+    console.error("[proxyToPythonServerless] Fetch failed:", error);
+    return NextResponse.json({ ok: false, error: "Failed to reach compute engine" }, { status: 502 });
+  }
 }
 
 function spawnLocalPython(payload: string): Promise<string> {
   const scriptPath = path.join(process.cwd(), "..", "backend", "scripts", "compute_cli.py");
 
   return new Promise<string>((resolve, reject) => {
-    const proc = spawn("python3", [scriptPath], {
+    const proc = spawn("python", [scriptPath], {
       cwd: path.join(process.cwd(), "..", "backend"),
       stdio: ["pipe", "pipe", "pipe"],
     });
@@ -75,6 +98,9 @@ export async function POST(request: Request) {
 
     let output: string;
     try {
+      if (process.env.NEXT_PUBLIC_ENGINE_URL || process.env.NODE_ENV === "production") {
+        return proxyToPythonServerless(request, payload);
+      }
       output = await spawnLocalPython(payload);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Compute failed";

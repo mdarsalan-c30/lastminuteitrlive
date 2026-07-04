@@ -14,13 +14,14 @@ test.describe("CTA paths: marketing", () => {
   test("landing hero CTAs navigate correctly", async ({ page }) => {
     await page.goto("/");
     await expect(
-      page.getByRole("heading", { name: /Running out of time/i })
+      page.getByRole("heading", { name: /Last-minute ITR/i })
     ).toBeVisible();
     await expect(
-      page.getByRole("main").getByRole("button", { name: /Start my free estimate/i })
+      page.getByRole("main").getByRole("button", { name: /Start my return/i })
     ).toBeVisible();
 
     await page
+      .getByRole("main")
       .getByRole("link", { name: "Upload Form 16", exact: true })
       .first()
       .click();
@@ -32,8 +33,24 @@ test.describe("CTA paths: marketing", () => {
     ).toBeVisible();
   });
 
+  test("Form16 quick card yes/no paths", async ({ page }) => {
+    await page.goto("/#filing-prep");
+    const yesLink = page.getByRole("link", { name: /Yes — upload Form 16/i });
+    await expect(yesLink).toBeVisible({ timeout: 15_000 });
+    await yesLink.click();
+    await expect(page).toHaveURL(/\/file\/import\/documents\?source=form16/, {
+      timeout: 30_000,
+    });
+
+    await page.goto("/#filing-prep");
+    const noLink = page.getByRole("link", { name: /No — enter income manually/i });
+    await expect(noLink).toBeVisible({ timeout: 15_000 });
+    await noLink.click();
+    await expect(page).toHaveURL(/\/file\/income/, { timeout: 30_000 });
+  });
+
   test("ITR type quiz renders and suggests outcome", async ({ page }) => {
-    await page.goto("/#itr-quiz");
+    await page.goto("/#filing-prep");
     const quizHeading = page.getByRole("heading", { name: /Find my ITR type/i });
     await expect(quizHeading).toBeVisible({ timeout: 15_000 });
 
@@ -55,7 +72,7 @@ test.describe("CTA paths: marketing", () => {
     const finalSection = page.locator("section").filter({
       has: page.getByRole("heading", { name: /Ready before the deadline/i }),
     });
-    const startLink = finalSection.getByRole("link", { name: /Start filing for/i });
+    const startLink = finalSection.getByRole("link", { name: /Start filing from/i });
     await expect(startLink).toBeVisible({ timeout: 15_000 });
     await startLink.click();
     await expect(page).toHaveURL(/\/file\/checkout\/plans/, { timeout: 30_000 });
@@ -86,7 +103,7 @@ test.describe("CTA paths: filing flow", () => {
   test("regime compare page loads", async ({ page }) => {
     await page.goto("/file/regime");
     await expect(
-      page.getByRole("heading", { name: /Your Smart Tax Summary/i })
+      page.getByRole("heading", { name: /Old vs new tax regime/i })
     ).toBeVisible();
   });
 

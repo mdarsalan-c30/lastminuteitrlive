@@ -1,167 +1,256 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDraftStore } from "@/lib/store/draft";
 import { getPlan } from "@/lib/payments/plans";
 import { getEffectivePrice, getDisplayPricing, formatPlanPriceLabel } from "@/lib/marketing/pricing";
 import { FilingLayout } from "@/components/filing/FilingLayout";
-import { EngineComputeFallback } from "@/components/filing/EngineComputeFallback";
 import RazorpayButton from "@/components/filing/checkout/RazorpayButton";
 import { usePaymentSession } from "@/lib/hooks/usePaymentSession";
-import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
 import { CHECKOUT_PAYMENT, FILING_COMPANION } from "@/lib/copy/filing";
 import { PAYMENT_COPY } from "@/lib/copy/marketing";
-import { formatINR } from "@/lib/format";
 import {
-  Banner,
   Card,
   FilingActions,
   ScreenTitle,
+  Button,
 } from "@/components/filing/ui";
+import { triggerConfetti } from "@/components/filing/Confetti";
+import { ShieldCheck, Tag, Sparkles } from "lucide-react";
 
 export default function PaymentPage() {
   const router = useRouter();
-  const { plan, regime, setPaymentVerified } = useDraftStore();
+  const { plan, setPaymentVerified } = useDraftStore();
   const { refresh: refreshPaymentSession } = usePaymentSession();
-  const [useSnapshot, setUseSnapshot] = useState(false);
-  const {
-    loading,
-    error,
-    engineUnavailable,
-    result,
-    lastSnapshot,
-    userInput,
-    compute,
-  } = useDraftTaxCompute();
+  
   const selectedPlan = getPlan(plan);
-  const effectivePrice = getEffectivePrice(plan);
+  const basePrice = getEffectivePrice(plan);
   const displayPricing = getDisplayPricing(plan);
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
-  const effectiveResult = result ?? (useSnapshot ? lastSnapshot : null);
-  const rc = effectiveResult?.regime_comparison;
-  const activeRegime = regime ?? rc?.recommended_regime ?? "new";
-  const netPayable = rc ? rc[activeRegime].net_payable : null;
-  const refundAmount =
-    netPayable !== null && netPayable < 0 ? Math.abs(netPayable) : 0;
-  const taxDue = netPayable !== null && netPayable > 0 ? netPayable : 0;
+  const [couponCode, setCouponCode] = useState("");
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [couponSuccess, setCouponSuccess] = useState<string | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+
+  const [validatedDiscount, setValidatedDiscount] = useState<{
+    code: string;
+    discountType: "percentage" | "fixed";
+    percentageOff?: number;
+    amountOff?: number;
+  } | null>(null);
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setApplyingCoupon(true);
+    setCouponError(null);
+    setCouponSuccess(null);
+    setValidatedDiscount(null);
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode.trim(), planId: plan }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.valid) {
+        throw new Error(data.reason ?? "Invalid code");
+      }
+      
+      setValidatedDiscount({
+        code: couponCode.trim(),
+        discountType: data.discount,
+        percentageOff: data.percentageOff,
+        amountOff: data.amountOff,
+      });
+      setCouponSuccess("Code applied successfully!");
+      triggerConfetti();
+    } catch (err) {
+      setCouponError(err instanceof Error ? err.message : "Invalid code");
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
+
+  const calculateFinalPrice = () => {
+    if (!validatedDiscount) return basePrice;
+    if (validatedDiscount.discountType === "percentage" && validatedDiscount.percentageOff) {
+      return Math.max(0, basePrice - (basePrice * validatedDiscount.percentageOff) / 100);
+    }
+    if (validatedDiscount.discountType === "fixed" && validatedDiscount.amountOff) {
+      return Math.max(0, basePrice - validatedDiscount.amountOff);
+    }
+    return basePrice;
+  };
+
+  const finalPrice = calculateFinalPrice();
+  const isFree = finalPrice === 0;
+
+  const handleFreeCheckout = async () => {
+    setPaymentError(null);
+    try {
+      const res = await fetch("/api/coupons/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: validatedDiscount?.code, planId: plan }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Checkout failed");
+      
+      setPaymentVerified(plan);
+      await refreshPaymentSession();
+      router.push("/file/companion?unlocked=1");
+    } catch (err) {
+      setPaymentError(err instanceof Error ? err.message : "Checkout failed");
+    }
+  };
 
   return (
-    <FilingLayout
-      mirrorText="You're paying for the step-by-step portal guide — not government filing. Refund and tax-due figures are estimates based on what you've entered so far."
-    >
-      <ScreenTitle
-        title={CHECKOUT_PAYMENT.title}
-        subtitle={CHECKOUT_PAYMENT.subtitle}
-      />
+    <FilingLayout mirrorText="You're paying for the step-by-step portal guide — not government filing.">
+      <div className="max-w-2xl mx-auto space-y-6 pb-24">
+        
+        <div className="text-center mb-8">
+          <ScreenTitle
+            title={CHECKOUT_PAYMENT.title}
+            subtitle={CHECKOUT_PAYMENT.subtitle}
+          />
+        </div>
 
-      <EngineComputeFallback
-        loading={loading}
-        error={error}
-        engineUnavailable={engineUnavailable}
-        lastSnapshot={lastSnapshot}
-        onRetry={() => {
-          setUseSnapshot(false);
-          void compute(userInput);
-        }}
-        onContinueWithSnapshot={() => setUseSnapshot(true)}
-      />
-
-      <Card recommended>
-        {loading ? (
-          <div className="space-y-2 animate-pulse">
-            <div className="h-4 w-3/4 rounded bg-slate-100" />
-            <div className="h-4 w-1/2 rounded bg-slate-100" />
-            <div className="h-4 w-2/3 rounded bg-slate-100" />
+        {/* Premium Plan Card */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 p-8 text-white shadow-xl">
+          <div className="absolute top-0 right-0 p-6 opacity-10">
+            <Sparkles className="w-24 h-24" />
           </div>
-        ) : (
-          <>
-            <p className="text-sm text-slate-700">
-              <strong>Estimated refund (if ITD accepts your return):</strong>{" "}
-              <span className="tabular-nums">{formatINR(refundAmount)}</span>
-            </p>
-            <p className="text-sm text-slate-700 mt-1">
-              <strong>Tax due before filing:</strong>{" "}
-              <span className="tabular-nums">{formatINR(taxDue)}</span>
-            </p>
-            {netPayable !== null && (
-              <p className="text-xs text-slate-500 mt-2">
-                Based on your {activeRegime} regime selection. Final amount
-                confirmed only after ITD processes your return.
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+              <span className="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white backdrop-blur-md mb-3">
+                Selected Plan
+              </span>
+              <h2 className="text-3xl font-bold">{selectedPlan.name}</h2>
+              <p className="text-slate-300 mt-2 max-w-sm text-sm leading-relaxed">
+                Unlock full access to the portal filing guide tailored for your income sources.
               </p>
-            )}
-            {netPayable === null && error && (
-              <p className="text-xs text-amber-700 mt-2">
-                Tax estimate unavailable — figures shown as ₹0 until your draft
-                is recalculated.
-              </p>
-            )}
-          </>
-        )}
-        <p className="text-sm text-slate-700 mt-3">
-          <strong>Plan:</strong> {selectedPlan.name} ·{" "}
-          <span className="tabular-nums">
-            {displayPricing.showOffer && displayPricing.original !== undefined ? (
-              <>
-                {formatPlanPriceLabel(effectivePrice)}{" "}
-                <span className="text-slate-500 line-through">
-                  {formatPlanPriceLabel(displayPricing.original)}
-                </span>
-              </>
+            </div>
+            
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 min-w-[160px] text-right border border-white/10 shadow-inner">
+              <p className="text-xs text-slate-300 uppercase tracking-wider font-semibold mb-1">Total</p>
+              
+              {validatedDiscount ? (
+                <>
+                  <div className="text-sm text-slate-400 line-through mb-1">
+                    {formatPlanPriceLabel(basePrice)}
+                  </div>
+                  <div className="text-4xl font-black text-green-400">
+                    {finalPrice === 0 ? "FREE" : formatPlanPriceLabel(finalPrice)}
+                  </div>
+                </>
+              ) : (
+                <div className="text-4xl font-black text-white">
+                  {formatPlanPriceLabel(basePrice)}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Coupon Code Section */}
+        <Card className="border-0 shadow-sm bg-white rounded-2xl p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Tag className="w-5 h-5 text-primary" />
+            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">Coupon Code</h3>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="text"
+              placeholder="Enter code here"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+              className="flex-1 min-h-12 px-4 py-3 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary uppercase font-mono bg-slate-50 text-slate-900 transition-all"
+              disabled={applyingCoupon || !!validatedDiscount}
+            />
+            {validatedDiscount ? (
+              <Button
+                variant="secondary"
+                className="min-h-12 px-6 rounded-xl text-sm font-medium"
+                onClick={() => {
+                  setValidatedDiscount(null);
+                  setCouponCode("");
+                  setCouponSuccess(null);
+                }}
+              >
+                Remove Code
+              </Button>
             ) : (
-              formatPlanPriceLabel(effectivePrice)
+              <Button
+                variant="primary"
+                className="min-h-12 px-8 rounded-xl text-sm font-medium shadow-md hover:shadow-lg transition-all"
+                onClick={handleApplyCoupon}
+                disabled={applyingCoupon || !couponCode.trim()}
+              >
+                {applyingCoupon ? "Applying..." : "Apply Code"}
+              </Button>
             )}
-          </span>
+          </div>
+          
+          {couponError && (
+            <div className="mt-3 text-sm text-red-500 flex items-center gap-1.5 bg-red-50 p-3 rounded-lg border border-red-100">
+              {couponError}
+            </div>
+          )}
+          
+          {couponSuccess && (
+            <div className="mt-3 text-sm text-emerald-600 flex items-center gap-1.5 bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+              <ShieldCheck className="w-4 h-4" />
+              {couponSuccess}
+            </div>
+          )}
+        </Card>
+
+        {paymentError && (
+          <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+            {paymentError}
+          </div>
+        )}
+
+        <FilingActions
+          hint={
+            <div className="flex items-center justify-center gap-2 text-slate-500 text-xs">
+              <ShieldCheck className="w-4 h-4" />
+              <span>{PAYMENT_COPY.secureLine} · Payments processed securely</span>
+            </div>
+          }
+        >
+          {isFree ? (
+            <Button
+              variant="primary"
+              className="min-h-12 w-full md:w-auto rounded-xl text-base shadow-lg"
+              onClick={handleFreeCheckout}
+            >
+              Unlock Guide Now
+            </Button>
+          ) : (
+            <RazorpayButton
+              planId={plan}
+              couponCode={validatedDiscount?.code}
+              onSuccess={async () => {
+                setPaymentVerified(plan);
+                await refreshPaymentSession();
+                router.push("/file/companion?unlocked=1");
+              }}
+              onError={setPaymentError}
+              className="min-h-12 w-full md:w-auto rounded-xl text-base shadow-lg"
+            />
+          )}
+        </FilingActions>
+        
+        <p className="text-center text-xs text-slate-400 mt-6 max-w-md mx-auto leading-relaxed">
+          By proceeding, you agree to our <Link href="/terms" className="underline hover:text-slate-600 transition-colors">Terms</Link> and <Link href="/refund-policy" className="underline hover:text-slate-600 transition-colors">Refund Policy</Link>. This unlocks the portal guide—you must manually submit your return on incometax.gov.in.
         </p>
-      </Card>
 
-      <Banner variant="info">
-        Refunds go to your pre-validated bank account only after ITD processes your return.
-      </Banner>
-
-      <Banner variant="info">
-        {FILING_COMPANION.paywallHeadline} — copy each value into incometax.gov.in yourself.
-        We never auto-submit to the Income Tax Department. Independently operated — not
-        affiliated with ITD.
-      </Banner>
-
-      {paymentError && (
-        <Banner variant="critical">{paymentError}</Banner>
-      )}
-
-      <p className="text-xs text-slate-500">
-        By paying you agree to our{" "}
-        <Link href="/terms" className="text-primary underline">
-          Terms
-        </Link>{" "}
-        and{" "}
-        <Link href="/refund-policy" className="text-primary underline">
-          Refund Policy
-        </Link>
-        . This unlocks your portal filing guide — you file and e-verify on incometax.gov.in
-        yourself.
-      </p>
-
-      <FilingActions
-        hint={
-          <p className="text-tier-legal">
-            {PAYMENT_COPY.secureLine} · {PAYMENT_COPY.portalLine}
-          </p>
-        }
-      >
-        <RazorpayButton
-          planId={plan}
-          onSuccess={async () => {
-            setPaymentVerified(plan);
-            await refreshPaymentSession();
-            router.push("/file/companion?unlocked=1");
-          }}
-          onError={setPaymentError}
-          className="min-h-11 w-full md:w-auto"
-        />
-      </FilingActions>
+      </div>
     </FilingLayout>
   );
 }

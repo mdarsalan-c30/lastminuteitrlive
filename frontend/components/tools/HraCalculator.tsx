@@ -70,19 +70,21 @@ export function HraCalculator() {
   };
 
   return (
-    <div className="card-premium p-5" id="hra-calculator">
-      <div className="flex items-start gap-2">
-        <Home className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
+    <div className="rounded-2xl p-6 shadow-sm" id="hra-calculator" style={{ backgroundColor: "#bfe9e0" }}>
+      <div className="flex items-start gap-3">
+        <div className="flex items-center justify-center rounded-xl p-3 bg-white/60 shadow-sm">
+          <Home className="size-6" style={{ color: "#0e5f63" }} aria-hidden />
+        </div>
         <div>
-          <h2 className="text-base font-semibold text-foreground">HRA exemption calculator</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h2 className="text-xl font-bold" style={{ color: "#0e5f63" }}>HRA exemption calculator</h2>
+          <p className="mt-1 text-sm font-medium opacity-80" style={{ color: "#0e5f63" }}>
             Section 10(13A) — exemption is the least of three limbs. Allowed under the old regime
             only (the new regime uses the higher ₹75,000 standard deduction instead).
           </p>
         </div>
       </div>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <NumberField
           id="hra-basic"
           label="Annual basic salary (+ DA)"
@@ -105,8 +107,8 @@ export function HraCalculator() {
           hint="Total rent paid in the financial year"
         />
         <div>
-          <span className="text-sm font-medium text-foreground">City type</span>
-          <div className="mt-1 inline-flex rounded-lg border border-border/70 bg-white p-0.5">
+          <span className="text-sm font-medium text-slate-800">City type</span>
+          <div className="mt-1 inline-flex rounded-lg border border-white/50 bg-white/40 p-0.5">
             {(["metro", "non_metro"] as const).map((tier) => (
               <button
                 key={tier}
@@ -115,36 +117,37 @@ export function HraCalculator() {
                 aria-pressed={cityTier === tier}
                 className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                   cityTier === tier
-                    ? "bg-primary text-white"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "text-white shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
+                style={cityTier === tier ? { backgroundColor: "#0e5f63" } : {}}
               >
                 {tier === "metro" ? "Metro (50%)" : "Non-metro (40%)"}
               </button>
             ))}
           </div>
-          <span className="mt-1 block text-xs text-muted-foreground">
+          <span className="mt-1 block text-xs text-slate-600">
             Metro: Delhi, Mumbai, Kolkata, Chennai
           </span>
         </div>
       </div>
 
       {hasInput && (
-        <div className="mt-5 rounded-xl border border-border/60 bg-muted/30 p-4">
+        <div className="mt-6 rounded-xl border border-white/50 bg-white/60 p-5 shadow-sm">
           <div className="flex items-baseline justify-between">
-            <span className="text-sm font-medium text-foreground">Exempt HRA</span>
-            <span className="text-xl font-bold tabular-nums text-emerald-700">
+            <span className="text-sm font-bold uppercase tracking-wide" style={{ color: "#0e5f63" }}>Exempt HRA</span>
+            <span className="text-2xl font-bold tabular-nums" style={{ color: "#0e5f63" }}>
               {formatINR(result.exemption)}
             </span>
           </div>
           <div className="mt-1 flex items-baseline justify-between">
-            <span className="text-sm text-muted-foreground">Taxable HRA</span>
-            <span className="text-sm font-semibold tabular-nums text-foreground">
+            <span className="text-sm font-medium opacity-80" style={{ color: "#0e5f63" }}>Taxable HRA</span>
+            <span className="text-sm font-semibold tabular-nums" style={{ color: "#0e5f63" }}>
               {formatINR(result.taxable)}
             </span>
           </div>
 
-          <ul className="mt-3 space-y-1.5 border-t border-border/60 pt-3 text-xs text-muted-foreground">
+          <ul className="mt-4 space-y-2 border-t border-white/60 pt-4 text-xs font-medium opacity-80" style={{ color: "#0e5f63" }}>
             <li className="flex justify-between">
               <span>1. Actual HRA received</span>
               <span className="tabular-nums">{formatINR(result.limbs.actualHraReceived)}</span>
@@ -158,13 +161,14 @@ export function HraCalculator() {
               <span className="tabular-nums">{formatINR(result.limbs.rentMinusTenPercent)}</span>
             </li>
           </ul>
-          <p className="mt-2 text-xs text-muted-foreground">{LIMB_LABEL[result.bindingLimb]}.</p>
+          <p className="mt-2 text-xs font-medium opacity-80" style={{ color: "#0e5f63" }}>{LIMB_LABEL[result.bindingLimb]}.</p>
 
-          <div className="mt-4 flex flex-wrap items-center gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={handleSave}
-              className="inline-flex min-h-10 items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90"
+              className="inline-flex min-h-10 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90"
+              style={{ backgroundColor: "#0e5f63" }}
             >
               Save rent details to draft
             </button>

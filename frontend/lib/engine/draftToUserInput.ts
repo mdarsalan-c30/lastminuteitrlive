@@ -1,7 +1,20 @@
 import type { BusinessType } from "@/lib/filing/case-matrix";
 import { incomeBandFromGross } from "@/lib/filing/case-matrix";
-import type { DraftState } from "@/lib/store/draft";
-import type { BusinessInput, CapitalGainsInput, ProfileFlags, UserInput } from "./types";
+import type {
+  CarryForwardDraft,
+  DepreciationBlockDraft,
+  DraftState,
+  ExtraPropertyDraft,
+  HousePropertyDraft,
+} from "@/lib/store/draft";
+import type {
+  BroughtForwardLossesInput,
+  BusinessInput,
+  CapitalGainsInput,
+  HousePropertyInput,
+  ProfileFlags,
+  UserInput,
+} from "./types";
 
 const CAP_80TTB = 50_000;
 
@@ -57,28 +70,53 @@ function businessTypeCodeFromDraft(
   return matrixBusiness;
 }
 
+function depreciationBlocksFromDraft(
+  blocks: DepreciationBlockDraft[] | undefined
+): BusinessInput["depreciation_blocks"] {
+  if (!blocks?.length) return undefined;
+  return blocks
+    .filter((b) => b.openingWdv > 0 || b.additionsFullYear > 0 || b.additionsHalfYear > 0)
+    .map((b) => ({
+      block: b.label || "plant_machinery_15",
+      rate: b.rate,
+      opening_wdv: b.openingWdv,
+      additions_180d_plus: b.additionsFullYear,
+      additions_under_180d: b.additionsHalfYear,
+      sale_proceeds: b.saleProceeds,
+    }));
+}
+
 function businessFromChips(
   matrixBusiness: BusinessType,
-  incomeChips: string[]
+  incomeChips: string[],
+  income: DraftState["income"],
+  depreciationBlocks?: DepreciationBlockDraft[]
 ): BusinessInput | undefined {
   if (matrixBusiness === "v") {
+    const receipts = income.businessRevenue ?? 0;
+    const expenses = income.businessExpenses ?? 0;
+    const blocks = depreciationBlocksFromDraft(depreciationBlocks);
     return {
       business_type: "regular_books",
-      actual_gross_receipts: 0,
-      actual_expenses: 0,
+      actual_gross_receipts: receipts > 0 ? receipts : 0,
+      actual_expenses: expenses,
+      ...(blocks ? { depreciation_blocks: blocks } : {}),
     };
   }
   if (incomeChips.includes("business_presumptive") || matrixBusiness === "w") {
+    const turnover = income.businessRevenue ?? 0;
     return {
       business_type: "presumptive_business",
-      turnover: CG_ESTIMATE_PLACEHOLDER,
+      turnover: turnover > 0 ? turnover : CG_ESTIMATE_PLACEHOLDER,
       digital_turnover_pct: 1,
     };
   }
   if (incomeChips.includes("freelance")) {
+    const receipts = income.freelanceRevenue ?? 0;
     return {
       business_type: "presumptive_profession",
-      gross_professional_receipts: CG_ESTIMATE_PLACEHOLDER,
+      gross_professional_receipts:
+        receipts > 0 ? receipts : CG_ESTIMATE_PLACEHOLDER,
     };
   }
   return undefined;
@@ -104,23 +142,51 @@ function profileFlagsFromDraft(
 }
 
 function housePropertyToInput(
-  hp: DraftState["houseProperty"]
-): UserInput["house_property"] | undefined {
+  hp: HousePropertyDraft | ExtraPropertyDraft
+): HousePropertyInput | undefined {
   if (hp.propertyType === "none") return undefined;
 
   const share = hp.coOwnerPercent;
+  const principal = hp.homeLoanPrincipal ?? 0;
   if (hp.propertyType === "let_out") {
     return {
       property_type: "let_out",
       annual_rent_received: scaleByOwnership(hp.annualRent, share),
       municipal_tax: scaleByOwnership(hp.municipalTax, share),
       home_loan_interest: scaleByOwnership(hp.homeLoanInterest, share),
+      ...(principal > 0
+        ? { home_loan_principal: scaleByOwnership(principal, share) }
+        : {}),
     };
   }
 
   return {
     property_type: "self_occupied",
     home_loan_interest: scaleByOwnership(hp.homeLoanInterest, share),
+    ...(principal > 0
+      ? { home_loan_principal: scaleByOwnership(principal, share) }
+      : {}),
+  };
+}
+
+function carryForwardToInput(
+  cf: CarryForwardDraft | undefined
+): BroughtForwardLossesInput | undefined {
+  if (!cf) return undefined;
+  const hasAny =
+    cf.hpLoss > 0 ||
+    cf.stcl > 0 ||
+    cf.ltcl > 0 ||
+    cf.businessLoss > 0 ||
+    cf.unabsorbedDepreciation > 0;
+  if (!hasAny) return undefined;
+  return {
+    hp_loss: cf.hpLoss,
+    stcl: cf.stcl,
+    ltcl: cf.ltcl,
+    business_loss: cf.businessLoss,
+    unabsorbed_depreciation: cf.unabsorbedDepreciation,
+    prior_return_filed_on_time: cf.priorReturnOnTime,
   };
 }
 
@@ -134,7 +200,10 @@ export function draftToUserInput(draft: Pick<
   | "houseProperty"
   | "deductions"
   | "connectedConnectors"
->): UserInput {
+> & Partial<Pick<
+  DraftState,
+  "extraProperties" | "carryForward" | "depreciationBlocks"
+>>): UserInput {
   const age = ageFromBand(draft.profile.ageBand);
   const gross = draft.income.grossSalary;
   const basic = Math.round(gross * 0.5);
@@ -167,24 +236,49 @@ export function draftToUserInput(draft: Pick<
     deductions.savings_interest_deduction = Math.min(fdInterest, CAP_80TTB);
   }
 
-  const housePropertyInput = housePropertyToInput(draft.houseProperty);
+  const primaryHp = housePropertyToInput(draft.houseProperty);
+  const extras = (draft.extraProperties ?? [])
+    .map(housePropertyToInput)
+    .filter((p): p is HousePropertyInput => p !== undefined);
+  // Portfolio path when 2+ properties; otherwise keep the single-property field.
+  const usePortfolio = primaryHp !== undefined && extras.length > 0;
+  const houseProperties = usePortfolio && primaryHp
+    ? [primaryHp, ...extras]
+    : undefined;
+  const housePropertyInput = usePortfolio ? undefined : primaryHp;
+
   const capitalGainsInput = capitalGainsFromChips(draft.incomeChips);
-  const businessInput = businessFromChips(draft.matrix.business, draft.incomeChips);
+  const businessInput = businessFromChips(
+    draft.matrix.business,
+    draft.incomeChips,
+    draft.income,
+    draft.depreciationBlocks
+  );
+  const carryForwardInput = carryForwardToInput(draft.carryForward);
   const profileFlags = profileFlagsFromDraft(
     draft.matrix,
     draft.incomeChips,
     draft.income.grossSalary
   );
 
+  // Home-loan principal from primary property also feeds the 80C pool.
+  const principal80c = draft.houseProperty.homeLoanPrincipal ?? 0;
+  if (principal80c > 0 && (deductions.home_loan_principal ?? 0) === 0) {
+    deductions.home_loan_principal = principal80c;
+  }
+
   return {
     age,
     mode: draft.filingMode,
     residential_status:
       draft.profile.residentialStatus === "non_resident" ? "nri" : draft.profile.residentialStatus,
-    assessment_year: "2025-26",
+    assessment_year: "2026-27",
+    late_filing: draft.profile.lateFiling ?? false,
     salary,
     ...(housePropertyInput ? { house_property: housePropertyInput } : {}),
+    ...(houseProperties ? { house_properties: houseProperties } : {}),
     ...(capitalGainsInput ? { capital_gains: capitalGainsInput } : {}),
+    ...(carryForwardInput ? { carry_forward: carryForwardInput } : {}),
     ...(businessInput ? { business: businessInput } : {}),
     other_income: {
       fd_interest: fdInterest,

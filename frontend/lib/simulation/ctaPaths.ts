@@ -30,7 +30,7 @@ export const MARKETING_CTA_PATHS: CtaPathEntry[] = [
     label: HERO_CTAS.uploadForm16.label,
     href: HERO_CTAS.uploadForm16.href,
     source: "landing-hero",
-    expectedJourneyStep: "A",
+    expectedJourneyStep: "B",
   },
   {
     id: "hero-how-it-works",
@@ -49,7 +49,7 @@ export const MARKETING_CTA_PATHS: CtaPathEntry[] = [
   {
     id: "final-cta-secondary",
     label: FINAL_CTA.secondary,
-    href: "/file/onboarding/eligibility?step=about-you",
+    href: "/file/start",
     source: "FinalCta",
     expectedJourneyStep: "A",
   },
@@ -58,19 +58,19 @@ export const MARKETING_CTA_PATHS: CtaPathEntry[] = [
     label: FORM16_QUICK.yes.label,
     href: FORM16_QUICK.yes.href,
     source: "Form16QuickCard",
-    expectedJourneyStep: "A",
+    expectedJourneyStep: "B",
   },
   {
     id: "form16-quick-no",
     label: FORM16_QUICK.no.label,
     href: FORM16_QUICK.no.href,
     source: "Form16QuickCard",
-    expectedJourneyStep: "A",
+    expectedJourneyStep: "E", // CONFIRM income tab
   },
   {
     id: "file-welcome-primary",
     label: "Start eligibility",
-    href: "/file/onboarding/eligibility?step=about-you",
+    href: "/file/start",
     source: "file/page",
     expectedJourneyStep: "A",
   },
@@ -86,7 +86,7 @@ export const MARKETING_CTA_PATHS: CtaPathEntry[] = [
     label: "Form16 fast path",
     href: buildDocumentsFastPathUrl(),
     source: "filing/routes",
-    expectedJourneyStep: "A",
+    expectedJourneyStep: "B",
   },
   {
     id: "eligibility-form16",
@@ -107,7 +107,7 @@ export const MARKETING_CTA_PATHS: CtaPathEntry[] = [
     label: c.title,
     href: c.href,
     source: "QuickStart",
-    expectedJourneyStep: "A" as const,
+    expectedJourneyStep: "B" as const,
   })),
   ...Object.entries(ITR_TYPE_QUIZ.results).map(([key, result]) => ({
     id: `quiz-result-${key}`,

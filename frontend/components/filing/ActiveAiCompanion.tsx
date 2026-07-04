@@ -226,11 +226,16 @@ export function ActiveAiCompanion() {
   // Initial welcome message from the Genie when changing steps
   useEffect(() => {
     const stepGuide = STEP_GUIDANCE[currentStep];
-    const initialText = activeField
-      ? `I see you are focusing on the **${
+    let initialText = "";
+    if (activeField) {
+      initialText = `I see you are focusing on the **${
           FIELD_GUIDANCE[activeField]?.title ?? activeField
-        }** field. Let me explain: ${FIELD_GUIDANCE[activeField]?.tip ?? "Fill out this detail."}`
-      : stepGuide?.banner ?? "I am ready to guide you. Ask me anything!";
+        }** field. Let me explain: ${FIELD_GUIDANCE[activeField]?.tip ?? "Fill out this detail."}`;
+    } else if (stepGuide) {
+      initialText = `${stepGuide.banner}\n\n${stepGuide.tips.map(t => `• ${t}`).join("\n")}`;
+    } else {
+      initialText = "I am ready to guide you. Ask me anything!";
+    }
 
     setMessages([
       {
@@ -240,6 +245,8 @@ export function ActiveAiCompanion() {
       },
     ]);
   }, [currentStep, activeField]);
+
+  const { handoff, result } = useDraftTaxCompute({ readOnly: true });
 
   // Scroll to bottom of chat when new message arrives
   useEffect(() => {
@@ -253,7 +260,7 @@ export function ActiveAiCompanion() {
     if (currentStep === "income") return ["What is Section 17(1)?", "What is Standard Deduction?"];
     if (currentStep === "deductions") return ["What is 80C limit?", "Can I claim rent without rent receipt?"];
     if (currentStep === "regime") return ["Old vs New regime differences?", "What is surcharge?"];
-    if (currentStep === "review") return ["What if there is a mismatch?", "How to avoid notices?"];
+    if (currentStep === "review" || currentStep === "checkout") return ["Get Expert CA Advice", "What if there is a mismatch?", "How to avoid notices?"];
     return ["Is my data safe?", "What is Standard Deduction?"];
   })();
 
@@ -287,6 +294,54 @@ export function ActiveAiCompanion() {
       return;
     }
 
+    if (normalizedQuestion === "get expert ca advice") {
+      if (!handoff) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `genie_${Date.now()}`,
+            role: "assistant",
+            text: "I need to compute your taxes first before I can give you expert CA advice. Please fill in your income details.",
+          },
+        ]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/layer2", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(handoff),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `genie_${Date.now()}`,
+              role: "assistant",
+              text: data.advice || "No advice returned.",
+            },
+          ]);
+        } else {
+          throw new Error("Failed to fetch CA advice");
+        }
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `genie_${Date.now()}`,
+            role: "assistant",
+            text: "Sorry, the AI CA brain is temporarily unavailable. Please try again later.",
+          },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     // Call API fallback for other/custom questions
     try {
       const res = await fetch("/api/chat", {
@@ -296,7 +351,6 @@ export function ActiveAiCompanion() {
       });
       if (res.ok) {
         const data = await res.json();
-        // Take last response from message array
         const responseText = data.messages?.[data.messages.length - 1]?.text ?? "I'm checking that for you.";
         setMessages((prev) => [
           ...prev,
@@ -340,7 +394,7 @@ export function ActiveAiCompanion() {
         </div>
         <div>
           <h4 className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
-            TaxSaathi Genie
+            LastMinuteITR Genie
           </h4>
           <p className="text-[10px] text-slate-500">Active filing assistant</p>
         </div>
@@ -380,104 +434,87 @@ export function ActiveAiCompanion() {
               </div>
             </div>
           </div>
-        ) : (
-          /* Step guidance (if no field is focused) */
-          currentStepGuidance && (
-            <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3 animate-in fade-in duration-300">
-              <div className="flex items-center gap-2">
-                <HelpCircle className="size-4.5 text-blue-500" />
-                <h5 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                  Step Tips
-                </h5>
+        ) : null}
+
+        {/* 3. Integrated Conversation Thread */}
+        <div className="flex-1 flex flex-col min-h-[350px] bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden mb-2">
+          {/* Header */}
+          <div className="bg-slate-50/50 px-3 py-2 border-b border-slate-100 flex items-center justify-between shrink-0">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <MessageSquare className="size-3" />
+              Genie Chat & Q&A
+            </span>
+          </div>
+
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin bg-slate-50/20">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={cn(
+                  "flex flex-col gap-1 rounded-xl p-2.5 max-w-[90%] leading-relaxed",
+                  msg.role === "user"
+                    ? "bg-slate-100 text-slate-900 self-end ml-auto rounded-tr-sm"
+                    : "bg-blue-50/70 text-slate-800 border border-blue-100/40 self-start mr-auto rounded-tl-sm"
+                )}
+              >
+                <p className="font-semibold text-[9px] uppercase text-slate-400">
+                  {msg.role === "user" ? "You" : "Genie"}
+                </p>
+                <p className="whitespace-pre-line text-xs">{msg.text}</p>
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                {currentStepGuidance.banner}
-              </p>
-              <ul className="space-y-2 pt-1.5 border-t border-slate-50">
-                {currentStepGuidance.tips.map((tip, i) => (
-                  <li key={i} className="flex gap-2 text-xs text-slate-500 leading-relaxed">
-                    <span className="text-blue-500 font-semibold">•</span>
-                    <span>{tip}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )
-        )}
+            ))}
+            {loading && (
+              <div className="bg-blue-50/50 text-slate-500 border border-blue-100/20 rounded-xl p-2.5 max-w-[90%] self-start mr-auto animate-pulse text-xs rounded-tl-sm">
+                Genie is writing…
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
 
-        {/* 3. Conversation Thread */}
-        <div className="space-y-3 pt-2">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 px-1">
-            Genie Chat & Q&A
-          </p>
-          <div className="bg-white border border-slate-100 rounded-2xl p-3 shadow-sm min-h-48 flex flex-col justify-between gap-3">
-            <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin pr-1 text-xs">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={cn(
-                    "flex flex-col gap-1 rounded-xl p-2.5 max-w-[90%] leading-relaxed",
-                    msg.role === "user"
-                      ? "bg-slate-100 text-slate-900 self-end ml-auto"
-                      : "bg-blue-50/50 text-slate-700 border border-blue-100/20 self-start mr-auto"
-                  )}
-                >
-                  <p className="font-medium text-[10px] uppercase text-slate-400">
-                    {msg.role === "user" ? "You" : "Genie"}
-                  </p>
-                  <p className="whitespace-pre-line">{msg.text}</p>
-                </div>
-              ))}
-              {loading && (
-                <div className="bg-blue-50/30 text-slate-500 border border-blue-100/10 rounded-xl p-2.5 max-w-[90%] self-start mr-auto animate-pulse">
-                  Genie is writing…
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Suggested Question Chips */}
-            <div className="flex flex-wrap gap-1.5 pt-2 border-t border-slate-50 shrink-0">
+          {/* Suggested Question Chips */}
+          <div className="px-3 py-2 bg-white shrink-0">
+            <div className="flex flex-wrap gap-1.5">
               {suggestedQuestions.map((q) => (
                 <button
                   key={q}
                   onClick={() => handleSendQuestion(q)}
-                  className="text-[10px] font-medium text-blue-600 bg-blue-50/50 hover:bg-blue-50 hover:text-blue-700 border border-blue-100/40 rounded-lg px-2 py-1 text-left transition-colors"
+                  className="text-[10px] font-medium text-blue-600 bg-blue-50/40 hover:bg-blue-100 hover:text-blue-800 border border-blue-100/60 rounded-lg px-2.5 py-1.5 text-left transition-colors"
                 >
                   {q}
                 </button>
               ))}
             </div>
           </div>
+
+          {/* 4. Chat Input Form Integrated */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSendQuestion(inputText);
+            }}
+            className="p-2 border-t border-slate-100 bg-slate-50 shrink-0"
+          >
+            <div className="flex items-center gap-1.5 bg-white border border-slate-200 shadow-inner rounded-xl px-2 py-1.5 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-400 transition-all">
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Ask Genie a question…"
+                className="flex-1 min-w-0 bg-transparent text-xs text-slate-900 focus:outline-none placeholder:text-slate-400 px-1 py-1"
+                disabled={loading}
+              />
+              <button
+                type="submit"
+                disabled={loading || !inputText.trim()}
+                className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:translate-y-px transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <Send className="size-3.5" />
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-
-      {/* 4. Chat Input Form */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSendQuestion(inputText);
-        }}
-        className="p-3 border-t border-slate-100 bg-white"
-      >
-        <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-100 rounded-xl px-2.5 py-1.5">
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Ask Genie a question…"
-            className="flex-1 min-w-0 bg-transparent text-xs text-slate-900 focus:outline-none placeholder:text-slate-400 py-1"
-            disabled={loading}
-          />
-          <button
-            type="submit"
-            disabled={loading || !inputText.trim()}
-            className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:translate-y-px transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <Send className="size-3" />
-          </button>
-        </div>
-      </form>
     </div>
   );
 }

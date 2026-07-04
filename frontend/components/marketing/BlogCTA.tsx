@@ -24,7 +24,7 @@ export function BlogCTA({ className }: BlogCTAProps) {
       </h2>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
         Upload Form 16 and AIS, compare old vs new regime on your numbers, and catch mismatches
-        early. Launch offer from ₹349 — you still submit and e-verify on the government portal
+        early. Plans from ₹349 — you still submit and e-verify on the government portal
         yourself.
       </p>
       <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateCoupon } from "@/lib/admin/coupons";
+import { validateReferralCode } from "@/lib/admin/referrals";
 import type { PlanId } from "@/lib/payments/plans";
+import { PLANS } from "@/lib/payments/plans";
 
-const VALID_PLANS: PlanId[] = ["free", "diy", "ai_smart", "ca"];
+const VALID_PLANS = Object.keys(PLANS) as PlanId[];
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,14 +17,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ valid: false, reason: "Invalid plan" });
     }
 
-    const result = await validateCoupon(body.code, planId);
-    if (!result.valid || !result.coupon) {
-      return NextResponse.json({ valid: false, reason: result.reason });
+    let result = await validateCoupon(body.code, planId);
+    let isReferral = false;
+    let refResult: any = null;
+
+    if (!result.valid) {
+      refResult = await validateReferralCode(body.code, planId);
+      if (refResult.valid) {
+        isReferral = true;
+      } else {
+        return NextResponse.json({ valid: false, reason: result.reason }); // Original reason
+      }
     }
+
+    if (isReferral) {
+      return NextResponse.json({
+        valid: true,
+        discount: "percentage",
+        amountOff: null,
+        percentageOff: refResult.refereeDiscountPct,
+      });
+    }
+
     return NextResponse.json({
       valid: true,
-      discount: result.coupon.discount,
-      amountOff: result.coupon.amountOff ?? null,
+      discount: result.coupon!.discount,
+      amountOff: result.coupon!.amountOff ?? null,
     });
   } catch {
     return NextResponse.json(

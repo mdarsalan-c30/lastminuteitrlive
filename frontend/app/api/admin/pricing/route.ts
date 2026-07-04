@@ -7,9 +7,9 @@ import {
   snapshotPricing,
   upsertPricingRow,
 } from "@/lib/pricing/config";
-import type { PlanId } from "@/lib/payments/plans";
+import { ADMIN_PRICING_PLAN_IDS, type PlanId } from "@/lib/payments/plans";
 
-const VALID_PLANS: PlanId[] = ["free", "diy", "ai_smart", "ca"];
+const VALID_PLANS: PlanId[] = ADMIN_PRICING_PLAN_IDS;
 
 interface PricingRowInput {
   planId: PlanId;

@@ -54,6 +54,47 @@ const PortalFootprintWizard = dynamic(
   }
 );
 
+function SubmittedAckCard() {
+  const router = useRouter();
+  const markReturnSubmitted = useDraftStore((s) => s.markReturnSubmitted);
+  const filingOutcome = useDraftStore((s) => s.filingOutcome);
+  const [ack, setAck] = useState(filingOutcome.acknowledgementNumber);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = () => {
+    const value = ack.trim();
+    if (value.length < 6) {
+      setError("Enter the acknowledgement number from the portal.");
+      return;
+    }
+    markReturnSubmitted(value);
+    router.push("/file/done");
+  };
+
+  return (
+    <div className="mt-4 space-y-2 border-t border-slate-100 pt-4">
+      <p className="text-sm font-semibold text-slate-900">I submitted on the portal</p>
+      <p className="text-xs text-slate-600">
+        Paste your acknowledgement number to start the 30-day e-verify countdown.
+      </p>
+      <input
+        type="text"
+        value={ack}
+        onChange={(e) => {
+          setAck(e.target.value);
+          setError(null);
+        }}
+        placeholder="Acknowledgement number"
+        className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm"
+      />
+      {error && <p className="text-xs text-amber-700">{error}</p>}
+      <Button onClick={handleSubmit} className="w-full">
+        Save &amp; continue
+      </Button>
+    </div>
+  );
+}
+
 function PortalFootprintWizardSkeleton() {
   return (
     <div
@@ -246,7 +287,7 @@ function CompanionContent() {
                 subtitle={FILING_COMPANION.subtitle}
                 badge={
                   <span className="mb-3 inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-primary">
-                    Personal filing guide
+                    Companion mode · Manual filing on ITD portal
                   </span>
                 }
               />
@@ -273,6 +314,20 @@ function CompanionContent() {
               )}
             </div>
           </div>
+
+          {session?.passkey && (
+            <Banner variant="info">
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between w-full">
+                <div>
+                  <strong className="font-semibold text-slate-800">Chrome Extension Passkey: </strong>
+                  <code className="bg-slate-100 border border-slate-200 px-2 py-1 rounded text-sm font-mono select-all text-primary font-bold">{session.passkey}</code>
+                </div>
+                <div className="text-xs text-slate-500 font-medium">
+                  Valid for 7 days until {new Date(session.expiresAt || "").toLocaleDateString()}
+                </div>
+              </div>
+            </Banner>
+          )}
 
       {justUnlocked && (
         <Banner variant="success">
@@ -455,6 +510,7 @@ function CompanionContent() {
                 </span>
               </p>
             )}
+            <SubmittedAckCard />
           </div>
 
           <div className="text-xs">

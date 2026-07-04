@@ -1,4 +1,8 @@
 import crypto from "crypto";
+import { hashPassword, verifyPassword } from "@/lib/auth/password";
+import { requireSessionSecret } from "@/lib/auth/sessionSecret";
+
+export { hashPassword, verifyPassword };
 
 export const ADMIN_SESSION_COOKIE = "ts_admin_session";
 /** Admin session lifetime — 12 hours. */
@@ -17,26 +21,18 @@ export interface AdminSession {
   exp: number;
 }
 
-export function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password).digest("hex");
-}
-
 function getSessionSecret(): string {
-  const secret =
-    process.env.ADMIN_SESSION_SECRET ??
-    process.env.PAYMENT_SESSION_SECRET ??
-    process.env.RAZORPAY_KEY_SECRET;
-  if (secret) return secret;
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("ADMIN_SESSION_SECRET required in production");
-  }
-  return "dev-admin-session-secret";
+  return requireSessionSecret({
+    envKeys: ["ADMIN_SESSION_SECRET", "PAYMENT_SESSION_SECRET"],
+    devFallback: "dev-admin-session-secret",
+    label: "Admin session",
+  });
 }
 
 /**
  * Admin users come from the ADMIN_USERS env var (JSON array of
- * {email, passwordHash, role}). In development, if none is configured, a single
- * bootstrap CEO is provided so the dashboard is usable out of the box.
+ * {email, passwordHash, role}). In development only, a bootstrap CEO is
+ * provided when none is configured.
  */
 export function getAdminUsers(): AdminUser[] {
   const raw = process.env.ADMIN_USERS;
@@ -51,22 +47,22 @@ export function getAdminUsers(): AdminUser[] {
           u.role.length > 0
       );
     } catch {
-      // fall through to bootstrap
+      // fall through
     }
   }
 
-  if (process.env.NODE_ENV !== "production") {
-    const devPassword = process.env.ADMIN_DEV_PASSWORD ?? "admin1234";
-    return [
-      {
-        email: "admin@taxsaathi.local",
-        passwordHash: hashPassword(devPassword),
-        role: "ceo",
-      },
-    ];
+  if (process.env.NODE_ENV === "production") {
+    return [];
   }
 
-  return [];
+  const devPassword = process.env.ADMIN_DEV_PASSWORD ?? "ITR2026";
+  return [
+    {
+      email: "admin@lastminuteitr.local",
+      passwordHash: hashPassword(devPassword),
+      role: "ceo",
+    },
+  ];
 }
 
 export function verifyCredentials(
@@ -78,17 +74,14 @@ export function verifyCredentials(
     (u) => u.email.toLowerCase() === email.trim().toLowerCase()
   );
   if (!user) return null;
-  const candidate = hashPassword(password);
-  const a = Buffer.from(candidate);
-  const b = Buffer.from(user.passwordHash);
-  if (a.length !== b.length) return null;
-  if (!crypto.timingSafeEqual(a, b)) return null;
+  if (!verifyPassword(password, user.passwordHash)) return null;
   return user;
 }
 
 function sign(encodedPayload: string): string {
+  const secret = getSessionSecret();
   return crypto
-    .createHmac("sha256", getSessionSecret())
+    .createHmac("sha256", secret)
     .update(encodedPayload)
     .digest("base64url");
 }

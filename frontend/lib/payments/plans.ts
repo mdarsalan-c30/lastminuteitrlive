@@ -6,78 +6,156 @@ export interface Plan {
   id: PlanId;
   name: string;
   price: number;
+  originalPrice?: number;
   priceLabel: string;
   description: string;
   features: string[];
   recommended?: boolean;
   comingSoon?: boolean;
   comingSoonFeatures?: string[];
+  buttonText?: string;
 }
 
 export const PLANS: Record<PlanId, Plan> = {
   free: {
     id: "free",
-    name: "Free",
+    name: "Basic",
     price: 0,
     priceLabel: "₹0",
-    description: "Estimate and readiness checklist",
+    description: "Estimates and checklists — no portal guide unlock.",
     features: [
       "Tax estimate",
       "ITR form recommendation",
       "Filing checklist",
     ],
   },
+  normal: {
+    id: "normal",
+    name: "Starter",
+    price: 349,
+    originalPrice: 999,
+    priceLabel: "₹349",
+    description: "For simple salaried filers who want AI-guided checks and a portal companion.",
+    recommended: false,
+    buttonText: "Get Starter",
+    features: [
+      "Form 16 upload & review",
+      "Old vs new regime comparison",
+      "Mismatch checklist",
+      "Portal filing companion guide",
+    ],
+  },
+  pro: {
+    id: "pro",
+    name: "AI Smart",
+    price: 599,
+    originalPrice: 1999,
+    priceLabel: "₹599",
+    description:
+      "Deeper AI checks, priority companion guidance, and capital-gains alerts for complex salaried cases.",
+    recommended: true,
+    buttonText: "Get AI Smart",
+    features: [
+      "Everything in Starter",
+      "Personalised AI tax companion",
+      "Priority mismatch review",
+      "Capital gains & F&O alerts",
+      "Regime recommendation on your draft",
+      "Priority support",
+    ],
+  },
+  b2b_20: {
+    id: "b2b_20",
+    name: "20 Applications",
+    price: 4999,
+    originalPrice: 7180,
+    priceLabel: "₹4,999",
+    description: "For CAs & HRs. 20 filing credits.",
+    features: ["Assign filings to clients", "Credit wallet", "Bulk dashboard"],
+  },
+  b2b_40: {
+    id: "b2b_40",
+    name: "40 Applications",
+    price: 8999,
+    originalPrice: 14360,
+    priceLabel: "₹8,999",
+    description: "For CAs & HRs. 40 filing credits.",
+    features: ["Assign filings to clients", "Credit wallet", "Bulk dashboard"],
+  },
+  b2b_100: {
+    id: "b2b_100",
+    name: "100 Applications",
+    price: 16999,
+    originalPrice: 35900,
+    priceLabel: "₹16,999",
+    description: "For CAs & HRs. 100 filing credits.",
+    features: ["Assign filings to clients", "Credit wallet", "Bulk dashboard"],
+  },
   diy: {
     id: "diy",
-    name: "DIY",
-    price: 499,
-    priceLabel: "₹499",
-    description: "Guided self-filing for salaried returns",
-    features: [
-      "Form 16 import",
-      "Step-by-step wizard",
-      "Pre-submit checks",
-      "Gov portal companion guide",
-    ],
+    name: "Starter (Legacy)",
+    price: 349,
+    priceLabel: "₹349",
+    description: "Legacy plan id — maps to Starter pricing.",
+    features: [],
   },
   ai_smart: {
     id: "ai_smart",
-    name: "AI Smart",
-    price: 349,
-    priceLabel: "₹349",
-    description: "Smart mismatch detection & tax optimizer",
-    recommended: true,
-    features: [
-      "Everything in DIY",
-      "AIS / 26AS mismatch detection",
-      "Old vs new regime comparison",
-      "Personalized tax savings suggestions",
-    ],
+    name: "AI Smart (Legacy)",
+    price: 599,
+    priceLabel: "₹599",
+    description: "Legacy plan id — maps to AI Smart pricing.",
+    features: [],
   },
   ca: {
     id: "ca",
     name: "CA Review",
     price: 2499,
     priceLabel: "₹2,499",
-    description: "Optional CA review before you file on incometax.gov.in — launching soon",
-    comingSoon: true,
-    comingSoonFeatures: ["Reviewed by a verified CA", "48-hour turnaround"],
+    description: "Optional human CA review before you file.",
     features: [
       "Everything in AI Smart",
-      "Reviewed by a verified CA",
-      "Zero-notice risk review",
-      "48-hour turnaround",
+      "CA review of your draft",
+      "Notice-risk walkthrough",
     ],
   },
 };
 
-export const PLAN_LIST: Plan[] = [
-  PLANS.free,
-  PLANS.diy,
-  PLANS.ai_smart,
-  PLANS.ca,
+/** Plans shown on marketing + checkout. */
+export const PLAN_LIST: Plan[] = [PLANS.normal, PLANS.pro];
+
+/** Plans the payment APIs accept (consumer checkout). */
+export const CHECKOUT_PLAN_IDS: PlanId[] = [
+  "free",
+  "normal",
+  "pro",
+  "diy",
+  "ai_smart",
+  "ca",
+];
+
+/** Admin-editable pricing rows. */
+export const ADMIN_PRICING_PLAN_IDS: PlanId[] = [
+  "free",
+  "normal",
+  "pro",
+  "diy",
+  "ai_smart",
+  "ca",
 ];
 
 export function getPlan(id: PlanId): Plan {
   return PLANS[id];
+}
+
+export function isCheckoutPlanId(id: string): id is PlanId {
+  return (CHECKOUT_PLAN_IDS as string[]).includes(id);
+}
+
+/** Map legacy aliases to current catalog ids. */
+export function normalizePlanId(raw: string | undefined): PlanId | null {
+  if (!raw) return null;
+  if (raw === "ca_review") return "ca";
+  if (!isCheckoutPlanId(raw)) return null;
+  return raw;
 }

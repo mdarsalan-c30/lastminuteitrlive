@@ -4,12 +4,12 @@ import { test, expect, type APIRequestContext } from "@playwright/test";
  * Admin E2E: RBAC enforcement, coupon lifecycle, and pricing propagation.
  *
  * Runs against the dev server (NODE_ENV != production), where a bootstrap CEO
- * (admin@taxsaathi.local / admin1234) is provided by lib/admin/auth.ts when
+ * (admin@lastminuteitr.local / admin1234) is provided by lib/admin/auth.ts when
  * ADMIN_USERS is not configured. Mock orders (order_mock_) are allowed in dev.
  */
 
 const DEV_ADMIN = {
-  email: "admin@taxsaathi.local",
+  email: "admin@lastminuteitr.local",
   password: "admin1234",
 };
 

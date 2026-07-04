@@ -21,15 +21,18 @@ from models import (
     DeductionsResult,
     BusinessIncomeResult,
     ITRResult,
+    RiskFlag,
 )
 from profiler import build_profile
 from salary import compute_net_salary
-from house_property import compute_house_property
+from house_property import compute_house_property, compute_house_property_portfolio
 from other_income import compute_other_income
 from capital_gains import compute_capital_gains
 from business_income import compute_business_income
+from carry_forward import apply_brought_forward
 from deductions import compute_deductions
 from regime_compare import compute_regime_comparison
+from rulesets import get_ruleset
 from risk_checker import run_risk_checks
 from confidence import compute_confidence
 from recommendations import generate_recommendations
@@ -73,20 +76,49 @@ def compute_itr(user: UserInput) -> ITRResult:
     salary_old = compute_net_salary(user.salary, regime="old")
     salary_new = compute_net_salary(user.salary, regime="new")
 
-    hp_old = compute_house_property(user.house_property, regime="old")
-    hp_new = compute_house_property(user.house_property, regime="new")
+    # Multi-property portfolio (ITR-2/3) replaces the single-property input
+    # when supplied; otherwise the original single-property path is used.
+    if user.house_properties:
+        hp_old = compute_house_property_portfolio(user.house_properties, regime="old")
+        hp_new = compute_house_property_portfolio(user.house_properties, regime="new")
+    else:
+        hp_old = compute_house_property(user.house_property, regime="old")
+        hp_new = compute_house_property(user.house_property, regime="new")
 
     other = compute_other_income(user.other_income)
-    cg = compute_capital_gains(user.capital_gains)
+    cg_raw = compute_capital_gains(user.capital_gains)
     biz_dict = compute_business_income(user.business)
 
-    biz_income = biz_dict["net_business_income"]
+    # ── Brought-forward losses (Schedule BFLA) — after intra-head set-off ──
+    # Unabsorbed depreciation cannot be set off against presumptive income
+    # (44AD/44ADA deem depreciation already allowed) — books cases only.
+    dep_ok = biz_dict["section_used"] == "books"
+    bf_old = apply_brought_forward(
+        user.carry_forward,
+        hp_income=hp_old["net_house_property_income"],
+        cg=cg_raw,
+        business_income=biz_dict["net_business_income"],
+        dep_against_business_allowed=dep_ok,
+    )
+    bf_new = apply_brought_forward(
+        user.carry_forward,
+        hp_income=hp_new["net_house_property_income"],
+        cg=cg_raw,
+        business_income=biz_dict["net_business_income"],
+        dep_against_business_allowed=dep_ok,
+    )
+    # CG and business adjustments are regime-independent — use the old-run
+    # values as canonical; only the HP head differs between regimes.
+    cg = bf_old["cg"]
+    biz_income = bf_old["business_income"]
+    hp_income_old = bf_old["hp_income"]
+    hp_income_new = bf_new["hp_income"]
 
     gti_old = max(
         0.0,
         round(
             salary_old["net_salary_income"]
-            + hp_old["net_house_property_income"]
+            + hp_income_old
             + other["total_other_income_gross"]
             + biz_income
             + cg["stcg_other_slab"]
@@ -101,7 +133,7 @@ def compute_itr(user: UserInput) -> ITRResult:
         0.0,
         round(
             salary_new["net_salary_income"]
-            + hp_new["net_house_property_income"]
+            + hp_income_new
             + other["total_other_income_gross"]
             + biz_income
             + cg["stcg_other_slab"]
@@ -112,12 +144,19 @@ def compute_itr(user: UserInput) -> ITRResult:
         ),
     )
 
+    if user.house_properties:
+        home_loan_principal_total = sum(
+            p.home_loan_principal for p in user.house_properties
+        )
+    else:
+        home_loan_principal_total = user.house_property.home_loan_principal
+
     ded_old_dict = compute_deductions(
         d=user.deductions,
         salary=user.salary,
         is_senior=profile.is_senior,
         regime="old",
-        home_loan_principal=user.house_property.home_loan_principal,
+        home_loan_principal=home_loan_principal_total,
         adjusted_total_income=gti_old,
     )
     ded_new_dict = compute_deductions(
@@ -161,6 +200,8 @@ def compute_itr(user: UserInput) -> ITRResult:
         age=user.age,
         tds_and_advance=total_tax_paid,
         standard_deduction_delta=std_ded_delta,
+        late_filing=user.late_filing,
+        ruleset=get_ruleset(user.assessment_year),
     )
 
     income_heads = IncomeHeadsResult(
@@ -175,7 +216,7 @@ def compute_itr(user: UserInput) -> ITRResult:
         net_annual_value=hp_old["net_annual_value"],
         repair_deduction_30pct=hp_old["repair_deduction_30pct"],
         interest_on_loan_24b=hp_old["interest_on_loan_24b"],
-        net_house_property_income=hp_old["net_house_property_income"],
+        net_house_property_income=hp_income_old,
         excess_interest_disallowed=hp_old["excess_interest_disallowed"],
         fd_interest=other["fd_interest"],
         savings_interest_gross=other["savings_interest_gross"],
@@ -187,6 +228,30 @@ def compute_itr(user: UserInput) -> ITRResult:
         ltcg_other_net=cg["ltcg_other_net"],
         gross_total_income=gti_old,
         carry_forward_loss_set_off=cg["carry_forward_stcl"] + cg["carry_forward_ltcl"],
+        bf_loss_set_off_total=bf_old["bf_set_off_total"],
+        losses_carried_forward={
+            # b/f losses not consumed this year + fresh current-year losses
+            "hp": round(
+                bf_old["carried_out"]["hp"]
+                + hp_old.get("hp_loss_carried_forward", 0.0),
+                2,
+            ),
+            "stcl": round(
+                bf_old["carried_out"]["stcl"] + cg["carry_forward_stcl"], 2
+            ),
+            "ltcl": round(
+                bf_old["carried_out"]["ltcl"] + cg["carry_forward_ltcl"], 2
+            ),
+            "business": round(
+                bf_old["carried_out"]["business"]
+                + biz_dict.get("current_year_business_loss_cf", 0.0),
+                2,
+            ),
+            "unabsorbed_depreciation": bf_old["carried_out"][
+                "unabsorbed_depreciation"
+            ],
+        },
+        depreciation_allowed=biz_dict.get("depreciation_allowed", 0.0),
     )
 
     business_result = BusinessIncomeResult(
@@ -199,6 +264,59 @@ def compute_itr(user: UserInput) -> ITRResult:
     )
 
     risk_flags = run_risk_checks(user, profile, income_heads, deductions_result, comparison)
+
+    # ── Flags from carry-forward / portfolio / depreciation paths ──
+    if bf_old["lapsed_sec80"] > 0:
+        risk_flags.append(RiskFlag(
+            code="BF_LOSS_DENIED_SEC80",
+            severity="warning",
+            message=(
+                f"₹{bf_old['lapsed_sec80']:,.0f} of brought-forward capital/"
+                "business losses were NOT set off because the loss-year return "
+                "was filed after the due date (Sec 80). House-property loss and "
+                "unabsorbed depreciation are unaffected."
+            ),
+        ))
+    if bf_old["bf_set_off_total"] > 0:
+        risk_flags.append(RiskFlag(
+            code="BF_LOSS_CLAIMED",
+            severity="info",
+            message=(
+                f"₹{bf_old['bf_set_off_total']:,.0f} of prior-year losses set "
+                "off this year. Keep last year's ITR acknowledgment and "
+                "Schedule CFL handy — the ITD matches these figures."
+            ),
+        ))
+    if hp_old.get("deemed_letout_pending", 0) > 0:
+        risk_flags.append(RiskFlag(
+            code="DEEMED_LETOUT_PENDING",
+            severity="warning",
+            message=(
+                "More than two self-occupied properties: the extra ones are "
+                "taxed as 'deemed let-out' on notional rent. A CA should set "
+                "the expected rent before filing."
+            ),
+        ))
+    if biz_dict.get("depreciation_st_gain_50", 0.0) > 0:
+        risk_flags.append(RiskFlag(
+            code="DEP_BLOCK_ST_GAIN_50",
+            severity="warning",
+            message=(
+                f"Asset sales exceeded a depreciation block by "
+                f"₹{biz_dict['depreciation_st_gain_50']:,.0f} — this is a "
+                "deemed short-term capital gain u/s 50. CA review recommended."
+            ),
+        ))
+    if bf_old["carried_out"]["unabsorbed_depreciation"] > 0:
+        risk_flags.append(RiskFlag(
+            code="UNABSORBED_DEP_REMAINDER",
+            severity="info",
+            message=(
+                "Unabsorbed depreciation remaining after business income — it "
+                "carries forward without time limit; set-off against other "
+                "heads is left for CA review in this version."
+            ),
+        ))
     recommendations = generate_recommendations(
         user, profile, income_heads, deductions_result, comparison, business_result
     )

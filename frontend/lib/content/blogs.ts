@@ -1,5 +1,4 @@
-import { LEARN_ARTICLES, type LearnArticle } from "./learn-articles";
-import { loadUploadedBlogs, type UploadedBlogPost } from "./blogs-store";
+import { PrismaClient } from "@prisma/client";
 
 export interface BlogPost {
   slug: string;
@@ -9,55 +8,49 @@ export interface BlogPost {
   tags: string[];
   publishedAt: string;
   readMinutes: number;
-  source: "learn" | "upload";
+  source: "upload";
   relatedGlossarySlugs?: [string, string];
 }
 
-function learnToBlog(article: LearnArticle): BlogPost {
-  return {
-    slug: article.slug,
-    title: article.title,
-    excerpt: article.description,
-    body: article.body,
-    tags: article.tags ?? ["ITR", "Guide"],
-    publishedAt: article.publishedAt,
-    readMinutes: article.readMinutes,
-    source: "learn",
-    relatedGlossarySlugs: article.relatedGlossarySlugs,
-  };
-}
-
-function uploadToBlog(post: UploadedBlogPost): BlogPost {
-  return {
-    slug: post.slug,
-    title: post.title,
-    excerpt: post.excerpt,
-    body: post.body,
-    tags: post.tags,
-    publishedAt: post.publishedAt,
-    readMinutes: post.readMinutes,
-    source: "upload",
-  };
-}
-
-export function getStaticBlogPosts(): BlogPost[] {
-  return LEARN_ARTICLES.map(learnToBlog);
-}
+const prisma = new PrismaClient();
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
-  const uploaded = await loadUploadedBlogs();
-  const staticPosts = getStaticBlogPosts();
-  const uploadedPosts = uploaded.map(uploadToBlog);
-  const staticSlugs = new Set(staticPosts.map((p) => p.slug));
-  const uniqueUploaded = uploadedPosts.filter((p) => !staticSlugs.has(p.slug));
-  return [...uniqueUploaded, ...staticPosts].sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
+  // Load from Prisma
+  const dbBlogs = await prisma.blog.findMany({
+    where: { status: "published" },
+    orderBy: { updatedAt: 'desc' }
+  });
+
+  const prismaPosts: BlogPost[] = dbBlogs.map(b => ({
+    slug: b.slug,
+    title: b.title,
+    excerpt: b.seoDescription || b.content.substring(0, 150).replace(/(<([^>]+)>)/gi, ""),
+    body: b.content,
+    tags: b.focusKeyword ? [b.focusKeyword] : ["Blog"],
+    publishedAt: b.updatedAt.toISOString(),
+    readMinutes: estimateReadMinutes(b.content),
+    source: "upload"
+  }));
+  
+  return prismaPosts;
 }
 
 export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
-  const posts = await getAllBlogPosts();
-  return posts.find((p) => p.slug === slug);
+  const dbBlog = await prisma.blog.findUnique({ where: { slug } });
+  if (dbBlog && dbBlog.status === 'published') {
+    return {
+      slug: dbBlog.slug,
+      title: dbBlog.title,
+      excerpt: dbBlog.seoDescription || dbBlog.content.substring(0, 150).replace(/(<([^>]+)>)/gi, ""),
+      body: dbBlog.content,
+      tags: dbBlog.focusKeyword ? [dbBlog.focusKeyword] : ["Blog"],
+      publishedAt: dbBlog.updatedAt.toISOString(),
+      readMinutes: estimateReadMinutes(dbBlog.content),
+      source: "upload"
+    };
+  }
+
+  return undefined;
 }
 
 export function estimateReadMinutes(body: string): number {

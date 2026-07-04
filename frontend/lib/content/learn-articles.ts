@@ -25,7 +25,10 @@ export interface LearnArticle {
   faqs?: LearnArticleFaq[];
 }
 
+import { PHASE6_LEARN_ARTICLES } from "./learn-articles-phase6";
+
 export const LEARN_ARTICLES = [
+  ...PHASE6_LEARN_ARTICLES,
   ...PHASE5_LEARN_ARTICLES,
   ...PHASE4_LEARN_ARTICLES,
   {

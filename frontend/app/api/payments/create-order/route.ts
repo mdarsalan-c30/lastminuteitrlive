@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { PlanId } from "@/lib/payments/plans";
+import {
+  CHECKOUT_PLAN_IDS,
+  normalizePlanId,
+  type PlanId,
+} from "@/lib/payments/plans";
 import {
   createRazorpayOrder,
   hasRazorpayKeys,
 } from "@/lib/payments/razorpay";
 import { getPublishedPrice } from "@/lib/pricing/config";
 import { validateCoupon } from "@/lib/admin/coupons";
-
-const VALID_PLANS: PlanId[] = ["free", "diy", "ai_smart", "ca"];
+import { validateReferralCode } from "@/lib/admin/referrals";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,23 +18,54 @@ export async function POST(request: NextRequest) {
       planId?: string;
       couponCode?: string;
     };
-    const raw = body.planId as string;
-    const planId = (raw === "ca_review" ? "ca" : raw) as PlanId;
+    const planId = normalizePlanId(body.planId);
 
-    if (!planId || !VALID_PLANS.includes(planId)) {
+    if (!planId || !CHECKOUT_PLAN_IDS.includes(planId)) {
       return NextResponse.json(
-        { error: "Invalid plan. Choose free, diy, ai_smart, or ca." },
+        {
+          error:
+            "Invalid plan. Choose free, normal, pro, diy, ai_smart, or ca.",
+        },
         { status: 400 }
       );
     }
 
     let effectivePrice = await getPublishedPrice(planId);
 
-    // Amount-off coupons reduce the Razorpay order amount.
     if (body.couponCode) {
+      let valid = false;
+      let discountType: "fixed" | "percentage" = "fixed";
+      let amountOff = 0;
+      let percentageOff = 0;
+
       const result = await validateCoupon(body.couponCode, planId);
-      if (result.valid && result.coupon?.discount === "amount") {
-        effectivePrice = Math.max(0, effectivePrice - (result.coupon.amountOff ?? 0));
+      if (result.valid) {
+        valid = true;
+        if (result.coupon!.discount === "full") {
+          discountType = "percentage";
+          percentageOff = 100;
+        } else {
+          discountType = "fixed";
+          amountOff = result.coupon!.amountOff ?? 0;
+        }
+      } else {
+        const refResult = await validateReferralCode(body.couponCode, planId);
+        if (refResult.valid) {
+          valid = true;
+          discountType = "percentage";
+          percentageOff = refResult.refereeDiscountPct;
+        }
+      }
+
+      if (valid) {
+        if (discountType === "percentage") {
+          effectivePrice = Math.max(
+            0,
+            effectivePrice - (effectivePrice * percentageOff) / 100
+          );
+        } else {
+          effectivePrice = Math.max(0, effectivePrice - amountOff);
+        }
       }
     }
 
@@ -48,8 +82,18 @@ export async function POST(request: NextRequest) {
 
     const amountPaise = effectivePrice * 100;
     const receipt = `itr_${planId}_${Date.now()}`;
+    const isProduction = process.env.NODE_ENV === "production";
 
     if (!hasRazorpayKeys()) {
+      if (isProduction) {
+        return NextResponse.json(
+          {
+            error:
+              "Payments are temporarily unavailable. Razorpay is not configured.",
+          },
+          { status: 503 }
+        );
+      }
       return NextResponse.json({
         orderId: `order_mock_${Date.now()}`,
         amount: amountPaise,

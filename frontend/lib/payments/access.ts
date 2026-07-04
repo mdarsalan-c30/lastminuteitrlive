@@ -10,7 +10,13 @@ export interface CompanionAccessState {
 
 /** Paid tiers that include companion export */
 export function canExportCompanion(plan: PlanId): boolean {
-  return plan === "diy" || plan === "ai_smart" || plan === "ca";
+  return (
+    plan === "normal" ||
+    plan === "pro" ||
+    plan === "diy" ||
+    plan === "ai_smart" ||
+    plan === "ca"
+  );
 }
 
 /** Companion copy / print / export after Razorpay verify (client draft state) */
@@ -32,7 +38,7 @@ export function hasServerCompanionAccess(
 
 /** AIS / 26AS mismatch engine — AI Smart and CA Review */
 export function canUseMismatchEngine(plan: PlanId): boolean {
-  return plan === "ai_smart" || plan === "ca";
+  return plan === "pro" || plan === "ai_smart" || plan === "ca";
 }
 
 /** Guided ITR-1 filing workflow */
@@ -42,5 +48,11 @@ export function canFileGuided(plan: PlanId): boolean {
 
 /** Regime compare optimizer */
 export function canUseRegimeOptimizer(plan: PlanId): boolean {
-  return plan === "ai_smart" || plan === "ca";
+  return (
+    plan === "normal" ||
+    plan === "pro" ||
+    plan === "diy" ||
+    plan === "ai_smart" ||
+    plan === "ca"
+  );
 }

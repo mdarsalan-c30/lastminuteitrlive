@@ -13,6 +13,7 @@ import {
 import { ConfidencePanel } from "@/components/filing/ConfidencePanel";
 import { EngineComputeFallback } from "@/components/filing/EngineComputeFallback";
 import { OptimizationTips } from "@/components/filing/OptimizationTips";
+import { TaxTraceExplainer } from "@/components/filing/TaxTraceExplainer";
 import { WhyWeNeedThis } from "@/components/filing/OnboardingForm";
 import { WHY_WE_ASK } from "@/lib/copy/trust";
 import { FILING_REGIME } from "@/lib/copy/filing";
@@ -74,7 +75,7 @@ export default function RegimePage() {
       activeNavSection="regime"
       mirrorText="Old regime lets you claim 80C, 80D, and HRA. New regime uses lower slabs but fewer deductions. You pick once per year."
     >
-      <RiskBadge variant="green">Smart summary</RiskBadge>
+      <RiskBadge variant="green">Tax analysis</RiskBadge>
 
       <ScreenTitle
         title={FILING_REGIME.title}
@@ -82,9 +83,7 @@ export default function RegimePage() {
           loading
             ? FILING_REGIME.subtitleLoading
             : rc
-              ? savings > 0
-                ? FILING_REGIME.subtitleResult(recommended, formatINR(savings))
-                : `Both regimes result in the same tax outcome for your profile. We still recommend the ${recommended === "new" ? "New" : "Old"} Regime based on your draft.`
+              ? FILING_REGIME.subtitleResult(recommended, formatINR(savings))
               : FILING_REGIME.subtitleFallback
         }
       />
@@ -155,7 +154,7 @@ export default function RegimePage() {
         )
       )}
 
-      <div className="filing-workspace-card-grid mb-4">
+      <div className="filing-card-grid mb-4">
         {loading ? (
           <>
             <RegimeCardSkeleton />
@@ -186,6 +185,14 @@ export default function RegimePage() {
           </>
         )}
       </div>
+
+      {!loading && rc && (
+        <TaxTraceExplainer
+          comparison={rc}
+          selectedRegime={selected}
+          className="mb-4"
+        />
+      )}
 
       {!loading && (
         <ConfidencePanel
@@ -283,9 +290,9 @@ function RegimeOption({
       )}
     >
       {recommended && (
-        <span className="absolute -top-2.5 right-4 inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+        <span className="absolute -top-2.5 right-4 inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
           {recommended ? <TrendingDown className="size-3" /> : <CheckCircle2 className="size-3" />}
-          Recommended
+          Cheaper
         </span>
       )}
       <h4 className="font-bold text-slate-900">{title}</h4>

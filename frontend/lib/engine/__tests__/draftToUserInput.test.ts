@@ -9,6 +9,9 @@ function baseDraft(
       | "profile"
       | "income"
       | "houseProperty"
+      | "extraProperties"
+      | "carryForward"
+      | "depreciationBlocks"
       | "deductions"
       | "connectedConnectors"
       | "incomeChips"
@@ -25,7 +28,10 @@ function baseDraft(
   | "houseProperty"
   | "deductions"
   | "connectedConnectors"
-> {
+> &
+  Partial<
+    Pick<DraftState, "extraProperties" | "carryForward" | "depreciationBlocks">
+  > {
   return {
     filingMode: "estimate",
     profile: {
@@ -269,5 +275,90 @@ describe("draftToUserInput", () => {
     expect(input.profile_flags?.has_foreign_income).toBe(true);
     expect(input.profile_flags?.has_foreign_assets).toBe(true);
     expect(input.profile_flags?.is_director).toBe(true);
+  });
+
+  it("maps multi-property portfolio when extra properties exist", () => {
+    const input = draftToUserInput(
+      baseDraft({
+        houseProperty: {
+          propertyType: "self_occupied",
+          annualRent: 0,
+          homeLoanInterest: 150_000,
+          municipalTax: 0,
+          coOwnerPercent: 100,
+        },
+        extraProperties: [
+          {
+            propertyType: "let_out",
+            annualRent: 240_000,
+            homeLoanInterest: 100_000,
+            municipalTax: 20_000,
+            coOwnerPercent: 100,
+          },
+        ],
+      })
+    );
+
+    expect(input.house_property).toBeUndefined();
+    expect(input.house_properties).toHaveLength(2);
+    expect(input.house_properties?.[0]?.property_type).toBe("self_occupied");
+    expect(input.house_properties?.[1]?.property_type).toBe("let_out");
+    expect(input.house_properties?.[1]?.annual_rent_received).toBe(240_000);
+  });
+
+  it("maps brought-forward losses from carryForward draft", () => {
+    const input = draftToUserInput(
+      baseDraft({
+        carryForward: {
+          hpLoss: 0,
+          stcl: 80_000,
+          ltcl: 20_000,
+          businessLoss: 0,
+          unabsorbedDepreciation: 0,
+          priorReturnOnTime: true,
+        },
+      })
+    );
+
+    expect(input.carry_forward?.stcl).toBe(80_000);
+    expect(input.carry_forward?.ltcl).toBe(20_000);
+    expect(input.carry_forward?.prior_return_filed_on_time).toBe(true);
+  });
+
+  it("maps depreciation blocks for books business", () => {
+    const input = draftToUserInput(
+      baseDraft({
+        matrix: { income: "2", age: "a", business: "v" },
+        income: {
+          grossSalary: 0,
+          tds: 0,
+          fdInterest: 0,
+          employer: "",
+          advanceTax: 0,
+          selfAssessmentTax: 0,
+          hraReceived: 0,
+          actualRentPaid: 0,
+          cityTier: "metro",
+          businessRevenue: 1_000_000,
+          businessExpenses: 300_000,
+        },
+        depreciationBlocks: [
+          {
+            id: "dep1",
+            label: "plant_machinery_15",
+            rate: 0.15,
+            openingWdv: 1_000_000,
+            additionsFullYear: 0,
+            additionsHalfYear: 0,
+            saleProceeds: 0,
+          },
+        ],
+      })
+    );
+
+    expect(input.business?.business_type).toBe("regular_books");
+    expect(input.business?.actual_gross_receipts).toBe(1_000_000);
+    expect(input.business?.depreciation_blocks?.[0]?.opening_wdv).toBe(1_000_000);
+    expect(input.business?.depreciation_blocks?.[0]?.rate).toBe(0.15);
   });
 });

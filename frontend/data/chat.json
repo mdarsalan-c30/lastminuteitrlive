@@ -166,5 +166,47 @@
     "text": "Thanks for reaching out. Our team will review your message and respond by email within 1–2 business days. For urgent filing help, continue with your companion guide on incometax.gov.in.",
     "sessionId": "sess_1781305186280_nliyaxt",
     "createdAt": "2026-06-12T22:59:48.896Z"
+  },
+  {
+    "id": "chat_1781359997757",
+    "role": "user",
+    "text": "How do I upload Form 16?",
+    "sessionId": "sess_1781359997662_fywysub",
+    "createdAt": "2026-06-13T14:13:17.757Z"
+  },
+  {
+    "id": "chat_1781359997757_reply",
+    "role": "support",
+    "text": "Thanks for reaching out. Our team will review your message and respond by email within 1–2 business days. For urgent filing help, continue with your companion guide on incometax.gov.in.",
+    "sessionId": "sess_1781359997662_fywysub",
+    "createdAt": "2026-06-13T14:13:17.758Z"
+  },
+  {
+    "id": "chat_1781809349840",
+    "role": "user",
+    "text": "hi",
+    "sessionId": "genie_session",
+    "createdAt": "2026-06-18T19:02:29.840Z"
+  },
+  {
+    "id": "chat_1781809351040_reply",
+    "role": "support",
+    "text": "Thanks for reaching out. Our team will review your message and respond by email within 1–2 business days. For urgent filing help, continue with your companion guide on incometax.gov.in.",
+    "sessionId": "genie_session",
+    "createdAt": "2026-06-18T19:02:31.041Z"
+  },
+  {
+    "id": "chat_1782931304684",
+    "role": "user",
+    "text": "hi",
+    "sessionId": "genie_session",
+    "createdAt": "2026-07-01T18:41:44.684Z"
+  },
+  {
+    "id": "chat_1782931305677_reply",
+    "role": "support",
+    "text": "Thanks for reaching out. Our team will review your message and respond by email within 1–2 business days. For urgent filing help, continue with your companion guide on incometax.gov.in.",
+    "sessionId": "genie_session",
+    "createdAt": "2026-07-01T18:41:45.679Z"
   }
 ]

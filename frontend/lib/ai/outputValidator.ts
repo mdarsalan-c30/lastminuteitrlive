@@ -1,8 +1,13 @@
+import { BANNED_PHRASES } from "@/lib/copy/strings";
+
 const BLOCKLIST_PATTERNS: RegExp[] = [
   /guarante(?:e|ed)\s+refund/i,
   /\bloophole\b/i,
   /file\s+for\s+you/i,
   /government\s+integrated/i,
+  // Doc 42 §1 banned words — shared with the copy lint so runtime AI output
+  // and static copy are held to the same standard (doc 52 §4).
+  ...BANNED_PHRASES,
 ];
 
 export function containsBlocklistedPhrase(text: string): boolean {

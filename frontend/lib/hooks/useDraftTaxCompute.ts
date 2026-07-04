@@ -38,6 +38,9 @@ export function useDraftTaxCompute(options?: { readOnly?: boolean }): UseDraftTa
   const matrix = useDraftStore((s) => s.matrix);
   const income = useDraftStore((s) => s.income);
   const houseProperty = useDraftStore((s) => s.houseProperty);
+  const extraProperties = useDraftStore((s) => s.extraProperties);
+  const carryForward = useDraftStore((s) => s.carryForward);
+  const depreciationBlocks = useDraftStore((s) => s.depreciationBlocks);
   const deductions = useDraftStore((s) => s.deductions);
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
   const mismatchResolved = useDraftStore((s) => s.mismatchResolved);
@@ -62,6 +65,9 @@ export function useDraftTaxCompute(options?: { readOnly?: boolean }): UseDraftTa
         incomeChips,
         income,
         houseProperty,
+        extraProperties,
+        carryForward,
+        depreciationBlocks,
         deductions,
         connectedConnectors,
       }),
@@ -72,6 +78,9 @@ export function useDraftTaxCompute(options?: { readOnly?: boolean }): UseDraftTa
       incomeChips,
       income,
       houseProperty,
+      extraProperties,
+      carryForward,
+      depreciationBlocks,
       deductions,
       connectedConnectors,
     ]
@@ -195,6 +204,9 @@ export function useDraftTaxCompute(options?: { readOnly?: boolean }): UseDraftTa
           mismatchResolved,
           lastParseResult,
           houseProperty,
+          extraProperties,
+          carryForward,
+          depreciationBlocks,
           deductions,
         },
         questionAnswers,
@@ -209,6 +221,9 @@ export function useDraftTaxCompute(options?: { readOnly?: boolean }): UseDraftTa
       mismatchResolved,
       lastParseResult,
       houseProperty,
+      extraProperties,
+      carryForward,
+      depreciationBlocks,
       deductions,
       questionAnswers,
     ]

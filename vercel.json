@@ -1,14 +1,24 @@
 {
+  "env": {
+    "ENABLE_UV": "0",
+    "VERCEL_PYTHON_USE_UV": "0"
+  },
+  "build": {
+    "env": {
+      "ENABLE_UV": "0",
+      "VERCEL_PYTHON_USE_UV": "0"
+    }
+  },
   "experimentalServices": {
     "frontend": {
       "root": "frontend",
       "routePrefix": "/",
       "framework": "nextjs"
     },
-    "backend": {
+    "backend_engine": {
       "root": "backend",
       "routePrefix": "/_/backend",
-      "entrypoint": "api/py-compute.py",
+      "entrypoint": "api/compute.py",
       "runtime": "python"
     }
   }

@@ -14,7 +14,7 @@ def _default_draft_user() -> UserInput:
         age=32,
         mode="estimate",
         residential_status="resident",
-        assessment_year="2025-26",
+        assessment_year="2026-27",
         salary=SalaryInput(gross_salary=1_200_000, basic_salary=600_000),
         other_income=OtherIncomeInput(fd_interest=18_400),
         deductions=DeductionsInput(

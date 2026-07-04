@@ -22,11 +22,15 @@ describe("filing routes helpers", () => {
     );
   });
 
-  it("builds eligibility and parsing URLs for form16 path", () => {
-    expect(buildEligibilityForm16Url()).toContain("source=form16");
+  it("builds GATE and COLLECT URLs for form16 path", () => {
+    expect(buildEligibilityForm16Url()).toBe(
+      "/file/start?source=form16&step=additional-income"
+    );
     expect(buildEligibilityForm16Url("complete-profile")).toContain(
       "step=complete-profile"
     );
-    expect(buildParsingForm16Url()).toBe("/file/import/parsing?source=form16");
+    expect(buildParsingForm16Url()).toBe(
+      "/file/import/documents?source=form16"
+    );
   });
 });

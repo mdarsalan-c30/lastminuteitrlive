@@ -20,7 +20,6 @@ import {
   HELP_PILLARS,
   type HelpPillar,
 } from "@/lib/content/help-articles";
-import { HELP_HUB } from "@/lib/copy/help";
 import { HELP_FAQS } from "@/lib/content/faqs";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
@@ -52,10 +51,11 @@ export function HelpHubPage() {
       <PageShell className="py-10 sm:py-12" contentClassName="max-w-4xl">
         <ScrollReveal delay={0}>
           <h1 className={`font-semibold text-foreground ${TYPOGRAPHY_SCALE.headline}`}>
-            {HELP_HUB.title}
+            Help center
           </h1>
           <p className={`mt-2 text-muted-foreground ${TYPOGRAPHY_SCALE.body}`}>
-            {HELP_HUB.subtitle}
+            Prep, reconcile, and file on incometax.gov.in with our companion — we do not
+            e-file for you. Search guides by topic or browse by journey step.
           </p>
         </ScrollReveal>
 
@@ -69,7 +69,7 @@ export function HelpHubPage() {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={HELP_HUB.searchPlaceholder}
+              placeholder="Search help (e.g. AIS, Form 16, e-verify)"
               className="w-full rounded-xl border border-border/70 bg-white py-2.5 pl-10 pr-3 text-sm outline-none ring-primary/20 focus:ring-2"
             />
           </label>

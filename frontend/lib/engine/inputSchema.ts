@@ -87,6 +87,15 @@ export const taxPaidInputSchema = z.object({
   self_assessment_tax_paid: z.number().min(0).optional(),
 });
 
+export const depreciationBlockInputSchema = z.object({
+  block: z.string(),
+  rate: z.number().min(0).max(1),
+  opening_wdv: z.number().min(0).optional(),
+  additions_180d_plus: z.number().min(0).optional(),
+  additions_under_180d: z.number().min(0).optional(),
+  sale_proceeds: z.number().min(0).optional(),
+});
+
 export const businessInputSchema = z.object({
   business_type: businessTypeSchema.optional(),
   turnover: z.number().min(0).optional(),
@@ -96,6 +105,16 @@ export const businessInputSchema = z.object({
   actual_expenses: z.number().min(0).optional(),
   profession_name: z.string().optional(),
   cash_receipts_pct: z.number().min(0).max(1).optional(),
+  depreciation_blocks: z.array(depreciationBlockInputSchema).optional(),
+});
+
+export const carryForwardInputSchema = z.object({
+  hp_loss: z.number().min(0).optional(),
+  stcl: z.number().min(0).optional(),
+  ltcl: z.number().min(0).optional(),
+  business_loss: z.number().min(0).optional(),
+  unabsorbed_depreciation: z.number().min(0).optional(),
+  prior_return_filed_on_time: z.boolean().optional(),
 });
 
 export const profileFlagsSchema = z.object({
@@ -126,8 +145,10 @@ export const userInputSchema = z.object({
   mode: filingModeSchema.optional(),
   salary: salaryInputSchema.optional(),
   house_property: housePropertyInputSchema.optional(),
+  house_properties: z.array(housePropertyInputSchema).optional(),
   other_income: otherIncomeInputSchema.optional(),
   capital_gains: capitalGainsInputSchema.optional(),
+  carry_forward: carryForwardInputSchema.optional(),
   deductions: deductionsInputSchema.optional(),
   taxes_paid: taxPaidInputSchema.optional(),
   business: businessInputSchema.optional(),

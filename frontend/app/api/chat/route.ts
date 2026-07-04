@@ -38,8 +38,8 @@ async function callGemini(question: string): Promise<string> {
             role: "user",
             parts: [
               {
-                text: `You are TaxSaathi Genie, a helpful, friendly, and expert Indian Tax Filing AI Assistant.
-The user is currently filing their ITR for AY 2026-27 (FY 2025-26) on the TaxSaathi MVP app.
+                text: `You are LastMinuteITR Genie, a helpful, friendly, and expert Indian Tax Filing AI Assistant.
+The user is currently filing their ITR for AY 2026-27 (FY 2025-26) on the LastMinuteITR MVP app.
 Answer the following tax query in plain, simple English. Keep it concise, professional, and easy to understand (1-3 sentences).
 Do not use complicated legal jargon. Highlight key limits if applicable (e.g., Standard Deduction ₹75k in New Regime, HRA in Old Regime, Section 80C cap of ₹1.5L, 80D limits, NPS extra ₹50k, etc.).
 

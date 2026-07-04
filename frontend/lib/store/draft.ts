@@ -18,6 +18,7 @@ export interface Profile {
   assessmentYear: string;
   residentialStatus: "resident" | "non_resident" | "rnor";
   ageBand: "under_60" | "senior" | "super_senior";
+  lateFiling?: boolean;
 }
 
 export interface IncomeDraft {
@@ -38,6 +39,13 @@ export interface IncomeDraft {
    * Optional so older persisted drafts and fixtures remain valid.
    */
   employers?: EmployerForm16[];
+  
+  /** Business / Freelance Fields */
+  businessRevenue?: number;
+  businessExpenses?: number;
+  freelanceRevenue?: number;
+  freelanceExpenses?: number;
+  otherIncome?: number;
 }
 
 export interface HousePropertyDraft {
@@ -46,6 +54,33 @@ export interface HousePropertyDraft {
   homeLoanInterest: number;
   municipalTax: number;
   coOwnerPercent: number;
+  /** Principal repaid this year — feeds 80C when set. */
+  homeLoanPrincipal?: number;
+}
+
+/** Extra properties beyond the primary (ITR-2/3 portfolio). */
+export type ExtraPropertyDraft = HousePropertyDraft;
+
+/** Prior-year losses from last ITR Schedule CFL — plain amounts only. */
+export interface CarryForwardDraft {
+  hpLoss: number;
+  stcl: number;
+  ltcl: number;
+  businessLoss: number;
+  unabsorbedDepreciation: number;
+  /** False if the loss-year return was filed after the due date (Sec 80). */
+  priorReturnOnTime: boolean;
+}
+
+/** One WDV block for books cases — user enters opening WDV + rate. */
+export interface DepreciationBlockDraft {
+  id: string;
+  label: string;
+  rate: number;
+  openingWdv: number;
+  additionsFullYear: number;
+  additionsHalfYear: number;
+  saleProceeds: number;
 }
 
 export interface DeductionDraft {
@@ -78,6 +113,17 @@ export type EnginePhase =
   | "recommended"
   | "filing";
 
+/** Retention loop (doc 21 FILED / VERIFIED / LAPSED). */
+export type FilingOutcomeStatus = "none" | "filed" | "verified" | "lapsed";
+
+export interface FilingOutcome {
+  status: FilingOutcomeStatus;
+  acknowledgementNumber: string;
+  submittedAt: number | null;
+  eVerifiedAt: number | null;
+  reminderOptIn: boolean;
+}
+
 export interface ComputeHistoryEntry {
   trigger: string;
   beforeSnapshot: unknown;
@@ -97,6 +143,10 @@ export interface DraftState {
   itrConfirmed: boolean;
   income: IncomeDraft;
   houseProperty: HousePropertyDraft;
+  /** Second+ properties (primary stays in houseProperty). */
+  extraProperties: ExtraPropertyDraft[];
+  carryForward: CarryForwardDraft;
+  depreciationBlocks: DepreciationBlockDraft[];
   deductions: DeductionDraft;
   regime: "old" | "new" | null;
   profession: string | null;
@@ -115,6 +165,7 @@ export interface DraftState {
   questionAnswers: Record<string, unknown>;
   computeHistory: ComputeHistoryEntry[];
   enginePhase: EnginePhase;
+  filingOutcome: FilingOutcome;
 
   setName: (name: string) => void;
   setFilingMode: (mode: "estimate" | "exact") => void;
@@ -133,6 +184,11 @@ export interface DraftState {
   /** Remove an employer entry and re-aggregate salary/TDS. */
   removeEmployerForm16: (id: string) => void;
   setHouseProperty: (houseProperty: Partial<HousePropertyDraft>) => void;
+  setExtraProperties: (properties: ExtraPropertyDraft[]) => void;
+  addExtraProperty: (property?: Partial<ExtraPropertyDraft>) => void;
+  removeExtraProperty: (index: number) => void;
+  setCarryForward: (carryForward: Partial<CarryForwardDraft>) => void;
+  setDepreciationBlocks: (blocks: DepreciationBlockDraft[]) => void;
   setDeductions: (deductions: Partial<DeductionDraft>) => void;
   setRegime: (regime: "old" | "new") => void;
   setProfession: (profession: string) => void;
@@ -149,6 +205,9 @@ export interface DraftState {
   setQuestionAnswer: (questionId: string, answer: unknown) => void;
   appendComputeHistory: (entry: ComputeHistoryEntry) => void;
   setEnginePhase: (phase: EnginePhase) => void;
+  setFilingOutcome: (outcome: Partial<FilingOutcome>) => void;
+  markReturnSubmitted: (acknowledgementNumber: string) => void;
+  markReturnEVerified: () => void;
   mergeParsedFields: (
     connectorId: string,
     payload: {
@@ -176,6 +235,7 @@ const defaultProfile: Profile = {
   assessmentYear: "AY 2026-27 (FY 2025-26)",
   residentialStatus: "resident",
   ageBand: "under_60",
+  lateFiling: false,
 };
 
 const defaultIncome: IncomeDraft = {
@@ -189,6 +249,11 @@ const defaultIncome: IncomeDraft = {
   actualRentPaid: 0,
   cityTier: "metro",
   employers: [],
+  businessRevenue: 0,
+  businessExpenses: 0,
+  freelanceRevenue: 0,
+  freelanceExpenses: 0,
+  otherIncome: 0,
 };
 
 const defaultHouseProperty: HousePropertyDraft = {
@@ -197,6 +262,16 @@ const defaultHouseProperty: HousePropertyDraft = {
   homeLoanInterest: 0,
   municipalTax: 0,
   coOwnerPercent: 100,
+  homeLoanPrincipal: 0,
+};
+
+const defaultCarryForward: CarryForwardDraft = {
+  hpLoss: 0,
+  stcl: 0,
+  ltcl: 0,
+  businessLoss: 0,
+  unabsorbedDepreciation: 0,
+  priorReturnOnTime: true,
 };
 
 const defaultDeductions: DeductionDraft = {
@@ -205,6 +280,27 @@ const defaultDeductions: DeductionDraft = {
   section80GG: 0,
   npsExtra: 0,
 };
+
+const defaultFilingOutcome: FilingOutcome = {
+  status: "none",
+  acknowledgementNumber: "",
+  submittedAt: null,
+  eVerifiedAt: null,
+  reminderOptIn: false,
+};
+
+/** 30 days in ms — e-verify window (doc 21 FILED). */
+export const EVERIFY_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
+export function deriveFilingOutcomeStatus(
+  outcome: FilingOutcome,
+  nowMs: number
+): FilingOutcomeStatus {
+  if (outcome.status === "verified" || outcome.eVerifiedAt) return "verified";
+  if (outcome.status === "none" || !outcome.submittedAt) return "none";
+  if (nowMs - outcome.submittedAt > EVERIFY_WINDOW_MS) return "lapsed";
+  return "filed";
+}
 
 const initialState = {
   name: "",
@@ -218,10 +314,14 @@ const initialState = {
   itrConfirmed: false,
   income: defaultIncome,
   houseProperty: defaultHouseProperty,
+  extraProperties: [] as ExtraPropertyDraft[],
+  carryForward: defaultCarryForward,
+  depreciationBlocks: [] as DepreciationBlockDraft[],
   deductions: defaultDeductions,
+  filingOutcome: defaultFilingOutcome,
   regime: null as "old" | "new" | null,
   profession: null as string | null,
-  plan: "ai_smart" as PlanId,
+  plan: "normal" as PlanId,
   paidPlanId: null as PlanId | null,
   paymentVerifiedAt: null as number | null,
   mismatchResolved: false,
@@ -330,6 +430,30 @@ export const useDraftStore = create<DraftState>()(
         set((s) => ({
           houseProperty: { ...s.houseProperty, ...houseProperty },
         })),
+      setExtraProperties: (extraProperties) => set({ extraProperties }),
+      addExtraProperty: (property) =>
+        set((s) => ({
+          extraProperties: [
+            ...s.extraProperties,
+            {
+              propertyType: property?.propertyType ?? "let_out",
+              annualRent: property?.annualRent ?? 0,
+              homeLoanInterest: property?.homeLoanInterest ?? 0,
+              municipalTax: property?.municipalTax ?? 0,
+              coOwnerPercent: property?.coOwnerPercent ?? 100,
+              homeLoanPrincipal: property?.homeLoanPrincipal ?? 0,
+            },
+          ],
+        })),
+      removeExtraProperty: (index) =>
+        set((s) => ({
+          extraProperties: s.extraProperties.filter((_, i) => i !== index),
+        })),
+      setCarryForward: (carryForward) =>
+        set((s) => ({
+          carryForward: { ...s.carryForward, ...carryForward },
+        })),
+      setDepreciationBlocks: (depreciationBlocks) => set({ depreciationBlocks }),
       setDeductions: (deductions) =>
         set((s) => ({ deductions: { ...s.deductions, ...deductions } })),
       setRegime: (regime) => set({ regime }),
@@ -365,6 +489,28 @@ export const useDraftStore = create<DraftState>()(
           computeHistory: [...s.computeHistory, entry].slice(-20),
         })),
       setEnginePhase: (enginePhase) => set({ enginePhase }),
+      setFilingOutcome: (filingOutcome) =>
+        set((s) => ({
+          filingOutcome: { ...s.filingOutcome, ...filingOutcome },
+        })),
+      markReturnSubmitted: (acknowledgementNumber) =>
+        set((s) => ({
+          filingOutcome: {
+            ...s.filingOutcome,
+            status: "filed",
+            acknowledgementNumber: acknowledgementNumber.trim(),
+            submittedAt: Date.now(),
+            eVerifiedAt: null,
+          },
+        })),
+      markReturnEVerified: () =>
+        set((s) => ({
+          filingOutcome: {
+            ...s.filingOutcome,
+            status: "verified",
+            eVerifiedAt: Date.now(),
+          },
+        })),
       mergeParsedFields: (connectorId, payload) =>
         set((s) => {
           const { fields } = payload;

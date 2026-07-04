@@ -3,28 +3,23 @@ import {
   Form16PdfOpenError,
   parseForm16MultiPart,
   scrubPanFromLogMessage,
-  type FieldConfidence,
 } from "@/lib/parsers/form16";
 
-const MOCK_FIELDS: Record<string, Record<string, string | number>> = {
-  ais: {
-    salaryReported: 1215000,
-    fdInterest: 18400,
-    mutualFundGains: 0,
-  },
-  form26as: {
-    tdsCredited: 85000,
-    advanceTax: 0,
-    selfAssessmentTax: 0,
-  },
-  cams: {
-    stcg: 12500,
-    ltcg: 0,
-    dividend: 3200,
-  },
-};
-
 const MAX_FORM16_FILES = 5;
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+
+/** Connectors with real parsers today. Others must not invent numbers. */
+const LIVE_CONNECTORS = new Set(["form16"]);
+
+const COMING_SOON_CONNECTORS = new Set([
+  "ais",
+  "form26as",
+  "cams",
+  "groww",
+  "zerodha",
+  "mfcentral",
+  "bank",
+]);
 
 function collectUploadFiles(formData: FormData): File[] {
   const files: File[] = [];
@@ -67,6 +62,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
+    for (const file of files) {
+      if (file.size > MAX_FILE_BYTES) {
+        return NextResponse.json(
+          { error: "Each file must be 10 MB or smaller." },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (COMING_SOON_CONNECTORS.has(connectorId) && !LIVE_CONNECTORS.has(connectorId)) {
+      return NextResponse.json(
+        {
+          error:
+            "This document type is not available for automatic parsing yet. Enter figures manually or upload Form 16.",
+          connectorId,
+          comingSoon: true,
+        },
+        { status: 422 }
+      );
+    }
+
     if (connectorId === "form16") {
       if (files.length > MAX_FORM16_FILES) {
         return NextResponse.json(
@@ -99,6 +115,20 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      if (demo) {
+        return NextResponse.json(
+          {
+            error:
+              "Could not extract Form 16 fields reliably. Re-upload a clearer PDF or enter figures manually.",
+            connectorId,
+            parseMode: "demo_fallback",
+            warnings: parseResult.warnings,
+            demo: true,
+          },
+          { status: 422 }
+        );
+      }
+
       return NextResponse.json({
         success: true,
         connectorId,
@@ -116,41 +146,26 @@ export async function POST(request: NextRequest) {
         parseMode: parseResult.parseMode,
         warnings: parseResult.warnings,
         parsedAt: new Date().toISOString(),
-        demo,
-        message: demo
-          ? "Demo fallback — could not extract all fields. Verify every figure against your Form 16."
-          : "Form 16 parsed from PDF — review extracted fields before filing.",
+        demo: false,
+        message: "Form 16 parsed from PDF — review extracted fields before filing.",
       });
     }
 
-    const file = files[0];
-    const filename = file.name;
-
-    const fields =
-      MOCK_FIELDS[connectorId] ?? {
-        note: "Document received — parsing stub",
-        sizeBytes: file.size,
-      };
-
-    return NextResponse.json({
-      success: true,
-      connectorId,
-      filename,
-      fields,
-      fieldConfidence: {} as Record<string, FieldConfidence>,
-      parseMode: "demo_fallback",
-      warnings: ["Demo parsing — sample numbers only."],
-      parsedAt: new Date().toISOString(),
-      demo: true,
-      message:
-        "Demo parsing — sample numbers only. Verify against your documents before filing.",
-    });
+    return NextResponse.json(
+      {
+        error:
+          "Unsupported document type. Upload Form 16, or enter income details manually.",
+        connectorId,
+      },
+      { status: 400 }
+    );
   } catch (error) {
     if (error instanceof Form16PdfOpenError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    const rawMessage = error instanceof Error ? error.message : "Upload processing failed";
+    const rawMessage =
+      error instanceof Error ? error.message : "Upload processing failed";
     const safeMessage = scrubPasswordFromMessage(rawMessage, password);
     console.error("upload error:", safeMessage);
     return NextResponse.json(

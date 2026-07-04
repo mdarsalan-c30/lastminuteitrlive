@@ -22,12 +22,12 @@ export const HELP_PILLARS: { id: HelpPillar; label: string; description: string 
   {
     id: "prep",
     label: "Prep",
-    description: "Getting Started: What you need before you open the portal.",
+    description: "Documents, ITR form choice, and readiness before you touch the portal.",
   },
   {
     id: "reconcile",
     label: "Reconcile",
-    description: "Fixing Mismatches: Solving Form 16, AIS, and 26AS differences.",
+    description: "Form 16 vs AIS vs 26AS — fix gaps before filing.",
   },
   {
     id: "regime",
@@ -37,7 +37,7 @@ export const HELP_PILLARS: { id: HelpPillar; label: string; description: string 
   {
     id: "portal",
     label: "File on portal",
-    description: "Filing Guide: How to use your step-by-step companion.",
+    description: "Copy-ready steps on incometax.gov.in using our companion guide.",
   },
   {
     id: "everify",

@@ -1,4 +1,4 @@
-export type ImportStartMode = "form16" | "itd" | "manual";
+export type ImportStartMode = "form16" | "capital_gains" | "manual";
 
 export const IMPORT_START_MODES: Record<
   ImportStartMode,
@@ -6,17 +6,17 @@ export const IMPORT_START_MODES: Record<
 > = {
   form16: {
     title: "Upload Form 16",
-    description: "Fastest: Drop your PDF here and we'll read it in seconds.",
+    description: "~5 min · PDF from employer",
   },
-  itd: {
-    title: "Import from ITD",
-    description: "~3 min · ERI connect coming soon",
-    small: "We'll notify you when live",
+  capital_gains: {
+    title: "Capital Gains / F & O",
+    description: "~5 min · Upload CAMS or enter estimates",
+    small: "Auto calculation coming soon",
   },
   manual: {
     title: "Start with estimates",
-    description: "Just testing the waters? Enter a few numbers manually.",
-    small: "~2 min · Refine with documents anytime",
+    description: "~2 min · Rough salary & deductions",
+    small: "No documents needed — refine later",
   },
 };
 
@@ -26,9 +26,9 @@ export function getImportContinueHref(
 ): string | null {
   if (mode === "form16") {
     if (options.form16FastPath) {
-      return "/file/onboarding/eligibility?source=form16&step=additional-income";
+      return "/file/start?source=form16&step=additional-income";
     }
-    return "/file/import/parsing";
+    return "/file/import/documents";
   }
   if (mode === "manual") {
     return "/file/regime";

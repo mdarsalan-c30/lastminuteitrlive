@@ -9,18 +9,15 @@ export interface DisplayPricing {
 }
 
 export function isLaunchOfferActive(now: Date = new Date()): boolean {
-  if (LAUNCH_OFFER.planId !== "ai_smart") return false;
+  if (LAUNCH_OFFER.planId !== "pro" && LAUNCH_OFFER.planId !== "ai_smart") {
+    return false;
+  }
   return now.getTime() < new Date(LAUNCH_OFFER.launchOfferEndsAt).getTime();
 }
 
 export function getEffectivePrice(planId: PlanId, now: Date = new Date()): number {
-  if (planId === LAUNCH_OFFER.planId) {
-    if (isLaunchOfferActive(now)) {
-      return LAUNCH_OFFER.launchPriceInr;
-    }
-    if (LAUNCH_OFFER.afterExpiryBehavior === "show_original") {
-      return LAUNCH_OFFER.originalPriceInr;
-    }
+  if (planId === LAUNCH_OFFER.planId && isLaunchOfferActive(now)) {
+    return LAUNCH_OFFER.launchPriceInr;
   }
   return PLANS[planId].price;
 }
@@ -30,11 +27,20 @@ export function getDisplayPricing(
   now: Date = new Date()
 ): DisplayPricing {
   const current = getEffectivePrice(planId, now);
+  const plan = PLANS[planId];
 
   if (planId === LAUNCH_OFFER.planId && isLaunchOfferActive(now)) {
     return {
       current,
       original: LAUNCH_OFFER.originalPriceInr,
+      showOffer: true,
+    };
+  }
+
+  if (plan.originalPrice !== undefined) {
+    return {
+      current,
+      original: plan.originalPrice,
       showOffer: true,
     };
   }

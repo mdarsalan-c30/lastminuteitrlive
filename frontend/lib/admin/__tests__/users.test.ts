@@ -1,13 +1,40 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-// Keep the admin store purely in-memory: no file reads/writes during the test.
-vi.mock("fs", () => ({
-  promises: {
-    readFile: vi.fn(() => Promise.reject(new Error("no file"))),
-    writeFile: vi.fn(() => Promise.resolve()),
-    mkdir: vi.fn(() => Promise.resolve()),
-  },
-}));
+// The store is Prisma-backed in production; keep these unit tests hermetic
+// with an in-memory implementation so no database state leaks across runs.
+vi.mock("@/lib/db/store", () => {
+  const collections = new Map<string, any[]>();
+  const rows = (name: string) => {
+    if (!collections.has(name)) collections.set(name, []);
+    return collections.get(name)!;
+  };
+  return {
+    genId: (prefix: string) =>
+      `${prefix}_${Math.random().toString(36).slice(2, 18)}`,
+    all: async (name: string) => [...rows(name)],
+    insert: async (name: string, row: any) => {
+      rows(name).push(row);
+      return row;
+    },
+    update: async (name: string, id: string, patch: any) => {
+      const row = rows(name).find((r) => r.id === id);
+      if (!row) return null;
+      Object.assign(row, patch);
+      return row;
+    },
+    remove: async (name: string, id: string) => {
+      const list = rows(name);
+      const idx = list.findIndex((r) => r.id === id);
+      if (idx === -1) return false;
+      list.splice(idx, 1);
+      return true;
+    },
+    replaceAll: async (name: string, newRows: any[]) => {
+      collections.set(name, [...newRows]);
+    },
+    resetCache: () => collections.clear(),
+  };
+});
 
 import { resetCache } from "@/lib/db/store";
 import {
@@ -25,23 +52,23 @@ describe("self-serve team management", () => {
   it("creates a user and authenticates it; disabled users cannot log in", async () => {
     resetCache();
     const { user, error } = await createAdminUser({
-      email: "Ops@TaxSaathi.com",
+      email: "Ops@LastMinuteITR.com",
       password: "supersecret",
       role: "ops",
-      createdBy: "ceo@taxsaathi.com",
+      createdBy: "ceo@lastminuteitr.com",
     });
     expect(error).toBeUndefined();
-    expect(user?.email).toBe("ops@taxsaathi.com");
+    expect(user?.email).toBe("ops@lastminuteitr.com");
 
-    const ok = await verifyAdminCredentials("ops@taxsaathi.com", "supersecret");
-    expect(ok).toEqual({ email: "ops@taxsaathi.com", role: "ops" });
+    const ok = await verifyAdminCredentials("ops@lastminuteitr.com", "supersecret");
+    expect(ok).toEqual({ email: "ops@lastminuteitr.com", role: "ops" });
 
-    const bad = await verifyAdminCredentials("ops@taxsaathi.com", "wrong");
+    const bad = await verifyAdminCredentials("ops@lastminuteitr.com", "wrong");
     expect(bad).toBeNull();
 
     await updateAdminUser(user!.id, { status: "disabled" });
     const disabled = await verifyAdminCredentials(
-      "ops@taxsaathi.com",
+      "ops@lastminuteitr.com",
       "supersecret"
     );
     expect(disabled).toBeNull();
@@ -50,19 +77,19 @@ describe("self-serve team management", () => {
   it("rejects duplicate emails and short passwords", async () => {
     resetCache();
     await createAdminUser({
-      email: "dupe@taxsaathi.com",
+      email: "dupe@lastminuteitr.com",
       password: "longenough",
       role: "ops",
     });
     const dup = await createAdminUser({
-      email: "dupe@taxsaathi.com",
+      email: "dupe@lastminuteitr.com",
       password: "longenough",
       role: "ops",
     });
     expect(dup.error).toMatch(/already exists/i);
 
     const short = await createAdminUser({
-      email: "new@taxsaathi.com",
+      email: "new@lastminuteitr.com",
       password: "short",
       role: "ops",
     });
@@ -97,11 +124,11 @@ describe("self-serve team management", () => {
 
     // A user can be assigned the custom role and authenticate.
     await createAdminUser({
-      email: "fin@taxsaathi.com",
+      email: "fin@lastminuteitr.com",
       password: "longenough",
       role: "finance",
     });
-    const ok = await verifyAdminCredentials("fin@taxsaathi.com", "longenough");
+    const ok = await verifyAdminCredentials("fin@lastminuteitr.com", "longenough");
     expect(ok?.role).toBe("finance");
   });
 });
