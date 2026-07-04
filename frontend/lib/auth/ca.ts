@@ -18,7 +18,7 @@ export interface CASession {
 
 function getSessionSecret(): string {
   return requireSessionSecret({
-    envKeys: ["PAYMENT_SESSION_SECRET"],
+    envKeys: ["PAYMENT_SESSION_SECRET", "RAZORPAY_KEY_SECRET"],
     devFallback: "dev-ca-session-secret",
     label: "CA session",
   });

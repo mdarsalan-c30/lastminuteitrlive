@@ -17,7 +17,9 @@ export interface B2CSession {
 
 function getSessionSecret(): string {
   return requireSessionSecret({
-    envKeys: ["PAYMENT_SESSION_SECRET"],
+    // Prefer a dedicated session secret; fall back to payment signing material
+    // already present in production (same pattern as lib/payments/session.ts).
+    envKeys: ["PAYMENT_SESSION_SECRET", "RAZORPAY_KEY_SECRET"],
     devFallback: "dev-b2c-session-secret",
     label: "B2C session",
   });
