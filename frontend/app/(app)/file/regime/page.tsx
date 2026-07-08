@@ -60,7 +60,8 @@ export default function RegimePage() {
       recommended_regime: recommended,
       savings_inr: savings,
     });
-    router.push("/file/review");
+    // Proceed to the AI Smart CA tab
+    router.push("/file/advisor");
   };
 
   const handleRetry = () => {

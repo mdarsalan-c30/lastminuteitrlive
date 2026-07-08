@@ -54,7 +54,6 @@ export const ROUTE_REDIRECTS: ReadonlyArray<{ from: string; to: string }> = [
   { from: "/file/house-property", to: "/file/review?tab=income" },
   { from: "/file/other", to: "/file/review?tab=income" },
   { from: "/file/deductions", to: "/file/review?tab=deductions" },
-  { from: "/file/advisor", to: "/file/regime" },
   { from: "/file/cabrain", to: "/file/regime" },
   { from: "/file/comprehensive", to: "/file/regime" },
   { from: "/file/profile", to: "/file/start" },

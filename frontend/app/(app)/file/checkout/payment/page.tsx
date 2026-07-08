@@ -37,7 +37,7 @@ export default function PaymentPage() {
 
   const [validatedDiscount, setValidatedDiscount] = useState<{
     code: string;
-    discountType: "percentage" | "fixed";
+    discountType: "percentage" | "fixed" | "full" | "amount";
     percentageOff?: number;
     amountOff?: number;
   } | null>(null);
@@ -76,9 +76,16 @@ export default function PaymentPage() {
 
   const calculateFinalPrice = () => {
     if (!validatedDiscount) return basePrice;
+    if (validatedDiscount.discountType === "full") {
+      return 0;
+    }
+    if (validatedDiscount.discountType === "amount" && validatedDiscount.amountOff) {
+      return Math.max(0, basePrice - validatedDiscount.amountOff);
+    }
     if (validatedDiscount.discountType === "percentage" && validatedDiscount.percentageOff) {
       return Math.max(0, basePrice - (basePrice * validatedDiscount.percentageOff) / 100);
     }
+    // Fallback for previous misnamed types if any
     if (validatedDiscount.discountType === "fixed" && validatedDiscount.amountOff) {
       return Math.max(0, basePrice - validatedDiscount.amountOff);
     }
