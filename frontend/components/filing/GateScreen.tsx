@@ -64,6 +64,7 @@ export function GateContent() {
     setRecommendedForm,
     setItrConfirmed,
     setSeniorMode,
+    setFilingPath,
   } = useDraftStore();
 
   const [pan, setPan] = useState("BOHPA6051D"); // Default demo pan as requested
@@ -154,9 +155,10 @@ export function GateContent() {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = (path: "simple" | "cabrain" = "simple") => {
     setSeniorMode(localAgeBand === "60+");
     setRecommendedForm(form, rec.caseId);
+    setFilingPath(path);
 
     // Finding 5: hard-gate unsupported personas — honest exit, no mis-file.
     if (scope.verdict === "blocked") {
@@ -299,7 +301,7 @@ export function GateContent() {
                 
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
-                    onClick={handleContinue}
+                    onClick={() => handleContinue("simple")}
                     className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-blue-700"
                   >
                     {scope.verdict === "blocked"
@@ -343,7 +345,7 @@ export function GateContent() {
 
                 <div className="flex justify-end pt-2">
                   <button
-                    onClick={handleContinue}
+                    onClick={() => handleContinue("simple")}
                     disabled={!itrConfirmed}
                     className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-slate-800 disabled:opacity-50"
                   >

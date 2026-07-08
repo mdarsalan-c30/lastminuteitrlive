@@ -10,14 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import { getAllBlogPosts, getBlogPost } from "@/lib/content/blogs";
 import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
+import Image from "next/image";
+
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
-}
-
-export async function generateStaticParams() {
-  const posts = await getAllBlogPosts();
-  return posts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -61,18 +59,18 @@ export default async function BlogArticlePage({ params }: PageProps) {
       <SiteHeader />
       
       {/* Hero Banner / Thumbnail */}
-      <div className="w-full bg-muted relative h-[300px] sm:h-[400px] lg:h-[450px] overflow-hidden">
-         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/40 mix-blend-multiply" />
-         <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-            <Badge variant="secondary" className="mb-6 py-1 px-3 text-xs tracking-widest uppercase font-bold">{post.tags[0] || 'Article'}</Badge>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-manrope text-[#0B1220] max-w-4xl tracking-tight leading-tight">
-               {post.title}
-            </h1>
-         </div>
+      <div className="w-full bg-muted relative h-[250px] sm:h-[350px] lg:h-[400px] overflow-hidden">
+         {post.coverImage && (
+           <Image src={post.coverImage} alt={post.title} fill className="object-cover" priority sizes="100vw" />
+         )}
       </div>
 
-      <main className="mx-auto max-w-[800px] min-w-0 px-5 py-12 sm:px-8 sm:py-16 bg-white -mt-10 relative z-10 rounded-t-3xl shadow-sm border border-border/50">
+      <main className="mx-auto max-w-[900px] min-w-0 px-5 py-10 sm:px-8 sm:py-12 bg-white -mt-10 relative z-10 rounded-t-3xl shadow-sm border border-border/50">
         <div className="mb-8">
+          <Badge variant="secondary" className="mb-4 py-1 px-3 text-xs tracking-widest uppercase font-bold">{post.tags[0] || 'Article'}</Badge>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-manrope text-[#0B1220] tracking-tight leading-tight mb-6">
+             {post.title}
+          </h1>
           <Link href="/blogs" className="text-sm font-semibold text-primary hover:underline flex items-center gap-1 w-fit mb-6">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
             Back to blogs
@@ -102,8 +100,12 @@ export default async function BlogArticlePage({ params }: PageProps) {
         
         <SocialShare url={`/blogs/${slug}`} title={post.title} />
 
-        <article className="prose prose-lg sm:prose-xl max-w-none prose-headings:font-manrope prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-primary">
-          <MarkdownArticleBody body={post.body} />
+        <article suppressHydrationWarning className="prose prose-lg sm:prose-xl max-w-none prose-headings:font-manrope prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-primary prose-img:mx-auto prose-p:leading-relaxed">
+          {/^\s*</.test(post.body) ? (
+            <div dangerouslySetInnerHTML={{ __html: post.body }} className="quill-content break-words overflow-x-hidden [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-xl [&_img]:shadow-sm [&_iframe]:max-w-full [&_p]:min-h-[1.5em]" />
+          ) : (
+            <MarkdownArticleBody body={post.body} />
+          )}
         </article>
         
         <SocialShare url={`/blogs/${slug}`} title={post.title} />

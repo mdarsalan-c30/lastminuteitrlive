@@ -156,6 +156,8 @@ export function isCheckoutPlanId(id: string): id is PlanId {
 export function normalizePlanId(raw: string | undefined): PlanId | null {
   if (!raw) return null;
   if (raw === "ca_review") return "ca";
+  if (raw === "diy") return "normal";
+  if (raw === "ai_smart") return "pro";
   if (!isCheckoutPlanId(raw)) return null;
   return raw;
 }

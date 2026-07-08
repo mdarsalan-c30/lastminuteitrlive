@@ -9,6 +9,7 @@ export interface BlogPost {
   publishedAt: string;
   readMinutes: number;
   source: "upload";
+  coverImage?: string;
   relatedGlossarySlugs?: [string, string];
 }
 
@@ -29,7 +30,8 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
     tags: b.focusKeyword ? [b.focusKeyword] : ["Blog"],
     publishedAt: b.updatedAt.toISOString(),
     readMinutes: estimateReadMinutes(b.content),
-    source: "upload"
+    source: "upload",
+    coverImage: b.coverImage || undefined,
   }));
   
   return prismaPosts;
@@ -46,7 +48,8 @@ export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
       tags: dbBlog.focusKeyword ? [dbBlog.focusKeyword] : ["Blog"],
       publishedAt: dbBlog.updatedAt.toISOString(),
       readMinutes: estimateReadMinutes(dbBlog.content),
-      source: "upload"
+      source: "upload",
+      coverImage: dbBlog.coverImage || undefined,
     };
   }
 

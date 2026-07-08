@@ -14,6 +14,9 @@ import { TYPOGRAPHY_SCALE } from "@/lib/design/layout";
 import { getAllBlogPosts, type BlogPost } from "@/lib/content/blogs";
 import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
+import Image from "next/image";
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = pageMetadata({
   title: "Tax & Finance Blog | LastMinute ITR",
@@ -26,13 +29,16 @@ function BlogCard({ post, featured = false }: { post: BlogPost; featured?: boole
   return (
     <Link href={`/blogs/${post.slug}`} className="block h-full">
       <Card className={`h-full flex flex-col overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${featured ? 'border-primary/20' : ''}`}>
-        {/* Placeholder thumbnail for modern look */}
+        {/* Thumbnail Image */}
         <div className={`w-full bg-muted overflow-hidden relative ${featured ? 'h-64' : 'h-48'}`}>
+          {post.coverImage ? (
+            <Image src={post.coverImage} alt={post.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 font-bold text-4xl">
+              {post.tags[0] || "Blog"}
+            </div>
+          )}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/30 mix-blend-multiply" />
-          {/* We can replace this with actual post.thumbnailUrl later if added to BlogPost type */}
-          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 font-bold text-4xl">
-            {post.tags[0] || "Blog"}
-          </div>
         </div>
         <CardHeader className="flex-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2 mb-2">

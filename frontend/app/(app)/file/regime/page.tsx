@@ -60,9 +60,7 @@ export default function RegimePage() {
       recommended_regime: recommended,
       savings_inr: savings,
     });
-    router.push(
-      filingPath === "cabrain" ? "/file/cabrain" : "/file/review/risk"
-    );
+    router.push("/file/review");
   };
 
   const handleRetry = () => {

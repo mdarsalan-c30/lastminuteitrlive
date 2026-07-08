@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { validateCoupon } from "@/lib/admin/coupons";
 import { validateReferralCode } from "@/lib/admin/referrals";
 import type { PlanId } from "@/lib/payments/plans";
-import { PLANS } from "@/lib/payments/plans";
+import { PLANS, normalizePlanId } from "@/lib/payments/plans";
 
 const VALID_PLANS = Object.keys(PLANS) as PlanId[];
 
@@ -12,7 +12,8 @@ export async function POST(request: NextRequest) {
     if (!body.code) {
       return NextResponse.json({ valid: false, reason: "Enter a code" });
     }
-    const planId = (body.planId === "ca_review" ? "ca" : body.planId) as PlanId;
+    const rawPlanId = body.planId === "ca_review" ? "ca" : body.planId;
+    const planId = normalizePlanId(rawPlanId) as PlanId;
     if (!planId || !VALID_PLANS.includes(planId)) {
       return NextResponse.json({ valid: false, reason: "Invalid plan" });
     }
