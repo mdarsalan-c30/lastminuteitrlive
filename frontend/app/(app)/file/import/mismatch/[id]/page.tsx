@@ -62,6 +62,9 @@ export default function MismatchDetailPage() {
 
       <FilingActions>
         <Button onClick={handleResolve}>Mark resolved with proof</Button>
+        <Button href="/file/review?tab=income" variant="ghost">
+          Edit my salary figure
+        </Button>
         <Button href="/file/import/mismatch" variant="ghost">
           Back
         </Button>

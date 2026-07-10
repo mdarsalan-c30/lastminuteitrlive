@@ -38,6 +38,24 @@ const BLOCKING_CHIPS: Record<string, string> = {
   unlisted: "Unlisted equity needs additional disclosures we do not collect yet.",
 };
 
+/**
+ * Entity returns (ITR-5 / ITR-6). We support these partially: the engine does
+ * not compute firm/company tax, so we route to a CA-assisted path with a
+ * document checklist instead of self-serve. Never a dead end.
+ */
+const CA_ASSISTED_ENTITY_CHIPS: Record<string, { form: string; message: string }> = {
+  firm_llp: {
+    form: "ITR-5",
+    message:
+      "Partnership firms and LLPs file ITR-5. We prepare your document checklist and connect you with a partner CA who files it with you.",
+  },
+  company: {
+    form: "ITR-6",
+    message:
+      "Companies file ITR-6 with audited financials. We prepare your document checklist and connect you with a partner CA who files it with you.",
+  },
+};
+
 /** Shown as guidance only — user can still continue on guided paths. */
 export const GUIDED_COMPLEX_CHIPS: Record<string, string> = {
   fno: "F&O is business income on ITR-3 — we guide turnover, expenses, and audit checks.",
@@ -52,6 +70,22 @@ export function evaluateScopeGate(input: ScopeGateInput): ScopeGateResult {
   const chips = new Set(input.incomeChips);
   const reasons: string[] = [];
   const guidance: string[] = [];
+
+  // Entity returns → CA-assisted path (partial ITR-5/6 support, never a dead end).
+  for (const [chip, entity] of Object.entries(CA_ASSISTED_ENTITY_CHIPS)) {
+    if (chips.has(chip)) {
+      return {
+        verdict: "blocked",
+        form: entity.form,
+        reasons: [entity.message],
+        guidance: [
+          "You still have a clear path: our partner CA files the return, and we keep you updated at every step.",
+        ],
+        actualFormNeeded: entity.form,
+        caRecommended: true,
+      };
+    }
+  }
 
   for (const [chip, message] of Object.entries(BLOCKING_CHIPS)) {
     if (chips.has(chip)) reasons.push(message);

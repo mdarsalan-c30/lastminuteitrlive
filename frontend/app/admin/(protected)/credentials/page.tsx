@@ -3,6 +3,27 @@ import { PageHeader, Card } from "../../_components/ui";
 export const dynamic = "force-dynamic";
 
 export default async function CredentialsPage() {
+  // Never expose plaintext test credentials on a production deployment.
+  if (process.env.NODE_ENV === "production" && process.env.SHOW_DEV_CREDENTIALS !== "1") {
+    return (
+      <div>
+        <PageHeader
+          title="Testing Credentials"
+          subtitle="Hidden on production"
+        />
+        <Card>
+          <p className="text-sm text-muted-foreground">
+            Test credentials are only listed on development builds. Set{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-xs">
+              SHOW_DEV_CREDENTIALS=1
+            </code>{" "}
+            to display them here (not recommended on live deployments).
+          </p>
+        </Card>
+      </div>
+    );
+  }
+
   const credentials = [
     {
       role: "Admin (CEO) — dev bootstrap only",

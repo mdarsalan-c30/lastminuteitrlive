@@ -53,7 +53,7 @@ export default function MismatchPage() {
 
   const handleProceedWithExplanation = () => {
     setMismatchProceedWithExplanation(true);
-    router.push("/file/import/tds");
+    router.push("/file/review");
   };
 
   return (
@@ -144,7 +144,7 @@ export default function MismatchPage() {
           <p className="text-xs text-slate-600 mb-3">
             No interest income in your draft yet. If AIS or your bank shows FD interest, add it before filing.
           </p>
-          <Button href="/file/other" variant="primary" className="text-xs px-3 py-1.5">
+          <Button href="/file/review?tab=income" variant="primary" className="text-xs px-3 py-1.5">
             Add income
           </Button>
         </div>
@@ -199,7 +199,7 @@ export default function MismatchPage() {
           </p>
         }
       >
-        <Button href="/file/import/tds" disabled={!mismatchResolved && criticalCount > 0 && !mismatchProceedWithExplanation}>
+        <Button href="/file/review" disabled={!mismatchResolved && criticalCount > 0 && !mismatchProceedWithExplanation}>
           Continue when critical rows are green
         </Button>
         {!mismatchResolved && criticalCount > 0 && (

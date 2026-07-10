@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { all, update } from "@/lib/db/store";
+import { prisma, update } from "@/lib/db/store";
 import {
   hashPassword,
   isLegacyPasswordHash,
@@ -24,12 +24,17 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    const users = await all("b2cUsers");
-    const user = users.find((u) => u.email === normalizedEmail);
+    const user = await prisma.b2CUser.findFirst({
+      where: { email: normalizedEmail },
+    });
     if (!user) {
       // Check if they are a CA partner
-      const tenants = await all("tenants");
-      const isTenant = tenants.some((t) => t.email?.toLowerCase() === normalizedEmail);
+      const isTenant = Boolean(
+        await prisma.tenant.findFirst({
+          where: { email: { equals: normalizedEmail, mode: "insensitive" } },
+          select: { id: true },
+        })
+      );
       if (isTenant) {
         return NextResponse.json(
           { error: "This email is registered as a CA Partner. Please log in through the CA Partner Login page." },

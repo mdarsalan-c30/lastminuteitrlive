@@ -101,6 +101,28 @@ model CompanionGrant {
   expiresAt DateTime?
   ts        DateTime  @default(now())
   passkey   String?
+
+  @@index([sessionId])
+  @@index([passkey])
+}
+
+model Invoice {
+  id         String   @id @default(uuid())
+  seq        Int      @unique @default(autoincrement())
+  paymentId  String   @unique
+  plan       String
+  planName   String
+  grossInr   Int
+  taxableInr Int
+  gstInr     Int
+  gstRate    Float    @default(0.18)
+  buyerName  String?
+  buyerEmail String?
+  sessionId  String?
+  status     String   @default("issued")
+  ts         DateTime @default(now())
+
+  @@index([sessionId])
 }
 
 model CrmContact {

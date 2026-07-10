@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { all, insert, genId } from "@/lib/db/store";
+import { prisma, insert, genId } from "@/lib/db/store";
 import { B2CUser } from "@/lib/db/types";
 import {
   hashPassword,
@@ -23,9 +23,11 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    // Check if user already exists
-    const users = await all("b2cUsers");
-    const existing = users.find((u) => u.email === normalizedEmail);
+    // Check if user already exists (unique index on email)
+    const existing = await prisma.b2CUser.findUnique({
+      where: { email: normalizedEmail },
+      select: { id: true },
+    });
     if (existing) {
       return NextResponse.json(
         { error: "A user with this email already exists" },

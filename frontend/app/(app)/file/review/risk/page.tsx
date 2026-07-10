@@ -18,8 +18,21 @@ import { PresubmitChecklist } from "@/components/filing/PresubmitChecklist";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
 
 export default function RiskReviewPage() {
-  const { mismatchResolved, income, deductions, recommendedForm, regime } =
-    useDraftStore();
+  const {
+    mismatchResolved,
+    income,
+    deductions,
+    recommendedForm,
+    regime,
+    connectedConnectors,
+  } = useDraftStore();
+  const aisGrossSalary = useDraftStore((s) => s.aisFigures?.grossSalary);
+  const hasAis = connectedConnectors.includes("ais");
+  const salaryMismatchOpen =
+    !mismatchResolved &&
+    hasAis &&
+    typeof aisGrossSalary === "number" &&
+    Math.abs(aisGrossSalary - income.grossSalary) > 100;
   const [useSnapshot, setUseSnapshot] = useState(false);
   const {
     loading,
@@ -110,18 +123,27 @@ export default function RiskReviewPage() {
             </p>
           )}
         <p className="text-sm text-slate-700 mt-1">
-          <strong>Mismatches:</strong> {mismatchResolved ? "2 resolved · 0 open" : "1 open"}
+          <strong>Mismatches:</strong>{" "}
+          {salaryMismatchOpen
+            ? "1 open — resolve it on the Mismatch screen before filing"
+            : hasAis
+              ? "None open"
+              : "None open · AIS not imported yet (cross-check recommended)"}
         </p>
         <p className="text-sm text-slate-700 mt-1 flex items-center gap-2">
           <strong>ITR form:</strong> {recommendedForm}
-          <RiskBadge variant="green">Low risk</RiskBadge>
+          <RiskBadge variant={salaryMismatchOpen ? "yellow" : "green"}>
+            {salaryMismatchOpen ? "Needs attention" : "Low risk"}
+          </RiskBadge>
         </p>
       </Card>
 
       <PresubmitChecklist
         className="mt-8 pt-8 border-t border-slate-200"
         secondaryAction={
-          <Button variant="ghost">Download proof checklist (PDF)</Button>
+          <Button variant="ghost" onClick={() => window.print()}>
+            Print proof checklist
+          </Button>
         }
       />
     </FilingLayout>

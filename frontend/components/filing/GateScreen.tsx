@@ -44,6 +44,8 @@ const FORM_PLAIN_LABELS: Record<string, string> = {
   "ITR-2": "For capital gains, foreign income, or income above ₹50L",
   "ITR-3": "Business income with books of accounts",
   "ITR-4": "Presumptive business or profession",
+  "ITR-5": "Partnership firms and LLPs — CA-assisted filing",
+  "ITR-6": "Companies — CA-assisted filing",
   BLOCK: "Parent must file for minor",
 };
 
@@ -101,6 +103,7 @@ export function GateContent() {
   const hasForeign = chips.has("foreign");
   const hasNRI = chips.has("nri");
   const hasCrypto = chips.has("crypto");
+  const hasEntity = chips.has("firm_llp") || chips.has("company");
 
   const rec = useMemo(() => resolveRecommendedForm(matrix, chips), [matrix, chips]);
 
@@ -108,18 +111,19 @@ export function GateContent() {
     let nextForm = rec.form;
     let nextReason = rec.reason;
 
-    if (hasNRI) {
-      nextForm = "BLOCK";
+    if (hasEntity) {
+      nextForm = chips.has("company") ? "ITR-6" : "ITR-5";
       nextReason =
-        "NRI / RNOR filing is not supported in this version. Please file on incometax.gov.in or with a CA.";
-    } else if (hasForeign || hasCrypto) {
+        "Firms, LLPs, and companies file entity returns — our partner CA files it with you.";
+    } else if (hasNRI || hasForeign || hasCrypto) {
       nextForm = hasBusiness || hasFO ? "ITR-3" : "ITR-2";
-      nextReason =
-        "Foreign income or crypto requires complex ITR forms — we guide you through the schedules.";
+      nextReason = hasNRI
+        ? "NRI / RNOR filing needs residential-status checks and Schedule FA — we guide you step by step."
+        : "Foreign income or crypto requires complex ITR forms — we guide you through the schedules.";
     }
 
     return { form: nextForm, reason: nextReason };
-  }, [rec, hasNRI, hasForeign, hasCrypto, hasBusiness, hasFO]);
+  }, [rec, chips, hasEntity, hasNRI, hasForeign, hasCrypto, hasBusiness, hasFO]);
 
   useEffect(() => {
     setRecommendedForm(form, rec.caseId);
@@ -142,7 +146,8 @@ export function GateContent() {
     hasFO ||
     hasForeign ||
     hasNRI ||
-    hasCrypto;
+    hasCrypto ||
+    hasEntity;
 
   const plainFormLabel = FORM_PLAIN_LABELS[form] ?? form;
 
@@ -255,6 +260,18 @@ export function GateContent() {
           />
         </div>
 
+        {/* Form 16 fast path returns here to ask "anything else this year?" */}
+        {searchParams.get("step") === "additional-income" && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-3">
+            <Check className="mt-0.5 size-4 shrink-0 text-emerald-600" strokeWidth={3} />
+            <p className="text-sm text-emerald-900">
+              <strong>Form 16 imported.</strong> One more thing — did you earn
+              anything else this year? Tick everything that applies below, then
+              continue. It keeps your return safe from AIS mismatch notices.
+            </p>
+          </div>
+        )}
+
         {/* Section 2: Income Sources */}
         <h2 className="text-xl font-bold text-slate-900 mb-4">Sec 2: Select your Income Sources</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 mb-8">
@@ -267,6 +284,8 @@ export function GateContent() {
             { id: "foreign", icon: Globe, label: "Resident Having Foreign Income", desc: "RSUs, foreign dividend", active: hasForeign, isComplex: true },
             { id: "nri", icon: Plane, label: "Non Resident (NRI) Filing", desc: "NRI status", active: hasNRI, isComplex: true },
             { id: "crypto", icon: Bitcoin, label: "Cryptocurrency", desc: "VDA trades", active: hasCrypto, isComplex: true },
+            { id: "firm_llp", icon: Building2, label: "Partnership Firm / LLP", desc: "ITR-5 · CA-assisted", active: chips.has("firm_llp"), isComplex: true },
+            { id: "company", icon: Building2, label: "Company", desc: "ITR-6 · CA-assisted", active: chips.has("company"), isComplex: true },
           ].map((item) => (
             <button
               key={item.id}
@@ -355,7 +374,7 @@ export function GateContent() {
                     className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-blue-700"
                   >
                     {scope.verdict === "blocked"
-                      ? "See honest next steps"
+                      ? "See my guided path"
                       : hasFO
                         ? "Continue — guided ITR-3"
                         : "Continue with our guide"}

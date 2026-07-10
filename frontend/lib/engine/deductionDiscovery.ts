@@ -18,6 +18,7 @@ import type {
   QuestionEngineContext,
 } from "./questionEngine";
 import type { ITRResult } from "./types";
+import { generateProfessionQuestions } from "./professionQuestions";
 
 // ── Statutory caps (mirror backend/engine/deductions.py) ──
 const CAP_80C = 150_000;
@@ -359,6 +360,14 @@ export function generateDeductionDiscoveryQuestions(
       "both"
     );
   }
+
+  // ── Profession-specific questions (the "Smart CA knows your field" layer) ──
+  const professionQuestions = generateProfessionQuestions({
+    profession: draft.profession ?? null,
+    incomeChips: draft.incomeChips,
+    questionAnswers: answers,
+  });
+  questions.push(...professionQuestions);
 
   return questions.sort((a, b) => b.estimatedSaving - a.estimatedSaving);
 }

@@ -263,25 +263,32 @@ function CompanionContent() {
 
   const handleRetry = () => setRetryKey((k) => k + 1);
 
-  const handleItr1JsonExport = async () => {
+  const handleItrJsonExport = async () => {
     if (!effectiveResult) return;
+    const formSlug = form.toLowerCase().replace("-", ""); // "ITR-3" → "itr3"
     setJsonExporting(true);
     setJsonExportError(null);
     try {
-      const response = await fetch("/api/itr/export/itr1", {
+      const response = await fetch(`/api/itr/export/${formSlug}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userInput, result: effectiveResult }),
       });
       if (!response.ok) {
-        const data = (await response.json()) as { error?: string };
-        throw new Error(data.error ?? "Could not export ITR JSON");
+        const data = (await response.json()) as {
+          error?: string;
+          validation?: { blocking?: string[] };
+        };
+        const blockingDetail = data.validation?.blocking?.[0];
+        throw new Error(
+          blockingDetail ?? data.error ?? "Could not export ITR JSON"
+        );
       }
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = "lastminute-itr-itr1-ay2026-27.json";
+      anchor.download = `lastminute-itr-${formSlug}-ay2026-27.json`;
       anchor.click();
       URL.revokeObjectURL(url);
     } catch (error) {
@@ -345,8 +352,18 @@ function CompanionContent() {
                   <strong className="font-semibold text-slate-800">Chrome Extension Passkey: </strong>
                   <code className="bg-slate-100 border border-slate-200 px-2 py-1 rounded text-sm font-mono select-all text-primary font-bold">{session.passkey}</code>
                 </div>
-                <div className="text-xs text-slate-500 font-medium">
-                  Valid for 7 days until {new Date(session.expiresAt || "").toLocaleDateString()}
+                <div className="flex items-center gap-3">
+                  <div className="text-xs text-slate-500 font-medium">
+                    Valid for 7 days until {new Date(session.expiresAt || "").toLocaleDateString()}
+                  </div>
+                  <a
+                    href="/api/invoices/mine?format=html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-semibold text-blue-700 underline underline-offset-2 whitespace-nowrap"
+                  >
+                    Download invoice
+                  </a>
                 </div>
               </div>
             </Banner>
@@ -439,12 +456,11 @@ function CompanionContent() {
                   disabled={
                     !exportUnlocked ||
                     jsonExporting ||
-                    form !== "ITR-1" ||
                     !effectiveResult
                   }
-                  onClick={handleItr1JsonExport}
+                  onClick={handleItrJsonExport}
                 >
-                  {jsonExporting ? "Preparing JSON…" : "Download ITR-1 JSON"}
+                  {jsonExporting ? "Preparing JSON…" : `Download ${form} JSON`}
                 </Button>
                 {jsonExportError && (
                   <p className="max-w-xs text-xs text-amber-700">

@@ -1,0 +1,8 @@
+engine_safe_before implementing layer1&layer2
+fixtures
+engine/tests
+__pycache__
+*.pyc
+Pipfile
+Procfile
+main.py

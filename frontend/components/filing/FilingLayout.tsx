@@ -15,9 +15,6 @@ import {
   UserCheck,
   UploadCloud,
   Coins,
-  PiggyBank,
-  GitCompare,
-  ShieldCheck,
   CreditCard,
   ExternalLink,
   FileText,
@@ -45,45 +42,37 @@ const SIDEBAR_STEPS: SidebarStep[] = [
   {
     id: "onboarding",
     label: "Get Started",
-    href: "/file/onboarding/eligibility?step=about-you",
-    match: ["/file/onboarding"],
+    href: "/file/start",
+    match: ["/file/start", "/file/onboarding"],
     icon: UserCheck,
   },
   {
     id: "import",
     label: "Import Documents",
     href: "/file/import/documents",
-    match: ["/file/import/documents", "/file/import/parsing"],
+    match: ["/file/import"],
     icon: UploadCloud,
   },
   {
-    id: "comprehensive",
-    label: "Comprehensive Profile",
-    href: "/file/comprehensive",
+    id: "review",
+    label: "Income & Deductions",
+    href: "/file/review",
     match: [
+      "/file/review",
       "/file/comprehensive",
       "/file/income",
       "/file/house-property",
       "/file/other",
       "/file/deductions",
-      "/file/regime",
-      "/file/cabrain",
     ],
     icon: Coins,
   },
   {
-    id: "advisor",
-    label: "AI Smart CA",
-    href: "/file/advisor",
-    match: ["/file/advisor"],
+    id: "regime",
+    label: "AI Smart CA · Regime",
+    href: "/file/regime",
+    match: ["/file/regime", "/file/advisor", "/file/cabrain"],
     icon: Sparkles,
-  },
-  {
-    id: "review",
-    label: "Audit & Review",
-    href: "/file/review",
-    match: ["/file/review"],
-    icon: ShieldCheck,
   },
   {
     id: "checkout",
@@ -132,8 +121,8 @@ function isSubItemActive(subId: string, pathname: string, activeNavSection?: str
 function getBreadcrumbs(pathname: string) {
   const parts = [{ label: "Filing Workspace", href: "/file" }];
   
-  if (pathname.startsWith("/file/onboarding")) {
-    parts.push({ label: "Get Started", href: "/file/onboarding/eligibility" });
+  if (pathname.startsWith("/file/start") || pathname.startsWith("/file/onboarding")) {
+    parts.push({ label: "Get Started", href: "/file/start" });
   } else if (pathname.startsWith("/file/import")) {
     parts.push({ label: "Import Documents", href: "/file/import/documents" });
   } else if (pathname.startsWith("/file/comprehensive")) {

@@ -17,6 +17,7 @@ import {
   PAYMENT_SESSION_COOKIE,
 } from "@/lib/payments/session";
 import { recordPayment } from "@/lib/admin/payments";
+import { createInvoiceForPayment } from "@/lib/billing/invoices";
 import { recordSessionEvent } from "@/lib/admin/events";
 import {
   hashIp,
@@ -65,8 +66,9 @@ async function persistVerifiedPayment(input: {
       }
     }
 
-    await recordPayment({
-      amount: couponId ? Math.max(0, amount) : amount,
+    const paidAmount = couponId ? Math.max(0, amount) : amount;
+    const payment = await recordPayment({
+      amount: paidAmount,
       plan: input.planId,
       status: "paid",
       source: input.orderId.startsWith("order_free_") ? "free" : "razorpay",
@@ -75,6 +77,16 @@ async function persistVerifiedPayment(input: {
       sessionId: input.sessionId,
       couponId,
     });
+
+    // GST invoice for every paid order (free/₹0 orders get none).
+    if (paidAmount > 0) {
+      await createInvoiceForPayment({
+        paymentId: payment.id,
+        plan: input.planId,
+        grossInr: paidAmount,
+        sessionId: input.sessionId,
+      });
+    }
 
     if (input.sessionId) {
       const passkey = generatePasskey();

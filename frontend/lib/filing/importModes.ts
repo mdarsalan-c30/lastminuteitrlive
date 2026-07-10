@@ -28,7 +28,11 @@ export function getImportContinueHref(
     if (options.form16FastPath) {
       return "/file/start?source=form16&step=additional-income";
     }
-    return "/file/import/documents";
+    // Once Form 16 is in, the next state is RECONCILE — never loop back
+    // to the documents screen.
+    return options.form16Connected
+      ? "/file/import/mismatch"
+      : "/file/import/documents";
   }
   if (mode === "manual") {
     return "/file/regime";

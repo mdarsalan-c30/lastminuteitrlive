@@ -48,8 +48,9 @@ describe("copy/strings — banned-words lint (doc 42 §1, §6)", () => {
   });
 
   it("never scolds and never guarantees (voice spot-checks)", () => {
-    // Blocked state is honest, not apologetic-vague.
-    expect(GATE.blockedTitle).toContain("won't pretend");
+    // Blocked state never says no — it routes to an expert with confidence.
+    expect(GATE.blockedTitle).toContain("expert");
+    expect(GATE.blockedBody.toLowerCase()).not.toContain("sorry");
     // Mismatch copy reassures before asking.
     expect(RECONCILE.mismatchReassure).toContain("normal");
     // Verified copy is honest about whose timeline the refund is on.

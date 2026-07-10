@@ -229,7 +229,7 @@ export interface DraftState {
   setDepreciationBlocks: (blocks: DepreciationBlockDraft[]) => void;
   setDeductions: (deductions: Partial<DeductionDraft>) => void;
   setRegime: (regime: "old" | "new") => void;
-  setProfession: (profession: string) => void;
+  setProfession: (profession: string | null) => void;
   setPlan: (plan: PlanId) => void;
   setPaymentVerified: (planId: PlanId) => void;
   setMismatchResolved: (resolved: boolean) => void;

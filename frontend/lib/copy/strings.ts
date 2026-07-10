@@ -25,9 +25,9 @@ export const ESTIMATE_CHIP = "Estimate · AY 2026-27";
 export const GATE = {
   whyCapitalGains:
     "Selling investments changes which form you need. We check so you never file the wrong one.",
-  blockedTitle: "We can't file your case correctly yet — and we won't pretend we can.",
+  blockedTitle: "Your case needs an expert's hands — and we bring the expert to you.",
   blockedBody:
-    "Your situation needs a form we don't support well enough to trust. Here's the honest path forward:",
+    "Your situation needs schedules that work best with a CA alongside you. Here's your guided path forward:",
 } as const;
 
 // ── COLLECT / EXTRACT ───────────────────────────────────────────

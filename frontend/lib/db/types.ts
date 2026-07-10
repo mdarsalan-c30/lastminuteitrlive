@@ -107,6 +107,26 @@ export interface Payment {
   ts: string;
 }
 
+export type InvoiceStatus = "issued" | "cancelled";
+
+export interface Invoice {
+  id: string;
+  seq: number;
+  paymentId: string;
+  plan: string;
+  planName: string;
+  /** GST-inclusive amount actually charged (₹). */
+  grossInr: number;
+  taxableInr: number;
+  gstInr: number;
+  gstRate: number;
+  buyerName?: string;
+  buyerEmail?: string;
+  sessionId?: string;
+  status: InvoiceStatus;
+  ts: string;
+}
+
 export interface CompanionGrant {
   id: string;
   sessionId: string;

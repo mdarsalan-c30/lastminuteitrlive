@@ -62,4 +62,25 @@ describe("scopeGate (doc 30 Finding 5)", () => {
     expect(fno.caRecommended).toBe(true);
     expect(fno.guidance.some((g) => /F&O/i.test(g))).toBe(true);
   });
+
+  it("routes firms/LLPs to CA-assisted ITR-5 (partial support, never a dead end)", () => {
+    const r = evaluateScopeGate({
+      incomeChips: ["firm_llp"],
+      recommendedForm: "ITR-1",
+    });
+    expect(r.verdict).toBe("blocked");
+    expect(r.actualFormNeeded).toBe("ITR-5");
+    expect(r.caRecommended).toBe(true);
+    expect(r.guidance.some((g) => /partner CA/i.test(g))).toBe(true);
+  });
+
+  it("routes companies to CA-assisted ITR-6", () => {
+    const r = evaluateScopeGate({
+      incomeChips: ["company"],
+      recommendedForm: "ITR-1",
+    });
+    expect(r.verdict).toBe("blocked");
+    expect(r.actualFormNeeded).toBe("ITR-6");
+    expect(r.caRecommended).toBe(true);
+  });
 });

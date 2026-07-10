@@ -19,6 +19,7 @@ import {
   generateDeductionDiscoveryQuestions,
   type DiscoveryQuestion,
 } from "@/lib/engine/deductionDiscovery";
+import { PROFESSION_OPTIONS } from "@/lib/engine/professionQuestions";
 import type { ITRResult } from "@/lib/engine/types";
 import { WhyExpander } from "@/components/ds/WhyExpander";
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,22 @@ const MANUAL_HINTS: Record<string, string> = {
     "Noted. We'll flag your return for a books-vs-presumptive comparison.",
   disc_bf_sec80:
     "Noted. If the loss-year return was late, capital and business losses cannot be carried forward.",
+  prof_doctor_indemnity:
+    "Noted. Keep the premium receipt — we'll flag your return for a books-vs-presumptive comparison.",
+  prof_doctor_equipment:
+    "Noted. Add the equipment cost as a depreciation block on the Income screen (15% rate).",
+  prof_doctor_pharmacy:
+    "Noted. We'll treat pharmacy sales as 44AD business income and consultations as 44ADA — usually lower tax.",
+  prof_lawyer_chamber:
+    "Noted. Keep expense proofs — we'll flag your return for a books-vs-presumptive comparison.",
+  prof_it_equipment:
+    "Noted. Add the equipment as a depreciation block on the Income screen (computers depreciate at 40%).",
+  prof_it_foreign_clients:
+    "Noted. Make sure all foreign receipts are in your gross receipts — AIS usually shows them.",
+  prof_creator_gifts:
+    "Noted. Barter and freebies above ₹20,000 count as income (194R) — include their fair value in receipts.",
+  prof_gig_tds:
+    "Noted. Check Form 26AS for platform TDS — it comes back as refund if your total tax is lower.",
 };
 
 function formatINR(n: number): string {
@@ -93,6 +110,14 @@ export function SmartSavingsFinder({ result }: { result?: ITRResult | null }) {
   const addExtraProperty = useDraftStore((s) => s.addExtraProperty);
   const setDepreciationBlocks = useDraftStore((s) => s.setDepreciationBlocks);
   const setHouseProperty = useDraftStore((s) => s.setHouseProperty);
+  const profession = useDraftStore((s) => s.profession);
+  const setProfession = useDraftStore((s) => s.setProfession);
+  const ensureIncomeChip = useDraftStore((s) => s.ensureIncomeChip);
+
+  const hasBusinessChips =
+    incomeChips.includes("freelance") ||
+    incomeChips.includes("business_presumptive") ||
+    incomeChips.includes("fno");
 
   const [amountDraftById, setAmountDraftById] = useState<Record<string, string>>({});
   const [confirmation, setConfirmation] = useState<string | null>(null);
@@ -111,6 +136,7 @@ export function SmartSavingsFinder({ result }: { result?: ITRResult | null }) {
       deductions,
       connectedConnectors,
       capitalGains,
+      profession,
     });
     const recommendedRegime = result?.regime_comparison.recommended_regime;
     return generateDeductionDiscoveryQuestions({
@@ -128,6 +154,7 @@ export function SmartSavingsFinder({ result }: { result?: ITRResult | null }) {
         carryForward,
         depreciationBlocks,
         deductions,
+        profession,
       },
       questionAnswers,
     })
@@ -140,8 +167,16 @@ export function SmartSavingsFinder({ result }: { result?: ITRResult | null }) {
     filingMode, profile, matrix, incomeChips, income, houseProperty,
     extraProperties, carryForward, depreciationBlocks, deductions,
     connectedConnectors, capitalGains, mismatchResolved, lastParseResult,
-    questionAnswers, result,
+    questionAnswers, result, profession,
   ]);
+
+  const handleSideIncome = (q: DiscoveryQuestion) => {
+    ensureIncomeChip("freelance");
+    setQuestionAnswer(q.id, { answer: "yes" });
+    setConfirmation(
+      "Great — we added Freelance to your income sources. Enter what you earned on the Income tab; presumptive tax makes it simple (often only 50% or less of receipts is taxed)."
+    );
+  };
 
   const handleYesWithAmount = (q: DiscoveryQuestion) => {
     const target = AMOUNT_TARGETS[q.id];
@@ -252,6 +287,30 @@ export function SmartSavingsFinder({ result }: { result?: ITRResult | null }) {
         only what is true — every claim needs proof.
       </p>
 
+      {hasBusinessChips && (
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-white p-3">
+          <label
+            htmlFor="ssf-profession"
+            className="text-xs font-semibold text-slate-700"
+          >
+            What do you do? We ask sharper questions once we know.
+          </label>
+          <select
+            id="ssf-profession"
+            value={profession ?? ""}
+            onChange={(e) => setProfession(e.target.value || null)}
+            className="h-8 rounded-lg border border-slate-300 px-2 text-xs"
+          >
+            <option value="">Select your field…</option>
+            {PROFESSION_OPTIONS.map((opt) => (
+              <option key={opt.id} value={opt.id}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {confirmation && (
         <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-xs text-emerald-800">
           {confirmation}
@@ -265,6 +324,7 @@ export function SmartSavingsFinder({ result }: { result?: ITRResult | null }) {
           const isSecondProperty = q.id === "disc_second_property";
           const isDepreciation = q.id === "disc_depreciation";
           const isSec80 = q.id === "disc_bf_sec80";
+          const isSideIncome = q.id === "prof_side_income";
 
           return (
             <div
@@ -363,6 +423,14 @@ export function SmartSavingsFinder({ result }: { result?: ITRResult | null }) {
                     onClick={() => handleSecondProperty(q)}
                   >
                     <Check className="size-3.5 mr-1" /> Yes, I have another
+                  </Button>
+                ) : isSideIncome ? (
+                  <Button
+                    size="sm"
+                    className="h-8 text-xs"
+                    onClick={() => handleSideIncome(q)}
+                  >
+                    <Check className="size-3.5 mr-1" /> Yes, I earned extra
                   </Button>
                 ) : isSec80 ? (
                   <>

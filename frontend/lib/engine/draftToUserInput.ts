@@ -234,7 +234,11 @@ export function draftToUserInput(draft: Pick<
   | "connectedConnectors"
 > & Partial<Pick<
   DraftState,
-  "extraProperties" | "carryForward" | "depreciationBlocks" | "capitalGains"
+  | "extraProperties"
+  | "carryForward"
+  | "depreciationBlocks"
+  | "capitalGains"
+  | "profession"
 >>): UserInput {
   const age = ageFromBand(draft.profile.ageBand);
   const gross = draft.income.grossSalary;
@@ -289,6 +293,9 @@ export function draftToUserInput(draft: Pick<
     draft.income,
     draft.depreciationBlocks
   );
+  if (businessInput && draft.profession) {
+    businessInput.profession_name = draft.profession;
+  }
   const carryForwardInput = carryForwardToInput(draft.carryForward);
   const profileFlags = profileFlagsFromDraft(
     draft.matrix,
