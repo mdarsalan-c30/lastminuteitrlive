@@ -70,14 +70,14 @@ export function SiteHeader() {
           {/* Upload Form 16 — secondary pill (hidden on mobile) */}
           <Link
             href="/file/import/documents?source=form16"
-            className="btn-pill-secondary hidden py-[10px] px-5 text-[14px] max-[860px]:hidden"
+            className="btn-pill-secondary hidden py-[10px] px-5 text-[14px] min-[860px]:inline-flex"
           >
             Upload Form 16
           </Link>
           {/* Start my return — primary pill */}
           <Link
             href="/#b2c-name"
-            className="btn-pill-primary py-[10px] px-5 text-[14px] max-[560px]:px-4 max-[380px]:hidden"
+            className="btn-pill-primary py-[10px] px-5 text-[14px] max-[560px]:px-3.5 max-[560px]:py-2 max-[560px]:text-[13px] max-[360px]:hidden"
           >
             Start my return
           </Link>

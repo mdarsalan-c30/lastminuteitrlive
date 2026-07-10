@@ -58,7 +58,7 @@ export function RegimeComparatorHero() {
 
   return (
     <div
-      className="w-full rounded-[24px] bg-white p-7"
+      className="w-full min-w-0 rounded-[20px] bg-white p-4 sm:rounded-[24px] sm:p-7"
       style={{
         border: "1px solid #E6E8EC",
         boxShadow: "0 24px 60px -24px rgba(11,18,32,.16), 0 2px 4px rgba(11,18,32,.04)",
@@ -107,7 +107,7 @@ export function RegimeComparatorHero() {
       </div>
 
       {/* Regime cards */}
-      <div className="mb-4.5 grid grid-cols-2 gap-3">
+      <div className="mb-4.5 grid grid-cols-2 gap-2 sm:gap-3">
         {/* Old */}
         <div
           className="relative rounded-[16px] border-[1.5px] px-4 py-4.5 text-center transition-all duration-300"

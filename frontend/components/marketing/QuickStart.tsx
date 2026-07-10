@@ -94,8 +94,8 @@ export function QuickStart() {
               </div>
             </div>
 
-            {/* Right: 2×2 doc cards */}
-            <div className="grid grid-cols-2 gap-3.5">
+            {/* Right: doc cards — single column on narrow phones */}
+            <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:gap-3.5">
               {QUICK_START_CONNECTORS.map((connector) => (
                 <Link
                   key={connector.id}

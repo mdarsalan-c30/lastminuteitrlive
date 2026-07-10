@@ -69,7 +69,7 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
           </div>
         </div>
 
-        <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] max-[980px]:grid-cols-1 max-[980px]:gap-12">
+        <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] max-[980px]:grid-cols-1 max-[980px]:gap-10 max-[560px]:gap-8">
           {/* Left copy */}
           <div>
             {mode === "b2c" ? (
@@ -79,9 +79,9 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                 <h1
                   className="font-manrope font-bold tracking-[-0.02em] text-[#0B1220]"
                   style={{
-                    fontSize: "clamp(34px, 4.2vw, 52px)",
-                    lineHeight: 1.08,
-                    marginBottom: 22,
+                    fontSize: "clamp(27px, 5.5vw, 52px)",
+                    lineHeight: 1.12,
+                    marginBottom: 18,
                   }}
                 >
                   File your ITR before the deadline —{" "}
@@ -90,10 +90,10 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
 
                 <p
                   style={{
-                    fontSize: 17.5,
+                    fontSize: "clamp(15px, 2vw, 17.5px)",
                     color: "#2B3344",
                     maxWidth: 480,
-                    marginBottom: 32,
+                    marginBottom: 28,
                     lineHeight: 1.6,
                   }}
                 >
@@ -187,9 +187,9 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                 <h1
                   className="font-manrope font-bold tracking-[-0.02em] text-[#0B1220]"
                   style={{
-                    fontSize: "clamp(34px, 4.2vw, 52px)",
-                    lineHeight: 1.08,
-                    marginBottom: 22,
+                    fontSize: "clamp(27px, 5.5vw, 52px)",
+                    lineHeight: 1.12,
+                    marginBottom: 18,
                   }}
                 >
                   Scale your tax practice —{" "}
@@ -198,10 +198,10 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
 
                 <p
                   style={{
-                    fontSize: 17.5,
+                    fontSize: "clamp(15px, 2vw, 17.5px)",
                     color: "#2B3344",
                     maxWidth: 480,
-                    marginBottom: 32,
+                    marginBottom: 28,
                     lineHeight: 1.6,
                   }}
                 >

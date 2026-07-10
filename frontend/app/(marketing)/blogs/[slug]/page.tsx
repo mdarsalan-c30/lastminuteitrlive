@@ -61,11 +61,11 @@ export default async function BlogArticlePage({ params }: PageProps) {
       <SiteHeader />
       
       {/* Hero Banner / Thumbnail */}
-      <div className="w-full bg-muted relative h-[300px] sm:h-[400px] lg:h-[450px] overflow-hidden">
+      <div className="w-full bg-muted relative min-h-[240px] sm:min-h-[360px] lg:min-h-[420px] overflow-hidden">
          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/40 mix-blend-multiply" />
-         <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-            <Badge variant="secondary" className="mb-6 py-1 px-3 text-xs tracking-widest uppercase font-bold">{post.tags[0] || 'Article'}</Badge>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-manrope text-[#0B1220] max-w-4xl tracking-tight leading-tight">
+         <div className="relative flex min-h-[240px] flex-col items-center justify-center text-center p-6 sm:min-h-[360px] lg:min-h-[420px]">
+            <Badge variant="secondary" className="mb-4 sm:mb-6 py-1 px-3 text-xs tracking-widest uppercase font-bold">{post.tags[0] || 'Article'}</Badge>
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-manrope text-[#0B1220] max-w-4xl tracking-tight leading-tight [overflow-wrap:anywhere]">
                {post.title}
             </h1>
          </div>
@@ -78,7 +78,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
             Back to blogs
           </Link>
           
-          <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed mb-6 font-medium">
+          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6 font-medium">
              {post.excerpt}
           </p>
 
@@ -102,7 +102,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
         
         <SocialShare url={`/blogs/${slug}`} title={post.title} />
 
-        <article className="prose prose-lg sm:prose-xl max-w-none prose-headings:font-manrope prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-primary">
+        <article className="prose prose-slate sm:prose-lg max-w-none prose-headings:font-manrope prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-primary">
           <MarkdownArticleBody body={post.body} />
         </article>
         

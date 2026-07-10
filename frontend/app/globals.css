@@ -337,6 +337,16 @@
   html {
     @apply font-sans scroll-smooth;
   }
+  /* Mobile font optimisation: rem-based type scales down ~6% on phones so
+     content boxes fit without horizontal cropping. */
+  @media (max-width: 480px) {
+    html {
+      font-size: 15px;
+    }
+  }
+  body {
+    overflow-x: clip;
+  }
   h1, h2, h3 {
     font-family: "SF Pro Display", var(--font-display), "Inter", -apple-system, BlinkMacSystemFont,
       "Segoe UI", system-ui, sans-serif;
