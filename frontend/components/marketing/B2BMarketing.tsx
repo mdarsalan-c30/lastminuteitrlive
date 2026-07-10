@@ -160,7 +160,7 @@ export function B2BPricing() {
             Simple, pay-as-you-grow pricing
           </h2>
           <p className="mt-4 text-[16px] text-[#6B7280] leading-relaxed max-w-[600px] mx-auto">
-            Choose a package that fits your firm's volume. Purchase filing credits upfront and use them anytime.
+            Choose a package that fits your firm&apos;s volume. Purchase filing credits upfront and use them anytime.
           </p>
         </ScrollReveal>
 

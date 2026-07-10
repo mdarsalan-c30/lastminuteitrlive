@@ -6,6 +6,7 @@ import {
   CA_SESSION_COOKIE,
   caCookieOptions,
 } from "@/lib/auth/ca";
+import { all } from "@/lib/db/store";
 
 export async function POST(req: Request) {
   try {
@@ -18,7 +19,6 @@ export async function POST(req: Request) {
     const normalizedEmail = email.trim().toLowerCase();
 
     // Check if they are an individual (B2C) user
-    const { all } = await import("@/lib/db/store");
     const b2cUsers = await all("b2cUsers");
     const isB2CUser = b2cUsers.some((u) => u.email === normalizedEmail);
 

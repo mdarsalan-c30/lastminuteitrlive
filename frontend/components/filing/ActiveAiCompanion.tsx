@@ -46,7 +46,7 @@ const LOCAL_TAX_KNOWLEDGE: Record<string, string> = {
   "how to avoid notices?":
     "Notice avoidance checklist: (1) Ensure gross salary matches Form 16, (2) Claim only genuine deductions backed by proofs, (3) Confirm all TDS entries match Form 26AS, (4) File your return before the July 31st deadline.",
   "how do i choose itr form?":
-    "We select the form automatically: ITR-1 (for single salary + one house property), ITR-2 (salary + capital gains or multiple houses), and ITR-3/4 (if business/professional income is declared).",
+    "We support ITR-1 through ITR-7 selection. For salaried users: ITR-1 (simple salary), ITR-2 (capital gains/foreign), ITR-3 (F&O/business), ITR-4 (presumptive). ITR-5/6/7 are filed via our CA partners.",
 };
 
 export const FIELD_GUIDANCE: Record<string, { title: string; tip: string; impact: string }> = {
@@ -153,7 +153,7 @@ const STEP_GUIDANCE: Record<string, { banner: string; tips: string[] }> = {
     ],
   },
   deductions: {
-    banner: "Let's maximize your tax savings. I will check for unclaimed deductions.",
+    banner: "Let's check lawful deductions you may have missed. Claim only what you can prove.",
     tips: [
       "Confirm Section 80C contributions (PPF, LIC, PF).",
       "Declare preventive health checks under Section 80D.",
@@ -161,7 +161,7 @@ const STEP_GUIDANCE: Record<string, { banner: string; tips: string[] }> = {
     ],
   },
   regime: {
-    banner: "Comparing Old vs. New Tax Regimes. I've computed your exact savings.",
+    banner: "Comparing Old vs. New Tax Regimes. These are estimates from your current numbers.",
     tips: [
       "New regime has lower rates but allows no exemptions.",
       "Old regime is profitable if your total deductions exceed ₹4.25L.",

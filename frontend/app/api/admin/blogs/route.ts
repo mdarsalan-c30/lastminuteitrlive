@@ -1,9 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { requireAdmin } from "@/lib/admin/rbac";
 
 const prisma = new PrismaClient();
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  const auth = await requireAdmin(request, "editContent");
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -18,12 +22,16 @@ export async function GET(request: Request) {
       orderBy: { updatedAt: "desc" },
     });
     return NextResponse.json(blogs);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to load blogs";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const auth = await requireAdmin(request, "editContent");
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const data = await request.json();
     const blog = await prisma.blog.create({
@@ -41,7 +49,9 @@ export async function POST(request: Request) {
       },
     });
     return NextResponse.json(blog);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to create blog";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

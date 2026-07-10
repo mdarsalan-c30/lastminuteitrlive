@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   getPlan,
+  isPurchasablePlanId,
   normalizePlanId,
   type PlanId,
 } from "@/lib/payments/plans";
 import {
+  fetchRazorpayOrder,
   hasRazorpayKeys,
   verifyPaymentSignature,
 } from "@/lib/payments/razorpay";
@@ -22,6 +24,10 @@ import {
   validateCoupon,
   generatePasskey,
 } from "@/lib/admin/coupons";
+import {
+  recordReferralRedemption,
+  validateReferralCode,
+} from "@/lib/admin/referrals";
 import { getPublishedPrice } from "@/lib/pricing/config";
 import { genId, insert } from "@/lib/db/store";
 import type { CompanionGrant } from "@/lib/db/types";
@@ -52,7 +58,6 @@ async function persistVerifiedPayment(input: {
         });
         couponId = result.coupon!.id;
       } else {
-        const { validateReferralCode, recordReferralRedemption } = await import("@/lib/admin/referrals");
         const refResult = await validateReferralCode(input.couponCode, input.planId);
         if (refResult.valid) {
           await recordReferralRedemption(refResult.referralCodeId, input.sessionId || "b2c", input.paymentId);
@@ -98,6 +103,44 @@ async function persistVerifiedPayment(input: {
 
 function resolvePlanId(raw: string | undefined): PlanId | null {
   return normalizePlanId(raw);
+}
+
+async function resolveVerifiedOrderPlan(input: {
+  orderId: string;
+  clientPlanId: PlanId | null;
+}): Promise<{ planId: PlanId } | NextResponse> {
+  const order = await fetchRazorpayOrder(input.orderId);
+  const notes = order.notes ?? {};
+  const notePlanId =
+    typeof notes.planId === "string" ? normalizePlanId(notes.planId) : null;
+  const noteAmountPaise = Number(notes.amountPaise);
+
+  if (notes.product !== "lastminute-itr" || !notePlanId || !isPurchasablePlanId(notePlanId)) {
+    return NextResponse.json(
+      { verified: false, error: "Payment order is not linked to a valid plan" },
+      { status: 400 }
+    );
+  }
+
+  if (input.clientPlanId && input.clientPlanId !== notePlanId) {
+    return NextResponse.json(
+      { verified: false, error: "Payment plan mismatch" },
+      { status: 400 }
+    );
+  }
+
+  if (
+    order.currency !== "INR" ||
+    !Number.isFinite(noteAmountPaise) ||
+    order.amount !== noteAmountPaise
+  ) {
+    return NextResponse.json(
+      { verified: false, error: "Payment amount mismatch" },
+      { status: 400 }
+    );
+  }
+
+  return { planId: notePlanId };
 }
 
 async function verifiedResponse(input: {
@@ -185,7 +228,7 @@ export async function POST(request: NextRequest) {
       isMockAllowed &&
       razorpay_order_id.startsWith("order_mock_")
     ) {
-      if (!planId) {
+      if (!planId || !isPurchasablePlanId(planId)) {
         return NextResponse.json({ error: "Invalid plan id" }, { status: 400 });
       }
       return await verifiedResponse({
@@ -244,15 +287,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!planId) {
-      return NextResponse.json({ error: "Invalid plan id" }, { status: 400 });
-    }
+    const resolvedOrder = await resolveVerifiedOrderPlan({
+      orderId: razorpay_order_id,
+      clientPlanId: planId,
+    });
+    if (resolvedOrder instanceof NextResponse) return resolvedOrder;
 
     return await verifiedResponse({
       mock: false,
       orderId: razorpay_order_id,
       paymentId: razorpay_payment_id,
-      planId,
+      planId: resolvedOrder.planId,
       sessionId: body.sessionId,
       couponCode: body.couponCode,
       ipHash,

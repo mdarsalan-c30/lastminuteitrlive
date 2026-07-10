@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  CHECKOUT_PLAN_IDS,
+  isPurchasablePlanId,
   normalizePlanId,
   type PlanId,
 } from "@/lib/payments/plans";
@@ -20,11 +20,11 @@ export async function POST(request: NextRequest) {
     };
     const planId = normalizePlanId(body.planId);
 
-    if (!planId || !CHECKOUT_PLAN_IDS.includes(planId)) {
+    if (!planId || !isPurchasablePlanId(planId)) {
       return NextResponse.json(
         {
           error:
-            "Invalid plan. Choose free, normal, pro, diy, ai_smart, or ca.",
+            "Invalid plan. Choose free, normal, pro, diy, or ai_smart. CA Review is launching soon.",
         },
         { status: 400 }
       );
@@ -106,7 +106,11 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const order = await createRazorpayOrder(amountPaise, receipt);
+    const order = await createRazorpayOrder(amountPaise, receipt, {
+      planId,
+      amountPaise,
+      couponCode: body.couponCode ?? "",
+    });
 
     return NextResponse.json({
       orderId: order.id,

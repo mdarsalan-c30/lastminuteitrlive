@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Lock } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -41,6 +41,16 @@ import {
 import { PORTAL_ITR1_SECTIONS } from "@/lib/engine/portalSections";
 import type { ITRResult, TaxRegime } from "@/lib/engine/types";
 import { SmartSavingsFinder } from "@/components/filing/SmartSavingsFinder";
+import { HraCalculator } from "@/components/filing/wizards/HraCalculator";
+import { MultiForm16SummaryCard } from "@/components/filing/wizards/MultiForm16SummaryCard";
+import {
+  buildSavingsCoachSummary,
+  type SavingsCoachSummary,
+} from "@/lib/engine/savingsCoach";
+import {
+  is80DCashPaymentBlocked,
+  SECTION_80D_CASH_MESSAGE,
+} from "@/lib/tax/section80d";
 
 const TAB_LABELS: Record<ReviewTab, string> = {
   import: "Import",
@@ -365,9 +375,17 @@ function ImportTab() {
 function IncomeTab() {
   const income = useDraftStore((s) => s.income);
   const houseProperty = useDraftStore((s) => s.houseProperty);
+  const regime = useDraftStore((s) => s.regime) ?? "new";
+  const setIncome = useDraftStore((s) => s.setIncome);
+  const incomeChips = useDraftStore((s) => s.incomeChips);
   const employers = income.employers ?? [];
   const hasAnyIncome =
-    income.grossSalary > 0 || income.fdInterest > 0 || houseProperty.propertyType !== "none";
+    income.grossSalary > 0 ||
+    income.fdInterest > 0 ||
+    houseProperty.propertyType !== "none" ||
+    incomeChips.includes("fno") ||
+    incomeChips.includes("crypto") ||
+    incomeChips.includes("foreign");
 
   if (!hasAnyIncome) {
     return (
@@ -380,8 +398,16 @@ function IncomeTab() {
     );
   }
 
+  const basicSalary = Math.round(income.grossSalary * 0.5);
+  const fnoAudit =
+    (income.fnoTurnover ?? 0) >= 10_00_00_000
+      ? "Your F&O absolute turnover is at or above ₹10 crore — a tax audit may apply. We recommend a CA review."
+      : null;
+
   return (
     <div className="space-y-3">
+      <MultiForm16SummaryCard employers={employers} regime={regime} />
+
       <Card>
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-slate-900">Salary</h3>
@@ -405,6 +431,89 @@ function IncomeTab() {
           </ul>
         )}
       </Card>
+
+      <HraCalculator
+        hraReceived={income.hraReceived}
+        basicSalary={basicSalary}
+        actualRentPaid={income.actualRentPaid}
+        cityTier={income.cityTier}
+        onChange={(patch) => setIncome(patch)}
+      />
+
+      {(incomeChips.includes("fno") || (income.fnoTurnover ?? 0) > 0) && (
+        <Card>
+          <h3 className="font-semibold text-slate-900">F&amp;O / trading (Schedule BP)</h3>
+          <p className="mt-2 text-sm text-slate-700">
+            Absolute turnover: {formatINR(income.fnoTurnover ?? 0)}
+          </p>
+          <p className="mt-1 text-sm text-slate-700">
+            Non-speculative P&amp;L: {formatINR(income.fnoNonSpeculativeProfit ?? 0)}
+          </p>
+          <p className="mt-1 text-sm text-slate-700">
+            Speculative / intraday P&amp;L: {formatINR(income.fnoSpeculativeProfit ?? 0)}
+          </p>
+          {fnoAudit && (
+            <p className="mt-2 text-sm text-amber-800">{fnoAudit}</p>
+          )}
+          <div className="mt-3 grid gap-2 sm:grid-cols-3">
+            <label className="text-xs">
+              Turnover
+              <input
+                type="number"
+                className="mt-1 w-full rounded-lg border px-2 py-1.5 text-sm"
+                value={income.fnoTurnover || ""}
+                onChange={(e) =>
+                  setIncome({ fnoTurnover: Math.max(0, Number(e.target.value) || 0) })
+                }
+              />
+            </label>
+            <label className="text-xs">
+              F&amp;O profit
+              <input
+                type="number"
+                className="mt-1 w-full rounded-lg border px-2 py-1.5 text-sm"
+                value={income.fnoNonSpeculativeProfit || ""}
+                onChange={(e) =>
+                  setIncome({
+                    fnoNonSpeculativeProfit: Number(e.target.value) || 0,
+                  })
+                }
+              />
+            </label>
+            <label className="text-xs">
+              Intraday profit
+              <input
+                type="number"
+                className="mt-1 w-full rounded-lg border px-2 py-1.5 text-sm"
+                value={income.fnoSpeculativeProfit || ""}
+                onChange={(e) =>
+                  setIncome({
+                    fnoSpeculativeProfit: Number(e.target.value) || 0,
+                  })
+                }
+              />
+            </label>
+          </div>
+        </Card>
+      )}
+
+      {(incomeChips.includes("crypto") || incomeChips.includes("foreign") || incomeChips.includes("nri")) && (
+        <Card>
+          <h3 className="font-semibold text-slate-900">Guided schedules</h3>
+          <div className="mt-2 flex flex-wrap gap-2 text-sm">
+            {incomeChips.includes("crypto") && (
+              <Link href="/file/import/vda" className="text-primary font-medium underline">
+                Edit crypto / VDA trades
+              </Link>
+            )}
+            {(incomeChips.includes("foreign") || incomeChips.includes("nri")) && (
+              <Link href="/file/import/foreign" className="text-primary font-medium underline">
+                Edit NRI / Schedule FA
+              </Link>
+            )}
+          </div>
+        </Card>
+      )}
 
       <Card>
         <div className="flex items-center justify-between">
@@ -435,11 +544,14 @@ function IncomeTab() {
   );
 }
 
-function DeductionsTab() {
+function DeductionsTab({ result }: { result: ITRResult | null }) {
   const deductions = useDraftStore((s) => s.deductions);
   const houseProperty = useDraftStore((s) => s.houseProperty);
   const income = useDraftStore((s) => s.income);
   const regime = useDraftStore((s) => s.regime);
+  const setDeductions = useDraftStore((s) => s.setDeductions);
+  const [paymentMode80D, setPaymentMode80D] = useState("upi");
+  const cashBlocked = is80DCashPaymentBlocked(paymentMode80D);
 
   const items = useMemo(
     () =>
@@ -464,7 +576,41 @@ function DeductionsTab() {
           .
         </Banner>
       )}
-      <SmartSavingsFinder />
+      <SmartSavingsFinder result={result} />
+
+      <Card>
+        <h3 className="font-semibold text-slate-900">Section 80D payment mode</h3>
+        <p className="mt-1 text-sm text-slate-600">
+          Health insurance and medical expenses must be paid by non-cash modes.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {["upi", "card", "cheque", "bank_transfer", "cash"].map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              className={`rounded-full border px-3 py-1 text-xs font-medium ${
+                paymentMode80D === mode
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-slate-200 text-slate-600"
+              }`}
+              onClick={() => {
+                setPaymentMode80D(mode);
+                if (is80DCashPaymentBlocked(mode) && deductions.section80D > 0) {
+                  setDeductions({ section80D: 0 });
+                }
+              }}
+            >
+              {mode.replace("_", " ")}
+            </button>
+          ))}
+        </div>
+        {cashBlocked && (
+          <Banner variant="warning">
+            {SECTION_80D_CASH_MESSAGE}
+          </Banner>
+        )}
+      </Card>
+
       <Card>
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-slate-900">Deduction checklist</h3>
@@ -711,11 +857,12 @@ function SummaryTab({
 function ReconcileHero({
   result,
   selectedRegime,
+  savingsCoach,
 }: {
   result: ITRResult | null;
   selectedRegime: TaxRegime;
+  savingsCoach: SavingsCoachSummary;
 }) {
-  const isPaid = Boolean(useDraftStore((s) => s.paidPlanId));
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
   const income = useDraftStore((s) => s.income);
   const mismatchResolved = useDraftStore((s) => s.mismatchResolved);
@@ -736,14 +883,14 @@ function ReconcileHero({
 
   const rc = result?.regime_comparison;
   const slab = rc?.[selectedRegime];
-  const netPayable = slab?.net_payable ?? 0;
-  const isRefund = netPayable < 0;
+  const netPayable = savingsCoach.netPayable;
+  const isRefund = savingsCoach.isRefund;
   const hasResult = Boolean(result && slab);
   const openItems = rowSummary.attention + rowSummary.missing;
   const regimeSavings =
-    rc && rc.tax_saving > 0
+    rc && savingsCoach.regimeDelta > 0
       ? `${rc.recommended_regime === "old" ? "Old" : "New"} regime saves ${formatINR(
-          rc.tax_saving
+          savingsCoach.regimeDelta
         )} on your numbers.`
       : null;
 
@@ -762,15 +909,8 @@ function ReconcileHero({
                 }`}
               >
                 {isRefund ? "Estimated refund " : "Estimated tax to pay "}
-                <span className={!isPaid ? "select-none opacity-70 blur-[5px]" : ""}>
-                  {formatINR(Math.abs(netPayable))}
-                </span>
+                <span>{formatINR(Math.abs(netPayable))}</span>
               </p>
-              {!isPaid && (
-                <span className="flex items-center gap-1 rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-bold uppercase text-slate-500">
-                  <Lock className="size-3" /> Locked
-                </span>
-              )}
             </div>
           ) : (
             <p className="mt-1 text-2xl font-bold text-slate-400">
@@ -779,6 +919,23 @@ function ReconcileHero({
           )}
           {regimeSavings && (
             <p className="mt-1 text-sm font-medium text-emerald-700">{regimeSavings}</p>
+          )}
+          {savingsCoach.remainingUpside > 0 && (
+            <p className="mt-1 text-sm font-medium text-emerald-700">
+              Your CA-style checklist found up to{" "}
+              {formatINR(savingsCoach.remainingUpside)} more lawful savings if you have proof.
+            </p>
+          )}
+          {savingsCoach.totalPossibleUpside > savingsCoach.regimeDelta && (
+            <p className="mt-1 text-sm font-semibold text-slate-800">
+              Total possible upside: up to {formatINR(savingsCoach.totalPossibleUpside)}.
+            </p>
+          )}
+          {savingsCoach.breakevenGap > 0 && (
+            <p className="mt-1 text-xs text-slate-500">
+              Old regime would need about {formatINR(savingsCoach.breakevenGap)} more
+              eligible deductions to beat the new regime.
+            </p>
           )}
           <p className="mt-1 text-xs text-slate-500">
             An estimate, not a promise — the CPC (Centralised Processing Centre) decides
@@ -828,13 +985,20 @@ function ReviewDashboard() {
   const regime = useDraftStore((s) => s.regime);
   const navDraft = useDraftStore(
     useShallow((s) => ({
+      profile: s.profile,
+      matrix: s.matrix,
       income: s.income,
       houseProperty: s.houseProperty,
+      extraProperties: s.extraProperties,
+      carryForward: s.carryForward,
+      depreciationBlocks: s.depreciationBlocks,
       deductions: s.deductions,
       regime: s.regime,
       incomeChips: s.incomeChips,
       connectedConnectors: s.connectedConnectors,
       mismatchResolved: s.mismatchResolved,
+      lastParseResult: s.lastParseResult,
+      questionAnswers: s.questionAnswers,
     }))
   );
   const tabStatuses = getReviewTabStatuses(navDraft);
@@ -844,6 +1008,32 @@ function ReviewDashboard() {
   const effectiveResult = result ?? lastSnapshot;
   const selectedRegime: TaxRegime =
     regime ?? effectiveResult?.regime_comparison.recommended_regime ?? "new";
+  const savingsCoach = useMemo(
+    () =>
+      buildSavingsCoachSummary({
+        result: effectiveResult,
+        selectedRegime,
+        questionContext: {
+          result: effectiveResult,
+          userInput,
+          draft: {
+            profile: navDraft.profile,
+            income: navDraft.income,
+            incomeChips: navDraft.incomeChips,
+            connectedConnectors: navDraft.connectedConnectors,
+            mismatchResolved: navDraft.mismatchResolved,
+            lastParseResult: navDraft.lastParseResult,
+            houseProperty: navDraft.houseProperty,
+            extraProperties: navDraft.extraProperties,
+            carryForward: navDraft.carryForward,
+            depreciationBlocks: navDraft.depreciationBlocks,
+            deductions: navDraft.deductions,
+          },
+          questionAnswers: navDraft.questionAnswers,
+        },
+      }),
+    [effectiveResult, selectedRegime, userInput, navDraft]
+  );
 
   const selectTab = (tab: ReviewTab) => {
     router.replace(buildReviewUrl(tab), { scroll: false });
@@ -855,7 +1045,11 @@ function ReviewDashboard() {
     <FilingLayout mirrorText="This dashboard is your reconcile-and-review hub. Confirm imports, income, and deductions, then compare regimes before you file on the portal.">
       <ScreenTitle title="Your filing snapshot" />
 
-      <ReconcileHero result={effectiveResult} selectedRegime={selectedRegime} />
+      <ReconcileHero
+        result={effectiveResult}
+        selectedRegime={selectedRegime}
+        savingsCoach={savingsCoach}
+      />
 
       <div
         role="tablist"
@@ -900,7 +1094,7 @@ function ReviewDashboard() {
       <div role="tabpanel">
         {activeTab === "import" && <ImportTab />}
         {activeTab === "income" && <IncomeTab />}
-        {activeTab === "deductions" && <DeductionsTab />}
+        {activeTab === "deductions" && <DeductionsTab result={effectiveResult} />}
         {activeTab === "taxes" &&
           (loading && !effectiveResult ? (
             <SkeletonRows />

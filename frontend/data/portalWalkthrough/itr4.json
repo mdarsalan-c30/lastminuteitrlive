@@ -1,0 +1,359 @@
+{
+  "schemaVersion": "AY2026-27.walkthrough.v1",
+  "form": "ITR-4",
+  "assessmentYear": "AY 2026-27",
+  "portalUrl": "https://www.incometax.gov.in/iec/foportal/",
+  "hasScreenshots": false,
+  "chapters": [
+    {
+      "id": "before-you-start",
+      "order": 0,
+      "title": "Before you start (ITR-4)",
+      "subtitle": "Text guide only — portal screenshots arrive when the intern Word pack is ready.",
+      "portalPath": "incometax.gov.in",
+      "tips": [
+        "This is a text scaffold for ITR-4. Screenshot walkthrough needs the intern Word file."
+      ],
+      "warnings": [
+        "Do not invent numbers. Use LastMinute compute values when unlocked."
+      ],
+      "steps": [
+        {
+          "id": "open",
+          "title": "Open portal",
+          "clickPath": "incometax.gov.in",
+          "plainEnglish": "Open the Income Tax portal in a new tab beside LastMinute.",
+          "action": "click"
+        },
+        {
+          "id": "confirm-form",
+          "title": "Confirm ITR-4",
+          "clickPath": "File Income Tax Return → select form",
+          "plainEnglish": "Only continue if LastMinute routed you to ITR-4.",
+          "action": "verify"
+        }
+      ]
+    },
+    {
+      "id": "login-start",
+      "order": 1,
+      "title": "Login and start filing",
+      "subtitle": "Same login path as ITR-1; pick the correct form on the portal.",
+      "portalPath": "Login → File Now → AY 2026-27 → Online",
+      "steps": [
+        {
+          "id": "login",
+          "title": "Login",
+          "clickPath": "Login",
+          "plainEnglish": "Sign in with PAN/Aadhaar.",
+          "action": "click"
+        },
+        {
+          "id": "ay",
+          "title": "AY 2026-27 Online",
+          "clickPath": "File Now → AY 2026-27 → Online → Continue",
+          "plainEnglish": "Select AY 2026-27 and Online mode.",
+          "action": "click"
+        },
+        {
+          "id": "pick",
+          "title": "Select ITR-4",
+          "clickPath": "ITR-4 → Proceed",
+          "plainEnglish": "Choose ITR-4 and proceed.",
+          "action": "click"
+        }
+      ]
+    },
+    {
+      "id": "presumptive_business",
+      "order": 2,
+      "title": "Presumptive business (44AD / 44ADA)",
+      "subtitle": "Income Sources → Business & Profession",
+      "portalPath": "Schedule BP → Presumptive Income",
+      "tips": [],
+      "warnings": [
+        "Cash receipts above 5% of turnover disqualify presumptive scheme.",
+        "Turnover above ₹2Cr (business) or receipts above ₹50L (profession) needs ITR-3."
+      ],
+      "steps": [
+        {
+          "id": "turnover_/_gross_receipts",
+          "title": "Turnover / gross receipts",
+          "clickPath": "Schedule BP → Presumptive Income",
+          "plainEnglish": "Base figure for 44AD presumptive rate — match bank summary.",
+          "action": "enter",
+          "ourValueKey": "business.turnover"
+        },
+        {
+          "id": "digital_receipts_percentage",
+          "title": "Digital receipts percentage",
+          "clickPath": "Schedule BP → Presumptive Income",
+          "plainEnglish": "Higher digital share qualifies for 6% rate instead of 8% under 44AD.",
+          "action": "enter",
+          "ourValueKey": "business.digital_turnover_pct"
+        },
+        {
+          "id": "presumptive_income_u/s_44ad",
+          "title": "Presumptive income u/s 44AD",
+          "clickPath": "Schedule BP → Presumptive Income",
+          "plainEnglish": "8% or 6% of turnover — our computed presumptive business profit.",
+          "action": "enter",
+          "ourValueKey": "business_income.presumptive_44ad"
+        },
+        {
+          "id": "gross_professional_receipts_(44ada)",
+          "title": "Gross professional receipts (44ADA)",
+          "clickPath": "Schedule BP → Presumptive Income",
+          "plainEnglish": "Required when profession uses 44ADA instead of trade turnover.",
+          "action": "enter",
+          "ourValueKey": "business.gross_professional_receipts"
+        },
+        {
+          "id": "presumptive_income_u/s_44ada",
+          "title": "Presumptive income u/s 44ADA",
+          "clickPath": "Schedule BP → Presumptive Income",
+          "plainEnglish": "50% of professional receipts when 44ADA applies.",
+          "action": "enter",
+          "ourValueKey": "business_income.presumptive_44ada"
+        },
+        {
+          "id": "net_business_income_(head_total)",
+          "title": "Net business income (head total)",
+          "clickPath": "Schedule BP → Presumptive Income",
+          "plainEnglish": "Final business head after presumptive computation.",
+          "action": "enter",
+          "ourValueKey": "business_income.net_business_income"
+        },
+        {
+          "id": "detailed_p&l_/_expense_breakup",
+          "title": "Detailed P&L / expense breakup",
+          "clickPath": "Schedule BP → Presumptive Income",
+          "plainEnglish": "ITR-4 presumptive scheme does not require expense schedules.",
+          "action": "skip"
+        },
+        {
+          "id": "44ae_(goods_carriage)",
+          "title": "44AE (goods carriage)",
+          "clickPath": "Schedule BP → Presumptive Income",
+          "plainEnglish": "Not supported in our engine yet — consult CA if you operate goods carriages.",
+          "action": "skip"
+        }
+      ]
+    },
+    {
+      "id": "salary",
+      "order": 3,
+      "title": "Salary (if mixed income)",
+      "subtitle": "Income Sources → Salary",
+      "portalPath": "Gross Total Income → Income from Salary/Pension",
+      "tips": [],
+      "warnings": [
+        "ITR-4 allows salary plus presumptive business — enter salary only if Form 16 exists.",
+        "Do not skip salary when employer TDS appears in 26AS."
+      ],
+      "steps": [
+        {
+          "id": "gross_salary_u/s_17(1)",
+          "title": "Gross salary u/s 17(1)",
+          "clickPath": "Gross Total Income → Income from Salary/Pension",
+          "plainEnglish": "Salaried side income alongside presumptive business.",
+          "action": "enter",
+          "ourValueKey": "income_heads.gross_salary"
+        },
+        {
+          "id": "exempt_allowances_u/s_10",
+          "title": "Exempt allowances u/s 10",
+          "clickPath": "Gross Total Income → Income from Salary/Pension",
+          "plainEnglish": "HRA and LTA exemptions reduce taxable salary.",
+          "action": "enter",
+          "ourValueKey": "income_heads.hra_exemption"
+        },
+        {
+          "id": "standard_deduction_u/s_16(ia)",
+          "title": "Standard deduction u/s 16(ia)",
+          "clickPath": "Gross Total Income → Income from Salary/Pension",
+          "plainEnglish": "Mandatory when salary schedule is active.",
+          "action": "enter",
+          "ourValueKey": "income_heads.standard_deduction"
+        },
+        {
+          "id": "net_salary_income",
+          "title": "Net salary income",
+          "clickPath": "Gross Total Income → Income from Salary/Pension",
+          "plainEnglish": "Verify portal salary head matches our total.",
+          "action": "enter",
+          "ourValueKey": "income_heads.net_salary_income"
+        },
+        {
+          "id": "entire_salary_schedule",
+          "title": "Entire salary schedule",
+          "clickPath": "Gross Total Income → Income from Salary/Pension",
+          "plainEnglish": "Skip all salary fields when you had no employment income.",
+          "action": "skip"
+        }
+      ]
+    },
+    {
+      "id": "deductions",
+      "order": 4,
+      "title": "Deductions and tax benefits",
+      "subtitle": "Deductions → Chapter VI-A",
+      "portalPath": "Total Deductions",
+      "tips": [],
+      "warnings": [
+        "Business presumptive income is not an 80C investment — keep schedules separate.",
+        "New regime blocks most deductions except 80CCD(2)."
+      ],
+      "steps": [
+        {
+          "id": "section_80c",
+          "title": "Section 80C",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Personal tax-saving investments capped at ₹1.5 lakh.",
+          "action": "enter",
+          "ourValueKey": "deductions.capped_80c"
+        },
+        {
+          "id": "section_80d",
+          "title": "Section 80D",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Health insurance premiums when old regime selected.",
+          "action": "enter",
+          "ourValueKey": "deductions.deduction_80d"
+        },
+        {
+          "id": "section_80ccd(1b)",
+          "title": "Section 80CCD(1B)",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Extra NPS deduction beyond 80C.",
+          "action": "enter",
+          "ourValueKey": "deductions.deduction_80ccd_1b"
+        },
+        {
+          "id": "section_80ccd(2)",
+          "title": "Section 80CCD(2)",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Employer NPS — available in both regimes.",
+          "action": "enter",
+          "ourValueKey": "deductions.deduction_80ccd_2"
+        },
+        {
+          "id": "section_80g",
+          "title": "Section 80G",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Eligible charitable donations.",
+          "action": "enter",
+          "ourValueKey": "deductions.deduction_80g"
+        },
+        {
+          "id": "section_80u",
+          "title": "Section 80U",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Select No when disability deduction is not claimed.",
+          "action": "skip",
+          "ourValueKey": "deductions.deduction_80u"
+        },
+        {
+          "id": "section_80tta_/_80ttb",
+          "title": "Section 80TTA / 80TTB",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Deselect portal default when our savings-interest deduction is zero.",
+          "action": "skip",
+          "ourValueKey": "deductions.deduction_80tta_ttb"
+        }
+      ]
+    },
+    {
+      "id": "tax_computation",
+      "order": 5,
+      "title": "Tax computation",
+      "subtitle": "Tax Paid and Verification → Part D",
+      "portalPath": "Tax on Total Income → Taxes Paid",
+      "tips": [],
+      "warnings": [
+        "Presumptive income is fully taxable — do not subtract business expenses again in Part D.",
+        "Verify 26AS TDS on both salary and business receipts."
+      ],
+      "steps": [
+        {
+          "id": "gross_total_income",
+          "title": "Gross total income",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "Salary plus presumptive business plus other heads.",
+          "action": "enter",
+          "ourValueKey": "income_heads.gross_total_income"
+        },
+        {
+          "id": "total_chapter_vi-a_deductions",
+          "title": "Total Chapter VI-A deductions",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "Old-regime deductions before taxable income.",
+          "action": "enter",
+          "ourValueKey": "deductions.total_chapter_via"
+        },
+        {
+          "id": "net_tax_payable_/_refund",
+          "title": "Net tax payable / refund",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "Amount still due or refundable after TDS credits.",
+          "action": "enter",
+          "ourValueKey": "regime_comparison.recommended_regime_net_payable"
+        },
+        {
+          "id": "tds_on_salary",
+          "title": "TDS on salary",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "Employer TDS when salary is present.",
+          "action": "enter",
+          "ourValueKey": "taxes_paid.tds_salary"
+        },
+        {
+          "id": "tds_on_other_income",
+          "title": "TDS on other income",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "Bank and client TDS from 26AS.",
+          "action": "enter",
+          "ourValueKey": "taxes_paid.tds_other"
+        },
+        {
+          "id": "advance_/_self-assessment_tax",
+          "title": "Advance / self-assessment tax",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "Direct tax payments via challan.",
+          "action": "enter",
+          "ourValueKey": "taxes_paid.advance_tax_paid"
+        },
+        {
+          "id": "schedule_cg_(capital_gains)",
+          "title": "Schedule CG (capital gains)",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "ITR-4 cannot report capital gains — upgrade to ITR-2 if you sold shares or property.",
+          "action": "skip"
+        }
+      ]
+    },
+    {
+      "id": "everify",
+      "order": 6,
+      "title": "E-verify and receipt",
+      "subtitle": "Same Aadhaar OTP path as ITR-1 after preview/submit.",
+      "portalPath": "Preview → Submit → E-Verify → Aadhaar OTP",
+      "steps": [
+        {
+          "id": "preview",
+          "title": "Preview and submit",
+          "clickPath": "Preview → Submit",
+          "plainEnglish": "Preview totals, then submit on the portal.",
+          "action": "click"
+        },
+        {
+          "id": "otp",
+          "title": "E-verify with Aadhaar OTP",
+          "clickPath": "E-Verify Now → Aadhaar OTP",
+          "plainEnglish": "Verify within 30 days. Download the receipt.",
+          "action": "click"
+        }
+      ]
+    }
+  ]
+}

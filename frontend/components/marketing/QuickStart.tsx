@@ -113,7 +113,7 @@ export function QuickStart() {
                     {DOC_ICONS[connector.id] ?? DOC_ICONS.form16}
                   </div>
                   <h5 className="font-manrope text-[15px] font-bold text-white mb-1.5">
-                    {connector.title}
+                    {connector.shortLabel}
                   </h5>
                   <p style={{ color: "#9AA3B5", fontSize: 12.5, lineHeight: 1.45 }}>
                     {connector.description}

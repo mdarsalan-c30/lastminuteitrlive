@@ -215,6 +215,29 @@ export default function PaymentPage() {
           </div>
         )}
 
+        {/* PAYMENT_API_TODO — Razorpay create/verify when production keys are live. */}
+        {!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID && !isFree && (
+          <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm space-y-2">
+            <p className="font-semibold">Payment gateway wiring in progress</p>
+            <p>
+              Razorpay will be connected here later. For now you can continue with a
+              development unlock so filing assistance stays testable.
+            </p>
+            <Button
+              variant="secondary"
+              className="w-full sm:w-auto"
+              onClick={async () => {
+                // PAYMENT_API_TODO — replace with verified Razorpay session
+                setPaymentVerified(plan);
+                await refreshPaymentSession();
+                router.push("/file/companion?unlocked=1");
+              }}
+            >
+              Continue without live payment (dev)
+            </Button>
+          </div>
+        )}
+
         <FilingActions
           hint={
             <div className="flex items-center justify-center gap-2 text-slate-500 text-xs">

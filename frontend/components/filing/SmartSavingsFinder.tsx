@@ -19,6 +19,7 @@ import {
   generateDeductionDiscoveryQuestions,
   type DiscoveryQuestion,
 } from "@/lib/engine/deductionDiscovery";
+import type { ITRResult } from "@/lib/engine/types";
 import { WhyExpander } from "@/components/ds/WhyExpander";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -70,7 +71,7 @@ function formatINR(n: number): string {
   return `₹${Math.round(n).toLocaleString("en-IN")}`;
 }
 
-export function SmartSavingsFinder() {
+export function SmartSavingsFinder({ result }: { result?: ITRResult | null }) {
   const filingMode = useDraftStore((s) => s.filingMode);
   const profile = useDraftStore((s) => s.profile);
   const matrix = useDraftStore((s) => s.matrix);
@@ -82,6 +83,7 @@ export function SmartSavingsFinder() {
   const depreciationBlocks = useDraftStore((s) => s.depreciationBlocks);
   const deductions = useDraftStore((s) => s.deductions);
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
+  const capitalGains = useDraftStore((s) => s.capitalGains);
   const mismatchResolved = useDraftStore((s) => s.mismatchResolved);
   const lastParseResult = useDraftStore((s) => s.lastParseResult);
   const questionAnswers = useDraftStore((s) => s.questionAnswers);
@@ -108,9 +110,11 @@ export function SmartSavingsFinder() {
       depreciationBlocks,
       deductions,
       connectedConnectors,
+      capitalGains,
     });
+    const recommendedRegime = result?.regime_comparison.recommended_regime;
     return generateDeductionDiscoveryQuestions({
-      result: null,
+      result,
       userInput,
       draft: {
         profile,
@@ -126,11 +130,17 @@ export function SmartSavingsFinder() {
         deductions,
       },
       questionAnswers,
-    }).slice(0, 6);
+    })
+      .filter((question) => {
+        if (question.regimeScope === "both") return true;
+        return recommendedRegime !== "new";
+      })
+      .slice(0, 6);
   }, [
     filingMode, profile, matrix, incomeChips, income, houseProperty,
     extraProperties, carryForward, depreciationBlocks, deductions,
-    connectedConnectors, mismatchResolved, lastParseResult, questionAnswers,
+    connectedConnectors, capitalGains, mismatchResolved, lastParseResult,
+    questionAnswers, result,
   ]);
 
   const handleYesWithAmount = (q: DiscoveryQuestion) => {

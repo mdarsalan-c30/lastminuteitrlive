@@ -8,14 +8,40 @@ async function proxyToPythonServerless(
   request: Request,
   payload: string
 ): Promise<NextResponse> {
+  const RAILWAY_URL = process.env.NEXT_PUBLIC_ENGINE_URL || "";
   const origin = new URL(request.url).origin;
-  const res = await fetch(`${origin}/_/backend/api/layer2`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: payload,
-  });
-  const data = await res.json();
-  return NextResponse.json(data, { status: res.status });
+  // Same Vercel Python service as compute — layer2 is routed inside compute.py
+  let targetUrl = `${origin}/_/backend/api/layer2`;
+  if (RAILWAY_URL) {
+    const cleanUrl = RAILWAY_URL.replace(/\/+$/, "");
+    targetUrl = cleanUrl.replace(/\/api\/compute\/?$/, "") + "/api/layer2";
+  }
+  try {
+    const res = await fetch(targetUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: payload,
+    });
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      return NextResponse.json(
+        {
+          ok: false,
+          error: `Invalid Layer-2 proxy response from ${targetUrl}: ${res.status} ${text.substring(0, 120)}`,
+        },
+        { status: 502 }
+      );
+    }
+    const data = (await res.json()) as Record<string, unknown>;
+    return NextResponse.json(data, { status: res.status });
+  } catch (error) {
+    console.error("[layer2 proxy] Fetch failed:", error);
+    return NextResponse.json(
+      { ok: false, error: "Failed to reach Layer-2 engine" },
+      { status: 502 }
+    );
+  }
 }
 
 function spawnLocalPython(payload: string): Promise<string> {
@@ -64,6 +90,9 @@ export async function POST(request: Request) {
 
     let output: string;
     try {
+      if (process.env.NEXT_PUBLIC_ENGINE_URL || process.env.NODE_ENV === "production") {
+        return proxyToPythonServerless(request, payload);
+      }
       output = await spawnLocalPython(payload);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Compute failed";

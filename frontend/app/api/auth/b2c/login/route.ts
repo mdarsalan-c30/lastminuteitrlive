@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { all } from "@/lib/db/store";
+import { all, update } from "@/lib/db/store";
 import {
+  hashPassword,
+  isLegacyPasswordHash,
   verifyPassword,
   createB2CSessionToken,
   B2C_SESSION_COOKIE,
@@ -47,6 +49,12 @@ export async function POST(request: NextRequest) {
         { error: "Invalid email or password" },
         { status: 401 }
       );
+    }
+
+    if (isLegacyPasswordHash(user.passwordHash)) {
+      await update("b2cUsers", user.id, {
+        passwordHash: hashPassword(password),
+      });
     }
 
     // Create session

@@ -1,0 +1,351 @@
+Capital Gain / Loss Statement
+For the period 01-Apr-2025 To 31-Mar-2026
+* Refer Disclaimer at the end of Statement MBKv11.70.1 Page 1 of 5
+This statement provides your Investment Performance, Capital Gains and Income for the current and last Financial Years,
+consolidated across CAMS serviced funds. Statement will contain actual withdrawals made by you from your fund account,
+realised gains/losses on a FIFO basis and segregated as long term and short term. The statement now includes LTCG
+applicable for equity oriented schemes introduced in the Budget 2018. The statements will be provided for the previous
+and current financial year.
+The consolidation has been carried out based on email id entered by you. If you do not have entered a PAN and if the
+email id is common to several members of your family, this statement will consolidate all those investments as well.
+Should you find any folio missing in this consolidation, please check for the registration of your email id in the respective
+folio.
+Email: sample@example.com
+Sample Taxpayer
+SAMPLE ADDRESS
+India
+Mobile: +919999999999
+Summary of Capital Gains 01/04 to 15/06 16/06 to 15/09 16/09 to 15/12 16/12 to 15/03 16/03 to 31/03
+Short Term Capital Gain
+Total
+Full Value of Consideration
+(Total sale value)
+42,597.21 0.00 0.00 0.00 0.00 42,597.21
+Cost of acquisition
+(Purchase cost of redeemed units)
+48,531.86 0.00 0.00 0.00 0.00 48,531.86
+Capital Gains / Loss -5,934.22 0.00 0.00 0.00 0.00 -5,934.22
+Long Term Capital Gain with indexation
+0.00 0.00 0.00 0.00 0.00 0.00
+0.00 0.00 0.00 0.00 0.00 0.00
+Fair Market Value of capital asset
+as per section 55(2)(ac)
+Full Value of Consideration
+(Total sale value)
+0.00 0.00 0.00 0.00 0.00 0.00
+	Cost of acquisition
+(Purchase cost of redeemed units)
+Capital Gains / Loss 0.00 0.00 0.00 0.00 0.00 0.00
+Capital Gain / Loss – Overall Summary (Equity)
+Long Term Capital Gain without indexation
+0.00 0.00 0.00 0.00 0.00 0.00
+0.00 0.00 31,314.84 0.00 4,083.19 35,398.03
+Fair Market Value of capital
+asset as per section 55(2)(ac)
+Full Value of Consideration
+(Total sale value)
+0.00 0.00 35,000.01 0.00 4,167.68 39,167.69
+	Cost of acquisition
+(Purchase cost of redeemed units)
+Capital Gains / Loss 0.00 0.00 -3,684.86 0.00 -84.45 -3,769.31
+
+-- 1 of 5 --
+
+Capital Gain / Loss Statement
+For the period 01-Apr-2025 To 31-Mar-2026
+* Refer Disclaimer at the end of Statement MBKv11.70.1 Page 2 of 5
+Summary of Capital Gains 01/04 to 15/06 16/06 to 15/09 16/09 to 15/12 16/12 to 15/03 16/03 to 31/03
+Short Term Capital Gain
+Total
+Full Value of Consideration
+(Total sale value)
+0.00 0.00 0.00 0.00 0.00 0.00
+Cost of acquisition
+(Purchase cost of redeemed units)
+0.00 0.00 0.00 0.00 0.00 0.00
+Capital Gains / Loss 0.00 0.00 0.00 0.00 0.00 0.00
+Long Term Capital Gain with indexation
+0.00 0.00 0.00 0.00 0.00 0.00
+0.00 0.00 0.00 0.00 0.00 0.00
+Fair Market Value of capital asset
+as per section 55(2)(ac)
+Full Value of Consideration
+(Total sale value)
+0.00 0.00 0.00 0.00 0.00 0.00
+	Cost of acquisition
+(Purchase cost of redeemed units)
+Capital Gains / Loss 0.00 0.00 0.00 0.00 0.00 0.00
+Capital Gain / Loss – Overall Summary (Non Equity)
+Long Term Capital Gain without indexation
+0.00 0.00 0.00 0.00 0.00 0.00
+0.00 0.00 0.00 0.00 0.00 0.00
+Fair Market Value of capital
+asset as per section 55(2)(ac)
+Full Value of Consideration
+(Total sale value)
+0.00 0.00 0.00 0.00 0.00 0.00
+	Cost of acquisition
+(Purchase cost of redeemed units)
+Capital Gains / Loss 0.00 0.00 0.00 0.00 0.00 0.00
+Capital Gain / Loss – Scheme level (EQUITY)
+Investment Cost Capital Gains / (Loss)
+TDS
+(if
+applicable)
+Grandfathered
+Value
+Total
+Count
+Total
+Amount
+Total
+Cost
+Market
+Value as on
+31/01/2018
+Indexed
+Cost Short Term
+Long Term
+TDS amount
+Scheme Name
+Redemption / Switch-Out
+with
+Indexation
+Long Term
+without
+Indexation
+3 12,083.19 12,699.55 0.00	0.00 -531.77 0.00 -84.45 0.00	Parag Parikh Flexi Cap Fund - Direct Plan Growth (formerly Parag Parikh Long Term Value Fund), ISIN :
+INF879O01027 (Equity(G))
+
+-- 2 of 5 --
+
+Capital Gain / Loss Statement
+For the period 01-Apr-2025 To 31-Mar-2026
+* Refer Disclaimer at the end of Statement MBKv11.70.1 Page 3 of 5
+Capital Gain / Loss – Scheme level (EQUITY)
+Investment Cost Capital Gains / (Loss)
+TDS
+(if
+applicable)
+Grandfathered
+Value
+Total
+Count
+Total
+Amount
+Total
+Cost
+Market
+Value as on
+31/01/2018
+Indexed
+Cost Short Term
+Long Term
+TDS amount
+Scheme Name
+Redemption / Switch-Out
+with
+Indexation
+Long Term
+without
+Indexation
+1 31,314.84 35,000.01 0.00	0.00 0.00 0.00 -3,684.86 0.00	SBI Nifty Next 50 Index Fund - Direct Plan - Growth, ISIN : INF200KA1W00 (Index Fund)
+1 34,597.21 40,000.00 0.00	0.00 -5,402.44 0.00 0.00 0.00	Aditya Birla Sun Life PSU Equity Fund Direct-Growth, ISIN : INF209KB1O82 (Equity(G))
+77,995.24 87,699.56 0.00	0.00 -5,934.21 0.00 -3,769.31 0.00	TOTAL
+Capital Gain / Loss – Scheme level (NON EQUITY)
+Investment Cost Capital Gains / (Loss)
+TDS
+(if
+applicable)
+Grandfathered
+Value
+Total
+Count
+Total
+Amount
+Total
+Cost
+Market
+Value as on
+31/01/2018
+Indexed
+Cost Short Term
+Long Term
+TDS amount
+Scheme Name
+Redemption / Switch-Out
+with
+Indexation
+Long Term
+without
+Indexation
+No data available for this Asset class
+Capital Gain / Loss – Transaction level
+AMC : PPFAS Mutual Fund 09-Jul-2026
+FOLIO No. 15762967 NAME : Sample Taxpayer STATUS : Individual PAN : ABCDE1234F
+B: Corresponding Units in Purchase / Switch-In / IDCW Reinvested	A : Redemption / Switch-Out D : Capital Gains / (Losses) E : TDS (if applicable)
+Description Date Purchase
+Units Unit Cost	Description Date Units Amount Price Indexed
+Cost** Short Term
+Long Term with
+Indexation	STT
+Long Term without
+Indexation Tax
+Perc
+Tax
+Deducted
+Tax+
+Surcharge	
+Redeemed
+Units
+C. Grandfathered Investments as
+on 31st Jan 2018
+Units as on
+31/01/2018
+Nav as on
+31/01/2018
+Market
+value as on
+31/01/2018
+Equity Schemes
+Guardian PAN :
+(Grandfathered
+Units)
+(Grandfathered
+NAV)
+(Grandfathered
+Value)
+Parag Parikh Flexi Cap Fund - Direct Plan Growth (formerly Parag Parikh Long Term Value Fund), ISIN : INF879O01027 (Equity(G))
+REDEMPTIO
+N
+09-Apr-2025 13.696 1,144.85 0.01 -33.65 0.00	83.5909 0.00	Purchase 03-Dec-2024 79.715 87.8129 0 0	0	7.972
+-21.53 0.00 0.00	Purchase 06-Jan-2025 57.240 87.3509	5.724
+REDEMPTIO
+N
+09-Apr-2025 83.683 6,855.15 0.07 -33.09 0.00	81.9191 0.00	Purchase 31-Oct-2024 116.298 85.9857 0 0	0	8.136
+-422.84 0.00 0.00	Purchase 03-Dec-2024 79.715 87.8129	71.743
+-20.66 0.00 0.00	Purchase 06-Jan-2025 57.240 87.3509	3.804
+REDEMPTIO
+N
+27-Mar-2026 47.712 4,083.19 0.04 0.00 0.00	85.5807 -84.45	Purchase 06-Jan-2025 57.240 87.3509 0 0	0	47.712
+0.00	Summary of IDCW received in this period in this scheme
+-531.77
+Paid Out : Reinvested : 0.00
+0.00 -84.45	Total 145.091 12,083.19 0 0
+IDCW Transfer Plan Out : 0.00
+
+-- 3 of 5 --
+
+Capital Gain / Loss Statement
+For the period 01-Apr-2025 To 31-Mar-2026
+* Refer Disclaimer at the end of Statement MBKv11.70.1 Page 4 of 5
+AMC : SBI Mutual Fund 09-Jul-2026
+FOLIO No. 99999999 NAME : Sample Taxpayer STATUS : Individual PAN : ABCDE1234F
+B: Corresponding Units in Purchase / Switch-In / IDCW Reinvested	A : Redemption / Switch-Out D : Capital Gains / (Losses) E : TDS (if applicable)
+Description Date Purchase
+Units Unit Cost	Description Date Units Amount Price Indexed
+Cost** Short Term
+Long Term with
+Indexation	STT
+Long Term without
+Indexation Tax
+Perc
+Tax
+Deducted
+Tax+
+Surcharge	
+Redeemed
+Units
+C. Grandfathered Investments as
+on 31st Jan 2018
+Units as on
+31/01/2018
+Nav as on
+31/01/2018
+Market
+value as on
+31/01/2018
+Equity Schemes
+Guardian PAN :
+(Grandfathered
+Units)
+(Grandfathered
+NAV)
+(Grandfathered
+Value)
+SBI Nifty Next 50 Index Fund - Direct Plan - Growth, ISIN : INF200KA1W00 (Index Fund)
+Redemption 25-Nov-2025 1,662.922 31,314.84 0.31 0.00 0.00	18.8314 -3,303.38	Purchase 30-Sep-2024 1,417.665 21.1616 0 0	0	1,417.665
+0.00 0.00 -381.48	Purchase 18-Oct-2024 245.257 20.3868	245.257
+0.00	Summary of IDCW received in this period in this scheme
+0.00
+Paid Out : Reinvested : 0.00
+0.00 -3,684.86	Total 1,662.922 31,314.84 0 0
+IDCW Transfer Plan Out : 0.00
+
+-- 4 of 5 --
+
+Capital Gain / Loss Statement
+For the period 01-Apr-2025 To 31-Mar-2026
+MBKv11.70.1 Page 5 of 5
+AMC : Aditya Birla Sun Life Mutual Fund 09-Jul-2026
+FOLIO No. 1048352813 NAME : Sample Taxpayer STATUS : Individual PAN : ABCDE1234F
+B: Corresponding Units in Purchase / Switch-In / IDCW Reinvested	A : Redemption / Switch-Out D : Capital Gains / (Losses) E : TDS (if applicable)
+Description Date Purchase
+Units Unit Cost	Description Date Units Amount Price Indexed
+Cost** Short Term
+Long Term with
+Indexation	STT
+Long Term without
+Indexation Tax
+Perc
+Tax
+Deducted
+Tax+
+Surcharge	
+Redeemed
+Units
+C. Grandfathered Investments as
+on 31st Jan 2018
+Units as on
+31/01/2018
+Nav as on
+31/01/2018
+Market
+value as on
+31/01/2018
+Equity Schemes
+Guardian PAN :
+(Grandfathered
+Units)
+(Grandfathered
+NAV)
+(Grandfathered
+Value)
+Aditya Birla Sun Life PSU Equity Fund Direct-Growth, ISIN : INF209KB1O82 (Equity(G))
+Redemption 08-May-2025 1,020.878 34,597.21 0.35 -5,402.44 0.00	33.89 0.00	Purchase 30-Sep-2024 1,020.878 39.18 0 0	0	1,020.878
+0.00	Summary of IDCW received in this period in this scheme
+-5,402.44
+Paid Out : Reinvested : 0.00
+0.00 0.00	Total 1,020.878 34,597.21 0 0
+IDCW Transfer Plan Out : 0.00
+End of Report
+*Disclaimer:This statement of gain/loss is issued at your request as additional information and should not be considered as the basis for determining your tax liability. For the purpose of determining capital gains, the first in first out ('FIFO') principle of appropriating
+withdrawals against subscriptions is followed. This statement is generated without considering any Indexation benefits, based on latest amendments to Finance Act, 2024. Pursuant to the Amendments made by the Finance Act 2018, the units disclosed under Section C –
+‘Grandfathered Investments as on 31st Jan 2018’ relates to the number of units that were considered for the redemption (withdrawal), where the cost value would be the market value shown as of 31st Jan 2018. For equity mergers, the grandfathered value as on 31st
+Jan 2018 is considered and disclosed as NAV as on 31/01/2018’, duly adjusted as per units created in target scheme. In respect of scheme mergers within the same Asset Class, the original investment value in the erstwhile scheme (scheme which merged) is considered
+and is reflected in Section B, as 'Unit Cost' which is adjusted as per units created in target scheme, for ease of verification. Please note that in respect of schemes where segregated portfolio is created, the original investment value of those investments prior to such
+creation, has been adjusted, basis the segregated percentile, for the purpose of Capital Gain. The statement shows actual STT and Tax deducted from your withdrawals and displays your tax status as on the date of generation of the statement. You are advised to consult
+your financial/tax advisor to verify the correctness and appropriateness of the contents of this statement. The Mutual Fund, Trustees, Asset Management Company, CAMS and each of their directors, employees or agents will not be liable for either determining your tax
+liability or any loss or damage arising out of any decisions/actions arising out of the contents of this statement.
+Note: Unit Cost = Purchase Price ( inclusive of stamp duty )
+** CII cost is shown for eligible investors and schemes.
+In absence of any information of total long-term capital gains earned during the financial year by a unitholder being a non-resident, while deducting taxes at source on the long-term capital gain earned on redemption/transfer of units of equity oriented funds which are
+chargeable to tax, the exemption available to the extent of INR 1 Lakh on such gains as provided under section 112A of the Income-tax Act, 1961 has not been considered
+As per the Income-tax Act, 1961 ('Act') and the amendments made by the Finance Act, 2020 [section 2(42A) - explanation 1(i) - sub-clause (hh), 49(2AG) & 49(2AH)], in case of segregation,
+i. The cost of acquisition of units allotted in the segregated portfolio is proportionate to the net assets of the scheme prior to segregation.
+ii. The cost of acquisition in the main portfolio is reduced by the extent of cost transferred to segregated portfolio as mentioned above.
+iii. The date of acquisition in the main portfolio has been considered for the purpose of classifying the units as short term/ long term in the segregated portfolio.
+* TDS will be deducted as per the statutory guidelines issued from time to time including based on PAN Active/Operative status as received from CBDT database.
+For Gifting on units, you are advised to consult your financial advisor on the correctness and appropriateness of tax amount mentioned in the statement.
+
+-- 5 of 5 --

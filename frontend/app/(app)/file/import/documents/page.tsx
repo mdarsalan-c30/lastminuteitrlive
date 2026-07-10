@@ -30,6 +30,8 @@ import {
   isForm16FastPath,
 } from "@/lib/filing/routes";
 import { getImportContinueHref, type ImportStartMode } from "@/lib/filing/importModes";
+import { BROKER_DOWNLOAD_GUIDES } from "@/lib/connectors/brokerGuides";
+import { AiSectionChecklist } from "@/components/filing/wizards/AiSectionChecklist";
 import { FileDown, FilePlus2, CloudDownload, HelpCircle, ChevronRight, TrendingUp, UploadCloud, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -249,8 +251,22 @@ function DocumentsContent() {
       if (hasBrokerProfits || brokers.length > 0 || Number(mfProfit) !== 0) {
         ensureIncomeChip("capital_gains");
       }
-      if (Number(fnoProfit) !== 0 || brokers.length > 0) {
+      const fnoAmt = Number(fnoProfit) || 0;
+      if (fnoAmt !== 0 || brokers.length > 0) {
         ensureIncomeChip("fno");
+        // Absolute turnover unknown from a single P&L figure — store profit and
+        // ask for turnover on review. Audit flag uses turnover when provided.
+        setIncome({
+          fnoNonSpeculativeProfit: fnoAmt,
+          fnoTurnover: Math.abs(fnoAmt),
+        });
+      }
+      if (Number(mfProfit) !== 0) {
+        // Rough MF estimate → STCG other until statement parsed
+        useDraftStore.getState().setCapitalGains({
+          stcg_other: Math.max(0, Number(mfProfit) || 0),
+          sourceConnectorId: "manual_estimate",
+        });
       }
       router.push("/file/comprehensive");
       return;
@@ -258,7 +274,7 @@ function DocumentsContent() {
     if (continueHref) {
       router.push(continueHref);
     }
-  }, [applyEstimateDraft, continueHref, effectiveImportMode, estimateValues.grossSalary, brokerInputs, brokers, fnoProfit, mfProfit, ensureIncomeChip, router]);
+  }, [applyEstimateDraft, continueHref, effectiveImportMode, estimateValues.grossSalary, brokerInputs, brokers, fnoProfit, mfProfit, ensureIncomeChip, setIncome, router]);
 
   const continueDisabled =
     effectiveImportMode === null ||
@@ -271,11 +287,32 @@ function DocumentsContent() {
     >
       <div className="mb-4 w-full border-b border-slate-100 pb-4">
         <h2 className="text-lg font-bold text-slate-900 tracking-tight mb-1">AI Document Processing</h2>
+        <div className="mt-3">
+          <AiSectionChecklist
+            kind={
+              importMode === "capital_gains"
+                ? "broker_pnl"
+                : importMode === "form16"
+                  ? "form16"
+                  : "form16"
+            }
+          />
+        </div>
+        <p className="mt-2 text-xs text-slate-500">
+          Also available:{" "}
+          <Link href="/file/import/vda" className="text-primary font-medium underline">
+            Crypto / VDA wizard
+          </Link>
+          {" · "}
+          <Link href="/file/import/foreign" className="text-primary font-medium underline">
+            NRI / foreign assets
+          </Link>
+        </p>
       </div>
 
       {/* Mode Selection Grid */}
       {!form16FastPath && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6 mt-4">
           <button
             onClick={() => handleModeSelect("form16")}
             className={cn(
@@ -290,6 +327,22 @@ function DocumentsContent() {
             </div>
             <h3 className="font-bold text-slate-900 text-[14px]">Upload Form 16</h3>
             <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">Fastest. AI parses your PDF from your employer.</p>
+          </button>
+
+          <button
+            onClick={() => handleModeSelect("capital_gains")}
+            className={cn(
+              "flex flex-col text-left rounded-xl border-2 p-4 transition-all",
+              importMode === "capital_gains"
+                ? "border-blue-600 bg-blue-50/80 shadow-sm"
+                : "border-slate-100 bg-white hover:border-blue-200"
+            )}
+          >
+            <div className={cn("rounded-lg p-2 inline-block mb-3", importMode === "capital_gains" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500")}>
+              <TrendingUp className="size-5" />
+            </div>
+            <h3 className="font-bold text-slate-900 text-[14px]">Capital gains / F&amp;O</h3>
+            <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">CAMS, Groww Excel, or broker Tax P&amp;L — guided entry.</p>
           </button>
 
           <button
@@ -333,12 +386,42 @@ function DocumentsContent() {
           <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 sm:p-5">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-bold text-slate-800">Which platforms do you use?</h4>
-              <a href="#" className="hidden sm:block text-[11px] text-blue-600 hover:underline">Process Note: Download from top 5 platforms</a>
             </div>
             
-            <div className="flex flex-wrap gap-2 mb-5">
-              {["Zerodha", "Groww", "Angel One", "Upstox", "ICICI Direct", "Other MFs"].map(b => (
-                <BrokerChip key={b} name={b} selected={brokers.includes(b)} onClick={() => toggleBroker(b)} />
+            <div className="flex flex-wrap gap-2 mb-4">
+              {BROKER_DOWNLOAD_GUIDES.map((g) => (
+                <BrokerChip
+                  key={g.id}
+                  name={g.label}
+                  selected={brokers.includes(g.label)}
+                  onClick={() => toggleBroker(g.label)}
+                />
+              ))}
+              <BrokerChip
+                name="Other MFs"
+                selected={brokers.includes("Other MFs")}
+                onClick={() => toggleBroker("Other MFs")}
+              />
+            </div>
+
+            <div className="mb-4 space-y-2">
+              {BROKER_DOWNLOAD_GUIDES.map((g) => (
+                <details
+                  key={g.id}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] text-slate-600"
+                >
+                  <summary className="cursor-pointer font-semibold text-slate-800">
+                    How to download from {g.label}
+                  </summary>
+                  <ol className="mt-2 list-decimal pl-4 space-y-1">
+                    {g.taxPnlSteps.map((step) => (
+                      <li key={step}>{step}</li>
+                    ))}
+                    {g.capitalGainsSteps?.map((step) => (
+                      <li key={step}>{step}</li>
+                    ))}
+                  </ol>
+                </details>
               ))}
             </div>
 
@@ -387,8 +470,9 @@ function DocumentsContent() {
               />
             </div>
             
-            <div className="mt-4 sm:hidden">
-              <a href="#" className="text-[11px] text-blue-600 hover:underline">Process Note: How to download statements</a>
+            <div className="mt-4 text-[11px] text-slate-500">
+              Upload broker Tax P&L in <strong>Optional Supporting Documents</strong> below
+              — AI document reading for each broker is rolling out; manual entry works today.
             </div>
           </div>
         </div>
@@ -400,7 +484,7 @@ function DocumentsContent() {
           <div className="min-w-0">
             {addEmployerMode && (
               <Banner variant="info">
-                <strong>Adding another Form 16.</strong> Upload the next employer&apos;s Form 16 — we'll add its salary and TDS to your existing total.
+                <strong>Adding another Form 16.</strong> Upload the next employer&apos;s Form 16 — we&apos;ll add its salary and TDS to your existing total.
               </Banner>
             )}
             <ConnectorGrid

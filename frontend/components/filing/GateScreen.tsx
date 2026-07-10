@@ -31,6 +31,13 @@ import {
   COMPLEX_CASE_FLAG,
   SELF_FILE_ELIGIBLE,
 } from "@/lib/copy/trust";
+import {
+  AI_CA_CONFIDENCE_BODY,
+  AI_CA_CONFIDENCE_HEADLINE,
+  FNO_GUIDED_BODY,
+  FNO_GUIDED_HEADLINE,
+} from "@/lib/copy/itrForms";
+import { ItrFormGuideTable } from "@/components/filing/ItrFormGuideTable";
 
 const FORM_PLAIN_LABELS: Record<string, string> = {
   "ITR-1": "Simple return for salaried employees",
@@ -66,8 +73,8 @@ export function GateContent() {
     setSeniorMode,
   } = useDraftStore();
 
-  const [pan, setPan] = useState("BOHPA6051D"); // Default demo pan as requested
-  const [mobile, setMobile] = useState("7204609907");
+  const [pan, setPan] = useState("");
+  const [mobile, setMobile] = useState("");
   const [localAgeBand, setLocalAgeBand] = useState("25-35");
 
   useEffect(() => {
@@ -97,21 +104,26 @@ export function GateContent() {
 
   const rec = useMemo(() => resolveRecommendedForm(matrix, chips), [matrix, chips]);
 
-  // Adjusted form recommendation based on strict rules
-  let form = rec.form;
-  let reason = rec.reason;
-  if (hasFO) {
-    form = "ITR-3";
-    reason = "Futures and Options trading requires ITR-3 and audit check.";
-  } else if (hasNRI) {
-    form = "BLOCK";
-    reason =
-      "NRI / RNOR filing is not supported in this version. Please file on incometax.gov.in or with a CA.";
-  } else if (hasForeign || hasCrypto) {
-    form = "ITR-2";
-    if (hasBusiness) form = "ITR-3";
-    reason = "Foreign income or crypto requires complex ITR forms — consider CA help.";
-  }
+  const { form, reason } = useMemo(() => {
+    let nextForm = rec.form;
+    let nextReason = rec.reason;
+
+    if (hasNRI) {
+      nextForm = "BLOCK";
+      nextReason =
+        "NRI / RNOR filing is not supported in this version. Please file on incometax.gov.in or with a CA.";
+    } else if (hasForeign || hasCrypto) {
+      nextForm = hasBusiness || hasFO ? "ITR-3" : "ITR-2";
+      nextReason =
+        "Foreign income or crypto requires complex ITR forms — we guide you through the schedules.";
+    }
+
+    return { form: nextForm, reason: nextReason };
+  }, [rec, hasNRI, hasForeign, hasCrypto, hasBusiness, hasFO]);
+
+  useEffect(() => {
+    setRecommendedForm(form, rec.caseId);
+  }, [form, rec.caseId, setRecommendedForm]);
 
   const scope = useMemo(
     () =>
@@ -134,21 +146,36 @@ export function GateContent() {
 
   const plainFormLabel = FORM_PLAIN_LABELS[form] ?? form;
 
-  const toggleSource = (sourceId: string, isBusiness: boolean = false, isCapitalGains: boolean = false, isComplex: boolean = false) => {
+  const toggleSource = (
+    sourceId: string,
+    isBusiness: boolean = false,
+    isCapitalGains: boolean = false,
+    isComplex: boolean = false
+  ) => {
+    const wasSelected = chips.has(sourceId);
+    const nextChips = new Set(chips);
+    if (wasSelected) nextChips.delete(sourceId);
+    else nextChips.add(sourceId);
+
     toggleIncomeChip(sourceId);
-    
+
+    const hasBusinessChip =
+      nextChips.has("freelance") ||
+      nextChips.has("business_presumptive") ||
+      nextChips.has("fno");
+
     if (isBusiness || sourceId === "fno") {
-      if (!chips.has(sourceId)) {
+      if (nextChips.has("fno")) {
         setMatrix({ business: "w" });
-      } else if (!chips.has("freelance") && !chips.has("business_presumptive") && !chips.has("fno")) {
+      } else if (!hasBusinessChip) {
         setMatrix({ business: "x" });
       }
     }
-    
+
     if (isCapitalGains || isComplex) {
-      if (!chips.has(sourceId)) {
+      if (nextChips.has(sourceId)) {
         setMatrix({ business: "z" });
-      } else {
+      } else if (!hasBusinessChip) {
         setMatrix({ business: "x" });
       }
     }
@@ -173,9 +200,12 @@ export function GateContent() {
 
   return (
     <FilingLayout
-      mirrorText="Residency and income type decide which ITR form you must use. We match you to the simplest form the law allows — wrong form means notices later."
+      mirrorText={AI_CA_CONFIDENCE_HEADLINE}
     >
       <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm min-h-[400px]">
+        <p className="text-sm text-slate-600 mb-6 leading-relaxed border border-blue-100 bg-blue-50/60 rounded-xl px-4 py-3">
+          {AI_CA_CONFIDENCE_BODY}
+        </p>
         {/* Section 1: Basics */}
         <h2 className="text-xl font-bold text-slate-900 mb-4">Sec 1: Basic Details</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-8">
@@ -286,15 +316,37 @@ export function GateContent() {
               
               <div className="p-5 bg-white">
                 <div className="mb-5 space-y-3">
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-800 mb-1">{COMPLEX_CASE_ESCALATION_TITLE}</h4>
-                    <p className="text-[13px] text-slate-600 leading-relaxed">{COMPLEX_CASE_ESCALATION_BODY}</p>
-                  </div>
+                  {hasFO ? (
+                    <div className="rounded-lg border border-blue-100 bg-blue-50/80 p-3">
+                      <h4 className="text-sm font-bold text-blue-900 mb-1">
+                        {FNO_GUIDED_HEADLINE}
+                      </h4>
+                      <p className="text-[13px] text-blue-900/80 leading-relaxed">
+                        {FNO_GUIDED_BODY}
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-800 mb-1">
+                        {COMPLEX_CASE_ESCALATION_TITLE}
+                      </h4>
+                      <p className="text-[13px] text-slate-600 leading-relaxed">
+                        {COMPLEX_CASE_ESCALATION_BODY}
+                      </p>
+                    </div>
+                  )}
                   <div className="bg-slate-50 border border-slate-100 rounded-lg p-3">
                     <p className="text-xs text-slate-600 font-medium">
                       <span className="text-slate-800 font-bold">Why?</span> {reason}
                     </p>
                   </div>
+                  {scope.guidance.length > 0 && (
+                    <ul className="text-xs text-slate-600 space-y-1 list-disc pl-4">
+                      {scope.guidance.map((g) => (
+                        <li key={g}>{g}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -304,7 +356,9 @@ export function GateContent() {
                   >
                     {scope.verdict === "blocked"
                       ? "See honest next steps"
-                      : "Continue to Self-Filing"}
+                      : hasFO
+                        ? "Continue — guided ITR-3"
+                        : "Continue with our guide"}
                   </button>
                 </div>
               </div>
@@ -353,6 +407,17 @@ export function GateContent() {
               </div>
             </div>
           )}
+        </div>
+
+        <div className="mt-8">
+          <h2 className="text-lg font-bold text-slate-900 mb-2">
+            Which ITR form applies to you?
+          </h2>
+          <p className="text-xs text-slate-500 mb-3">
+            India has seven ITR forms — we support guided self-filing for ITR-1 to
+            ITR-4 and partner filing for ITR-5 to ITR-7.
+          </p>
+          <ItrFormGuideTable />
         </div>
       </div>
     </FilingLayout>

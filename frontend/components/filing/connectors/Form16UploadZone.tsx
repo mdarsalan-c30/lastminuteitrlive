@@ -145,6 +145,11 @@ export function Form16UploadZone({
             ? "Your employer's Form 16 has been successfully read by our AI." 
             : "Drop Part A, Part B, or your Annexure here. Parsing starts instantly."}
         </p>
+        <p className="text-xs text-slate-500 mt-2 max-w-md mx-auto leading-relaxed">
+          <strong className="text-slate-700">Two or more employers?</strong> Upload
+          each Form 16 PDF (up to 5) — we add salary and TDS from every employer
+          into one combined total for your return.
+        </p>
 
         <label className={cn(
           "mt-6 inline-flex cursor-pointer items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition-all shadow-sm",

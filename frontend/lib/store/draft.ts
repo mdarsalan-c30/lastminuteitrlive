@@ -46,6 +46,12 @@ export interface IncomeDraft {
   freelanceRevenue?: number;
   freelanceExpenses?: number;
   otherIncome?: number;
+  /** F&O absolute turnover (abs P + abs L + options premium). */
+  fnoTurnover?: number;
+  /** Non-speculative F&O P&L (Schedule BP). */
+  fnoNonSpeculativeProfit?: number;
+  /** Speculative / intraday P&L — isolated set-off bucket. */
+  fnoSpeculativeProfit?: number;
 }
 
 export interface HousePropertyDraft {
@@ -92,6 +98,32 @@ export interface DeductionDraft {
 
 export type FieldConfidence = "high" | "review" | "missing";
 export type ParseMode = "extracted" | "demo_fallback";
+
+/** AIS / 26AS figures extracted from documents — never invent sample amounts. */
+export interface AisFigures {
+  grossSalary?: number;
+  tds?: number;
+  fdInterest?: number;
+}
+
+/** Capital gains from CAMS / broker P&L — losses stored as positive stcl/ltcl. */
+export interface CapitalGainsDraft {
+  stcg_111a?: number;
+  ltcg_112a?: number;
+  stcg_other?: number;
+  ltcg_other?: number;
+  stcl_equity?: number;
+  ltcl?: number;
+  sourceConnectorId?: string;
+}
+
+export interface DocumentFactDraft {
+  key: string;
+  label: string;
+  value: string | number | boolean;
+  confidence?: number;
+  sourceConnectorId?: string;
+}
 
 export interface LastParseResult {
   connectorId: string;
@@ -160,6 +192,12 @@ export interface DraftState {
   bankValidated: boolean;
   seniorMode: boolean;
   connectedConnectors: string[];
+  /** Real AIS figures when imported — undefined means not imported. */
+  aisFigures: AisFigures | null;
+  /** Real CG figures from CAMS / broker statements — never invent sample amounts. */
+  capitalGains: CapitalGainsDraft | null;
+  /** Facts extracted via document AI pipeline for reconcile. */
+  documentFacts: DocumentFactDraft[];
   lastParseResult: LastParseResult | null;
   engineRecommendationCount: number;
   questionAnswers: Record<string, unknown>;
@@ -201,6 +239,10 @@ export interface DraftState {
   setBankValidated: (validated: boolean) => void;
   setSeniorMode: (enabled: boolean) => void;
   setConnectorConnected: (connectorId: string) => void;
+  setAisFigures: (figures: AisFigures | null) => void;
+  setCapitalGains: (capitalGains: CapitalGainsDraft | null) => void;
+  setDocumentFacts: (facts: DocumentFactDraft[]) => void;
+  mergeDocumentFacts: (facts: DocumentFactDraft[]) => void;
   setEngineRecommendationCount: (count: number) => void;
   setQuestionAnswer: (questionId: string, answer: unknown) => void;
   appendComputeHistory: (entry: ComputeHistoryEntry) => void;
@@ -254,6 +296,9 @@ const defaultIncome: IncomeDraft = {
   freelanceRevenue: 0,
   freelanceExpenses: 0,
   otherIncome: 0,
+  fnoTurnover: 0,
+  fnoNonSpeculativeProfit: 0,
+  fnoSpeculativeProfit: 0,
 };
 
 const defaultHouseProperty: HousePropertyDraft = {
@@ -331,6 +376,9 @@ const initialState = {
   bankValidated: false,
   seniorMode: false,
   connectedConnectors: [] as string[],
+  aisFigures: null as AisFigures | null,
+  capitalGains: null as CapitalGainsDraft | null,
+  documentFacts: [] as DocumentFactDraft[],
   lastParseResult: null as LastParseResult | null,
   engineRecommendationCount: 0,
   questionAnswers: {} as Record<string, unknown>,
@@ -478,6 +526,19 @@ export const useDraftStore = create<DraftState>()(
             ? s.connectedConnectors
             : [...s.connectedConnectors, connectorId],
         })),
+      setAisFigures: (aisFigures) => set({ aisFigures }),
+      setCapitalGains: (capitalGains) => set({ capitalGains }),
+      setDocumentFacts: (documentFacts) => set({ documentFacts }),
+      mergeDocumentFacts: (facts) =>
+        set((s) => {
+          const byKey = new Map(
+            s.documentFacts.map((f) => [f.key, f] as const)
+          );
+          for (const fact of facts) {
+            byKey.set(fact.key, fact);
+          }
+          return { documentFacts: Array.from(byKey.values()) };
+        }),
       setEngineRecommendationCount: (engineRecommendationCount) =>
         set({ engineRecommendationCount }),
       setQuestionAnswer: (questionId, answer) =>

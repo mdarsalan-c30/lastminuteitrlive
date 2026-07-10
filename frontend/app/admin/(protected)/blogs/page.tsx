@@ -17,7 +17,7 @@ export default async function AdminBlogsPage() {
     return (
       <div className="flex h-[60vh] flex-col items-center justify-center">
         <h2 className="text-xl font-bold">Access Denied</h2>
-        <p className="text-muted-foreground mt-2">You don't have permission to view or manage content.</p>
+        <p className="text-muted-foreground mt-2">You don&apos;t have permission to view or manage content.</p>
       </div>
     );
   }

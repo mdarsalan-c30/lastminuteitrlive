@@ -1,0 +1,415 @@
+{
+  "schemaVersion": "AY2026-27.walkthrough.v1",
+  "form": "ITR-3",
+  "assessmentYear": "AY 2026-27",
+  "portalUrl": "https://www.incometax.gov.in/iec/foportal/",
+  "hasScreenshots": false,
+  "chapters": [
+    {
+      "id": "before-you-start",
+      "order": 0,
+      "title": "Before you start (ITR-3)",
+      "subtitle": "Text guide only — portal screenshots arrive when the intern Word pack is ready.",
+      "portalPath": "incometax.gov.in",
+      "tips": [
+        "This is a text scaffold for ITR-3. Screenshot walkthrough needs the intern Word file."
+      ],
+      "warnings": [
+        "Do not invent numbers. Use LastMinute compute values when unlocked."
+      ],
+      "steps": [
+        {
+          "id": "open",
+          "title": "Open portal",
+          "clickPath": "incometax.gov.in",
+          "plainEnglish": "Open the Income Tax portal in a new tab beside LastMinute.",
+          "action": "click"
+        },
+        {
+          "id": "confirm-form",
+          "title": "Confirm ITR-3",
+          "clickPath": "File Income Tax Return → select form",
+          "plainEnglish": "Only continue if LastMinute routed you to ITR-3.",
+          "action": "verify"
+        }
+      ]
+    },
+    {
+      "id": "login-start",
+      "order": 1,
+      "title": "Login and start filing",
+      "subtitle": "Same login path as ITR-1; pick the correct form on the portal.",
+      "portalPath": "Login → File Now → AY 2026-27 → Online",
+      "steps": [
+        {
+          "id": "login",
+          "title": "Login",
+          "clickPath": "Login",
+          "plainEnglish": "Sign in with PAN/Aadhaar.",
+          "action": "click"
+        },
+        {
+          "id": "ay",
+          "title": "AY 2026-27 Online",
+          "clickPath": "File Now → AY 2026-27 → Online → Continue",
+          "plainEnglish": "Select AY 2026-27 and Online mode.",
+          "action": "click"
+        },
+        {
+          "id": "pick",
+          "title": "Select ITR-3",
+          "clickPath": "ITR-3 → Proceed",
+          "plainEnglish": "Choose ITR-3 and proceed.",
+          "action": "click"
+        }
+      ]
+    },
+    {
+      "id": "business_pl",
+      "order": 2,
+      "title": "Business P&L (books of account)",
+      "subtitle": "Income Sources → Business & Profession",
+      "portalPath": "Schedule BP → Part A-P&L",
+      "tips": [],
+      "warnings": [
+        "Use audited or signed P&L figures — not bank credits alone.",
+        "Do not enter presumptive 44AD/44ADA percentages here — ITR-3 requires actual books."
+      ],
+      "steps": [
+        {
+          "id": "gross_receipts_/_turnover_(books)",
+          "title": "Gross receipts / turnover (books)",
+          "clickPath": "Schedule BP → Part A-P&L",
+          "plainEnglish": "Total revenue per P&L before expenses.",
+          "action": "enter",
+          "ourValueKey": "business.actual_gross_receipts"
+        },
+        {
+          "id": "total_business_expenses",
+          "title": "Total business expenses",
+          "clickPath": "Schedule BP → Part A-P&L",
+          "plainEnglish": "Allowable expenses from books — must support net profit.",
+          "action": "enter",
+          "ourValueKey": "business.actual_expenses"
+        },
+        {
+          "id": "net_profit_from_business",
+          "title": "Net profit from business",
+          "clickPath": "Schedule BP → Part A-P&L",
+          "plainEnglish": "Receipts minus expenses per our P&L mapping.",
+          "action": "enter",
+          "ourValueKey": "business_income.books_profit"
+        },
+        {
+          "id": "net_business_income_(head_total)",
+          "title": "Net business income (head total)",
+          "clickPath": "Schedule BP → Part A-P&L",
+          "plainEnglish": "Final business head after adjustments — verify on portal.",
+          "action": "enter",
+          "ourValueKey": "business_income.net_business_income"
+        },
+        {
+          "id": "presumptive_income_u/s_44ad",
+          "title": "Presumptive income u/s 44AD",
+          "clickPath": "Schedule BP → Part A-P&L",
+          "plainEnglish": "ITR-3 uses regular books, not presumptive turnover percentages.",
+          "action": "skip"
+        },
+        {
+          "id": "presumptive_income_u/s_44ada",
+          "title": "Presumptive income u/s 44ADA",
+          "clickPath": "Schedule BP → Part A-P&L",
+          "plainEnglish": "Professionals on presumptive scheme should file ITR-4, not ITR-3.",
+          "action": "skip"
+        }
+      ]
+    },
+    {
+      "id": "capital_gains",
+      "order": 3,
+      "title": "Capital gains (if applicable)",
+      "subtitle": "Income Sources → Capital Gains",
+      "portalPath": "Schedule CG → STCG / LTCG",
+      "tips": [],
+      "warnings": [
+        "Many ITR-3 filers have no capital gains — skip entire schedule when all CG values are zero.",
+        "Separate business income from investment gains — wrong schedule causes defective return."
+      ],
+      "steps": [
+        {
+          "id": "stcg_u/s_111a",
+          "title": "STCG u/s 111A",
+          "clickPath": "Schedule CG → STCG / LTCG",
+          "plainEnglish": "Enter when broker reported listed equity short-term gains.",
+          "action": "enter",
+          "ourValueKey": "income_heads.stcg_111a_net"
+        },
+        {
+          "id": "ltcg_u/s_112a",
+          "title": "LTCG u/s 112A",
+          "clickPath": "Schedule CG → STCG / LTCG",
+          "plainEnglish": "Taxable listed equity LTCG after annual exemption.",
+          "action": "enter",
+          "ourValueKey": "income_heads.ltcg_112a_net"
+        },
+        {
+          "id": "other_capital_gains",
+          "title": "Other capital gains",
+          "clickPath": "Schedule CG → STCG / LTCG",
+          "plainEnglish": "Property, unlisted, or debt fund gains at applicable rates.",
+          "action": "enter",
+          "ourValueKey": "income_heads.ltcg_other_net"
+        },
+        {
+          "id": "entire_schedule_cg",
+          "title": "Entire Schedule CG",
+          "clickPath": "Schedule CG → STCG / LTCG",
+          "plainEnglish": "Skip all CG rows when our summary shows zero across STCG and LTCG.",
+          "action": "skip"
+        }
+      ]
+    },
+    {
+      "id": "salary",
+      "order": 4,
+      "title": "Salary (if mixed income)",
+      "subtitle": "Income Sources → Salary",
+      "portalPath": "Gross Total Income → Income from Salary/Pension",
+      "tips": [],
+      "warnings": [
+        "Business-only filers should skip salary entirely.",
+        "Side employment while running a business still needs Form 16 values entered."
+      ],
+      "steps": [
+        {
+          "id": "gross_salary_u/s_17(1)",
+          "title": "Gross salary u/s 17(1)",
+          "clickPath": "Gross Total Income → Income from Salary/Pension",
+          "plainEnglish": "Enter when you also had salary alongside business income.",
+          "action": "enter",
+          "ourValueKey": "income_heads.gross_salary"
+        },
+        {
+          "id": "standard_deduction_u/s_16(ia)",
+          "title": "Standard deduction u/s 16(ia)",
+          "clickPath": "Gross Total Income → Income from Salary/Pension",
+          "plainEnglish": "Apply when salary head is active.",
+          "action": "enter",
+          "ourValueKey": "income_heads.standard_deduction"
+        },
+        {
+          "id": "net_salary_income",
+          "title": "Net salary income",
+          "clickPath": "Gross Total Income → Income from Salary/Pension",
+          "plainEnglish": "Verify combined salary head matches our computation.",
+          "action": "enter",
+          "ourValueKey": "income_heads.net_salary_income"
+        },
+        {
+          "id": "entire_salary_schedule",
+          "title": "Entire salary schedule",
+          "clickPath": "Gross Total Income → Income from Salary/Pension",
+          "plainEnglish": "Skip when gross salary is zero — business-only return.",
+          "action": "skip"
+        }
+      ]
+    },
+    {
+      "id": "deductions",
+      "order": 5,
+      "title": "Deductions and tax benefits",
+      "subtitle": "Deductions → Chapter VI-A",
+      "portalPath": "Total Deductions",
+      "tips": [],
+      "warnings": [
+        "Business expenses belong in Schedule BP, not 80C — do not double-count.",
+        "New regime limits most deductions; confirm regime toggle first."
+      ],
+      "steps": [
+        {
+          "id": "section_80c",
+          "title": "Section 80C",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Personal investments — separate from business P&L expenses.",
+          "action": "enter",
+          "ourValueKey": "deductions.capped_80c"
+        },
+        {
+          "id": "section_80d",
+          "title": "Section 80D",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Health insurance for self and parents when old regime applies.",
+          "action": "enter",
+          "ourValueKey": "deductions.deduction_80d"
+        },
+        {
+          "id": "section_80ccd(1b)",
+          "title": "Section 80CCD(1B)",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Additional NPS contribution beyond 80C.",
+          "action": "enter",
+          "ourValueKey": "deductions.deduction_80ccd_1b"
+        },
+        {
+          "id": "section_80ccd(2)",
+          "title": "Section 80CCD(2)",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Employer NPS — allowed in both regimes.",
+          "action": "enter",
+          "ourValueKey": "deductions.deduction_80ccd_2"
+        },
+        {
+          "id": "section_80g",
+          "title": "Section 80G",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Charitable donations after eligible limits.",
+          "action": "enter",
+          "ourValueKey": "deductions.deduction_80g"
+        },
+        {
+          "id": "section_80u",
+          "title": "Section 80U",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Select No when disability deduction does not apply.",
+          "action": "skip",
+          "ourValueKey": "deductions.deduction_80u"
+        },
+        {
+          "id": "section_80tta_/_80ttb",
+          "title": "Section 80TTA / 80TTB",
+          "clickPath": "Total Deductions",
+          "plainEnglish": "Deselect if savings-interest deduction is zero in our summary.",
+          "action": "skip",
+          "ourValueKey": "deductions.deduction_80tta_ttb"
+        }
+      ]
+    },
+    {
+      "id": "balance_sheet",
+      "order": 6,
+      "title": "Balance sheet (Part A-BS)",
+      "subtitle": "Financial Particulars → Balance Sheet",
+      "portalPath": "Part A-BS → Assets and Liabilities",
+      "tips": [],
+      "warnings": [
+        "LastMinute ITR does not compute balance sheet figures yet.",
+        "Consult your CA or use audited books — do not invent asset values."
+      ],
+      "steps": [
+        {
+          "id": "fixed_assets",
+          "title": "Fixed assets",
+          "clickPath": "Part A-BS → Assets and Liabilities",
+          "plainEnglish": "Not computed in our engine — enter from your books or skip if portal allows.",
+          "action": "skip"
+        },
+        {
+          "id": "current_assets_(cash,_debtors,_stock)",
+          "title": "Current assets (cash, debtors, stock)",
+          "clickPath": "Part A-BS → Assets and Liabilities",
+          "plainEnglish": "Requires full books — outside current companion scope.",
+          "action": "skip"
+        },
+        {
+          "id": "capital_account_/_liabilities",
+          "title": "Capital account / liabilities",
+          "clickPath": "Part A-BS → Assets and Liabilities",
+          "plainEnglish": "Balance sheet is mandatory for ITR-3 audit cases — use professional help.",
+          "action": "skip"
+        },
+        {
+          "id": "schedule_al_(assets_&_liabilities)",
+          "title": "Schedule AL (assets & liabilities)",
+          "clickPath": "Part A-BS → Assets and Liabilities",
+          "plainEnglish": "Skip unless income exceeds ₹50L threshold requiring AL disclosure.",
+          "action": "skip"
+        }
+      ]
+    },
+    {
+      "id": "tax_computation",
+      "order": 7,
+      "title": "Tax computation",
+      "subtitle": "Tax Paid and Verification → Part D",
+      "portalPath": "Tax on Total Income → Taxes Paid",
+      "tips": [],
+      "warnings": [
+        "Business income plus CG may trigger advance-tax interest — verify Part D carefully.",
+        "Match TDS on professional receipts with 26AS before claiming credit."
+      ],
+      "steps": [
+        {
+          "id": "gross_total_income",
+          "title": "Gross total income",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "All heads combined — salary, business, CG, and other sources.",
+          "action": "enter",
+          "ourValueKey": "income_heads.gross_total_income"
+        },
+        {
+          "id": "total_chapter_vi-a_deductions",
+          "title": "Total Chapter VI-A deductions",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "Chapter VI-A total in old regime.",
+          "action": "enter",
+          "ourValueKey": "deductions.total_chapter_via"
+        },
+        {
+          "id": "net_tax_payable_/_refund",
+          "title": "Net tax payable / refund",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "Final amount owed or refunded after all credits.",
+          "action": "enter",
+          "ourValueKey": "regime_comparison.recommended_regime_net_payable"
+        },
+        {
+          "id": "tds_on_salary",
+          "title": "TDS on salary",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "Form 16 TDS when salary is present.",
+          "action": "enter",
+          "ourValueKey": "taxes_paid.tds_salary"
+        },
+        {
+          "id": "tds_on_other_income",
+          "title": "TDS on other income",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "26AS credits on FD, contracts, and brokerage.",
+          "action": "enter",
+          "ourValueKey": "taxes_paid.tds_other"
+        },
+        {
+          "id": "advance_/_self-assessment_tax",
+          "title": "Advance / self-assessment tax",
+          "clickPath": "Tax on Total Income → Taxes Paid",
+          "plainEnglish": "Challan payments for business advance tax.",
+          "action": "enter",
+          "ourValueKey": "taxes_paid.advance_tax_paid"
+        }
+      ]
+    },
+    {
+      "id": "everify",
+      "order": 8,
+      "title": "E-verify and receipt",
+      "subtitle": "Same Aadhaar OTP path as ITR-1 after preview/submit.",
+      "portalPath": "Preview → Submit → E-Verify → Aadhaar OTP",
+      "steps": [
+        {
+          "id": "preview",
+          "title": "Preview and submit",
+          "clickPath": "Preview → Submit",
+          "plainEnglish": "Preview totals, then submit on the portal.",
+          "action": "click"
+        },
+        {
+          "id": "otp",
+          "title": "E-verify with Aadhaar OTP",
+          "clickPath": "E-Verify Now → Aadhaar OTP",
+          "plainEnglish": "Verify within 30 days. Download the receipt.",
+          "action": "click"
+        }
+      ]
+    }
+  ]
+}

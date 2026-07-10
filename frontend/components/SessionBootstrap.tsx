@@ -46,7 +46,7 @@ export function SessionBootstrap({ session }: { session: { name: string; email: 
 
     window.addEventListener("pagehide", onPageLeave);
     return () => window.removeEventListener("pagehide", onPageLeave);
-  }, [resetDraft, clearProfile]);
+  }, [resetDraft, clearProfile, session]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);

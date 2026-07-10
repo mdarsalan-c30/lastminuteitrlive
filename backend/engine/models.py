@@ -174,6 +174,10 @@ class BusinessInput:
     # ITR-3 books: WDV depreciation blocks (Sec 32). Depreciation is computed
     # by the engine and deducted from books profit.
     depreciation_blocks: list[DepreciationBlockInput] = field(default_factory=list)
+    # F&O / intraday — Schedule BP buckets (isolated loss set-off).
+    fno_turnover: float = 0.0
+    fno_non_speculative_profit: float = 0.0
+    fno_speculative_profit: float = 0.0
 
 
 @dataclass

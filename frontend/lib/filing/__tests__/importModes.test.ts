@@ -29,12 +29,12 @@ describe("importModes", () => {
     ).toBe("/file/regime");
   });
 
-  it("returns null for capital gains (dedicated flow handles routing)", () => {
+  it("routes capital gains / F&O import to comprehensive review", () => {
     expect(
       getImportContinueHref("capital_gains", {
         form16Connected: false,
         form16FastPath: false,
       })
-    ).toBeNull();
+    ).toBe("/file/comprehensive");
   });
 });

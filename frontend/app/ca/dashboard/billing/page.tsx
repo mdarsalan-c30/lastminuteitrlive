@@ -149,7 +149,7 @@ export default async function CABillingPage() {
             <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700">
               <Quote className="size-6 text-slate-500 mb-4" />
               <p className="text-slate-300 italic text-sm mb-4">
-                "The CRM tool acts like a mini accounting tracker for my firm. I can see all my clients, enter the custom fees I charge them, and track my total earnings right from the dashboard. It's incredibly robust."
+                &ldquo;The CRM tool acts like a mini accounting tracker for my firm. I can see all my clients, enter the custom fees I charge them, and track my total earnings right from the dashboard. It&apos;s incredibly robust.&rdquo;
               </p>
               <div className="flex items-center gap-3">
                 <div className="size-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-sm">SP</div>
@@ -163,7 +163,7 @@ export default async function CABillingPage() {
             <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700">
               <Quote className="size-6 text-slate-500 mb-4" />
               <p className="text-slate-300 italic text-sm mb-4">
-                "The credit system is flawless. I bought the 40-pack, and it automatically deducts a credit only when filing is successful. If there's an error, the credit rolls back immediately. Production-ready logic."
+                &ldquo;The credit system is flawless. I bought the 40-pack, and it automatically deducts a credit only when filing is successful. If there&apos;s an error, the credit rolls back immediately. Production-ready logic.&rdquo;
               </p>
               <div className="flex items-center gap-3">
                 <div className="size-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-sm">RN</div>

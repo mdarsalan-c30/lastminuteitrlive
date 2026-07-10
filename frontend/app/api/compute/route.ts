@@ -13,7 +13,8 @@ async function proxyToPythonServerless(
   const RAILWAY_URL = process.env.NEXT_PUBLIC_ENGINE_URL || "";
   const origin = new URL(request.url).origin;
   
-  let targetUrl = `${origin}/_/backend/api/py-compute`;
+  // Vercel Python service is registered at /_/backend with entrypoint api/compute.py
+  let targetUrl = `${origin}/_/backend/api/compute`;
   if (RAILWAY_URL) {
     const cleanUrl = RAILWAY_URL.replace(/\/+$/, "");
     targetUrl = cleanUrl.endsWith("/api/compute") ? cleanUrl : `${cleanUrl}/api/compute`;

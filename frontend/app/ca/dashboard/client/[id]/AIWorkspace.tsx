@@ -276,7 +276,7 @@ export function AIWorkspace({ contactId, initialStatus }: { contactId: string, i
           <div className="h-full flex flex-col items-center justify-center text-slate-400 p-12 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 min-h-[500px]">
             <BrainCircuit className="size-16 mb-4 text-slate-300" />
             <p className="font-semibold text-lg text-slate-600">Awaiting Tax Data</p>
-            <p className="text-sm mt-1 text-center max-w-sm">Hit "Run Engine" to process the client's data and extract maximum refunds.</p>
+            <p className="text-sm mt-1 text-center max-w-sm">Hit &ldquo;Run Engine&rdquo; to process the client&apos;s data and extract maximum refunds.</p>
           </div>
         ) : (
           <div className="space-y-6">

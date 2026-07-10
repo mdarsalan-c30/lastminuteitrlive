@@ -5,8 +5,8 @@ export const dynamic = "force-dynamic";
 export default async function CredentialsPage() {
   const credentials = [
     {
-      role: "Admin (CEO)",
-      email: "emailnikhil95@gmail.com",
+      role: "Admin (CEO) — dev bootstrap only",
+      email: "admin@lastminuteitr.local",
       password: "ITR2026",
       type: "Admin",
       portal: "/admin/login",

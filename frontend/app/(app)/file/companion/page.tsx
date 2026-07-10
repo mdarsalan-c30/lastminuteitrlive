@@ -22,10 +22,6 @@ import {
   fetchPersonalizedPortalGuide,
 } from "@/lib/engine/portalGuideEngine";
 import { getPortalGuide } from "@/lib/engine/client";
-import {
-  firstScreenIndexForSection,
-  isPortalSectionId,
-} from "@/lib/engine/portalSections";
 import type { PortalForm, PortalGuideResponse } from "@/lib/engine/types";
 import { useTaxCompute } from "@/lib/hooks/useTaxCompute";
 import { trackCompanionLoad } from "@/lib/monitoring/events";
@@ -43,10 +39,10 @@ import {
 const FORMS: PortalForm[] = ["ITR-1", "ITR-2", "ITR-3", "ITR-4"];
 type CompanionViewMode = "guided" | "checklist";
 
-const PortalFootprintWizard = dynamic(
+const PortalWalkthroughWizard = dynamic(
   () =>
-    import("@/components/filing/companion/PortalFootprintWizard").then(
-      (mod) => mod.PortalFootprintWizard
+    import("@/components/filing/companion/PortalWalkthroughWizard").then(
+      (mod) => mod.PortalWalkthroughWizard
     ),
   {
     loading: () => <PortalFootprintWizardSkeleton />,
@@ -136,7 +132,6 @@ export default function CompanionPage() {
 }
 
 function CompanionContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const draft = useDraftStore();
   const { session, loading: sessionLoading } = usePaymentSession();
@@ -153,6 +148,8 @@ function CompanionContent() {
   const [loadWarning, setLoadWarning] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
   const [viewMode, setViewMode] = useState<CompanionViewMode>("guided");
+  const [jsonExporting, setJsonExporting] = useState(false);
+  const [jsonExportError, setJsonExportError] = useState<string | null>(null);
   const companionLoggedRef = useRef(false);
 
   const paymentBypass = isClientPaymentBypassEnabled();
@@ -161,24 +158,25 @@ function CompanionContent() {
     (!sessionLoading && session?.verified === true && session.companionAccess === true);
 
   const justUnlocked = searchParams.get("unlocked") === "1" && exportUnlocked;
-  const sectionParam = searchParams.get("section");
-
-  const initialScreenId = useMemo(() => {
-    const screens = guide?.footprintScreens;
-    if (!screens || screens.length === 0 || !isPortalSectionId(sectionParam)) {
-      return undefined;
-    }
-    const idx = firstScreenIndexForSection(screens, sectionParam);
-    return idx >= 0 ? screens[idx].id : undefined;
-  }, [guide?.footprintScreens, sectionParam]);
+  const isDemoMode = searchParams.get("demo") === "1";
 
   const loadGuide = useCallback(async () => {
-    if (!exportUnlocked) return;
     setLoading(true);
     setLoadError(null);
     setLoadWarning(null);
     const loadStartedAt = Date.now();
     try {
+      if (!exportUnlocked) {
+        const standardGuide = await getPortalGuide(form);
+        setGuide(standardGuide);
+        setLoadWarning(
+          isDemoMode
+            ? "Demo guide — exact copy-ready values unlock after payment."
+            : "Free guide loaded — exact copy-ready values unlock after payment."
+        );
+        return;
+      }
+
       const mismatches = draft.mismatchResolved ? [] : ["import-mismatch"];
       const data = await fetchPersonalizedPortalGuide({
         form,
@@ -225,23 +223,16 @@ function CompanionContent() {
     } finally {
       setLoading(false);
     }
-  }, [exportUnlocked, form, effectiveResult, draft, userInput]);
+  }, [exportUnlocked, form, effectiveResult, draft, userInput, isDemoMode]);
 
   useEffect(() => {
-    if (!exportUnlocked || companionLoggedRef.current) return;
+    if (companionLoggedRef.current) return;
     companionLoggedRef.current = true;
     void logSessionEvent("companion_open", {
       draft: draftSnapshotForLog(useDraftStore.getState()),
-      meta: { form, bypass: paymentBypass },
+      meta: { form, bypass: paymentBypass, free: !exportUnlocked, demo: isDemoMode },
     });
-  }, [exportUnlocked, paymentBypass, form]);
-
-  useEffect(() => {
-    if (paymentBypass) return;
-    if (!exportUnlocked) {
-      router.replace("/file/checkout/plans?reason=companion");
-    }
-  }, [exportUnlocked, paymentBypass, router]);
+  }, [exportUnlocked, paymentBypass, form, isDemoMode]);
 
   useEffect(() => {
     if (!exportUnlocked) return;
@@ -249,19 +240,21 @@ function CompanionContent() {
   }, [compute, exportUnlocked, userInput]);
 
   useEffect(() => {
-    if (!exportUnlocked) return;
+    // Free users get the standard guide; paid users get personalized values.
+    // ?demo=1 is an explicit free-preview entry (marketing / help links).
     loadGuide();
-  }, [exportUnlocked, loadGuide, retryKey]);
+  }, [exportUnlocked, isDemoMode, loadGuide, retryKey]);
 
-  if (!exportUnlocked) {
+  if (sessionLoading && !paymentBypass) {
     return (
       <FilingLayout mirrorText="Checking whether your portal guide is unlocked…">
         <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
           <p className="text-sm font-medium text-slate-900">
-            {sessionLoading ? "Checking payment access…" : "Redirecting to plans…"}
+            Checking payment access…
           </p>
           <p className="mt-2 text-sm text-slate-600">
-            One moment — we will take you to checkout if your guide is not unlocked yet.
+            You can still use the free screen-by-screen guide. Exact copy-ready
+            values unlock after payment.
           </p>
         </div>
       </FilingLayout>
@@ -269,6 +262,36 @@ function CompanionContent() {
   }
 
   const handleRetry = () => setRetryKey((k) => k + 1);
+
+  const handleItr1JsonExport = async () => {
+    if (!effectiveResult) return;
+    setJsonExporting(true);
+    setJsonExportError(null);
+    try {
+      const response = await fetch("/api/itr/export/itr1", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userInput, result: effectiveResult }),
+      });
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        throw new Error(data.error ?? "Could not export ITR JSON");
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "lastminute-itr-itr1-ay2026-27.json";
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setJsonExportError(
+        error instanceof Error ? error.message : "Could not export ITR JSON"
+      );
+    } finally {
+      setJsonExporting(false);
+    }
+  };
 
   const mismatchBlock =
     !draft.mismatchResolved || (guide?.hasMismatches ?? false);
@@ -337,6 +360,19 @@ function CompanionContent() {
         </Banner>
       )}
 
+      {!exportUnlocked && !sessionLoading && (
+        <Banner variant="info">
+          You are on the free screen-by-screen guide.{" "}
+          <a
+            href="/file/checkout/plans?reason=companion"
+            className="font-semibold text-primary underline underline-offset-2"
+          >
+            Unlock exact copy-ready values
+          </a>{" "}
+          after payment.
+        </Banner>
+      )}
+
       <EngineComputeFallback
         loading={computing}
         error={computeError}
@@ -374,12 +410,11 @@ function CompanionContent() {
         </div>
       )}
 
-      {guide && (
+      {(guide || viewMode === "guided") && (
         <>
-          {guide.footprintScreens && guide.footprintScreens.length > 0 && (
-            <div className="mb-4 flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-4 flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                View mode
+                View mode · Option B portal guide
               </p>
               <div className="grid grid-cols-2 gap-2 sm:w-auto">
                 <Button
@@ -387,32 +422,52 @@ function CompanionContent() {
                   className="min-h-10 w-full text-xs sm:w-auto"
                   onClick={() => setViewMode("guided")}
                 >
-                  Guided wizard
+                  Screen-by-screen
                 </Button>
                 <Button
                   variant={viewMode === "checklist" ? "primary" : "secondary"}
                   className="min-h-10 w-full text-xs sm:w-auto"
                   onClick={() => setViewMode("checklist")}
                 >
-                  Full checklist
+                  All fields
                 </Button>
               </div>
-            </div>
-          )}
-          {guide.footprintScreens &&
-            guide.footprintScreens.length > 0 &&
-            viewMode === "guided" && (
-            <PortalFootprintWizard
+              <div className="flex flex-col gap-1 sm:items-end">
+                <Button
+                  variant="secondary"
+                  className="min-h-10 text-xs"
+                  disabled={
+                    !exportUnlocked ||
+                    jsonExporting ||
+                    form !== "ITR-1" ||
+                    !effectiveResult
+                  }
+                  onClick={handleItr1JsonExport}
+                >
+                  {jsonExporting ? "Preparing JSON…" : "Download ITR-1 JSON"}
+                </Button>
+                {jsonExportError && (
+                  <p className="max-w-xs text-xs text-amber-700">
+                    {jsonExportError}
+                  </p>
+                )}
+              </div>
+          </div>
+          {viewMode === "guided" && (
+            <PortalWalkthroughWizard
               key={form}
-              form={guide.form}
-              screens={guide.footprintScreens}
-              steps={guide.steps}
-              initialScreenId={initialScreenId}
+              form={form}
+              exportUnlocked={exportUnlocked}
+              result={effectiveResult}
+              userInput={userInput}
+              formMismatch={
+                Boolean(draft.recommendedForm) &&
+                draft.recommendedForm !== form
+              }
+              recommendedForm={draft.recommendedForm}
             />
-            )}
-          {(!guide.footprintScreens ||
-            guide.footprintScreens.length === 0 ||
-            viewMode === "checklist") && (
+          )}
+          {viewMode === "checklist" && guide && (
             <PortalGuideTable
               form={guide.form}
               steps={guide.steps}
@@ -421,10 +476,15 @@ function CompanionContent() {
               mismatches={draft.mismatchResolved ? [] : ["import-mismatch"]}
             />
           )}
+          {viewMode === "checklist" && !guide && !loading && (
+            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500">
+              Field checklist unavailable for {form}. Use Screen-by-screen instead.
+            </div>
+          )}
         </>
       )}
 
-      {!guide && !loading && !loadError && (
+      {!guide && !loading && !loadError && viewMode !== "guided" && (
         <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500">
           No portal guide available for {form}.
         </div>

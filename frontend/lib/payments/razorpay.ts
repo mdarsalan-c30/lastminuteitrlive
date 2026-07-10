@@ -22,7 +22,8 @@ export function verifyPaymentSignature(
 
 export async function createRazorpayOrder(
   amountPaise: number,
-  receipt: string
+  receipt: string,
+  notes: Record<string, string | number | boolean> = {}
 ): Promise<{ id: string; amount: number; currency: string }> {
   const keyId = process.env.RAZORPAY_KEY_ID!;
   const keySecret = process.env.RAZORPAY_KEY_SECRET!;
@@ -38,7 +39,7 @@ export async function createRazorpayOrder(
       amount: amountPaise,
       currency: "INR",
       receipt,
-      notes: { product: "lastminute-itr" },
+      notes: { product: "lastminute-itr", ...notes },
     }),
   });
 
@@ -53,4 +54,36 @@ export async function createRazorpayOrder(
     currency: string;
   };
   return data;
+}
+
+export async function fetchRazorpayOrder(orderId: string): Promise<{
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  notes?: Record<string, string | number | boolean | null>;
+}> {
+  const keyId = process.env.RAZORPAY_KEY_ID!;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET!;
+
+  const auth = Buffer.from(`${keyId}:${keySecret}`).toString("base64");
+  const response = await fetch(`https://api.razorpay.com/v1/orders/${orderId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Basic ${auth}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Razorpay order fetch failed: ${error}`);
+  }
+
+  return (await response.json()) as {
+    id: string;
+    amount: number;
+    currency: string;
+    status: string;
+    notes?: Record<string, string | number | boolean | null>;
+  };
 }

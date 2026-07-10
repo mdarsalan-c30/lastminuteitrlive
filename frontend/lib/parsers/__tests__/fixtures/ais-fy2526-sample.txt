@@ -1,0 +1,453 @@
+Part A - General Information
+Permanent Account Number (PAN) Aadhaar Number Name of Assessee
+ABCDE1234F XXXX XXXX 0000 SAMPLE TAXPAYER
+Date of Birth Mobile Number E-mail Address
+01/01/1990 9999999999 sample@example.com
+Address
+SAMPLE ADDRESS, BANGALORE, KARNATAKA
+------------------------------------------------------------------------------------- Annual Information Statement (Part B) --------------------------------------------------------------------------------------
+(All amount values are in INR)
+Part B1-Information relating to tax deducted or collected at source
+Salary
+SR. NO. INFORMATION CODE INFORMATION DESCRIPTION INFORMATION SOURCE COUNT AMOUNT
+1 TDS-192 Salary received (Section 192) ANAND RATHI WEALTH LIMITED (MUMH05095G) 12 17,71,368
+SR. NO. QUARTER DATE OF PAYMENT/CREDIT AMOUNT PAID/CREDITED TDS DEDUCTED TDS DEPOSITED STATUS
+1 Q4(Jan-Mar) 31/03/2026 1,14,601 7,229 7,229 Active
+2 Q4(Jan-Mar) 28/02/2026 1,14,601 7,230 7,230 Active
+3 Q4(Jan-Mar) 31/01/2026 1,14,601 7,229 7,229 Active
+4 Q3(Oct-Dec) 31/12/2025 1,14,601 7,229 7,229 Active
+5 Q3(Oct-Dec) 30/11/2025 1,14,601 7,229 7,229 Active
+6 Q3(Oct-Dec) 31/10/2025 1,14,601 7,229 7,229 Active
+7 Q2(Jul-Sep) 30/09/2025 1,14,601 7,229 7,229 Active
+8 Q2(Jul-Sep) 31/08/2025 1,14,601 7,229 7,229 Active
+9 Q2(Jul-Sep) 31/07/2025 5,25,559 76,350 76,350 Active
+10 Q1(Apr-Jun) 30/06/2025 1,09,667 3,554 3,554 Active
+11 Q1(Apr-Jun) 31/05/2025 1,09,667 3,554 3,554 Active
+12 Q1(Apr-Jun) 30/04/2025 1,09,667 3,554 3,554 Active
+13 Q2(Jul-Sep) 30/09/2025 1,14,601 7,229 7,229 Inactive
+14 Q2(Jul-Sep) 31/08/2025 1,14,601 7,229 7,229 Inactive
+15 Q2(Jul-Sep) 31/07/2025 5,25,559 76,350 76,350 Inactive
+Note - If there is variation between the TDS/TCS information as displayed in Form26AS on TRACES portal, and the TDS/TCS information as displayed in AIS on Compliance Portal, the taxpayer may rely on the
+information displayed on TRACES portal for the purpose of filing of tax return and for other tax compliance purposes.
+Part B2-Information relating to specified financial transaction (SFT)
+Dividend
+SR. NO. INFORMATION CODE INFORMATION DESCRIPTION INFORMATION SOURCE COUNT AMOUNT
+1 SFT-015 Dividend income (SFT-015) TATA STEEL LIMITED (AAACT2803M.AZ428) 1 72
+SR. NO. REPORTED ON DIVIDEND AMOUNT STATUS
+1 19/05/2026 72 Active
+SR. NO. INFORMATION CODE INFORMATION DESCRIPTION INFORMATION SOURCE COUNT AMOUNT
+2 SFT-015 Dividend income (SFT-015) Canara Robeco Asset Management Company Limited
+(AAACC2031J.AZ476)
+1 47
+SR. NO. REPORTED ON DIVIDEND AMOUNT STATUS
+1 19/05/2026 47 Active
+SR. NO. INFORMATION CODE INFORMATION DESCRIPTION INFORMATION SOURCE COUNT AMOUNT
+3 SFT-015 Dividend income (SFT-015) AR VENTURE FUNDS MANAGEMENT PRIVATE LIMITED
+(AAACH8136P.AZ611)
+1 30
+SR. NO. REPORTED ON DIVIDEND AMOUNT STATUS
+1 15/05/2026 30 Active
+SR. NO. INFORMATION CODE INFORMATION DESCRIPTION INFORMATION SOURCE COUNT AMOUNT
+4 SFT-015 Dividend income (SFT-015) Reliance Strategic Investments Limited (AABCR1466K.AZ326) 1 2
+SR. NO. REPORTED ON DIVIDEND AMOUNT STATUS
+1 23/05/2026 2 Active
+Interest from savings bank
+SR. NO. INFORMATION CODE INFORMATION DESCRIPTION INFORMATION SOURCE COUNT AMOUNT
+5 SFT-016(SB) Interest income (SFT-016) – Savings HDFC BANK LIMITED (AAACH2702H.AB772) 1 1,090
+SR. NO. REPORTED ON ACCOUNT NUMBER ACCOUNT TYPE INTEREST AMOUNT STATUS
+1 07/05/2026 XXXXXXXXXXXX Saving 1,090 Active
+SR. NO. INFORMATION CODE INFORMATION DESCRIPTION INFORMATION SOURCE COUNT AMOUNT
+6 SFT-016(SB) Interest income (SFT-016) – Savings UNION BANK OF INDIA (AAACU0564G.AB646) 1 169
+SR. NO. REPORTED ON ACCOUNT NUMBER ACCOUNT TYPE INTEREST AMOUNT STATUS
+1 28/05/2026 452402010751278 Saving 169 Active
+SR. NO. INFORMATION CODE INFORMATION DESCRIPTION INFORMATION SOURCE COUNT AMOUNT
+7 SFT-016(SB) Interest income (SFT-016) – Savings DBS BANK INDIA LIMITED (AAGCD5838A.AZ036) 1 125
+SR. NO. REPORTED ON ACCOUNT NUMBER ACCOUNT TYPE INTEREST AMOUNT STATUS
+1 27/05/2026 881016309562 Saving 125 Active
+SR. NO. INFORMATION CODE INFORMATION DESCRIPTION INFORMATION SOURCE COUNT AMOUNT
+8 SFT-016(SB) Interest income (SFT-016) – Savings AIRTEL PAYMENTS BANK LIMITED (AAICA4398J.AB943) 1 12
+Annual Information Statement (AIS) Financial Year 2025-26
+Download ID : ABCDE1234F202606300339 IP Address :
+Generation Date : 30/06/2026, 03:39:41 Page 1 of 3
+
+-- 1 of 3 --
+
+SR. NO. REPORTED ON ACCOUNT NUMBER ACCOUNT TYPE INTEREST AMOUNT STATUS
+1 13/05/2026 8660732521 Saving 12 Active
+Sale of securities and units of mutual fund
+SR. NO. INFORMATION CODE INFORMATION DESCRIPTION INFORMATION SOURCE COUNT AMOUNT
+9 SFT-18-EMF(M) Sale of unit of equity oriented mutual fund (RTA) Computer Age Management Services Limited (AAACC3035G.AZ670) 5 77,995.00
+SR.
+NO.
+AMC
+NAME
+(CODE)
+DATE OF
+SALE/
+TRANSFER
+SECURITY
+CLASS
+SECURITY
+NAME
+(SECURIT
+Y CODE)
+DEBIT TYPE CREDIT
+TYPE
+ASSET
+TYPE
+QUANTITY SALE
+PRICE PER
+UNIT
+SALES CONSIDERATION STT COST OF ACQUISITION UNIT FMV FAIR MARKET VALUE INDEXE
+D COST
+OF
+ACQUIS
+ITION
+STATUS
+1 PPFAS
+Asset
+Managem
+ent Pvt.
+Ltd.(PP)
+27/03/2026 Unit of
+Equity
+Oriented
+Mutual
+Fund
+Parag
+Parikh
+Flexi Cap
+Fund -
+Direct
+Plan
+Growth(I
+NF879O0
+1027)
+AMC
+(redemption
+)
+AMC
+(purchase)
+Long
+term
+47.71 85.58 4,083 0.04 4,167.68 0 0 0 Active
+2 SBI
+Mutual
+Fund(L)
+25/11/2025 Unit of
+Equity
+Oriented
+Mutual
+Fund
+SBI Nifty
+Next 50
+Index
+Fund -
+Direct
+Plan -
+Growth(
+INF200K
+A1W00)
+AMC
+(redemption
+)
+AMC
+(purchase)
+Long
+term
+1,662.92 18.83 31,315 0.31 35,000.01 0 0 0 Active
+3 Aditya
+Birla Sun
+Life
+Mutual
+Fund(B)
+08/05/2025 Unit of
+Equity
+Oriented
+Mutual
+Fund
+Aditya
+Birla Sun
+Life PSU
+Equity
+Fund
+Direct-
+Growth(I
+NF209KB
+1O82)
+AMC
+(redemption
+)
+AMC
+(purchase)
+Short
+term
+1,020.88 33.89 34,597 0.35 40,000.00 0 0 0 Active
+4 PPFAS
+Asset
+Managem
+ent Pvt.
+Ltd.(PP)
+09/04/2025 Unit of
+Equity
+Oriented
+Mutual
+Fund
+Parag
+Parikh
+Flexi Cap
+Fund -
+Direct
+Plan(INF
+879O010
+27)
+AMC
+(redemption
+)
+AMC
+(purchase)
+Short
+term
+13.70 83.59 1,145 0.01 1,200.04 0 0 0 Active
+5 PPFAS
+Asset
+Managem
+ent Pvt.
+Ltd.(PP)
+09/04/2025 Unit of
+Equity
+Oriented
+Mutual
+Fund
+Parag
+Parikh
+Flexi Cap
+Fund -
+Direct
+Plan(INF
+879O010
+27)
+AMC
+(redemption
+)
+AMC
+(purchase)
+Short
+term
+83.68 81.92 6,855 0.07 7,331.82 0 0 0 Active
+SR. NO. INFORMATION CODE INFORMATION DESCRIPTION INFORMATION SOURCE COUNT AMOUNT
+10 SFT-18-EMF(M) Sale of unit of equity oriented mutual fund (RTA) KFin Technologies Pvt. Ltd (AAGCK6303B) 5 65,124.00
+SR.
+NO.
+AMC
+NAME
+(CODE)
+DATE OF
+SALE/
+TRANSFER
+SECURITY
+CLASS
+SECURITY
+NAME
+(SECURIT
+Y CODE)
+DEBIT TYPE CREDIT
+TYPE
+ASSET
+TYPE
+QUANTITY SALE
+PRICE PER
+UNIT
+SALES CONSIDERATION STT COST OF ACQUISITION UNIT FMV FAIR MARKET VALUE INDEXE
+D COST
+OF
+ACQUIS
+ITION
+STATUS
+1 LIC
+MUTUAL
+FUND(10
+2)
+27/03/2026 Unit of
+Equity
+Oriented
+Mutual
+Fund
+LIC MF
+Infrastruc
+ture
+Fund_Dire
+ct Plan-
+Growth_G
+rowth(IN
+F767K01
+GW5)
+AMC
+(redemption
+)
+AMC
+(purchase)
+Long
+term
+74.55 53.46 3,985 0.04 4,378.44 0 0 0 Active
+2 NIPPON
+INDIA
+MUTUAL
+FUND(RM
+F)
+13/01/2026 Unit of
+Equity
+Oriented
+Mutual
+Fund
+NIPPON
+INDIA
+GROWTH
+MID CAP
+FUND_DI
+RECT
+GROWTH
+PLAN
+GROWTH
+OPTION_
+GROWTH(
+INF204K0
+1E54)
+AMC
+(redemption
+)
+AMC
+(purchase)
+Long
+term
+4.33 4,599.59 19,898 0.20 20,002.10 0 0 0 Active
+3 MOTILAL
+OSWAL
+MUTUAL
+FUND(12
+7)
+25/11/2025 Unit of
+Equity
+Oriented
+Mutual
+Fund
+Motilal
+Oswal
+Midcap
+Fund_Dire
+ct
+Plan_Gro
+wth(INF2
+47L01445
+)
+AMC
+(redemption
+)
+AMC
+(purchase)
+Long
+term
+163.54 117.03 19,140 0.19 20,000.02 0 0 0 Active
+4 MOTILAL
+OSWAL
+MUTUAL
+FUND(12
+7)
+25/11/2025 Unit of
+Equity
+Oriented
+Mutual
+Fund
+Motilal
+Oswal
+Midcap
+Fund_Dire
+ct
+Plan_Gro
+wth(INF2
+47L01445
+)
+AMC
+(redemption
+)
+AMC
+(purchase)
+Long
+term
+17.95 117.03 2,101 0.02 2,208.99 0 0 0 Active
+5 MOTILAL
+OSWAL
+MUTUAL
+FUND(12
+7)
+08/05/2025 Unit of
+Equity
+Oriented
+Mutual
+Fund
+Motilal
+Oswal
+Midcap
+Fund_Dire
+ct
+Plan_Gro
+wth(INF2
+47L01445
+)
+AMC
+(redemption
+)
+AMC
+(purchase)
+Short
+term
+185.25 107.96 20,000 0.20 22,791.03 0 0 0 Active
+PAN Name Financial Year
+ABCDE1234F SAMPLE TAXPAYER 2025-26
+Download ID : ABCDE1234F202606300339 IP Address :
+Generation Date : 30/06/2026, 03:39:41 Page 2 of 3
+
+-- 2 of 3 --
+
+Part B7-Any other information in relation to sub-rule (2) of rule 114-I
+Salary
+SR. NO. INFORMATION CODE INFORMATION DESCRIPTION INFORMATION SOURCE COUNT AMOUNT
+1 TDS-Ann.II-SAL Salary (TDS Annexure II) ANAND RATHI WEALTH LIMITED (MUMH05095G) 1 17,71,368
+SR. NO. EMPLOYMENT START DATE EMPLOYMENT END DATE GROSS SALARY U/S 17(1) VALUE OF PERQUISITES U/S
+17(2)
+PROFITS IN LIEU OF SALARY
+U/S 17(3)
+GROSS SALARY STATUS
+1 01/04/2025 31/03/2026 17,71,368 0 0 17,71,368 Active
+Part B3-Information relating to payment of taxes
+SR. NO. FINANCIAL
+YEAR
+MAJOR HEAD MINOR HEAD TAX (A) SURCHARGE (B) EDUCATION
+CESS (C)
+OTHERS (D) TOTAL (A+B+C
++D)
+BSR CODE DATE OF
+DEPOSIT
+CHALLAN
+SERIAL
+NUMBER
+CHALLAN IDENTIFICATION NUMBER
+1 2024-25 Income Tax
+(Other than
+Companies)
+Self
+Assessment
+170 0 0 0 170 0510062 15/09/2025 11703 25091503088175HDFC
+Note - For financial year 2022-23 and earlier, details of tax payments are available in both Form 26AS on the TRACES portal and Annual Information Statement (AIS) on the Compliance Portal. If there is any variation
+between the tax payment information shown in Form 26AS and AIS, taxpayers are advised to rely on Form 26AS on the TRACES portal for filing their income tax returns and for other tax compliance purposes.
+However, from Financial Year 2023-24, details of Tax Payments are available only in AIS.
+Part B4-Information relating to demand and refund
+Refund
+SR. NO. FINANCIAL YEAR MODE NATURE OF REFUND REFUND AMOUNT DATE OF PAYMENT
+No Transactions Present
+PAN Name Financial Year
+ABCDE1234F SAMPLE TAXPAYER 2025-26
+Download ID : ABCDE1234F202606300339 IP Address :
+Generation Date : 30/06/2026, 03:39:41 Page 3 of 3
+
+-- 3 of 3 --
