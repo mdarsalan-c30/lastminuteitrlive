@@ -1,5 +1,8 @@
-/** Temporary company logo asset (full wordmark in image). */
+/** Full vertical logo (icon + wordmark + tagline). */
 export const BRAND_LOGO_PATH = "/brand/lastminuteitr-logo.png";
+
+/** Icon mark only — paper plane, document, clock (no text). */
+export const BRAND_ICON_PATH = "/brand/lastminuteitr-icon.png";
 
 export const BRAND_LOGO_ALT = "LastminuteITR — Filing in 10 Min";
 

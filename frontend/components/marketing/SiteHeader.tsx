@@ -48,7 +48,7 @@ export function SiteHeader() {
       )}
     >
       <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-4 px-8 h-[72px] max-[560px]:h-[64px] max-[560px]:px-5">
-        <BrandLogo size="sm" className="max-[560px]:h-8" priority />
+        <BrandLogo variant="wordmark" size="sm" priority />
 
         {/* Desktop Nav */}
         <nav className="hidden items-center gap-9 lg:flex" aria-label="Main navigation">

@@ -8,7 +8,7 @@ import { RelatedArticles } from "@/components/marketing/RelatedArticles";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { SiteHeader } from "@/components/marketing/SiteHeader";
 import { Badge } from "@/components/ui/badge";
-import { BRAND_LOGO_ALT, BRAND_LOGO_PATH } from "@/lib/brand";
+import { BRAND_ICON_PATH, BRAND_LOGO_ALT } from "@/lib/brand";
 import { getAllBlogPosts, getBlogPost } from "@/lib/content/blogs";
 import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -101,7 +101,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
              <div className="flex items-center gap-3">
                 <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-white ring-1 ring-border/60">
                   <Image
-                    src={BRAND_LOGO_PATH}
+                    src={BRAND_ICON_PATH}
                     alt={BRAND_LOGO_ALT}
                     fill
                     className="object-contain p-1"

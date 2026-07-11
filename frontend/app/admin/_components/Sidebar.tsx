@@ -66,7 +66,7 @@ export function Sidebar({ email, role }: { email: string; role: string }) {
   return (
     <aside className="flex h-full w-56 shrink-0 flex-col border-r border-border bg-sidebar">
       <div className="flex h-14 items-center gap-2 border-b border-border px-4">
-        <BrandLogo href="/admin" size="xs" className="h-7" />
+        <BrandLogo href="/admin" variant="icon" size="xs" />
         <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">
           Admin
         </span>

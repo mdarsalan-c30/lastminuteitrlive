@@ -12,7 +12,7 @@
 import { all, genId, insert, prisma } from "@/lib/db/store";
 import { getPlan, normalizePlanId } from "@/lib/payments/plans";
 import type { Invoice } from "@/lib/db/types";
-import { BRAND_LOGO_PATH } from "@/lib/brand";
+import { BRAND_ICON_PATH } from "@/lib/brand";
 import { absoluteUrl } from "@/lib/seo";
 
 export const GST_RATE = 0.18;
@@ -115,7 +115,7 @@ export function renderInvoiceHtml(invoice: Invoice): string {
   });
   const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
-  const logoUrl = absoluteUrl(BRAND_LOGO_PATH);
+  const logoUrl = absoluteUrl(BRAND_ICON_PATH);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -133,7 +133,7 @@ export function renderInvoiceHtml(invoice: Invoice): string {
   th { background: #f1f5f9; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: #475569; }
   td.num, th.num { text-align: right; }
   .total td { font-weight: 700; border-bottom: none; }
-  .brand-logo { height: 52px; width: auto; margin-bottom: 8px; display: block; }
+  .brand-logo { height: 44px; width: 44px; margin-bottom: 8px; display: block; object-fit: contain; }
   @media print { body { background: #fff; padding: 0; } .sheet { border: none; } .no-print { display: none; } }
 </style>
 </head>
