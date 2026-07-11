@@ -12,7 +12,7 @@ import { BRAND_ICON_PATH, BRAND_LOGO_ALT } from "@/lib/brand";
 import { getAllBlogPosts, getBlogPost } from "@/lib/content/blogs";
 import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
-import Image from "next/image";
+
 
 export const dynamic = 'force-dynamic';
 
