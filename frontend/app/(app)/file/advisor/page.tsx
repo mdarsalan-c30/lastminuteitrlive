@@ -12,6 +12,7 @@ export default function AdvisorPage() {
 
   return (
     <FilingLayout
+      variant="companion"
       mirrorText="Your AI Smart CA provides real-time advisory on your tax deductions, saving opportunities, and mistakes."
     >
       <ScreenTitle

@@ -45,7 +45,7 @@ export function AIChatInterview() {
       const res = await fetch(
         process.env.NEXT_PUBLIC_BACKEND_URL
           ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/advisor/chat`
-          : "/_/backend/api/advisor/chat", 
+          : "/api/advisor/chat", 
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -91,7 +91,7 @@ export function AIChatInterview() {
       const res = await fetch(
         process.env.NEXT_PUBLIC_BACKEND_URL
           ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/advisor/action`
-          : "/_/backend/api/advisor/action", 
+          : "/api/advisor/action", 
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
