@@ -7,6 +7,7 @@ import { Sheet, SheetCloseLink, SheetContent, SheetTrigger } from "@/components/
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
 
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { NavMenu } from "@/components/nav/NavMenu";
 
 const PRODUCTS_LINKS = [
@@ -47,14 +48,7 @@ export function SiteHeader() {
       )}
     >
       <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-4 px-8 h-[72px] max-[560px]:h-[64px] max-[560px]:px-5">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 font-manrope font-extrabold text-[18px] tracking-[-0.01em] text-[#0B1220] max-[560px]:text-base">
-          <svg className="size-[30px] max-[560px]:size-[26px] flex-shrink-0" viewBox="0 0 48 48" fill="none" aria-hidden>
-            <path d="M14 6h12l8 8v6H14V6z" fill="#bfe9e0"/>
-            <path d="M10 14h13v9h13l-13 13-13-13h9v-9z" fill="#0e5f63"/>
-          </svg>
-          <span>Lastminute<span className="text-[#0e5f63]">ITR</span></span>
-        </Link>
+        <BrandLogo size="sm" className="max-[560px]:h-8" priority />
 
         {/* Desktop Nav */}
         <nav className="hidden items-center gap-9 lg:flex" aria-label="Main navigation">

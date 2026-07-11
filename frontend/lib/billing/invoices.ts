@@ -12,6 +12,8 @@
 import { all, genId, insert, prisma } from "@/lib/db/store";
 import { getPlan, normalizePlanId } from "@/lib/payments/plans";
 import type { Invoice } from "@/lib/db/types";
+import { BRAND_LOGO_PATH } from "@/lib/brand";
+import { absoluteUrl } from "@/lib/seo";
 
 export const GST_RATE = 0.18;
 const INVOICE_FY = "2026-27";
@@ -113,6 +115,8 @@ export function renderInvoiceHtml(invoice: Invoice): string {
   });
   const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
+  const logoUrl = absoluteUrl(BRAND_LOGO_PATH);
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -129,7 +133,7 @@ export function renderInvoiceHtml(invoice: Invoice): string {
   th { background: #f1f5f9; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: #475569; }
   td.num, th.num { text-align: right; }
   .total td { font-weight: 700; border-bottom: none; }
-  .footer { margin-top: 32px; font-size: 12px; color: #64748b; line-height: 1.6; }
+  .brand-logo { height: 52px; width: auto; margin-bottom: 8px; display: block; }
   @media print { body { background: #fff; padding: 0; } .sheet { border: none; } .no-print { display: none; } }
 </style>
 </head>
@@ -137,6 +141,7 @@ export function renderInvoiceHtml(invoice: Invoice): string {
 <div class="sheet">
   <div class="row" style="margin-top:0">
     <div>
+      <img src="${logoUrl}" alt="LastminuteITR" class="brand-logo" />
       <h1>${SELLER.name}</h1>
       <p class="muted">${SELLER.address}<br/>${SELLER.email}${SELLER.gstin ? `<br/>GSTIN: ${SELLER.gstin}` : ""}</p>
     </div>

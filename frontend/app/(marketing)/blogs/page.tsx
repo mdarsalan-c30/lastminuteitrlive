@@ -52,7 +52,7 @@ function BlogCard({ post, featured = false }: { post: BlogPost; featured?: boole
               </Badge>
             ))}
           </div>
-          <CardTitle className={`font-manrope ${featured ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-xl'} mb-2`}>
+          <CardTitle className={`font-manrope ${featured ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'} mb-2`}>
             {post.title}
           </CardTitle>
           <CardDescription className={featured ? 'text-base' : 'text-sm line-clamp-3'}>

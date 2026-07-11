@@ -4,6 +4,7 @@ import { AnalyticsProvider } from "@/components/AnalyticsProvider";
 import { HashScrollHandler } from "@/components/navigation/HashScrollHandler";
 import { SessionBootstrap } from "@/components/SessionBootstrap";
 import { defaultOpenGraphImages, getSiteUrl } from "@/lib/seo";
+import { BRAND_LOGO_PATH } from "@/lib/brand";
 import "./globals.css";
 
 const inter = Inter({
@@ -61,6 +62,10 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+  },
+  icons: {
+    icon: BRAND_LOGO_PATH,
+    apple: BRAND_LOGO_PATH,
   },
 };
 

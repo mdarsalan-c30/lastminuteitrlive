@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { RegimeComparatorHero } from "@/components/marketing/RegimeComparatorHero";
 import { CaRegistrationForm } from "@/components/marketing/CaRegistrationForm";
+import { HERO_HEADLINE_ACCENT } from "@/lib/brand";
 import { ASSESSMENT_YEAR } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -84,10 +85,8 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                     marginBottom: 16,
                   }}
                 >
-                  File your ITR under 10 minutes —{" "}
-                  <span style={{ color: "#0e5f63" }}>
-                    your personal smart AI-assisted CA.
-                  </span>
+                  File your ITR under 10 min —{" "}
+                  <span style={{ color: "#0e5f63" }}>{HERO_HEADLINE_ACCENT}</span>
                 </h1>
 
                 <p

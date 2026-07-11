@@ -9,6 +9,7 @@ import { formatINR } from "@/lib/format";
 import { FILING_READY } from "@/lib/copy/strings";
 import { cn } from "@/lib/utils";
 import { getIncomeSectionStatuses, statusDotClass, type IncomeSectionId } from "@/lib/filing/navStatus";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { ProfileNavLink } from "@/components/marketing/ProfileNavLink";
 import { ActiveAiCompanion } from "./ActiveAiCompanion";
 import { FloatingGenie } from "./FloatingGenie";
@@ -245,12 +246,7 @@ export function FilingLayout({
     <div className="flex flex-col h-full bg-white">
       {/* Brand Header */}
       <div className="flex h-16 shrink-0 items-center px-6 border-b border-slate-100/60 gap-2.5 bg-white">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/10">
-          <FileText className="size-4" />
-        </span>
-        <span className="font-semibold text-slate-900 tracking-tight text-base">
-          LastMinuteITR
-        </span>
+        <BrandLogo size="xs" className="h-8" />
         <span className="inline-flex items-center rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
           MVP
         </span>
@@ -478,14 +474,7 @@ export function FilingLayout({
             >
               <Menu className="size-5" />
             </button>
-            <Link href="/" className="flex items-center gap-2">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm">
-                <FileText className="size-3.5" />
-              </span>
-              <span className="font-semibold text-slate-900 text-sm">
-                LastMinuteITR
-              </span>
-            </Link>
+            <BrandLogo size="xs" className="h-7" />
           </div>
 
           {/* Desktop Breadcrumbs */}
