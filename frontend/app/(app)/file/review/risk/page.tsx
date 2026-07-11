@@ -47,7 +47,11 @@ export default function RiskReviewPage() {
   } = useDraftTaxCompute();
 
   const effectiveResult = result ?? (useSnapshot ? lastSnapshot : null);
-  const totalIncome = income.grossSalary + income.fdInterest;
+  // Prefer the engine's gross total income — it includes business, capital
+  // gains, and house property, not just salary + interest.
+  const totalIncome =
+    effectiveResult?.income_heads.gross_total_income ??
+    income.grossSalary + income.fdInterest;
   const activeRegime =
     regime ?? effectiveResult?.regime_comparison.recommended_regime ?? "new";
   const selectedPay = effectiveResult?.regime_comparison
@@ -123,9 +127,9 @@ export default function RiskReviewPage() {
             </p>
           )}
         <p className="text-sm text-slate-700 mt-1">
-          <strong>Mismatches:</strong>{" "}
+          <strong>Number differences:</strong>{" "}
           {salaryMismatchOpen
-            ? "1 open — resolve it on the Mismatch screen before filing"
+            ? "1 open — your documents show different numbers; fix before filing"
             : hasAis
               ? "None open"
               : "None open · AIS not imported yet (cross-check recommended)"}

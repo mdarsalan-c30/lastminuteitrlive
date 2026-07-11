@@ -44,7 +44,7 @@ describe("copy/strings — banned-words lint (doc 42 §1, §6)", () => {
     expect(NOT_GOVERNMENT).toContain("incometax.gov.in");
     expect(SELF_FILE_POSITIONING).toContain("file it yourself");
     expect(ESTIMATE_CHIP).toContain("Estimate");
-    expect(ESTIMATE_CHIP).toContain("AY 2026-27");
+    expect(ESTIMATE_CHIP).toContain("FY 2025-26");
   });
 
   it("never scolds and never guarantees (voice spot-checks)", () => {

@@ -47,8 +47,11 @@ export function fallbackConfidenceFromDraft(
     draft.incomeChips.includes("bank_interest");
   const hasHomeLoan = draft.incomeChips.includes("home_loan");
   const hasCg = draft.incomeChips.includes("capital_gains");
+  const hasSalary = draft.incomeChips.includes("salary");
 
-  const relevant: string[] = ["has_form16", "has_ais", "has_form26as"];
+  // Form 16 only applies to salaried filers — freelancers never get one.
+  const relevant: string[] = ["has_ais", "has_form26as"];
+  if (hasSalary) relevant.push("has_form16");
   if (hasInterest) relevant.push("has_bank_interest_cert");
   if (hasHomeLoan) relevant.push("has_home_loan_cert");
   if (hasCg) relevant.push("has_capital_gains_statement");

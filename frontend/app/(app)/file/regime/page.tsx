@@ -251,7 +251,8 @@ export default function RegimePage() {
 
       {!loading && rc && (
         <p className="mb-6 text-xs text-slate-500">
-          Breakeven deductions ~{formatINR(rc.breakeven_deductions)} · GTI{" "}
+          Old regime beats new once your deductions cross ~
+          {formatINR(rc.breakeven_deductions)} · Total income{" "}
           {formatINR(effectiveResult?.income_heads.gross_total_income ?? 0)}
         </p>
       )}
@@ -274,7 +275,8 @@ export default function RegimePage() {
 
       {!mismatchResolved && (
         <p className="mt-3 text-xs text-amber-700">
-          Resolve import mismatches before filing on the portal.
+          Some numbers in your documents don&apos;t match yet — sort them out
+          before you file on the portal.
         </p>
       )}
     </FilingLayout>

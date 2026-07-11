@@ -42,7 +42,7 @@ describe("resolveCheckoutGate", () => {
     expect(result.blockingHref).toBe("");
   });
 
-  it("blocks checkout when tax engine is unavailable", () => {
+  it("allows checkout when tax engine is unavailable (engine override)", () => {
     const result = resolveCheckoutGate({
       mismatchResolved: true,
       mismatchProceedWithExplanation: false,
@@ -51,9 +51,9 @@ describe("resolveCheckoutGate", () => {
       loading: false,
     });
 
-    expect(result.canCheckout).toBe(false);
+    expect(result.canCheckout).toBe(true);
     expect(result.engineOverride).toBe(true);
-    expect(result.blockingHref).toBe("/file/regime");
+    expect(result.blockingHref).toBe("");
   });
 
   it("blocks checkout for missing documents when not filing ready", () => {
@@ -71,6 +71,38 @@ describe("resolveCheckoutGate", () => {
     expect(result.canCheckout).toBe(false);
     expect(result.blockingHref).toBe("/file/import/documents");
     expect(result.blockingLabel).toContain("Form 16");
+  });
+
+  it("does not block on mismatch when no open mismatch exists", () => {
+    const result = resolveCheckoutGate({
+      mismatchResolved: false,
+      mismatchProceedWithExplanation: false,
+      confidence: confidence(),
+      engineUnavailable: false,
+      loading: false,
+      hasOpenMismatch: false,
+    });
+
+    expect(result.canCheckout).toBe(true);
+    expect(result.blockingHref).toBe("");
+  });
+
+  it("allows checkout in estimate mode with estimateOverride flag", () => {
+    const result = resolveCheckoutGate({
+      mismatchResolved: false,
+      mismatchProceedWithExplanation: false,
+      confidence: confidence({
+        filing_ready: false,
+        is_estimate_mode: true,
+        missing_documents: ["Annual Information Statement (AIS)", "Form 26AS"],
+      }),
+      engineUnavailable: false,
+      loading: false,
+      hasOpenMismatch: false,
+    });
+
+    expect(result.canCheckout).toBe(true);
+    expect(result.estimateOverride).toBe(true);
   });
 
   it("does not apply engine override while loading", () => {

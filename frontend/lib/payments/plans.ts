@@ -134,12 +134,21 @@ export const CHECKOUT_PLAN_IDS: PlanId[] = [
   "ai_smart",
 ];
 
-/** True when a plan may be purchased via create-order / verify. */
+export const B2B_CHECKOUT_PLAN_IDS: PlanId[] = ["b2b_20", "b2b_40", "b2b_100"];
+
+/** True when a plan may be purchased via create-order / verify (B2C checkout). */
 export function isPurchasablePlanId(id: PlanId): boolean {
   const plan = PLANS[id];
   if (!plan) return false;
   if (plan.comingSoon) return false;
   return (CHECKOUT_PLAN_IDS as string[]).includes(id);
+}
+
+/** B2B bulk packs — CA session only. */
+export function isCaPurchasablePlanId(id: PlanId): boolean {
+  const plan = PLANS[id];
+  if (!plan) return false;
+  return (B2B_CHECKOUT_PLAN_IDS as string[]).includes(id);
 }
 
 /** Admin-editable pricing rows. */
@@ -164,6 +173,8 @@ export function isCheckoutPlanId(id: string): id is PlanId {
 export function normalizePlanId(raw: string | undefined): PlanId | null {
   if (!raw) return null;
   const id = raw === "ca_review" ? "ca" : raw;
-  if (!isCheckoutPlanId(id)) return null;
-  return id as PlanId;
+  if (isCheckoutPlanId(id) || (B2B_CHECKOUT_PLAN_IDS as string[]).includes(id)) {
+    return id as PlanId;
+  }
+  return null;
 }

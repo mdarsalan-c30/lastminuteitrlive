@@ -2,6 +2,7 @@
 
 import { FieldLabel, ResetStepButton, TextInput } from "@/components/filing/ui";
 import { formatINR } from "@/lib/format";
+import { useGenieFocus } from "@/lib/filing/useGenieFocus";
 
 function parseAmount(value: string): number {
   const digits = value.replace(/\D/g, "");
@@ -17,6 +18,8 @@ export interface QuickEstimateValues {
   tds: number;
   section80C: number;
   section80D: number;
+  /** Business / freelance receipts — shown only for business-income filers. */
+  businessReceipts: number;
 }
 
 export const EMPTY_QUICK_ESTIMATE: QuickEstimateValues = {
@@ -24,14 +27,22 @@ export const EMPTY_QUICK_ESTIMATE: QuickEstimateValues = {
   tds: 0,
   section80C: 0,
   section80D: 0,
+  businessReceipts: 0,
 };
 
 interface QuickEstimateFormProps {
   values: QuickEstimateValues;
   onChange: (values: QuickEstimateValues) => void;
+  /** Show the business / freelance receipts field (ITR-3/ITR-4 filers). */
+  showBusiness?: boolean;
 }
 
-export function QuickEstimateForm({ values, onChange }: QuickEstimateFormProps) {
+export function QuickEstimateForm({ values, onChange, showBusiness }: QuickEstimateFormProps) {
+  const grossFocus = useGenieFocus("gross_salary");
+  const tdsFocus = useGenieFocus("tds");
+  const c80Focus = useGenieFocus("section80c");
+  const d80Focus = useGenieFocus("section80d");
+
   const update = (patch: Partial<QuickEstimateValues>) => {
     onChange({ ...values, ...patch });
   };
@@ -40,7 +51,8 @@ export function QuickEstimateForm({ values, onChange }: QuickEstimateFormProps) 
     values.grossSalary > 0 ||
     values.tds > 0 ||
     values.section80C > 0 ||
-    values.section80D > 0;
+    values.section80D > 0 ||
+    values.businessReceipts > 0;
 
   return (
     <div className="card-premium space-y-4 p-4 sm:p-6">
@@ -63,17 +75,36 @@ export function QuickEstimateForm({ values, onChange }: QuickEstimateFormProps) 
       </div>
 
       <div>
-        <FieldLabel>Annual gross salary</FieldLabel>
+        <FieldLabel>
+          Annual gross salary{showBusiness ? " (leave blank if none)" : ""}
+        </FieldLabel>
         <TextInput
           type="text"
           placeholder="e.g. 12,00,000"
           value={formatAmountInput(values.grossSalary)}
           onChange={(v) => update({ grossSalary: parseAmount(v) })}
+          onFocus={grossFocus.onFocus}
         />
         {values.grossSalary > 0 && (
           <p className="mt-1 text-xs text-slate-500">{formatINR(values.grossSalary)}</p>
         )}
       </div>
+
+      {showBusiness && (
+        <div>
+          <FieldLabel>Business / freelance receipts this year</FieldLabel>
+          <TextInput
+            type="text"
+            placeholder="e.g. 18,00,000"
+            value={formatAmountInput(values.businessReceipts)}
+            onChange={(v) => update({ businessReceipts: parseAmount(v) })}
+          />
+          <p className="mt-1 text-xs text-slate-500">
+            Total money received from clients or customers, before expenses. You
+            can fine-tune this on the next screen.
+          </p>
+        </div>
+      )}
 
       <div>
         <FieldLabel>TDS already deducted (optional)</FieldLabel>
@@ -82,6 +113,7 @@ export function QuickEstimateForm({ values, onChange }: QuickEstimateFormProps) 
           placeholder="e.g. 85,000"
           value={formatAmountInput(values.tds)}
           onChange={(v) => update({ tds: parseAmount(v) })}
+          onFocus={tdsFocus.onFocus}
         />
       </div>
 
@@ -93,6 +125,7 @@ export function QuickEstimateForm({ values, onChange }: QuickEstimateFormProps) 
             placeholder="e.g. 1,50,000"
             value={formatAmountInput(values.section80C)}
             onChange={(v) => update({ section80C: parseAmount(v) })}
+            onFocus={c80Focus.onFocus}
           />
         </div>
         <div>
@@ -102,6 +135,7 @@ export function QuickEstimateForm({ values, onChange }: QuickEstimateFormProps) 
             placeholder="e.g. 25,000"
             value={formatAmountInput(values.section80D)}
             onChange={(v) => update({ section80D: parseAmount(v) })}
+            onFocus={d80Focus.onFocus}
           />
         </div>
       </div>

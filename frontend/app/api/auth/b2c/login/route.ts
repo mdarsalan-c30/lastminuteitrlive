@@ -8,6 +8,7 @@ import {
   B2C_SESSION_COOKIE,
   b2cCookieOptions,
 } from "@/lib/auth/b2c";
+import { ensureSelfProfile } from "@/lib/family/server";
 import { cookies } from "next/headers";
 
 export async function POST(request: NextRequest) {
@@ -56,6 +57,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (user.status === "blocked") {
+      return NextResponse.json(
+        {
+          error:
+            "Your account has been temporarily blocked. Please contact support@lastminute-itr.com to restore access.",
+        },
+        { status: 403 }
+      );
+    }
+
     if (isLegacyPasswordHash(user.passwordHash)) {
       await update("b2cUsers", user.id, {
         passwordHash: hashPassword(password),
@@ -72,7 +83,13 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies();
     cookieStore.set(B2C_SESSION_COOKIE, token, b2cCookieOptions());
 
-    return NextResponse.json({ ok: true, user: { name: user.name, email: user.email } });
+    const selfProfile = await ensureSelfProfile(user.id, user.name);
+
+    return NextResponse.json({
+      ok: true,
+      user: { name: user.name, email: user.email },
+      selfProfileId: selfProfile.id,
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

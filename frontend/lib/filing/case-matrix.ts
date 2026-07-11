@@ -134,7 +134,7 @@ export function getItrPathReasons(
     rec.reason,
     `Income band ${matrix.income} · Age ${matrix.age}`,
     `Business type ${matrix.business}`,
-    "Lawful optimization only — no blocked claims",
+    "Only legal savings — no blocked claims",
   ];
 }
 

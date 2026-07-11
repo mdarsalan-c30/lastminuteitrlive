@@ -10,8 +10,8 @@ const TRUST_BADGES: UniformBadgeItem[] = [
     iconNode: <span className="text-[10px] font-semibold text-foreground">₹</span>,
     label: "Salary-first calculations",
   },
-  { icon: Scale, label: "Lawful optimization" },
-  { icon: ShieldCheck, label: "DPDP compliant" },
+  { icon: Scale, label: "Only legal savings" },
+  { icon: ShieldCheck, label: "Your data stays private" },
   { icon: Hand, label: "No auto-submit" },
 ];
 

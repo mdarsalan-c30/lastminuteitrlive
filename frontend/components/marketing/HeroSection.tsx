@@ -79,27 +79,29 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                 <h1
                   className="font-manrope font-bold tracking-[-0.02em] text-[#0B1220]"
                   style={{
-                    fontSize: "clamp(27px, 5.5vw, 52px)",
-                    lineHeight: 1.12,
-                    marginBottom: 18,
+                    fontSize: "clamp(24px, 4.8vw, 48px)",
+                    lineHeight: 1.15,
+                    marginBottom: 16,
                   }}
                 >
-                  File your ITR before the deadline —{" "}
-                  <span style={{ color: "#0e5f63" }}>without the guesswork.</span>
+                  File your ITR under 10 minutes —{" "}
+                  <span style={{ color: "#0e5f63" }}>
+                    your personal smart AI-assisted CA.
+                  </span>
                 </h1>
 
                 <p
                   style={{
-                    fontSize: "clamp(15px, 2vw, 17.5px)",
+                    fontSize: "clamp(14px, 1.8vw, 16.5px)",
                     color: "#2B3344",
-                    maxWidth: 480,
+                    maxWidth: 520,
                     marginBottom: 28,
-                    lineHeight: 1.6,
+                    lineHeight: 1.55,
                   }}
                 >
-                  We reconcile Form 16, AIS, and 26AS, pick the cheaper tax
-                  regime, and hand you a copy-ready guide. You file and e-verify
-                  yourself, directly on incometax.gov.in.
+                  Upload your Form 16, AIS, capital gains, F&amp;O, answer a few
+                  easy questions, and get a step-by-step guide to file directly
+                  on incometax.gov.in with an AI CA expert by your side.
                 </p>
 
                 <form
@@ -144,7 +146,7 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                           <path d="M8 1l5.5 2.2v4.3c0 4-2.5 6.6-5.5 7.5-3-0.9-5.5-3.5-5.5-7.5V3.2L8 1z" stroke="#0e5f63" strokeWidth="1.3"/>
                         </svg>
                       ),
-                      label: "Lawful optimisation",
+                      label: "Only legal savings",
                     },
                     {
                       icon: (
@@ -153,7 +155,7 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                           <path d="M5 6V4a3 3 0 016 0v2" stroke="#0e5f63" strokeWidth="1.3"/>
                         </svg>
                       ),
-                      label: "DPDP compliant",
+                      label: "Your data stays private",
                     },
                     {
                       icon: (

@@ -38,12 +38,12 @@ describe("importModes", () => {
     ).toBe("/file/regime");
   });
 
-  it("routes capital gains / F&O import to comprehensive review", () => {
+  it("routes capital gains / F&O import to review hub", () => {
     expect(
       getImportContinueHref("capital_gains", {
         form16Connected: false,
         form16FastPath: false,
       })
-    ).toBe("/file/comprehensive");
+    ).toBe("/file/review");
   });
 });

@@ -120,12 +120,18 @@ function DocumentsContent() {
   const addEmployerMode = searchParams.get("addEmployer") === "1";
   const form16Connected = connectedConnectors.includes("form16");
   
+  const incomeChips = useDraftStore((s) => s.incomeChips);
+  const hasBusinessChips =
+    incomeChips.includes("freelance") ||
+    incomeChips.includes("business_presumptive");
+
   const [importMode, setImportMode] = useState<ImportStartMode | null>(null);
   const [estimateValues, setEstimateValues] = useState<QuickEstimateValues>({
     grossSalary: income.grossSalary,
     tds: income.tds,
     section80C: deductions.section80C,
     section80D: deductions.section80D,
+    businessReceipts: income.freelanceRevenue ?? income.businessRevenue ?? 0,
   });
 
   // Dashboard State
@@ -206,18 +212,25 @@ function DocumentsContent() {
   const applyEstimateDraft = useCallback(() => {
     setFilingMode("estimate");
     setFilingPath("simple");
-    ensureIncomeChip("salary");
+    if (estimateValues.grossSalary > 0) ensureIncomeChip("salary");
     setItrConfirmed(true);
     setIncome({
       grossSalary: estimateValues.grossSalary,
       tds: estimateValues.tds,
+      // Business receipts land in freelanceRevenue (44ADA default);
+      // the review "Business & freelance" card lets the user re-bucket to 44AD or books.
+      ...(estimateValues.businessReceipts > 0
+        ? { freelanceRevenue: estimateValues.businessReceipts }
+        : {}),
     });
+    if (estimateValues.businessReceipts > 0) ensureIncomeChip("freelance");
     setDeductions({
       section80C: estimateValues.section80C,
       section80D: estimateValues.section80D,
     });
     trackEvent("import_estimate_submitted", {
       grossSalary: estimateValues.grossSalary,
+      businessReceipts: estimateValues.businessReceipts,
       section80C: estimateValues.section80C,
     });
   }, [
@@ -241,9 +254,10 @@ function DocumentsContent() {
 
   const handleContinue = useCallback(() => {
     if (effectiveImportMode === "manual") {
-      if (estimateValues.grossSalary <= 0) return;
+      if (estimateValues.grossSalary <= 0 && estimateValues.businessReceipts <= 0)
+        return;
       applyEstimateDraft();
-      router.push("/file/comprehensive");
+      router.push("/file/review");
       return;
     }
     if (effectiveImportMode === "capital_gains") {
@@ -268,17 +282,19 @@ function DocumentsContent() {
           sourceConnectorId: "manual_estimate",
         });
       }
-      router.push("/file/comprehensive");
+      router.push("/file/review");
       return;
     }
     if (continueHref) {
       router.push(continueHref);
     }
-  }, [applyEstimateDraft, continueHref, effectiveImportMode, estimateValues.grossSalary, brokerInputs, brokers, fnoProfit, mfProfit, ensureIncomeChip, setIncome, router]);
+  }, [applyEstimateDraft, continueHref, effectiveImportMode, estimateValues.grossSalary, estimateValues.businessReceipts, brokerInputs, brokers, fnoProfit, mfProfit, ensureIncomeChip, setIncome, router]);
 
   const continueDisabled =
     effectiveImportMode === null ||
-    (effectiveImportMode === "manual" && estimateValues.grossSalary <= 0) ||
+    (effectiveImportMode === "manual" &&
+      estimateValues.grossSalary <= 0 &&
+      estimateValues.businessReceipts <= 0) ||
     (effectiveImportMode === "capital_gains" && brokers.length === 0 && !lossesCarryingForward && !fnoProfit && !mfProfit);
 
   return (
@@ -376,7 +392,11 @@ function DocumentsContent() {
       {!form16FastPath && importMode === "manual" && (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 border-t border-slate-100 pt-6">
           <h3 className="text-base font-bold text-slate-900 mb-3">Enter rough estimates</h3>
-          <QuickEstimateForm values={estimateValues} onChange={setEstimateValues} />
+          <QuickEstimateForm
+            values={estimateValues}
+            onChange={setEstimateValues}
+            showBusiness={hasBusinessChips}
+          />
         </div>
       )}
 

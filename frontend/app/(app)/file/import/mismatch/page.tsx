@@ -61,14 +61,15 @@ export default function MismatchPage() {
       mirrorText="AIS shows what the tax department already knows. Fixing mismatches here prevents refund delays and scrutiny notices."
     >
       <ScreenTitle
-        title="Mismatch resolution"
+        title="When your documents show different numbers"
         subtitle="Compare your draft with imported documents. We only show numbers we actually have — never sample figures."
       />
 
       {!mismatchResolved && (
         <Banner variant="info">
-          Mismatches don&apos;t block you — you file on incometax.gov.in yourself. Clearing
-          them now just means fewer refund delays and notices later.
+          Your documents may show different numbers — that&apos;s common. Clearing
+          them now means fewer refund delays and notices later. You still file on
+          incometax.gov.in yourself.
         </Banner>
       )}
 

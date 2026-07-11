@@ -6,11 +6,13 @@ import { useState, type ReactNode } from "react";
 import { useDraftStore } from "@/lib/store/draft";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
 import { formatINR } from "@/lib/format";
+import { FILING_READY } from "@/lib/copy/strings";
 import { cn } from "@/lib/utils";
 import { getIncomeSectionStatuses, statusDotClass, type IncomeSectionId } from "@/lib/filing/navStatus";
 import { ProfileNavLink } from "@/components/marketing/ProfileNavLink";
 import { ActiveAiCompanion } from "./ActiveAiCompanion";
 import { FloatingGenie } from "./FloatingGenie";
+import { FilingSessionControls } from "./FilingSessionControls";
 import {
   UserCheck,
   UploadCloud,
@@ -27,6 +29,7 @@ import {
   Wrench,
   LogOut,
   Sparkles,
+  UsersRound,
 } from "lucide-react";
 
 type SidebarStep = {
@@ -39,6 +42,13 @@ type SidebarStep = {
 };
 
 const SIDEBAR_STEPS: SidebarStep[] = [
+  {
+    id: "family",
+    label: "People I file for",
+    href: "/file/family",
+    match: ["/file/family"],
+    icon: UsersRound,
+  },
   {
     id: "onboarding",
     label: "Get Started",
@@ -121,14 +131,21 @@ function isSubItemActive(subId: string, pathname: string, activeNavSection?: str
 function getBreadcrumbs(pathname: string) {
   const parts = [{ label: "Filing Workspace", href: "/file" }];
   
-  if (pathname.startsWith("/file/start") || pathname.startsWith("/file/onboarding")) {
+  if (pathname.startsWith("/file/family")) {
+    parts.push({ label: "People I file for", href: "/file/family" });
+  } else if (pathname.startsWith("/file/start") || pathname.startsWith("/file/onboarding")) {
     parts.push({ label: "Get Started", href: "/file/start" });
   } else if (pathname.startsWith("/file/import")) {
     parts.push({ label: "Import Documents", href: "/file/import/documents" });
   } else if (pathname.startsWith("/file/comprehensive")) {
     parts.push({ label: "Comprehensive Profile", href: "/file/comprehensive" });
+  } else if (pathname.startsWith("/file/regime")) {
+    parts.push({ label: "Regime Choice", href: "/file/regime" });
   } else if (pathname.startsWith("/file/review")) {
     parts.push({ label: "Audit & Review", href: "/file/review" });
+  } else if (pathname.startsWith("/file/checkout/payment")) {
+    parts.push({ label: "Checkout & Plans", href: "/file/checkout/plans" });
+    parts.push({ label: "Payment", href: "/file/checkout/payment" });
   } else if (pathname.startsWith("/file/checkout")) {
     parts.push({ label: "Checkout & Plans", href: "/file/checkout/plans" });
   } else if (pathname.startsWith("/file/companion")) {
@@ -207,10 +224,15 @@ export function FilingLayout({
       return mismatchResolved ? "complete" : "partial";
     }
     if (stepId === "checkout") {
-      return pathname.startsWith("/file/companion") ? "complete" : "missing";
+      if (pathname.startsWith("/file/checkout/payment")) return "partial";
+      if (pathname.startsWith("/file/checkout")) return "partial";
+      return "missing";
     }
     if (stepId === "companion") {
-      return pathname.startsWith("/file/checkout/everify") ? "complete" : "missing";
+      if (pathname.startsWith("/file/companion")) return "partial";
+      if (pathname.startsWith("/file/done") || pathname.startsWith("/file/checkout/everify"))
+        return "complete";
+      return "missing";
     }
     return "missing";
   }
@@ -411,7 +433,7 @@ export function FilingLayout({
                 />
               </div>
               <div className="flex items-center justify-between text-[10px] text-slate-400">
-                <span>{taxConfidence.filing_ready ? "Filing-ready" : "Incomplete"}</span>
+                <span>{taxConfidence.filing_ready ? FILING_READY.ready : "Incomplete"}</span>
                 {!taxConfidence.filing_ready && (
                   <Link href="/file/import/documents" className="text-blue-600 font-semibold hover:underline">
                     Upload
@@ -485,7 +507,10 @@ export function FilingLayout({
           </nav>
 
           {/* Quick exit & profile on mobile/desktop */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="hidden md:block">
+              <FilingSessionControls compact />
+            </div>
             <Link
               href="/"
               className="text-xs font-semibold text-slate-500 hover:text-slate-950 transition-colors hidden sm:block"
@@ -553,7 +578,7 @@ export function FilingLayout({
           </div>
         </div>
       )}
-      <FloatingGenie />
+      <FloatingGenie desktopHidden={!isCompanionLayout} />
     </div>
   );
 }

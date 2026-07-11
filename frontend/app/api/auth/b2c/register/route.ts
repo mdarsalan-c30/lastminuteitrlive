@@ -7,6 +7,7 @@ import {
   B2C_SESSION_COOKIE,
   b2cCookieOptions,
 } from "@/lib/auth/b2c";
+import { ensureSelfProfile } from "@/lib/family/server";
 import { cookies } from "next/headers";
 
 export async function POST(request: NextRequest) {
@@ -45,6 +46,7 @@ export async function POST(request: NextRequest) {
     };
 
     await insert("b2cUsers", newUser);
+    await ensureSelfProfile(newUser.id, newUser.name);
 
     // Create session
     const token = createB2CSessionToken({

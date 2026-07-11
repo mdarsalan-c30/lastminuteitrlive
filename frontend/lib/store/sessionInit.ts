@@ -4,8 +4,17 @@ const SESSION_ACTIVE_KEY = "lastminute-itr-session-active";
 const SESSION_ID_KEY = "lastminute-itr-session-id";
 
 /** Clear persisted draft/profile on first load of each browser tab session. */
-export function ensureFreshBrowserSession(): boolean {
+export function ensureFreshBrowserSession(skipWipe = false): boolean {
   if (typeof window === "undefined") return false;
+  if (skipWipe) {
+    if (!sessionStorage.getItem(SESSION_ACTIVE_KEY)) {
+      sessionStorage.setItem(SESSION_ACTIVE_KEY, String(Date.now()));
+    }
+    if (!sessionStorage.getItem(SESSION_ID_KEY)) {
+      sessionStorage.setItem(SESSION_ID_KEY, crypto.randomUUID());
+    }
+    return false;
+  }
   if (sessionStorage.getItem(SESSION_ACTIVE_KEY)) return false;
 
   localStorage.removeItem(DRAFT_STORAGE_KEY);

@@ -26,13 +26,23 @@ function BlogCard({ post, featured = false }: { post: BlogPost; featured?: boole
   return (
     <Link href={`/blogs/${post.slug}`} className="block h-full">
       <Card className={`h-full flex flex-col overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${featured ? 'border-primary/20' : ''}`}>
-        {/* Placeholder thumbnail for modern look */}
         <div className={`w-full bg-muted overflow-hidden relative ${featured ? 'h-64' : 'h-48'}`}>
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/30 mix-blend-multiply" />
-          {/* We can replace this with actual post.thumbnailUrl later if added to BlogPost type */}
-          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 font-bold text-4xl">
-            {post.tags[0] || "Blog"}
-          </div>
+          {post.coverImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={post.coverImage}
+              alt=""
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/30 mix-blend-multiply" />
+              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 font-bold text-4xl">
+                {post.tags[0] || "Blog"}
+              </div>
+            </>
+          )}
         </div>
         <CardHeader className="flex-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2 mb-2">
@@ -125,7 +135,12 @@ export default async function BlogsPage() {
                 {tutorials.map(post => (
                   <Link key={post.slug} href={`/blogs/${post.slug}`} className="group flex gap-4 items-center p-3 rounded-xl hover:bg-muted/50 transition-colors">
                     <div className="w-24 h-24 rounded-lg bg-secondary/30 shrink-0 overflow-hidden relative">
-                      <div className="absolute inset-0 flex items-center justify-center text-primary font-bold text-xl opacity-30">#</div>
+                      {post.coverImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={post.coverImage} alt="" className="h-full w-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center text-primary font-bold text-xl opacity-30">#</div>
+                      )}
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg group-hover:text-primary transition-colors line-clamp-2">{post.title}</h3>
@@ -147,7 +162,12 @@ export default async function BlogsPage() {
                 {finance.map(post => (
                   <Link key={post.slug} href={`/blogs/${post.slug}`} className="group flex gap-4 items-center p-3 rounded-xl hover:bg-muted/50 transition-colors">
                     <div className="w-24 h-24 rounded-lg bg-primary/10 shrink-0 overflow-hidden relative">
-                       <div className="absolute inset-0 flex items-center justify-center text-primary font-bold text-xl opacity-30">$</div>
+                      {post.coverImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={post.coverImage} alt="" className="h-full w-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center text-primary font-bold text-xl opacity-30">$</div>
+                      )}
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg group-hover:text-primary transition-colors line-clamp-2">{post.title}</h3>

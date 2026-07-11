@@ -20,8 +20,8 @@ export const DEMO_REGIME_TAX: { old: number; new: number } = {
 };
 
 export const TRUST_ITEMS = [
-  "Lawful optimization only",
-  "DPDP compliant",
+  "Only legal savings",
+  "Your data stays private",
   "Companion filing on gov portal",
 ] as const;
 

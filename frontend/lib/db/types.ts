@@ -104,6 +104,9 @@ export interface Payment {
   sessionId?: string;
   couponId?: string;
   refundReason?: string;
+  userId?: string;
+  familyProfileId?: string;
+  tenantId?: string;
   ts: string;
 }
 
@@ -236,13 +239,48 @@ export interface Tenant {
   createdAt: string;
 }
 
+export type B2CUserStatus = "active" | "blocked";
+
 export interface B2CUser {
   id: string;
   name: string;
   email: string;
   passwordHash: string;
   referredBy?: string;
+  status?: B2CUserStatus;
+  flagReason?: string | null;
+  createdBy?: string | null;
+  filingsRemaining?: number;
   createdAt: string;
+}
+
+export type FamilyRelationship =
+  | "self"
+  | "spouse"
+  | "father"
+  | "mother"
+  | "son"
+  | "daughter"
+  | "sibling"
+  | "client"
+  | "other";
+
+export type FamilyFilingStatus = "not_started" | "in_progress" | "filed";
+
+export interface FamilyProfile {
+  id: string;
+  userId: string;
+  name: string;
+  relationship: FamilyRelationship;
+  pan?: string | null;
+  dob?: string | null;
+  filingStatus: FamilyFilingStatus;
+  draftJson?: unknown;
+  unlockedPlanId?: string | null;
+  unlockedAt?: string | null;
+  lastPaymentId?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 /** Every collection the admin store manages. */

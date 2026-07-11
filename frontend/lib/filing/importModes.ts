@@ -38,7 +38,7 @@ export function getImportContinueHref(
     return "/file/regime";
   }
   if (mode === "capital_gains") {
-    return "/file/comprehensive";
+    return "/file/review";
   }
   return null;
 }

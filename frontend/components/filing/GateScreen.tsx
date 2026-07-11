@@ -41,9 +41,9 @@ import { ItrFormGuideTable } from "@/components/filing/ItrFormGuideTable";
 
 const FORM_PLAIN_LABELS: Record<string, string> = {
   "ITR-1": "Simple return for salaried employees",
-  "ITR-2": "For capital gains, foreign income, or income above ₹50L",
-  "ITR-3": "Business income with books of accounts",
-  "ITR-4": "Presumptive business or profession",
+  "ITR-2": "For gains from shares/property, foreign income, or income above ₹50L",
+  "ITR-3": "Business income where you track full accounts",
+  "ITR-4": "Small business or freelancer — simplified flat-rate tax",
   "ITR-5": "Partnership firms and LLPs — CA-assisted filing",
   "ITR-6": "Companies — CA-assisted filing",
   BLOCK: "Parent must file for minor",

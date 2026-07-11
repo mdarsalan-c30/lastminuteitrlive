@@ -1,23 +1,22 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { useDraftStore } from "@/lib/store/draft";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
+import { getBrowserSessionId } from "@/lib/store/sessionInit";
+import { getActiveProfileId } from "@/lib/family/client";
 import { formatINR } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
-  Sparkles,
-  MessageSquare,
-  Send,
-  HelpCircle,
-  Lightbulb,
-  CheckCircle,
-  AlertTriangle,
-  ArrowRight,
-  User,
-  ArrowLeftRight,
-} from "lucide-react";
+  FIELD_GUIDANCE,
+  buildWelcomeMessage,
+  stepFromPathname,
+  suggestedQuestionsForStep,
+} from "@/lib/filing/genieKnowledge";
+import type { GenieChatContext } from "@/lib/filing/genieContext";
+import { buildGenieDocumentSnapshot } from "@/lib/filing/genieDocumentContext";
+import { Sparkles, MessageSquare, Send, Lightbulb } from "lucide-react";
 
 interface Message {
   id: string;
@@ -25,296 +24,179 @@ interface Message {
   text: string;
 }
 
-// Pre-coded expert answers for instant local replies to common tax questions
-const LOCAL_TAX_KNOWLEDGE: Record<string, string> = {
-  "how to get form 16?":
-    "Form 16 is a TDS certificate issued by your employer by June 15th every year. It details your salary earned and tax deducted. Contact your HR or finance department to download it.",
-  "is my data safe?":
-    "Yes, completely. In compliance with the Indian DPDP Act 2025, your data is processed and stored locally in India. We never share your raw PII (like PAN or name) with external APIs.",
-  "what is section 17(1)?":
-    "Section 17(1) refers to your basic salary plus all allowances, bonus, and commissions. It is the raw gross salary figure before deductions. This must match the amount in Box 17(1) of your Form 16.",
-  "what is standard deduction?":
-    "Standard Deduction is a flat tax exemption of ₹75,000 (increased in latest budget) automatically deducted from your salary income under both Old and New Tax Regimes. You do not need to submit any rent bills or proofs to claim this.",
-  "what is 80c limit?":
-    "Under Section 80C, you can claim tax deductions up to ₹1,500,000 (1.5 Lakhs) per year. This includes payments for PPF, ELSS, Employee Provident Fund (EPF), life insurance premiums, and home loan principal repayments.",
-  "can i claim rent without rent receipt?":
-    "Yes, you can declare HRA exemption without uploading rent receipts initially. However, you must keep receipts and rent agreements safe, as the Income Tax Department may demand them later. If rent exceeds ₹1 Lakh annually, your landlord's PAN is mandatory.",
-  "old vs new regime differences?":
-    "The New Tax Regime has lower tax slabs but removes most deductions (like HRA, 80C, 24b). The Old Tax Regime has higher tax slabs but allows you to claim all deductions. We compare both in real-time to suggest the one that saves you the most money.",
-  "what if there is a mismatch?":
-    "If your Form 16 numbers differ from AIS/26AS, the tax department will flag it. We highlight mismatches in the Review tab. You should either ask your employer to correct their TDS return or file matching the official AIS details to prevent notices.",
-  "how to avoid notices?":
-    "Notice avoidance checklist: (1) Ensure gross salary matches Form 16, (2) Claim only genuine deductions backed by proofs, (3) Confirm all TDS entries match Form 26AS, (4) File your return before the July 31st deadline.",
-  "how do i choose itr form?":
-    "We support ITR-1 through ITR-7 selection. For salaried users: ITR-1 (simple salary), ITR-2 (capital gains/foreign), ITR-3 (F&O/business), ITR-4 (presumptive). ITR-5/6/7 are filed via our CA partners.",
-};
-
-export const FIELD_GUIDANCE: Record<string, { title: string; tip: string; impact: string }> = {
-  employer: {
-    title: "Employer Name",
-    tip: "Enter the legal name of your employer as printed on your Form 16.",
-    impact: "Must match the TAN details of your deductor to avoid mapping issues.",
-  },
-  gross_salary: {
-    title: "Gross Salary (Sec 17(1))",
-    tip: "Look at point 1(a) of your Form 16 Part B. This is your salary before any exemptions.",
-    impact: "This is the primary base for your tax calculations. Direct impact on tax liability.",
-  },
-  tds: {
-    title: "Tax Deducted (TDS)",
-    tip: "Enter the total tax deducted by your employer. Confirm it matches the certified TDS total on Part A.",
-    impact: "Directly reduces your final tax payable. Mismatches will block your refund.",
-  },
-  section80c: {
-    title: "Section 80C Deductions",
-    tip: "Combine your EPF, PPF, ELSS, life insurance, and school tuition fees here (Max ₹1,50,000).",
-    impact: "Saves up to ₹46,800 in tax (at the 30% slab) under the Old Regime.",
-  },
-  section80d: {
-    title: "Section 80D (Health Insurance)",
-    tip: "Enter premiums paid for health insurance. Limit is ₹25,000 for self/family, plus ₹25,000/₹50,000 for parents.",
-    impact: "Directly lowers your taxable income under the Old Regime.",
-  },
-  hra_received: {
-    title: "HRA Received",
-    tip: "Enter the total House Rent Allowance paid by your employer (usually in Box 10(13A) of Form 16).",
-    impact: "Used to compute tax-exempt rent under the Old Regime.",
-  },
-  actual_rent_paid: {
-    title: "Actual Rent Paid",
-    tip: "Enter the total rent paid by you to your landlord during the year.",
-    impact: "Essential for HRA exemption calculation. Higher rent can increase your tax savings.",
-  },
-  fd_interest: {
-    title: "FD / Savings Interest",
-    tip: "Check your bank statements for interest credited. Savings interest has a ₹10,000 deduction (80TTA).",
-    impact: "Must be declared under 'Other Sources' to match bank reporting (SFT).",
-  },
-  home_loan_interest: {
-    title: "Home Loan Interest (Sec 24b)",
-    tip: "Enter the interest portion paid on your housing loan this year (Max ₹2,00,000 for self-occupied).",
-    impact: "Significantly reduces taxable income under the Old Regime.",
-  },
-  actual_rent_paid_80gg: {
-    title: "Rent Paid (No HRA received)",
-    tip: "Rent paid if you do not receive HRA from your employer. Claimable under Section 80GG.",
-    impact: "Deduction capped at ₹5,000/month or 25% of adjusted total income under Old Regime.",
-  },
-  nps_extra: {
-    title: "NPS Extra (Section 80CCD(1B))",
-    tip: "Additional self-contribution to National Pension System (NPS) Tier 1 up to ₹50,000.",
-    impact: "Saves extra tax completely over-and-above the ₹1.5 Lakh limit of Section 80C.",
-  },
-  annualRent: {
-    title: "Annual Rental Income",
-    tip: "Gross rent received from letting out your owned house property to a tenant.",
-    impact: "Subject to a standard 30% deduction (Sec 24a) for repairs before being taxed.",
-  },
-  municipalTax: {
-    title: "Municipal Property Tax Paid",
-    tip: "Local body property tax actually paid by you during the financial year.",
-    impact: "Directly subtracted from rental income to reduce your property tax liability.",
-  },
-  coOwnerPercent: {
-    title: "Co-Ownership Share (%)",
-    tip: "Your legal share of ownership in this property (e.g. 100% for sole owner, 50% for half-half).",
-    impact: "Scales all rental income, taxes, and loan interest calculations by this share.",
-  },
-  propertyType: {
-    title: "Property Occupancy Type",
-    tip: "Choose Self-occupied if you live in it, or Let-out if you rent it out to tenants.",
-    impact: "Determines interest claim limits (capped at ₹2L for self-occupied; unlimited for let-out).",
-  },
-};
-
-const STEP_GUIDANCE: Record<string, { banner: string; tips: string[] }> = {
-  onboarding: {
-    banner: "Let's set up your filing baseline. Answer these questions to determine the correct ITR Form.",
-    tips: [
-      "Select all your income sources (Salary, House, FD).",
-      "Confirm your age group for correct tax slabs.",
-      "Check senior citizen options for higher deductions.",
-    ],
-  },
-  import: {
-    banner: "Upload your Form 16 PDFs. I will automatically parse the tables and match them to TDS logs.",
-    tips: [
-      "If password-protected, the password is your PAN in CAPITALS.",
-      "You can upload up to 5 PDFs if you changed jobs.",
-      "We scan for digital signatures to ensure safety.",
-    ],
-  },
-  income: {
-    banner: "Verify your pre-filled income numbers. I have cross-checked them with your uploaded documents.",
-    tips: [
-      "Verify Gross Salary matches your Form 16 Box 17(1).",
-      "Make sure TDS matches the amount credited in Form 26AS.",
-      "Add any freelance/other income to avoid penalty interest.",
-    ],
-  },
-  deductions: {
-    banner: "Let's check lawful deductions you may have missed. Claim only what you can prove.",
-    tips: [
-      "Confirm Section 80C contributions (PPF, LIC, PF).",
-      "Declare preventive health checks under Section 80D.",
-      "I'll automatically apply the standard deduction of ₹75,000.",
-    ],
-  },
-  regime: {
-    banner: "Comparing Old vs. New Tax Regimes. These are estimates from your current numbers.",
-    tips: [
-      "New regime has lower rates but allows no exemptions.",
-      "Old regime is profitable if your total deductions exceed ₹4.25L.",
-      "You can switch regimes every year if you have salary income.",
-    ],
-  },
-  review: {
-    banner: "Audit engine checklist is running. I am looking for mismatch signals.",
-    tips: [
-      "Green checks mean no critical differences with government logs.",
-      "Double check salary entries if a mismatch is flagged.",
-      "You can add a note to explain deviations and lock filing.",
-    ],
-  },
-  checkout: {
-    banner: "Select your helper package. Unlocks portal filing scripts and dedicated CA review support.",
-    tips: [
-      "Standard plan covers salary earners with Form 16.",
-      "AI Smart plan includes real-time validation and AI Q&A.",
-      "All plans include secure data retention for 7 years.",
-    ],
-  },
-  companion: {
-    banner: "Dual-screen assistant is active. Open incometax.gov.in in another tab.",
-    tips: [
-      "Follow the sequence of fields page by page.",
-      "Use the copy button to copy numbers exactly.",
-      "E-verify via Aadhaar OTP after clicking submit.",
-    ],
-  },
-};
+export { FIELD_GUIDANCE };
 
 export function ActiveAiCompanion() {
   const pathname = usePathname();
   const activeField = useDraftStore((s) => s.activeField);
+  const income = useDraftStore((s) => s.income);
+  const deductions = useDraftStore((s) => s.deductions);
+  const incomeChips = useDraftStore((s) => s.incomeChips);
+  const mismatchResolved = useDraftStore((s) => s.mismatchResolved);
+  const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
+  const lastParseResult = useDraftStore((s) => s.lastParseResult);
+  const aisFigures = useDraftStore((s) => s.aisFigures);
+  const capitalGains = useDraftStore((s) => s.capitalGains);
+  const documentFacts = useDraftStore((s) => s.documentFacts);
+  const regime = useDraftStore((s) => s.regime);
+  const recommendedForm = useDraftStore((s) => s.recommendedForm);
+  const name = useDraftStore((s) => s.name);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const lastStepRef = useRef<string>("");
 
-  // Dynamic step determination based on path
-  const currentStep = pathname.startsWith("/file/onboarding")
-    ? "onboarding"
-    : pathname.startsWith("/file/import")
-      ? "import"
-      : pathname.startsWith("/file/income") ||
-        pathname.startsWith("/file/house-property") ||
-        pathname.startsWith("/file/other")
-        ? "income"
-        : pathname.startsWith("/file/deductions")
-          ? "deductions"
-          : pathname.startsWith("/file/regime")
-            ? "regime"
-            : pathname.startsWith("/file/review")
-              ? "review"
-              : pathname.startsWith("/file/checkout")
-                ? "checkout"
-                : pathname.startsWith("/file/companion")
-                  ? "companion"
-                  : "income";
-
-  // Initial welcome message from the Genie when changing steps
-  useEffect(() => {
-    const stepGuide = STEP_GUIDANCE[currentStep];
-    let initialText = "";
-    if (activeField) {
-      initialText = `I see you are focusing on the **${
-          FIELD_GUIDANCE[activeField]?.title ?? activeField
-        }** field. Let me explain: ${FIELD_GUIDANCE[activeField]?.tip ?? "Fill out this detail."}`;
-    } else if (stepGuide) {
-      initialText = `${stepGuide.banner}\n\n${stepGuide.tips.map(t => `• ${t}`).join("\n")}`;
-    } else {
-      initialText = "I am ready to guide you. Ask me anything!";
-    }
-
-    setMessages([
-      {
-        id: "welcome",
-        role: "assistant",
-        text: initialText,
-      },
-    ]);
-  }, [currentStep, activeField]);
-
+  const currentStep = stepFromPathname(pathname);
   const { handoff, result } = useDraftTaxCompute({ readOnly: true });
 
-  // Scroll to bottom of chat when new message arrives
+  const netPayable = useMemo(() => {
+    if (!result?.regime_comparison) return undefined;
+    const rec = result.regime_comparison.recommended_regime;
+    return result.regime_comparison[rec]?.net_payable;
+  }, [result]);
+
+  const genieContext = useMemo((): GenieChatContext => {
+    const rc = result?.regime_comparison;
+    const rec = rc?.recommended_regime;
+    const slab = rec && rc ? rc[rec] : null;
+    const payable = slab?.net_payable;
+
+    const documents = buildGenieDocumentSnapshot({
+      connectedConnectors,
+      income,
+      deductions,
+      lastParseResult,
+      aisFigures,
+      capitalGains,
+      documentFacts,
+    });
+
+    return {
+      step: currentStep,
+      recommendedForm: recommendedForm ?? result?.profile?.itr_form ?? undefined,
+      regime: regime ?? rec,
+      recommendedRegime: rec,
+      grossSalary: income.grossSalary > 0 ? income.grossSalary : undefined,
+      netPayable: payable,
+      taxableIncome: slab?.taxable_income,
+      taxSaving: rc?.tax_saving,
+      isRefund: payable != null && payable < 0,
+      activeField: activeField ?? undefined,
+      filingFor: name || undefined,
+      completenessScore: result?.confidence?.completeness_score,
+      filingReady: result?.confidence?.filing_ready,
+      missingDocuments: result?.confidence?.missing_documents,
+      mismatchResolved,
+      incomeTypes: incomeChips.length ? [...incomeChips] : undefined,
+      deductions: {
+        section80C: deductions.section80C || undefined,
+        section80D: deductions.section80D || undefined,
+        hraReceived: income.hraReceived || undefined,
+        npsExtra: deductions.npsExtra || undefined,
+      },
+      riskFlags: result?.risk_flags?.map((r) => r.message).slice(0, 5),
+      recommendations: result?.recommendations?.map((r) => r.plain_english).slice(0, 5),
+      documents,
+    };
+  }, [
+    activeField,
+    aisFigures,
+    capitalGains,
+    connectedConnectors,
+    currentStep,
+    deductions,
+    documentFacts,
+    income,
+    incomeChips,
+    lastParseResult,
+    mismatchResolved,
+    name,
+    regime,
+    recommendedForm,
+    result,
+  ]);
+
+  // Welcome message on step change — include active field when present
+  useEffect(() => {
+    if (lastStepRef.current === currentStep && messages.length > 0 && !activeField) return;
+    lastStepRef.current = currentStep;
+    setMessages([
+      {
+        id: `welcome_${currentStep}`,
+        role: "assistant",
+        text: buildWelcomeMessage(currentStep, activeField),
+      },
+    ]);
+  }, [currentStep, activeField]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Append field hint when user focuses a field (don't wipe chat)
+  useEffect(() => {
+    if (!activeField || !FIELD_GUIDANCE[activeField]) return;
+    const f = FIELD_GUIDANCE[activeField];
+    const hint = `You're now on: ${f.title}\n\n• ${f.tip}\n\n• Tax impact: ${f.impact}`;
+    setMessages((prev) => {
+      if (prev.some((m) => m.id === `field_${activeField}`)) return prev;
+      return [
+        ...prev,
+        { id: `field_${activeField}`, role: "assistant", text: hint },
+      ];
+    });
+  }, [activeField]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Suggested questions based on the current step
-  const suggestedQuestions = (() => {
-    if (currentStep === "onboarding") return ["How do I choose ITR form?", "Can I file late?"];
-    if (currentStep === "import") return ["Is my data safe?", "How to get Form 16?"];
-    if (currentStep === "income") return ["What is Section 17(1)?", "What is Standard Deduction?"];
-    if (currentStep === "deductions") return ["What is 80C limit?", "Can I claim rent without rent receipt?"];
-    if (currentStep === "regime") return ["Old vs New regime differences?", "What is surcharge?"];
-    if (currentStep === "review" || currentStep === "checkout") return ["Get Expert CA Advice", "What if there is a mismatch?", "How to avoid notices?"];
-    return ["Is my data safe?", "What is Standard Deduction?"];
-  })();
-
-  const handleSendQuestion = async (question: string) => {
-    if (!question.trim() || loading) return;
-
-    const userMsg: Message = {
-      id: `user_${Date.now()}`,
-      role: "user",
-      text: question.trim(),
-    };
-    setMessages((prev) => [...prev, userMsg]);
-    setInputText("");
-    setLoading(true);
-
-    const normalizedQuestion = question.toLowerCase().trim();
-
-    // Check local database for instant reply
-    if (LOCAL_TAX_KNOWLEDGE[normalizedQuestion]) {
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `genie_${Date.now()}`,
-            role: "assistant",
-            text: LOCAL_TAX_KNOWLEDGE[normalizedQuestion],
-          },
-        ]);
-        setLoading(false);
-      }, 500);
-      return;
+  const suggestedQuestions = useMemo(() => {
+    const base = suggestedQuestionsForStep(currentStep);
+    if (connectedConnectors.includes("form16")) {
+      return ["What's in my Form 16?", ...base.filter((q) => !q.includes("Form 16"))].slice(0, 4);
     }
+    if (connectedConnectors.includes("cams") || capitalGains) {
+      return ["Summarize my CAMS upload", ...base].slice(0, 4);
+    }
+    if (currentStep === "import" && connectedConnectors.length === 0) {
+      return ["What documents should I upload?", ...base].slice(0, 4);
+    }
+    return base;
+  }, [capitalGains, connectedConnectors, currentStep]);
 
-    if (normalizedQuestion === "get expert ca advice") {
-      if (!handoff) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `genie_${Date.now()}`,
-            role: "assistant",
-            text: "I need to compute your taxes first before I can give you expert CA advice. Please fill in your income details.",
-          },
-        ]);
-        setLoading(false);
-        return;
-      }
+  const handleSendQuestion = useCallback(
+    async (question: string) => {
+      if (!question.trim() || loading) return;
 
-      try {
-        const res = await fetch("/api/layer2", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(handoff),
-        });
-        if (res.ok) {
+      const userMsg: Message = {
+        id: `user_${Date.now()}`,
+        role: "user",
+        text: question.trim(),
+      };
+      setMessages((prev) => [...prev, userMsg]);
+      setInputText("");
+      setLoading(true);
+
+      const normalized = question.toLowerCase().trim();
+
+      if (normalized === "get expert ca advice") {
+        if (!handoff) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `genie_${Date.now()}`,
+              role: "assistant",
+              text:
+                "• Fill in your income details first on the Review screen\n• Then ask again — I'll analyse your draft\n• Or go to Regime to run the tax engine",
+            },
+          ]);
+          setLoading(false);
+          return;
+        }
+        try {
+          const res = await fetch("/api/layer2", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(handoff),
+          });
           const data = await res.json();
           setMessages((prev) => [
             ...prev,
@@ -324,8 +206,48 @@ export function ActiveAiCompanion() {
               text: data.advice || "No advice returned.",
             },
           ]);
+        } catch {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `genie_${Date.now()}`,
+              role: "assistant",
+              text: "• CA advice is temporarily unavailable\n• Try again in a minute\n• Your draft is saved",
+            },
+          ]);
+        } finally {
+          setLoading(false);
+        }
+        return;
+      }
+
+      try {
+        // #region agent log
+        fetch('http://127.0.0.1:7563/ingest/b08ac730-6614-46b3-bb0c-a50e7f63316c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'2c61ed'},body:JSON.stringify({sessionId:'2c61ed',location:'ActiveAiCompanion.tsx:send',message:'chat request context',data:{connectors:genieContext.documents?.connectedConnectors??[],grossSalary:genieContext.documents?.form16?.grossSalary??null,question:question.trim().slice(0,80)},timestamp:Date.now(),hypothesisId:'H5'})}).catch(()=>{});
+        // #endregion
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: question,
+            sessionId: getBrowserSessionId(),
+            context: {
+              ...genieContext,
+              profileId: getActiveProfileId(),
+            },
+          }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const responseText =
+            data.messages?.[data.messages.length - 1]?.text ??
+            "• Checking that for you…";
+          setMessages((prev) => [
+            ...prev,
+            { id: `genie_${Date.now()}`, role: "assistant", text: responseText },
+          ]);
         } else {
-          throw new Error("Failed to fetch CA advice");
+          throw new Error("chat failed");
         }
       } catch {
         setMessages((prev) => [
@@ -333,129 +255,76 @@ export function ActiveAiCompanion() {
           {
             id: `genie_${Date.now()}`,
             role: "assistant",
-            text: "Sorry, the AI CA brain is temporarily unavailable. Please try again later.",
+            text:
+              "• Network issue — try again\n• Common tips: 80C max ₹1.5L, gross salary is Form 16 Box 17(1)\n• Use Refresh in the header if your numbers look wrong",
           },
         ]);
       } finally {
         setLoading(false);
       }
-      return;
-    }
-
-    // Call API fallback for other/custom questions
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: question, sessionId: "genie_session" }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const responseText = data.messages?.[data.messages.length - 1]?.text ?? "I'm checking that for you.";
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `genie_${Date.now()}`,
-            role: "assistant",
-            text: responseText,
-          },
-        ]);
-      } else {
-        throw new Error();
-      }
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `genie_${Date.now()}`,
-          role: "assistant",
-          text: "I couldn't reach the tax network. Under Section 80C, you can claim up to ₹1.5L, and Section 17(1) is your gross salary. Please review your Form 16.",
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [genieContext, handoff, loading]
+  );
 
   const currentFieldGuidance = activeField ? FIELD_GUIDANCE[activeField] : null;
-  const currentStepGuidance = STEP_GUIDANCE[currentStep];
 
   return (
     <div className="flex flex-col h-full bg-slate-50/20 border-l border-slate-100/80">
-      {/* 1. Genie Header */}
       <div className="flex items-center gap-3 p-4 border-b border-slate-100 bg-white">
         <div className="relative">
           <div className="flex size-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20 relative overflow-hidden">
             <Sparkles className="size-4 animate-pulse text-blue-100" />
-            {/* Pulsing glow overlay */}
-            <span className="absolute inset-0 bg-blue-400/10 rounded-xl animate-ping" />
           </div>
           <span className="absolute bottom-0 right-0 block h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />
         </div>
-        <div>
-          <h4 className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
-            LastMinuteITR Genie
-          </h4>
-          <p className="text-[10px] text-slate-500">Active filing assistant</p>
+        <div className="min-w-0">
+          <h4 className="text-xs font-semibold text-slate-800">LastMinuteITR Genie</h4>
+          <p className="text-[10px] text-slate-500 truncate">
+            {connectedConnectors.length > 0
+              ? `Reading ${connectedConnectors.length} upload${connectedConnectors.length === 1 ? "" : "s"} · ask about your files`
+              : netPayable != null
+                ? `Est. ${formatINR(netPayable)} · 150+ tax guides`
+                : "Upload Form 16/CAMS — I'll read them"}
+          </p>
         </div>
       </div>
 
-      {/* 2. Main Guidance Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
-        {/* Active Input Genie Card */}
         {activeField && currentFieldGuidance ? (
-          <div className="bg-gradient-to-br from-blue-50/70 to-blue-50/30 border border-blue-100/60 rounded-2xl p-4 shadow-sm space-y-3 relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {/* Sparkling corner effect */}
-            <span className="absolute right-2 top-2 text-blue-400 opacity-20">
-              <Sparkles className="size-8" />
-            </span>
-            <div className="flex items-start gap-2.5">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white font-bold text-xs">
-                i
-              </span>
-              <div className="space-y-1">
-                <h5 className="text-xs font-bold text-blue-900 uppercase tracking-wider">
-                  Focused Field Guide
-                </h5>
-                <p className="text-sm font-semibold text-slate-900">
-                  {currentFieldGuidance.title}
-                </p>
-              </div>
-            </div>
-            
-            <p className="text-xs text-slate-700 leading-relaxed bg-white/70 rounded-xl p-3 border border-blue-50/50">
+          <div className="bg-gradient-to-br from-blue-50/70 to-blue-50/30 border border-blue-100/60 rounded-2xl p-4 shadow-sm space-y-2">
+            <p className="text-xs font-bold text-blue-900 uppercase tracking-wider">
+              Focused field
+            </p>
+            <p className="text-sm font-semibold text-slate-900">
+              {currentFieldGuidance.title}
+            </p>
+            <p className="text-xs text-slate-700 leading-relaxed">
               {currentFieldGuidance.tip}
             </p>
-            
             <div className="text-[11px] text-blue-800 bg-blue-100/30 rounded-lg p-2.5 flex gap-2">
               <Lightbulb className="size-3.5 shrink-0 text-blue-600 mt-0.5" />
-              <div>
-                <strong className="font-semibold text-blue-900">Tax Impact:</strong> {currentFieldGuidance.impact}
-              </div>
+              <span>{currentFieldGuidance.impact}</span>
             </div>
           </div>
         ) : null}
 
-        {/* 3. Integrated Conversation Thread */}
-        <div className="flex-1 flex flex-col min-h-[350px] bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden mb-2">
-          {/* Header */}
-          <div className="bg-slate-50/50 px-3 py-2 border-b border-slate-100 flex items-center justify-between shrink-0">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <MessageSquare className="size-3" />
-              Genie Chat & Q&A
+        <div className="flex flex-col min-h-[320px] bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-slate-50/50 px-3 py-2 border-b border-slate-100 flex items-center gap-1.5">
+            <MessageSquare className="size-3 text-slate-400" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              Ask anything
             </span>
           </div>
 
-          {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin bg-slate-50/20">
+          <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin bg-slate-50/20 max-h-[280px]">
             {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={cn(
-                  "flex flex-col gap-1 rounded-xl p-2.5 max-w-[90%] leading-relaxed",
+                  "flex flex-col gap-1 rounded-xl p-2.5 max-w-[92%] leading-relaxed",
                   msg.role === "user"
                     ? "bg-slate-100 text-slate-900 self-end ml-auto rounded-tr-sm"
-                    : "bg-blue-50/70 text-slate-800 border border-blue-100/40 self-start mr-auto rounded-tl-sm"
+                    : "bg-blue-50/70 text-slate-800 border border-blue-100/40 self-start rounded-tl-sm"
                 )}
               >
                 <p className="font-semibold text-[9px] uppercase text-slate-400">
@@ -465,21 +334,19 @@ export function ActiveAiCompanion() {
               </div>
             ))}
             {loading && (
-              <div className="bg-blue-50/50 text-slate-500 border border-blue-100/20 rounded-xl p-2.5 max-w-[90%] self-start mr-auto animate-pulse text-xs rounded-tl-sm">
-                Genie is writing…
-              </div>
+              <div className="text-xs text-slate-500 animate-pulse p-2">Genie is typing…</div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Suggested Question Chips */}
-          <div className="px-3 py-2 bg-white shrink-0">
+          <div className="px-3 py-2 bg-white shrink-0 border-t border-slate-100">
             <div className="flex flex-wrap gap-1.5">
               {suggestedQuestions.map((q) => (
                 <button
                   key={q}
-                  onClick={() => handleSendQuestion(q)}
-                  className="text-[10px] font-medium text-blue-600 bg-blue-50/40 hover:bg-blue-100 hover:text-blue-800 border border-blue-100/60 rounded-lg px-2.5 py-1.5 text-left transition-colors"
+                  type="button"
+                  onClick={() => void handleSendQuestion(q)}
+                  className="text-[10px] font-medium text-blue-600 bg-blue-50/40 hover:bg-blue-100 border border-blue-100/60 rounded-lg px-2.5 py-1.5 transition-colors"
                 >
                   {q}
                 </button>
@@ -487,27 +354,26 @@ export function ActiveAiCompanion() {
             </div>
           </div>
 
-          {/* 4. Chat Input Form Integrated */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              handleSendQuestion(inputText);
+              void handleSendQuestion(inputText);
             }}
             className="p-2 border-t border-slate-100 bg-slate-50 shrink-0"
           >
-            <div className="flex items-center gap-1.5 bg-white border border-slate-200 shadow-inner rounded-xl px-2 py-1.5 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-400 transition-all">
+            <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-2 py-1.5 focus-within:ring-2 focus-within:ring-blue-500/20">
               <input
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                placeholder="Ask Genie a question…"
-                className="flex-1 min-w-0 bg-transparent text-xs text-slate-900 focus:outline-none placeholder:text-slate-400 px-1 py-1"
+                placeholder="Ask in plain English…"
+                className="flex-1 min-w-0 bg-transparent text-xs focus:outline-none px-1 py-1"
                 disabled={loading}
               />
               <button
                 type="submit"
                 disabled={loading || !inputText.trim()}
-                className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:translate-y-px transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white disabled:opacity-40"
               >
                 <Send className="size-3.5" />
               </button>

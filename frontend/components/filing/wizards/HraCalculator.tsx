@@ -3,6 +3,7 @@
 import { computeHraExemption, type CityTier } from "@/lib/tax/hra";
 import { formatINR } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { useGenieFocus } from "@/lib/filing/useGenieFocus";
 
 export interface HraCalculatorProps {
   hraReceived: number;
@@ -28,6 +29,9 @@ export function HraCalculator({
   onChange,
   className,
 }: HraCalculatorProps) {
+  const hraFocus = useGenieFocus("hra_received");
+  const rentFocus = useGenieFocus("actual_rent_paid");
+
   const breakdown = computeHraExemption({
     hraReceived,
     basicSalary,
@@ -64,6 +68,7 @@ export function HraCalculator({
             onChange={(e) =>
               onChange({ hraReceived: Math.max(0, Number(e.target.value) || 0) })
             }
+            onFocus={hraFocus.onFocus}
           />
         </label>
         <label className="block text-sm">
@@ -78,6 +83,7 @@ export function HraCalculator({
                 actualRentPaid: Math.max(0, Number(e.target.value) || 0),
               })
             }
+            onFocus={rentFocus.onFocus}
           />
         </label>
       </div>

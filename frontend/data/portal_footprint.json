@@ -461,14 +461,21 @@
           "ourValueKey": "income_heads.ltcg_112a_net",
           "action": "enter",
           "copyValue": true,
-          "plainEnglishWhy": "Taxable LTCG after ₹1.25L annual exemption on listed equity."
+          "plainEnglishWhy": "Net LTCG on listed equity before the ₹1.25L exemption — the portal applies the exemption itself."
         },
         {
-          "label": "Other capital gains (property, debt MF, etc.)",
+          "label": "STCG on other assets (slab rate)",
+          "ourValueKey": "income_heads.stcg_other_slab",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Short-term gains on property, gold, debt funds, unlisted shares — taxed at your slab rate."
+        },
+        {
+          "label": "LTCG on other assets (property, gold, debt MF)",
           "ourValueKey": "income_heads.ltcg_other_net",
           "action": "enter",
           "copyValue": true,
-          "plainEnglishWhy": "Non-112A gains use slab or special rates — enter net taxable amount."
+          "plainEnglishWhy": "Long-term gains outside 112A use special rates — enter net taxable amount."
         },
         {
           "label": "Presumptive business u/s 44AD",
@@ -483,6 +490,105 @@
           "action": "skip",
           "copyValue": false,
           "plainEnglishWhy": "Skip unless our profile flags foreign assets — expert review recommended."
+        }
+      ]
+    },
+    {
+      "id": "schedule_112a",
+      "order": 4,
+      "title": "Schedule 112A — listed shares & equity MF",
+      "portalScreenTitle": "Schedule CG → Schedule 112A",
+      "portalPath": "Income Sources → Capital Gains → Schedule 112A",
+      "screenTips": [
+        "If you sold shares bought on or before 31 Jan 2018, the portal asks scrip-wise details — one row per stock or fund.",
+        "Use your broker's Tax P&L or capital gains statement — not just the sale amount from your bank."
+      ],
+      "warnings": [
+        "Grandfathering uses 31 Jan 2018 fair market value — wrong cost inflates tax.",
+        "STT must have been paid on sale for 112A LTCG treatment."
+      ],
+      "fields": [
+        {
+          "label": "Taxable LTCG u/s 112A (after ₹1.25L exemption)",
+          "ourValueKey": "income_heads.ltcg_112a_net",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "After entering scrip-wise rows, the portal total should match this net taxable figure."
+        },
+        {
+          "label": "STCG u/s 111A (listed equity)",
+          "ourValueKey": "income_heads.stcg_111a_net",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Short-term listed equity gains taxed at 15% — enter net after intra-head set-off."
+        },
+        {
+          "label": "Scrip-wise sale rows",
+          "ourValueKey": "",
+          "action": "verify",
+          "copyValue": false,
+          "plainEnglishWhy": "Add each sale: ISIN, sale date, sale value, purchase cost, FMV on 31-Jan-2018 if bought earlier."
+        }
+      ]
+    },
+    {
+      "id": "loss_carry_forward",
+      "order": 5,
+      "title": "Loss set-off & carry forward (CYLA · BFLA · CFL)",
+      "portalScreenTitle": "Schedules CYLA → BFLA → CFL",
+      "portalPath": "Tax Computation → Loss Adjustment",
+      "screenTips": [
+        "CYLA = losses this year set against income this year.",
+        "BFLA = old losses from previous years set against this year's income.",
+        "CFL = what's left to carry to next year — save this schedule for future filing."
+      ],
+      "warnings": [
+        "Speculative (intraday) losses can only set off speculative gains — not salary.",
+        "House property loss can set off other heads up to ₹2 lakh; rest carries forward.",
+        "File on time — losses from a year cannot be carried forward if that year's return was filed late."
+      ],
+      "fields": [
+        {
+          "label": "Current year loss set-off (CYLA total)",
+          "ourValueKey": "income_heads.carry_forward_loss_set_off",
+          "action": "verify",
+          "copyValue": true,
+          "plainEnglishWhy": "Portal auto-computes CYLA — verify it matches our summary after you enter all income heads."
+        },
+        {
+          "label": "Brought-forward loss used (BFLA)",
+          "ourValueKey": "income_heads.bf_loss_set_off_total",
+          "action": "verify",
+          "copyValue": true,
+          "plainEnglishWhy": "Enter prior-year STCL/LTCL/HP loss figures from last year's CFL schedule first."
+        },
+        {
+          "label": "STCL carried forward to next year",
+          "ourValueKey": "income_heads.losses_carried_forward.stcl",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Short-term capital loss remaining after set-off — usable against future STCG for 8 years."
+        },
+        {
+          "label": "LTCL carried forward to next year",
+          "ourValueKey": "income_heads.losses_carried_forward.ltcl",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Long-term capital loss remaining — set off only against future LTCG for 8 years."
+        },
+        {
+          "label": "House property loss carried forward",
+          "ourValueKey": "income_heads.losses_carried_forward.hp",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Loss from let-out property beyond ₹2L set-off limit — carries for 8 years."
+        },
+        {
+          "label": "Business loss carried forward",
+          "ourValueKey": "income_heads.losses_carried_forward.business",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Unabsorbed business loss — carries for 8 years (ITR-2 rarely; ITR-3 traders see this)."
         }
       ]
     },
@@ -752,6 +858,82 @@
       ]
     },
     {
+      "id": "schedule_112a",
+      "title": "Schedule 112A — equity sales",
+      "portalScreenTitle": "Schedule CG → Schedule 112A",
+      "portalPath": "Income Sources → Capital Gains → Schedule 112A",
+      "warnings": [
+        "F&O traders: F&O profit goes in Schedule BP, not 112A — only delivery equity uses 112A."
+      ],
+      "fields": [
+        {
+          "label": "LTCG u/s 112A (net taxable)",
+          "ourValueKey": "income_heads.ltcg_112a_net",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Delivery equity LTCG after ₹1.25L exemption."
+        },
+        {
+          "label": "STCG u/s 111A",
+          "ourValueKey": "income_heads.stcg_111a_net",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Delivery equity short-term gains at 15%."
+        }
+      ]
+    },
+    {
+      "id": "loss_carry_forward",
+      "title": "Loss set-off & carry forward",
+      "portalScreenTitle": "Schedules CYLA → BFLA → CFL",
+      "portalPath": "Tax Computation → Loss Adjustment",
+      "screenTips": [
+        "F&O losses are non-speculative business losses — different rules from equity STCL.",
+        "Intraday losses are speculative — can only offset intraday profits."
+      ],
+      "warnings": [
+        "Carry forward only if prior year return was filed on time.",
+        "Verify CFL totals — you'll need them when filing next year."
+      ],
+      "fields": [
+        {
+          "label": "Current year loss set-off",
+          "ourValueKey": "income_heads.carry_forward_loss_set_off",
+          "action": "verify",
+          "copyValue": true,
+          "plainEnglishWhy": "Auto-filled on portal after all schedules — cross-check with our engine."
+        },
+        {
+          "label": "Brought-forward loss used",
+          "ourValueKey": "income_heads.bf_loss_set_off_total",
+          "action": "verify",
+          "copyValue": true,
+          "plainEnglishWhy": "From last year's CFL schedule — enter in BFLA first."
+        },
+        {
+          "label": "STCL carried forward",
+          "ourValueKey": "income_heads.losses_carried_forward.stcl",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Equity short-term loss not set off this year."
+        },
+        {
+          "label": "Business loss carried forward",
+          "ourValueKey": "income_heads.losses_carried_forward.business",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "F&O or business loss remaining after set-off — 8 year carry."
+        },
+        {
+          "label": "Unabsorbed depreciation",
+          "ourValueKey": "income_heads.losses_carried_forward.unabsorbed_depreciation",
+          "action": "enter",
+          "copyValue": true,
+          "plainEnglishWhy": "Depreciation not used this year — carries forward indefinitely."
+        }
+      ]
+    },
+    {
       "id": "salary",
       "title": "Salary (if mixed income)",
       "portalScreenTitle": "Income Sources → Salary",
@@ -1013,6 +1195,46 @@
           "action": "skip",
           "copyValue": false,
           "plainEnglishWhy": "Not supported in our engine yet — consult CA if you operate goods carriages."
+        }
+      ]
+    },
+    {
+      "id": "presumptive_44ae",
+      "title": "Goods carriage (44AE)",
+      "portalScreenTitle": "Income Sources → Business → 44AE",
+      "portalPath": "Schedule BP → Presumptive Income u/s 44AE",
+      "warnings": [
+        "LastMinute does not compute 44AE yet — use portal calculator or consult your CA.",
+        "More than 10 goods carriages requires ITR-3 with books of account."
+      ],
+      "fields": [
+        {
+          "label": "Number of goods carriages owned",
+          "ourValueKey": "",
+          "action": "enter",
+          "copyValue": false,
+          "plainEnglishWhy": "Each vehicle gets a separate row on the portal."
+        },
+        {
+          "label": "Tonnage capacity (GVW from RC)",
+          "ourValueKey": "",
+          "action": "enter",
+          "copyValue": false,
+          "plainEnglishWhy": "Portal uses tonnage to calculate presumptive income per km."
+        },
+        {
+          "label": "Presumptive income u/s 44AE (total)",
+          "ourValueKey": "",
+          "action": "verify",
+          "copyValue": false,
+          "plainEnglishWhy": "Auto-calculated on portal — verify against your records."
+        },
+        {
+          "label": "Skip 44AE (shop/profession only)",
+          "ourValueKey": "",
+          "action": "skip",
+          "copyValue": false,
+          "plainEnglishWhy": "Skip when you only use 44AD or 44ADA presumptive schemes."
         }
       ]
     },

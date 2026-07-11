@@ -26,6 +26,8 @@ import {
 import { trackEvent } from "@/lib/analytics";
 import { displayValue } from "@/lib/format";
 import { Button } from "@/components/filing/ui";
+import { PortalCaBanner } from "@/components/filing/companion/PortalCaBanner";
+import { getScreenCaGuidance } from "@/lib/filing/portalWalkthrough";
 import {
   Collapsible,
   CollapsibleContent,
@@ -41,6 +43,8 @@ interface PortalFootprintWizardProps {
   portalScreenshotUrl?: string;
   /** Deep-link entry: open on the first screen of this footprint screen id. */
   initialScreenId?: string;
+  /** Razorpay-verified payment unlocks copy-ready values */
+  exportUnlocked?: boolean;
 }
 
 function actionLabel(action: PortalFieldAction): string {
@@ -119,6 +123,7 @@ export function PortalFootprintWizard({
   steps = [],
   portalScreenshotUrl,
   initialScreenId,
+  exportUnlocked = false,
 }: PortalFootprintWizardProps) {
   const [screenIndex, setScreenIndex] = useState(() => {
     if (!initialScreenId) return 0;
@@ -238,6 +243,8 @@ export function PortalFootprintWizard({
           stepTitle: screen.title,
           portalField: screen.portalScreenTitle,
           screenTips: screen.screenTips,
+          form,
+          portalPath: screen.portalPath,
         },
       });
       setScreenHelpText(response.explain.explanation);
@@ -258,7 +265,7 @@ export function PortalFootprintWizard({
   const canGoNext = screenIndex < screens.length - 1;
 
   const handleCopy = async (fieldLabel: string, value: string | number | null | undefined) => {
-    if (value === null || value === undefined) return;
+    if (!exportUnlocked || value === null || value === undefined) return;
     await navigator.clipboard.writeText(String(value));
     setCopiedKey(fieldLabel);
     trackEvent("companion_field_copy", {
@@ -289,6 +296,12 @@ export function PortalFootprintWizard({
             className="filing-step-segment"
           />
         ))}
+      </div>
+
+      <div className="mt-4">
+        <PortalCaBanner>
+          {getScreenCaGuidance(currentScreen.id)}
+        </PortalCaBanner>
       </div>
 
       {sectionRoadmap.length > 1 && (
@@ -397,15 +410,25 @@ export function PortalFootprintWizard({
               <div className="mt-3 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-[10px] uppercase tracking-wide text-slate-500">Your number</p>
-                  <p className="font-mono text-sm font-semibold text-slate-900">
-                    {displayValue(field.ourValue)}
+                  <p
+                    className={cn(
+                      "font-mono text-sm font-semibold text-slate-900",
+                      !exportUnlocked && "blur-sm select-none"
+                    )}
+                  >
+                    {!exportUnlocked ? "Unlock value" : displayValue(field.ourValue)}
                   </p>
                 </div>
                 {field.copyValue && field.ourValue != null && (
                   <button
                     type="button"
                     onClick={() => handleCopy(field.label, field.ourValue)}
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-primary"
+                    disabled={!exportUnlocked}
+                    title={exportUnlocked ? "Copy value" : "Pay to unlock copy"}
+                    className={cn(
+                      "inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-primary",
+                      !exportUnlocked && "cursor-not-allowed opacity-50"
+                    )}
                   >
                     {copiedKey === field.label ? (
                       <>

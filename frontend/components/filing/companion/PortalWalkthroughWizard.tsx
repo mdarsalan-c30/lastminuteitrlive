@@ -12,9 +12,11 @@ import {
 import type { ITRResult, PortalForm, UserInput } from "@/lib/engine/types";
 import { displayValue } from "@/lib/format";
 import { Button } from "@/components/filing/ui";
+import { PortalCaBanner } from "@/components/filing/companion/PortalCaBanner";
 import { cn } from "@/lib/utils";
 import {
   getPortalWalkthrough,
+  getChapterCaGuidance,
   ITD_PORTAL_URL,
   resolveWalkthroughValue,
   walkthroughImageUrl,
@@ -177,6 +179,8 @@ export function PortalWalkthroughWizard({
         </a>
       </div>
 
+      <PortalCaBanner>{getChapterCaGuidance(chapter.id, form)}</PortalCaBanner>
+
       <div className="flex gap-1 overflow-x-auto pb-1">
         {chapters.map((c, i) => (
           <button
@@ -247,10 +251,9 @@ export function PortalWalkthroughWizard({
                   <p className="mt-1 text-xs font-medium text-slate-500">
                     {step.clickPath}
                   </p>
-                  <p className="mt-1 text-sm text-slate-700">{step.plainEnglish}</p>
-                  {step.hindiShort && (
-                    <p className="mt-0.5 text-xs text-slate-500">{step.hindiShort}</p>
-                  )}
+                  <p className="mt-1 text-xs leading-relaxed text-slate-700 sm:text-sm">
+                    {step.plainEnglish}
+                  </p>
                   {step.tip && (
                     <p className="mt-1 text-xs text-teal-800">{step.tip}</p>
                   )}

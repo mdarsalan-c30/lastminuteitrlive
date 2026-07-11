@@ -53,10 +53,22 @@ function PlansContent() {
     mismatchResolved,
     mismatchProceedWithExplanation,
   } = useDraftStore();
+  const income = useDraftStore((s) => s.income);
+  const incomeChips = useDraftStore((s) => s.incomeChips);
+  const capitalGains = useDraftStore((s) => s.capitalGains);
+  const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
+  const aisGrossSalary = useDraftStore((s) => s.aisFigures?.grossSalary);
 
   const { loading, confidence, regimeSavings, engineUnavailable } =
     useDraftTaxCompute();
   const [couponNoteVisible, setCouponNoteVisible] = useState(false);
+
+  // Only an actual AIS/salary difference should send users to the mismatch
+  // screen — manual-estimate filers have nothing to reconcile there.
+  const hasOpenMismatch =
+    connectedConnectors.includes("ais") &&
+    typeof aisGrossSalary === "number" &&
+    Math.abs(aisGrossSalary - income.grossSalary) > 100;
 
   const gate = resolveCheckoutGate({
     mismatchResolved,
@@ -64,6 +76,7 @@ function PlansContent() {
     confidence,
     engineUnavailable,
     loading,
+    hasOpenMismatch,
   });
 
   const mismatchesResolved =
@@ -92,6 +105,21 @@ function PlansContent() {
       setPlan(recommendedPlan);
     }
   }, [loading, gate.canCheckout, recommendedPlan, setPlan]);
+
+  const hasBusinessIncome =
+    incomeChips.includes("freelance") ||
+    incomeChips.includes("business_presumptive") ||
+    (income.businessRevenue ?? 0) > 0 ||
+    (income.freelanceRevenue ?? 0) > 0;
+  const hasSalaryIncome = income.grossSalary > 0 || incomeChips.includes("salary");
+  const hasCapitalGainsIncome =
+    incomeChips.includes("capital_gains") || capitalGains !== null;
+  const planAudience =
+    hasBusinessIncome && hasSalaryIncome
+      ? "resident salaried + business/freelance"
+      : hasBusinessIncome
+        ? "resident business & freelance"
+        : "resident salaried";
 
   const handlePlanSelect = (planId: typeof plan) => {
     if (!gate.canCheckout || PLANS[planId].comingSoon) return;
@@ -149,6 +177,16 @@ function PlansContent() {
         </div>
       )}
 
+      {!loading && gate.estimateOverride && (
+        <div className="mb-4">
+          <Banner variant="info">
+            You&apos;re using quick estimates. You can pay and unlock the portal
+            guide now — just upload your AIS and Form 26AS before you actually
+            file, so the numbers you copy are exact.
+          </Banner>
+        </div>
+      )}
+
       <div className="relative overflow-hidden rounded-2xl bg-white p-8 shadow-sm mb-6 border border-slate-200/60 ring-1 ring-slate-100/50">
         <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
           <svg className="w-32 h-32 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -176,7 +214,8 @@ function PlansContent() {
 
 
       <p className="text-xs text-slate-500 mb-6">
-        Who this plan is for: resident salaried · {recommendedForm} · no capital gains
+        Who this plan is for: {planAudience} · {recommendedForm}
+        {hasCapitalGainsIncome ? " · capital gains covered" : ""}
       </p>
 
       <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">

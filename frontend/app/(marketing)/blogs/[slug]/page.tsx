@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BlogCTA } from "@/components/marketing/BlogCTA";
@@ -62,10 +63,22 @@ export default async function BlogArticlePage({ params }: PageProps) {
       
       {/* Hero Banner / Thumbnail */}
       <div className="w-full bg-muted relative min-h-[240px] sm:min-h-[360px] lg:min-h-[420px] overflow-hidden">
-         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/40 mix-blend-multiply" />
+         {post.coverImage ? (
+           <Image
+             src={post.coverImage}
+             alt=""
+             fill
+             priority
+             className="object-cover"
+             sizes="100vw"
+           />
+         ) : (
+           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/40 mix-blend-multiply" />
+         )}
+         <div className="absolute inset-0 bg-black/35" />
          <div className="relative flex min-h-[240px] flex-col items-center justify-center text-center p-6 sm:min-h-[360px] lg:min-h-[420px]">
             <Badge variant="secondary" className="mb-4 sm:mb-6 py-1 px-3 text-xs tracking-widest uppercase font-bold">{post.tags[0] || 'Article'}</Badge>
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-manrope text-[#0B1220] max-w-4xl tracking-tight leading-tight [overflow-wrap:anywhere]">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-manrope text-white max-w-4xl tracking-tight leading-tight [overflow-wrap:anywhere] drop-shadow-sm">
                {post.title}
             </h1>
          </div>

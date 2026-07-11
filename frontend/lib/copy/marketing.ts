@@ -1,12 +1,14 @@
 import { getEntryPriceInr, LAUNCH_OFFER } from "@/lib/marketing/offer";
 import { formatPlanPriceLabel } from "@/lib/marketing/pricing";
 
-export const HERO_HEADLINE = "File ITR before the deadline — without the guesswork.";
+export const HERO_HEADLINE =
+  "File your own ITR — Your Personal smart AI assisted CA.";
 
-export const HERO_HEADLINE_ACCENT = "Reconcile Form 16 & AIS. You submit on incometax.gov.in.";
+export const HERO_HEADLINE_ACCENT =
+  "Upload Form 16, AIS, capital gains, F&O — step-by-step guide on incometax.gov.in.";
 
 export const HERO_EMOTIONAL_HOOK =
-  "Reconcile Form 16, AIS, and 26AS, pick the right regime, and get a copy-ready guide — you file and e-verify yourself on incometax.gov.in.";
+  "Upload your Form 16, AIS, capital gains, F&O, answer a few easy questions, and get a step-by-step guide to file directly on incometax.gov.in with an expert by your side.";
 
 export const HERO_TRUST_LINE =
   "Estimate only — ITD confirms your final refund · You file on incometax.gov.in · Not a government service";

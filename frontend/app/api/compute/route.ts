@@ -44,11 +44,11 @@ async function proxyToPythonServerless(
   }
 }
 
-function spawnLocalPython(payload: string): Promise<string> {
+function spawnLocalPython(payload: string, pythonBin = "python3"): Promise<string> {
   const scriptPath = path.join(process.cwd(), "..", "backend", "scripts", "compute_cli.py");
 
   return new Promise<string>((resolve, reject) => {
-    const proc = spawn("python", [scriptPath], {
+    const proc = spawn(pythonBin, [scriptPath], {
       cwd: path.join(process.cwd(), "..", "backend"),
       stdio: ["pipe", "pipe", "pipe"],
     });
@@ -102,7 +102,15 @@ export async function POST(request: Request) {
       if (process.env.NEXT_PUBLIC_ENGINE_URL || process.env.NODE_ENV === "production") {
         return proxyToPythonServerless(request, payload);
       }
-      output = await spawnLocalPython(payload);
+      try {
+        output = await spawnLocalPython(payload);
+      } catch (firstErr) {
+        const firstMessage =
+          firstErr instanceof Error ? firstErr.message : "Compute failed";
+        if (firstMessage !== "ENGINE_UNAVAILABLE") throw firstErr;
+        // Some machines only expose `python` (e.g. Windows, pyenv shims).
+        output = await spawnLocalPython(payload, "python");
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Compute failed";
       if (message === "ENGINE_UNAVAILABLE") {

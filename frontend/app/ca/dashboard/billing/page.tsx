@@ -4,13 +4,7 @@ import { CA_SESSION_COOKIE, readCASession } from "@/lib/auth/ca";
 import { all } from "@/lib/db/store";
 import { PLANS } from "@/lib/payments/plans";
 import { CheckCircle2, ShieldCheck } from "lucide-react";
-
-// PAYMENT_API_TODO: wire "Buy Now" to the Razorpay B2B order flow once keys
-// are live. Until then, purchases route through the partnerships inbox.
-const BUY_MAILTO = (pack: string) =>
-  `mailto:partners@lastminuteitr.com?subject=${encodeURIComponent(
-    `Buy credits: ${pack}`
-  )}`;
+import { CaPackBuyButton } from "@/components/ca/CaPackBuyButton";
 
 const PACKS = [
   {
@@ -127,16 +121,7 @@ export default async function CABillingPage() {
                 }
               >
                 <span className="text-sm font-semibold text-blue-600">{pack.perFiling}</span>
-                <a
-                  href={BUY_MAILTO(pack.title)}
-                  className={
-                    pack.popular
-                      ? "px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-sm"
-                      : "px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition"
-                  }
-                >
-                  Buy Now
-                </a>
+                <CaPackBuyButton planId={pack.planId} label="Credits added after payment" />
               </div>
             </div>
           );
@@ -150,10 +135,8 @@ export default async function CABillingPage() {
             How buying works right now
           </p>
           <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-            Online checkout for credit packs is being wired up. Until then, click
-            Buy Now to email our partnerships team — credits are added to your
-            wallet the same working day, and a GST invoice is issued with every
-            purchase.
+            Pay online to add filing credits to your wallet instantly. Each credit
+            lets you file one client return. GST invoice is issued with every purchase.
           </p>
         </div>
       </div>

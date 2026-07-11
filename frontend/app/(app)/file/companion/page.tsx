@@ -25,6 +25,10 @@ import { getPortalGuide } from "@/lib/engine/client";
 import type { PortalForm, PortalGuideResponse } from "@/lib/engine/types";
 import { useTaxCompute } from "@/lib/hooks/useTaxCompute";
 import { trackCompanionLoad } from "@/lib/monitoring/events";
+import {
+  firstScreenIndexForSection,
+  isPortalSectionId,
+} from "@/lib/engine/portalSections";
 import { usePaymentSession } from "@/lib/hooks/usePaymentSession";
 import { isClientPaymentBypassEnabled } from "@/lib/payments/bypass";
 import { draftSnapshotForLog, logSessionEvent } from "@/lib/sessionLogClient";
@@ -37,7 +41,29 @@ import {
 } from "@/components/ui/accordion";
 
 const FORMS: PortalForm[] = ["ITR-1", "ITR-2", "ITR-3", "ITR-4"];
-type CompanionViewMode = "guided" | "checklist";
+type CompanionViewMode = "guided" | "mirror" | "parallel" | "checklist";
+
+const PortalFootprintWizard = dynamic(
+  () =>
+    import("@/components/filing/companion/PortalFootprintWizard").then(
+      (mod) => mod.PortalFootprintWizard
+    ),
+  {
+    loading: () => <PortalFootprintWizardSkeleton />,
+    ssr: false,
+  }
+);
+
+const PortalParallelMirror = dynamic(
+  () =>
+    import("@/components/filing/companion/PortalParallelMirror").then(
+      (mod) => mod.PortalParallelMirror
+    ),
+  {
+    loading: () => <PortalFootprintWizardSkeleton />,
+    ssr: false,
+  }
+);
 
 const PortalWalkthroughWizard = dynamic(
   () =>
@@ -142,12 +168,21 @@ function CompanionContent() {
   const [form, setForm] = useState<PortalForm>(
     (draft.recommendedForm as PortalForm) || "ITR-1"
   );
+  // Zustand persist hydrates after first render — follow the recommended form
+  // until the user explicitly picks one from the dropdown.
+  const [formManuallyChosen, setFormManuallyChosen] = useState(false);
+  useEffect(() => {
+    const recommended = draft.recommendedForm as PortalForm | null;
+    if (!formManuallyChosen && recommended && FORMS.includes(recommended)) {
+      setForm(recommended);
+    }
+  }, [draft.recommendedForm, formManuallyChosen]);
   const [guide, setGuide] = useState<PortalGuideResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loadWarning, setLoadWarning] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
-  const [viewMode, setViewMode] = useState<CompanionViewMode>("guided");
+  const [viewMode, setViewMode] = useState<CompanionViewMode>("parallel");
   const [jsonExporting, setJsonExporting] = useState(false);
   const [jsonExportError, setJsonExportError] = useState<string | null>(null);
   const companionLoggedRef = useRef(false);
@@ -159,6 +194,22 @@ function CompanionContent() {
 
   const justUnlocked = searchParams.get("unlocked") === "1" && exportUnlocked;
   const isDemoMode = searchParams.get("demo") === "1";
+  const sectionParam = searchParams.get("section");
+
+  const initialScreenId = useMemo(() => {
+    if (!sectionParam || !guide?.footprintScreens || !isPortalSectionId(sectionParam)) {
+      return undefined;
+    }
+    const idx = firstScreenIndexForSection(guide.footprintScreens, sectionParam);
+    if (idx < 0) return undefined;
+    return guide.footprintScreens[idx]?.id;
+  }, [sectionParam, guide?.footprintScreens]);
+
+  useEffect(() => {
+    if (sectionParam && isPortalSectionId(sectionParam)) {
+      setViewMode("mirror");
+    }
+  }, [sectionParam]);
 
   const loadGuide = useCallback(async () => {
     setLoading(true);
@@ -330,7 +381,10 @@ function CompanionContent() {
               <select
                 id="companion-form"
                 value={form}
-                onChange={(e) => setForm(e.target.value as PortalForm)}
+                onChange={(e) => {
+                  setFormManuallyChosen(true);
+                  setForm(e.target.value as PortalForm);
+                }}
                 className="min-h-11 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm sm:w-auto"
               >
                 {FORMS.map((f) => (
@@ -373,7 +427,14 @@ function CompanionContent() {
         <Banner variant="success">
           Your portal guide is unlocked — copy each value into incometax.gov.in as you
           go. {guide ? `${guide.steps.length} steps` : "Loading steps…"} with your
-          return numbers pre-filled.
+          return numbers pre-filled.{" "}
+          <a
+            href="/file/family"
+            className="font-semibold underline underline-offset-2"
+          >
+            File for someone else
+          </a>{" "}
+          when this person is done.
         </Banner>
       )}
 
@@ -429,24 +490,38 @@ function CompanionContent() {
 
       {(guide || viewMode === "guided") && (
         <>
-          <div className="mb-4 flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-4 flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                View mode · Option B portal guide
+                How do you want to file on the portal?
               </p>
-              <div className="grid grid-cols-2 gap-2 sm:w-auto">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 <Button
                   variant={viewMode === "guided" ? "primary" : "secondary"}
-                  className="min-h-10 w-full text-xs sm:w-auto"
+                  className="min-h-10 w-full text-xs"
                   onClick={() => setViewMode("guided")}
                 >
-                  Screen-by-screen
+                  Step guide
+                </Button>
+                <Button
+                  variant={viewMode === "parallel" ? "primary" : "secondary"}
+                  className="min-h-10 w-full text-xs"
+                  onClick={() => setViewMode("parallel")}
+                >
+                  All sections
+                </Button>
+                <Button
+                  variant={viewMode === "mirror" ? "primary" : "secondary"}
+                  className="min-h-10 w-full text-xs"
+                  onClick={() => setViewMode("mirror")}
+                >
+                  One screen
                 </Button>
                 <Button
                   variant={viewMode === "checklist" ? "primary" : "secondary"}
-                  className="min-h-10 w-full text-xs sm:w-auto"
+                  className="min-h-10 w-full text-xs"
                   onClick={() => setViewMode("checklist")}
                 >
-                  All fields
+                  Checklist
                 </Button>
               </div>
               <div className="flex flex-col gap-1 sm:items-end">
@@ -482,6 +557,34 @@ function CompanionContent() {
               }
               recommendedForm={draft.recommendedForm}
             />
+          )}
+          {viewMode === "parallel" && guide?.footprintScreens && (
+            <PortalParallelMirror
+              key={`parallel-${form}`}
+              form={form}
+              screens={guide.footprintScreens}
+              exportUnlocked={exportUnlocked}
+            />
+          )}
+          {viewMode === "parallel" && !guide?.footprintScreens && !loading && (
+            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500">
+              Loading portal sections…
+            </div>
+          )}
+          {viewMode === "mirror" && guide?.footprintScreens && (
+            <PortalFootprintWizard
+              key={`mirror-${form}-${initialScreenId ?? "start"}`}
+              form={form}
+              screens={guide.footprintScreens}
+              steps={guide.steps}
+              exportUnlocked={exportUnlocked}
+              initialScreenId={initialScreenId}
+            />
+          )}
+          {viewMode === "mirror" && !guide?.footprintScreens && !loading && (
+            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500">
+              Loading portal mirror…
+            </div>
           )}
           {viewMode === "checklist" && guide && (
             <PortalGuideTable
@@ -548,16 +651,16 @@ function CompanionContent() {
             />
           )}
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4 card-premium">
+          <div className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 card-premium">
             <h4 className="text-sm font-semibold text-slate-900">What this means</h4>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">
+            <p className="mt-2 text-xs leading-relaxed text-slate-600 sm:text-sm">
               Each row maps to a field on incometax.gov.in. Copy values exactly — typos
               cause validation errors when you submit on the government portal.
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4">
-            <h2 className="text-base font-semibold text-slate-900">Filing progress</h2>
+          <div className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4">
+            <h2 className="text-sm font-semibold text-slate-900 sm:text-base">Filing progress</h2>
             <p className="text-tier-feature mt-1">
               After payment you file on incometax.gov.in yourself.
             </p>

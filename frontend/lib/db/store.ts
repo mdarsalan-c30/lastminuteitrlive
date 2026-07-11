@@ -45,7 +45,8 @@ const modelMap: Record<string, keyof typeof prisma> = {
   referralConfig: "referralConfig",
   referralCodes: "referralCode",
   referralRedemptions: "referralRedemption",
-  b2cWallets: "b2CWallet"
+  b2cWallets: "b2CWallet",
+  familyProfiles: "familyProfile"
 };
 
 export async function all<K extends string>(collection: K): Promise<any[]> {

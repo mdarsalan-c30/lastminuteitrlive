@@ -18,7 +18,13 @@ export const YOUR_DATA_LINE =
 export const SELF_FILE_POSITIONING =
   "You file it yourself — we prepare and guide.";
 
-export const ESTIMATE_CHIP = "Estimate · AY 2026-27";
+export const ESTIMATE_CHIP = "Estimate · FY 2025-26 return";
+
+export const FILING_READY = {
+  ready: "Ready to file",
+  rough: "Numbers still rough",
+  estimate: "Estimate mode",
+} as const;
 
 // ── GATE ────────────────────────────────────────────────────────
 
@@ -48,7 +54,9 @@ export const RECONCILE = {
   actionKeep: "Keep mine",
   actionDispute: "This is wrong",
   allClear:
-    "Everything matches — Form 16, AIS and 26AS all agree. That's the best start possible.",
+    "Everything matches — Form 16, AIS, and 26AS all agree. That's the best start possible.",
+  hubMirror:
+    "This dashboard is your match-and-review hub. Confirm imports, income, and deductions, then compare regimes before you file on the portal.",
 } as const;
 
 // ── CONFIRM ─────────────────────────────────────────────────────
@@ -68,7 +76,8 @@ export const COMPUTE = {
 // ── SAVINGS COACH ─────────────────────────────────────────────────
 
 export const SAVINGS_COACH = {
-  estimateLabel: "Andaaza hai — final amount ITD portal par confirm hoga.",
+  estimateLabel:
+    "Rough estimate — ITD confirms the final amount on the government portal.",
   proofLine: "Only claim what you can prove with a receipt, statement, or Form 16.",
   moreSavings:
     "Your CA-style checklist found more lawful savings if you have proof.",

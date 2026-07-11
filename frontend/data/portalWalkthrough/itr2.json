@@ -3,384 +3,595 @@
   "form": "ITR-2",
   "assessmentYear": "AY 2026-27",
   "portalUrl": "https://www.incometax.gov.in/iec/foportal/",
-  "hasScreenshots": false,
+  "hasScreenshots": true,
   "chapters": [
     {
       "id": "before-you-start",
       "order": 0,
       "title": "Before you start (ITR-2)",
-      "subtitle": "Text guide only — portal screenshots arrive when the intern Word pack is ready.",
-      "portalPath": "incometax.gov.in",
+      "subtitle": "Confirm ITR-2 fits you, and keep documents ready.",
+      "heroImage": "image1.jpg",
+      "portalPath": "incometax.gov.in → Individual / HUF → Salaried",
       "tips": [
-        "This is a text scaffold for ITR-2. Screenshot walkthrough needs the intern Word file."
+        "ITR-2 is for capital gains, foreign income, or total income above ₹50 lakh.",
+        "Keep broker Tax P&L, Form 16 (if salaried), AIS, and 26AS open."
       ],
       "warnings": [
-        "Do not invent numbers. Use LastMinute compute values when unlocked."
+        "If you only have salary with no capital gains — ITR-1 may be enough.",
+        "Do not invent numbers — copy from LastMinute when unlocked."
       ],
       "steps": [
         {
-          "id": "open",
-          "title": "Open portal",
-          "clickPath": "incometax.gov.in",
-          "plainEnglish": "Open the Income Tax portal in a new tab beside LastMinute.",
-          "action": "click"
+          "id": "open-portal",
+          "title": "Open the Income Tax portal",
+          "clickPath": "Browser → incometax.gov.in",
+          "plainEnglish": "Open https://www.incometax.gov.in/iec/foportal/ in a new tab. Keep LastMinute ITR open beside it.",
+          "hindiShort": "इनकम टैक्स पोर्टल नया टैब में खोलें।",
+          "action": "click",
+          "image": "image1.jpg"
         },
         {
-          "id": "confirm-form",
-          "title": "Confirm ITR-2",
-          "clickPath": "File Income Tax Return → select form",
-          "plainEnglish": "Only continue if LastMinute routed you to ITR-2.",
-          "action": "verify"
+          "id": "check-form",
+          "title": "Check which ITR applies",
+          "clickPath": "Individual/HUF → Salaried Employees → Return / Forms applicable to me",
+          "plainEnglish": "Use this only if the portal (and LastMinute) say ITR-1. Otherwise switch the form selector above.",
+          "hindiShort": "पक्का करें कि आपका फॉर्म ITR-1 है।",
+          "action": "verify",
+          "image": "image2.jpg"
+        },
+        {
+          "id": "docs-ready",
+          "title": "Documents checklist",
+          "clickPath": "Your files",
+          "plainEnglish": "Form 16 (employer), Form 26AS, AIS, bank statements, and investment proofs (policy / document numbers).",
+          "action": "note",
+          "image": "image3.jpg"
         }
       ]
     },
     {
-      "id": "login-start",
+      "id": "prep-26as-ais",
       "order": 1,
-      "title": "Login and start filing",
-      "subtitle": "Same login path as ITR-1; pick the correct form on the portal.",
-      "portalPath": "Login → File Now → AY 2026-27 → Online",
+      "title": "Login · 26AS · AIS",
+      "subtitle": "Download what the tax department already knows, then match it.",
+      "heroImage": "image4.jpg",
+      "portalPath": "Login → e-File → Form 26AS → AIS",
+      "tips": [
+        "Select Assessment Year AY 2026-27 (next year after FY 2025-26).",
+        "Match salary, dividend, and savings interest with your Form 16 and bank."
+      ],
+      "warnings": [
+        "If TDS on 26AS does not match Form 16, fix it before you file."
+      ],
       "steps": [
         {
           "id": "login",
-          "title": "Login",
-          "clickPath": "Login",
-          "plainEnglish": "Sign in with PAN/Aadhaar.",
-          "action": "click"
+          "title": "Login (or register)",
+          "clickPath": "Login → PAN / Aadhaar / User ID",
+          "plainEnglish": "Sign in with PAN or Aadhaar. Register first if you do not have an account.",
+          "hindiShort": "PAN या आधार से लॉगिन करें।",
+          "action": "click",
+          "image": "image4.jpg"
         },
         {
-          "id": "ay",
-          "title": "AY 2026-27 Online",
-          "clickPath": "File Now → AY 2026-27 → Online → Continue",
-          "plainEnglish": "Select AY 2026-27 and Online mode.",
-          "action": "click"
+          "id": "open-26as",
+          "title": "Open Form 26AS",
+          "clickPath": "e-File → Income Tax Returns → View Form 26AS",
+          "plainEnglish": "Click I Agree, then View Tax Credit (Form 26AS).",
+          "hindiShort": "Form 26AS खोलें।",
+          "action": "click",
+          "image": "image5.jpg"
         },
         {
-          "id": "pick",
-          "title": "Select ITR-2",
-          "clickPath": "ITR-2 → Proceed",
-          "plainEnglish": "Choose ITR-2 and proceed.",
-          "action": "click"
+          "id": "download-26as",
+          "title": "Download 26AS for AY 2026-27",
+          "clickPath": "Assessment Year → AY 2026-27 → View as HTML → Export as PDF",
+          "plainEnglish": "Choose AY 2026-27, view as HTML, then export PDF. Check TDS lines carefully.",
+          "action": "verify",
+          "image": "image6.jpg",
+          "ourValueKey": "taxes_paid.tds_salary",
+          "tip": "Your LastMinute TDS (when unlocked) should be close to Form 16 + 26AS."
+        },
+        {
+          "id": "download-ais",
+          "title": "Download AIS / TIS",
+          "clickPath": "AIS → AIS → Download AIS/TIS (F.Y. 2025-26)",
+          "plainEnglish": "Download AIS for FY 2025-26. Match salary, dividend, and bank interest with your draft.",
+          "hindiShort": "AIS डाउनलोड कर के मिलान करें।",
+          "action": "verify",
+          "image": "image7.jpg"
         }
       ]
     },
     {
-      "id": "salary",
+      "id": "start-filing",
       "order": 2,
-      "title": "Salary (if applicable)",
-      "subtitle": "Income Sources → Salary",
-      "portalPath": "Gross Total Income → Income from Salary/Pension",
-      "tips": [],
-      "warnings": [
-        "Skip the entire salary schedule if you had no employer salary this year.",
-        "Investors with only capital gains should not enter salary fields."
+      "title": "Start filing ITR-2",
+      "subtitle": "Pick AY 2026-27, Online mode, and ITR-2.",
+      "heroImage": "image8.jpg",
+      "portalPath": "File Now → AY → Online → ITR-1",
+      "tips": [
+        "Mode of filing must be Online for this guide.",
+        "Choose Start New Filing unless you are revising an earlier draft."
       ],
       "steps": [
         {
-          "id": "gross_salary_u/s_17(1)",
-          "title": "Gross salary u/s 17(1)",
-          "clickPath": "Gross Total Income → Income from Salary/Pension",
-          "plainEnglish": "Enter only when Form 16 exists; otherwise skip this schedule.",
+          "id": "file-now",
+          "title": "File Now",
+          "clickPath": "Dashboard left panel → check details → File Now",
+          "plainEnglish": "Confirm the details on the left. Update if wrong, then click File Now.",
+          "action": "click",
+          "image": "image8.jpg"
+        },
+        {
+          "id": "ay-online",
+          "title": "Assessment year + Online",
+          "clickPath": "Assessment Year → AY 2026-27 → Mode of Filing → Online → Continue",
+          "plainEnglish": "Select AY 2026-27 and Online, then Continue.",
+          "action": "click",
+          "image": "image9.jpg"
+        },
+        {
+          "id": "new-filing",
+          "title": "Start New Filing",
+          "clickPath": "Start New Filing → Individual → Proceed",
+          "plainEnglish": "Choose Start New Filing, then Individual, then Proceed.",
+          "action": "click",
+          "image": "image10.jpg"
+        },
+        {
+          "id": "pick-itr-2",
+          "title": "Select ITR-2",
+          "clickPath": "ITR-2 → Proceed With ITR-2 → Let's Get Started",
+          "plainEnglish": "Select ITR-2, Proceed With ITR-2, then Let's Get Started.",
+          "action": "click",
+          "image": "image11.jpg"
+        },
+        {
+          "id": "exemption-reason",
+          "title": "Why you are filing",
+          "clickPath": "Taxable income is more than basic exemption limit → Continue",
+          "plainEnglish": "Select that taxable income is more than the basic exemption limit, then Continue.",
+          "action": "click",
+          "image": "image12.jpg"
+        }
+      ]
+    },
+    {
+      "id": "personal-regime-bank",
+      "order": 3,
+      "title": "Personal info · Regime · Bank",
+      "subtitle": "Fix personal details, employment, old/new regime, and bank account.",
+      "heroImage": "image13.jpg",
+      "portalPath": "Personal Information → Nature of Employment → Regime → Bank",
+      "tips": [
+        "Portal regime question: Yes = Old tax regime, No = New tax regime.",
+        "Filed u/s 139(1) if on time; 139(4) if after the due date."
+      ],
+      "warnings": [
+        "If you are filing for yourself, answer No to the representative-assessee question."
+      ],
+      "steps": [
+        {
+          "id": "personal-info",
+          "title": "Personal Information",
+          "clickPath": "Select Personal Information → Edit if needed",
+          "plainEnglish": "Open Personal Information. Edit anything wrong, then save.",
+          "action": "verify",
+          "image": "image13.jpg"
+        },
+        {
+          "id": "employment-section",
+          "title": "Nature of employment + section",
+          "clickPath": "Nature of Employment → Others (private) → Filed u/s → 139(1) or 139(4)",
+          "plainEnglish": "Private employees usually pick Others. Use 139(1) before due date, or 139(4) if late.",
+          "action": "click",
+          "image": "image14.jpg",
+          "tip": "LastMinute uses your late-filing flag to suggest 139(1) vs 139(4)."
+        },
+        {
+          "id": "regime",
+          "title": "Old vs new regime",
+          "clickPath": "Are you opting out of new regime? → Yes (Old) / No (New)",
+          "plainEnglish": "Yes means Old regime. No means New regime. Match the regime LastMinute recommended.",
+          "hindiShort": "Yes = पुराना, No = नया टैक्स स्लैब।",
           "action": "enter",
+          "image": "image15.jpg",
+          "ourValueKey": "regime_comparison.recommended_regime"
+        },
+        {
+          "id": "bank",
+          "title": "Bank account",
+          "clickPath": "Add / link bank account → verify IFSC & account",
+          "plainEnglish": "Add and link a bank account if missing. Refunds go only to a validated account.",
+          "action": "verify",
+          "image": "image16.jpg"
+        }
+      ]
+    },
+    {
+      "id": "salary-if-any",
+      "title": "Salary (if you had a job)",
+      "subtitle": "Skip this whole chapter if you had no employer salary.",
+      "heroImage": "image17.jpg",
+      "portalPath": "Gross Total Income → Income from Salary/Pension",
+      "tips": [
+        "Use Form 16 Part B figures — not your bank credits."
+      ],
+      "warnings": [
+        "Capital-gains-only filers should skip every salary row."
+      ],
+      "steps": [
+        {
+          "id": "open-salary",
+          "title": "Open salary schedule",
+          "clickPath": "Gross Total Income → Income from Salary/Pension → Edit",
+          "plainEnglish": "Open the salary section only if Form 16 exists. Otherwise skip to Capital Gains.",
+          "action": "click",
+          "image": "image17.jpg"
+        },
+        {
+          "id": "gross-salary",
+          "title": "Gross salary u/s 17(1)",
+          "clickPath": "Salary → Gross salary",
+          "plainEnglish": "Copy our gross salary into the matching portal field.",
+          "action": "enter",
+          "image": "image18.jpg",
           "ourValueKey": "income_heads.gross_salary"
         },
         {
-          "id": "exempt_allowances_u/s_10_(hra/lta)",
-          "title": "Exempt allowances u/s 10 (HRA/LTA)",
-          "clickPath": "Gross Total Income → Income from Salary/Pension",
-          "plainEnglish": "Match Form 16 exempt totals when salary is present.",
-          "action": "enter",
-          "ourValueKey": "income_heads.hra_exemption"
-        },
-        {
-          "id": "standard_deduction_u/s_16(ia)",
+          "id": "std-ded",
           "title": "Standard deduction u/s 16(ia)",
-          "clickPath": "Gross Total Income → Income from Salary/Pension",
-          "plainEnglish": "Required when salary head is active; copy exact computed amount.",
+          "clickPath": "Salary → Standard deduction",
+          "plainEnglish": "Enter the standard deduction amount we computed.",
           "action": "enter",
+          "image": "image18.jpg",
           "ourValueKey": "income_heads.standard_deduction"
         },
         {
-          "id": "net_salary_income",
+          "id": "net-salary",
           "title": "Net salary income",
-          "clickPath": "Gross Total Income → Income from Salary/Pension",
-          "plainEnglish": "Verify portal net salary matches our head total.",
-          "action": "enter",
+          "clickPath": "Salary → Save",
+          "plainEnglish": "Save and confirm net salary matches our summary.",
+          "action": "verify",
+          "image": "image18.jpg",
           "ourValueKey": "income_heads.net_salary_income"
-        },
-        {
-          "id": "entire_salary_schedule",
-          "title": "Entire salary schedule",
-          "clickPath": "Gross Total Income → Income from Salary/Pension",
-          "plainEnglish": "Skip all salary rows when gross salary is zero in our summary.",
-          "action": "skip"
         }
-      ]
+      ],
+      "order": 4
     },
     {
-      "id": "capital_gains",
-      "order": 3,
+      "id": "capital-gains",
       "title": "Capital gains schedule",
-      "subtitle": "Income Sources → Capital Gains",
-      "portalPath": "Schedule CG → STCG / LTCG",
-      "tips": [],
+      "subtitle": "Schedule CG — STCG and LTCG at special rates.",
+      "heroImage": "image19.jpg",
+      "portalPath": "Income Sources → Capital Gains → Schedule CG",
+      "tips": [
+        "Use broker tax P&L — enter net gains, not sale proceeds.",
+        "LTCG u/s 112A: enter gross LTCG before the ₹1.25L exemption."
+      ],
       "warnings": [
-        "Use broker tax P&L or capital gains statement — not sale proceeds alone.",
-        "LTCG u/s 112A exemption of ₹1.25L is applied before entering taxable LTCG."
+        "Wrong schedule (ITR-1) if you have STCG or LTCG above exemption limits."
       ],
       "steps": [
         {
-          "id": "stcg_u/s_111a_(listed_equity/mf)",
+          "id": "open-cg",
+          "title": "Open Schedule CG",
+          "clickPath": "Gross Total Income → Capital Gains → Schedule CG",
+          "plainEnglish": "Open the capital gains schedule from Income Sources.",
+          "action": "click",
+          "image": "image19.jpg"
+        },
+        {
+          "id": "stcg-111a",
           "title": "STCG u/s 111A (listed equity/MF)",
-          "clickPath": "Schedule CG → STCG / LTCG",
-          "plainEnglish": "Listed equity short-term gains taxed at 15% — net after set-off.",
+          "clickPath": "Schedule CG → STCG 111A",
+          "plainEnglish": "Listed equity short-term gains — net after loss set-off, taxed at 15%.",
           "action": "enter",
+          "image": "image20.jpg",
           "ourValueKey": "income_heads.stcg_111a_net"
         },
         {
-          "id": "ltcg_u/s_112a_(listed_equity/mf)",
-          "title": "LTCG u/s 112A (listed equity/MF)",
-          "clickPath": "Schedule CG → STCG / LTCG",
-          "plainEnglish": "Taxable LTCG after ₹1.25L annual exemption on listed equity.",
+          "id": "stcg-other",
+          "title": "STCG on other assets (slab rate)",
+          "clickPath": "Schedule CG → STCG other",
+          "plainEnglish": "Short-term gains on property, gold, debt funds — taxed at your slab.",
           "action": "enter",
+          "image": "image20.jpg",
+          "ourValueKey": "income_heads.stcg_other_slab"
+        },
+        {
+          "id": "ltcg-112a",
+          "title": "LTCG u/s 112A (listed equity/MF)",
+          "clickPath": "Schedule CG → LTCG 112A",
+          "plainEnglish": "Net LTCG on listed equity before ₹1.25L exemption — portal applies exemption.",
+          "action": "enter",
+          "image": "image21.jpg",
           "ourValueKey": "income_heads.ltcg_112a_net"
         },
         {
-          "id": "other_capital_gains_(property,_debt_mf,_",
-          "title": "Other capital gains (property, debt MF, etc.)",
-          "clickPath": "Schedule CG → STCG / LTCG",
-          "plainEnglish": "Non-112A gains use slab or special rates — enter net taxable amount.",
+          "id": "ltcg-other",
+          "title": "LTCG on other assets",
+          "clickPath": "Schedule CG → LTCG other",
+          "plainEnglish": "Property, gold, unlisted shares — at 12.5% or 20%.",
           "action": "enter",
+          "image": "image21.jpg",
           "ourValueKey": "income_heads.ltcg_other_net"
-        },
-        {
-          "id": "presumptive_business_u/s_44ad",
-          "title": "Presumptive business u/s 44AD",
-          "clickPath": "Schedule CG → STCG / LTCG",
-          "plainEnglish": "ITR-2 has no presumptive business schedule — use ITR-4 if applicable.",
-          "action": "skip"
-        },
-        {
-          "id": "schedule_fa_(foreign_assets)",
-          "title": "Schedule FA (foreign assets)",
-          "clickPath": "Schedule CG → STCG / LTCG",
-          "plainEnglish": "Skip unless our profile flags foreign assets — expert review recommended.",
-          "action": "skip"
         }
-      ]
+      ],
+      "order": 5
     },
     {
-      "id": "other_income",
-      "order": 4,
-      "title": "Other sources income",
-      "subtitle": "Income Sources → Other Sources",
-      "portalPath": "Schedule OS → Interest, Dividends",
-      "tips": [],
+      "id": "schedule-112a",
+      "title": "Schedule 112A — scrip-wise equity sales",
+      "subtitle": "One row per stock or equity MF sold (delivery only).",
+      "heroImage": "image22.jpg",
+      "portalPath": "Schedule CG → Schedule 112A",
+      "tips": [
+        "Import broker Tax P&L CSV if the portal allows.",
+        "For pre-2018 purchases, use 31 Jan 2018 FMV as cost."
+      ],
       "warnings": [
-        "Cross-check FD and dividend lines with AIS before entering.",
-        "Enter gross savings interest before 80TTA/80TTB deduction."
+        "F&O profit does not go in 112A — use ITR-3 if you traded derivatives."
       ],
       "steps": [
         {
-          "id": "fd_/_term_deposit_interest",
+          "id": "open-112a",
+          "title": "Open Schedule 112A",
+          "clickPath": "Capital Gains → Schedule 112A → Add",
+          "plainEnglish": "Add one row per scrip (stock/fund) you sold this year.",
+          "action": "click",
+          "image": "image22.jpg"
+        },
+        {
+          "id": "112a-total",
+          "title": "Verify 112A summary total",
+          "clickPath": "Schedule 112A → summary",
+          "plainEnglish": "After all scrip rows, the summary should match our LTCG 112A figure.",
+          "action": "verify",
+          "image": "image22.jpg",
+          "ourValueKey": "income_heads.ltcg_112a_net"
+        }
+      ],
+      "order": 6
+    },
+    {
+      "id": "other-sources",
+      "title": "Other sources (interest & dividends)",
+      "subtitle": "Schedule OS — match AIS before you save.",
+      "heroImage": "image20.jpg",
+      "portalPath": "Income Sources → Other Sources → Schedule OS",
+      "tips": [
+        "Enter gross savings interest; 80TTA/80TTB is in deductions."
+      ],
+      "warnings": [
+        "Dividends are taxable even when TDS was deducted."
+      ],
+      "steps": [
+        {
+          "id": "open-os",
+          "title": "Open Schedule OS",
+          "clickPath": "Gross Total Income → Other Sources → Schedule OS",
+          "plainEnglish": "Open interest and dividend schedules.",
+          "action": "click",
+          "image": "image20.jpg"
+        },
+        {
+          "id": "fd-interest",
           "title": "FD / term deposit interest",
-          "clickPath": "Schedule OS → Interest, Dividends",
-          "plainEnglish": "Fully taxable interest — must match 26AS TDS credits.",
+          "clickPath": "Schedule OS → Interest from deposits",
+          "plainEnglish": "Fully taxable — cross-check with 26AS TDS.",
           "action": "enter",
+          "image": "image20.jpg",
           "ourValueKey": "income_heads.fd_interest"
         },
         {
-          "id": "savings_account_interest_(gross)",
-          "title": "Savings account interest (gross)",
-          "clickPath": "Schedule OS → Interest, Dividends",
-          "plainEnglish": "Enter gross interest; 80TTA/80TTB is claimed in deductions.",
+          "id": "savings-interest",
+          "title": "Savings account interest",
+          "clickPath": "Schedule OS → Savings interest",
+          "plainEnglish": "Enter gross interest from AIS / bank statements.",
           "action": "enter",
+          "image": "image20.jpg",
           "ourValueKey": "income_heads.savings_interest_gross"
         },
         {
-          "id": "dividend_income",
+          "id": "dividends",
           "title": "Dividend income",
-          "clickPath": "Schedule OS → Interest, Dividends",
-          "plainEnglish": "Dividends are taxable in your hands even if TDS was deducted.",
+          "clickPath": "Schedule OS → Dividends",
+          "plainEnglish": "Enter dividends reported in AIS.",
           "action": "enter",
+          "image": "image20.jpg",
           "ourValueKey": "income_heads.dividend_income"
-        },
-        {
-          "id": "total_other_sources",
-          "title": "Total other sources",
-          "clickPath": "Schedule OS → Interest, Dividends",
-          "plainEnglish": "Verify portal OS total matches our computed head.",
-          "action": "enter",
-          "ourValueKey": "income_heads.total_other_income"
-        },
-        {
-          "id": "lottery_/_game_winnings",
-          "title": "Lottery / game winnings",
-          "clickPath": "Schedule OS → Interest, Dividends",
-          "plainEnglish": "Skip unless you reported such income in our questionnaire.",
-          "action": "skip"
         }
-      ]
+      ],
+      "order": 7
     },
     {
-      "id": "deductions",
-      "order": 5,
-      "title": "Deductions and tax benefits",
-      "subtitle": "Deductions → Chapter VI-A",
-      "portalPath": "Total Deductions",
-      "tips": [],
+      "id": "loss-carry-forward",
+      "title": "Losses — CYLA, BFLA, CFL",
+      "subtitle": "Set off this year's losses, then note CFL for next July.",
+      "heroImage": "image23.jpg",
+      "portalPath": "Tax Computation → CYLA → BFLA → CFL",
+      "tips": [
+        "Fill all income schedules first — CYLA is mostly automatic.",
+        "Save CFL numbers from last year's acknowledgement for BFLA."
+      ],
       "warnings": [
-        "Capital gains tax rates are separate — do not offset CG with 80C.",
-        "New regime blocks most Chapter VI-A deductions except 80CCD(2)."
+        "Losses cannot carry forward if the prior year return was filed late."
       ],
       "steps": [
         {
-          "id": "section_80c",
-          "title": "Section 80C",
-          "clickPath": "Total Deductions",
-          "plainEnglish": "Old regime only — capped at ₹1.5 lakh combined.",
-          "action": "enter",
-          "ourValueKey": "deductions.capped_80c"
+          "id": "cyla",
+          "title": "Verify Schedule CYLA",
+          "clickPath": "Tax Computation → Schedule CYLA",
+          "plainEnglish": "Check how this year's losses reduced income — mostly auto-calculated.",
+          "action": "verify",
+          "image": "image23.jpg",
+          "ourValueKey": "income_heads.carry_forward_loss_set_off"
         },
         {
-          "id": "section_80d",
-          "title": "Section 80D",
-          "clickPath": "Total Deductions",
-          "plainEnglish": "Health insurance premium deduction when old regime selected.",
-          "action": "enter",
-          "ourValueKey": "deductions.deduction_80d"
+          "id": "bfla",
+          "title": "Enter prior-year losses (BFLA)",
+          "clickPath": "Tax Computation → Schedule BFLA",
+          "plainEnglish": "Copy STCL/LTCL/HP loss figures from last year's CFL schedule.",
+          "action": "verify",
+          "image": "image23.jpg",
+          "ourValueKey": "income_heads.bf_loss_set_off_total"
         },
         {
-          "id": "section_80ccd(1b)",
-          "title": "Section 80CCD(1B)",
-          "clickPath": "Total Deductions",
-          "plainEnglish": "Additional NPS up to ₹50,000 — separate from 80C cap.",
-          "action": "enter",
-          "ourValueKey": "deductions.deduction_80ccd_1b"
-        },
-        {
-          "id": "section_80ccd(2)",
-          "title": "Section 80CCD(2)",
-          "clickPath": "Total Deductions",
-          "plainEnglish": "Employer NPS allowed in both old and new regime.",
-          "action": "enter",
-          "ourValueKey": "deductions.deduction_80ccd_2"
-        },
-        {
-          "id": "section_80g",
-          "title": "Section 80G",
-          "clickPath": "Total Deductions",
-          "plainEnglish": "Enter eligible donation amount after qualifying limits.",
-          "action": "enter",
-          "ourValueKey": "deductions.deduction_80g"
-        },
-        {
-          "id": "section_80u",
-          "title": "Section 80U",
-          "clickPath": "Total Deductions",
-          "plainEnglish": "Select No when no disability deduction applies.",
-          "action": "skip",
-          "ourValueKey": "deductions.deduction_80u"
-        },
-        {
-          "id": "section_80tta_/_80ttb",
-          "title": "Section 80TTA / 80TTB",
-          "clickPath": "Total Deductions",
-          "plainEnglish": "Deselect portal default if our computed savings-interest deduction is zero.",
-          "action": "skip",
-          "ourValueKey": "deductions.deduction_80tta_ttb"
+          "id": "cfl",
+          "title": "Note CFL for next year",
+          "clickPath": "Tax Computation → Schedule CFL",
+          "plainEnglish": "Write down unused STCL/LTCL — you'll need these numbers next July.",
+          "action": "note",
+          "image": "image24.jpg"
         }
-      ]
+      ],
+      "order": 8
     },
     {
-      "id": "tax_computation",
-      "order": 6,
-      "title": "Tax computation",
-      "subtitle": "Tax Paid and Verification → Part D",
-      "portalPath": "Tax on Total Income → Taxes Paid",
-      "tips": [],
-      "warnings": [
-        "Special-rate CG tax is added to slab tax — compare full Part D, not salary alone.",
-        "Refund and payable are mutually exclusive — verify sign matches our net payable."
+      "id": "deductions-tax-paid",
+      "order": 9,
+      "title": "Deductions · Tax paid",
+      "subtitle": "Claim only deductions you can prove. Match TDS with Form 16 and 26AS.",
+      "heroImage": "image23.jpg",
+      "portalPath": "Total Deductions → Tax Paid",
+      "tips": [
+        "Many Chapter VI-A deductions work only in the old regime.",
+        "New regime still allows standard deduction and employer NPS (80CCD(2)) where eligible."
       ],
       "steps": [
         {
-          "id": "gross_total_income",
-          "title": "Gross total income",
-          "clickPath": "Tax on Total Income → Taxes Paid",
-          "plainEnglish": "Sum of all heads before Chapter VI-A — must match before deductions.",
+          "id": "deductions",
+          "title": "Total Deductions",
+          "clickPath": "Total Deductions → enter eligible sections → Save",
+          "plainEnglish": "Open Total Deductions. Enter only amounts you have proof for (80C, 80D, etc.).",
           "action": "enter",
-          "ourValueKey": "income_heads.gross_total_income"
-        },
-        {
-          "id": "total_chapter_vi-a_deductions",
-          "title": "Total Chapter VI-A deductions",
-          "clickPath": "Tax on Total Income → Taxes Paid",
-          "plainEnglish": "Old-regime deductions reduce taxable income on portal.",
-          "action": "enter",
+          "image": "image23.jpg",
           "ourValueKey": "deductions.total_chapter_via"
         },
         {
-          "id": "net_tax_payable_/_refund",
-          "title": "Net tax payable / refund",
-          "clickPath": "Tax on Total Income → Taxes Paid",
-          "plainEnglish": "Positive = pay more; negative = refund — use recommended regime result.",
-          "action": "enter",
-          "ourValueKey": "regime_comparison.recommended_regime_net_payable"
-        },
-        {
-          "id": "tds_on_salary",
-          "title": "TDS on salary",
-          "clickPath": "Tax on Total Income → Taxes Paid",
-          "plainEnglish": "Must reconcile with Form 16 Part-A and Form 26AS.",
-          "action": "enter",
+          "id": "tax-paid",
+          "title": "Tax Paid (TDS)",
+          "clickPath": "Tax Paid → verify TDS / advance tax",
+          "plainEnglish": "Verify TDS with Form 16 and Form 26AS. Fix mismatches before you continue.",
+          "action": "verify",
+          "image": "image24.jpg",
           "ourValueKey": "taxes_paid.tds_salary"
-        },
-        {
-          "id": "tds_on_other_income",
-          "title": "TDS on other income",
-          "clickPath": "Tax on Total Income → Taxes Paid",
-          "plainEnglish": "FD, dividend, and broker TDS from 26AS.",
-          "action": "enter",
-          "ourValueKey": "taxes_paid.tds_other"
-        },
-        {
-          "id": "advance_/_self-assessment_tax",
-          "title": "Advance / self-assessment tax",
-          "clickPath": "Tax on Total Income → Taxes Paid",
-          "plainEnglish": "Enter challan payments you made during the year.",
-          "action": "enter",
-          "ourValueKey": "taxes_paid.advance_tax_paid"
-        },
-        {
-          "id": "surcharge_on_tax",
-          "title": "Surcharge on tax",
-          "clickPath": "Tax on Total Income → Taxes Paid",
-          "plainEnglish": "Leave blank unless our summary shows surcharge — rare below ₹50L income.",
-          "action": "skip"
         }
       ]
     },
     {
-      "id": "everify",
-      "order": 7,
-      "title": "E-verify and receipt",
-      "subtitle": "Same Aadhaar OTP path as ITR-1 after preview/submit.",
-      "portalPath": "Preview → Submit → E-Verify → Aadhaar OTP",
+      "id": "liability-confirm",
+      "order": 10,
+      "title": "Tax liability · Confirm",
+      "subtitle": "Check the computation once, then Confirm.",
+      "heroImage": "image25.jpg",
+      "portalPath": "Verify tax liability → D11 → Confirm → Proceed to Verification",
+      "tips": [
+        "Under the new regime, resident individuals may get rebate up to ₹60,000 when total income is within ₹12 lakh (slab tax only) — this is an estimate tip, not a guarantee."
+      ],
       "steps": [
         {
-          "id": "preview",
-          "title": "Preview and submit",
-          "clickPath": "Preview → Submit",
-          "plainEnglish": "Preview totals, then submit on the portal.",
-          "action": "click"
+          "id": "liability",
+          "title": "Verify tax liability",
+          "clickPath": "Verify your tax liability details",
+          "plainEnglish": "Open the liability screen. Compare totals with LastMinute’s estimate.",
+          "action": "verify",
+          "image": "image25.jpg",
+          "ourValueKey": "regime_comparison.recommended_regime_net_payable"
         },
         {
-          "id": "otp",
-          "title": "E-verify with Aadhaar OTP",
-          "clickPath": "E-Verify Now → Aadhaar OTP",
-          "plainEnglish": "Verify within 30 days. Download the receipt.",
-          "action": "click"
+          "id": "d11-confirm",
+          "title": "Check D11 and Confirm",
+          "clickPath": "D11. Total Tax, Fee and Interest → Confirm",
+          "plainEnglish": "Recheck D11 (D5+D7+D8+D9+D10+D10a−D6), then Confirm.",
+          "action": "click",
+          "image": "image26.jpg"
+        },
+        {
+          "id": "proceed-verification",
+          "title": "Proceed to Verification",
+          "clickPath": "Proceed to Verification",
+          "plainEnglish": "After all sections look right, click Proceed to Verification.",
+          "action": "click",
+          "image": "image27.jpg"
+        }
+      ]
+    },
+    {
+      "id": "pay-preview-submit",
+      "order": 11,
+      "title": "Pay / Refund · Preview · Submit",
+      "subtitle": "Pay now or later if tax is due. Preview carefully, then submit.",
+      "heroImage": "image28.jpg",
+      "portalPath": "Pay Now/Later → Preview → Validation → Submit",
+      "warnings": [
+        "If you Pay Now, wait until the challan appears in Tax Paid Schedule before you submit."
+      ],
+      "steps": [
+        {
+          "id": "refund-or-pay",
+          "title": "Refund or pay",
+          "clickPath": "Refund path OR Pay Later / Pay Now",
+          "plainEnglish": "If refund: continue. If tax due: Pay Later or Pay Now. After Pay Now, confirm challan updated.",
+          "action": "verify",
+          "image": "image28.jpg",
+          "ourValueKey": "regime_comparison.recommended_regime_net_payable"
+        },
+        {
+          "id": "preview-submit",
+          "title": "Preview and submit",
+          "clickPath": "Preview And Submit Your Return → tick boxes → Proceed to Validation → Preview",
+          "plainEnglish": "Preview the return. Leave the three optional verification shortcuts if following Aadhaar OTP later. Proceed to Validation, then Preview again.",
+          "action": "click",
+          "image": "image29.jpg"
+        },
+        {
+          "id": "final-validation",
+          "title": "Proceed to Verification",
+          "clickPath": "Proceed to Validation → Proceed To Verification",
+          "plainEnglish": "Re-check details, then Proceed to Verification.",
+          "action": "click",
+          "image": "image30.jpg"
+        }
+      ]
+    },
+    {
+      "id": "everify-receipt",
+      "order": 12,
+      "title": "E-verify · Download receipt",
+      "subtitle": "Finish with Aadhaar OTP. Save your acknowledgement.",
+      "heroImage": "image31.jpg",
+      "portalPath": "E-Verify Now → Aadhaar OTP → Submit → Download Receipt",
+      "tips": [
+        "We recommend Aadhaar OTP. E-verify within 30 days of filing."
+      ],
+      "steps": [
+        {
+          "id": "everify-now",
+          "title": "E-Verify Now",
+          "clickPath": "E-Verify Now → Continue",
+          "plainEnglish": "Choose E-Verify Now and Continue.",
+          "action": "click",
+          "image": "image31.jpg"
+        },
+        {
+          "id": "aadhaar-otp",
+          "title": "Aadhaar OTP",
+          "clickPath": "OTP on mobile linked to Aadhaar → I agree → Generate OTP → Validate",
+          "plainEnglish": "Select Aadhaar OTP, agree, generate OTP, enter it, Validate, then Submit.",
+          "hindiShort": "आधार OTP से वेरिफाई करें।",
+          "action": "click",
+          "image": "image32.jpg"
+        },
+        {
+          "id": "receipt",
+          "title": "Download receipt",
+          "clickPath": "Proceed → Download Receipt",
+          "plainEnglish": "Congratulations — download the receipt and paste the acknowledgement number in LastMinute Done.",
+          "action": "note",
+          "image": "image33.jpg"
         }
       ]
     }

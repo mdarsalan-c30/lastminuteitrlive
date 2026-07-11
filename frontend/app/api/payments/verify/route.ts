@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   getPlan,
   isPurchasablePlanId,
+  isCaPurchasablePlanId,
   normalizePlanId,
   type PlanId,
 } from "@/lib/payments/plans";
@@ -19,6 +20,14 @@ import {
 import { recordPayment } from "@/lib/admin/payments";
 import { createInvoiceForPayment } from "@/lib/billing/invoices";
 import { recordSessionEvent } from "@/lib/admin/events";
+import { getOptionalB2CUser } from "@/lib/auth/optionalB2c";
+import { unlockFamilyProfile } from "@/lib/family/server";
+import {
+  addTenantFilingCredits,
+  creditsForB2bPlan,
+  isB2bPackPlan,
+} from "@/lib/filings/credits";
+import { CA_SESSION_COOKIE, readCASession } from "@/lib/auth/ca";
 import {
   hashIp,
   recordRedemption,
@@ -42,7 +51,10 @@ async function persistVerifiedPayment(input: {
   sessionId?: string;
   couponCode?: string;
   ipHash?: string;
-}): Promise<void> {
+  userId?: string;
+  familyProfileId?: string;
+  tenantId?: string;
+}): Promise<string | undefined> {
   try {
     const amount = input.orderId.startsWith("order_free_")
       ? 0
@@ -76,7 +88,30 @@ async function persistVerifiedPayment(input: {
       razorpayPaymentId: input.paymentId,
       sessionId: input.sessionId,
       couponId,
+      userId: input.userId,
+      familyProfileId: input.familyProfileId,
+      tenantId: input.tenantId,
     });
+
+    if (
+      input.userId &&
+      input.familyProfileId &&
+      isPurchasablePlanId(input.planId)
+    ) {
+      await unlockFamilyProfile({
+        profileId: input.familyProfileId,
+        userId: input.userId,
+        planId: input.planId,
+        paymentId: payment.id,
+      });
+    }
+
+    if (input.tenantId && isB2bPackPlan(input.planId)) {
+      await addTenantFilingCredits(
+        input.tenantId,
+        creditsForB2bPlan(input.planId)
+      );
+    }
 
     // GST invoice for every paid order (free/₹0 orders get none).
     if (paidAmount > 0) {
@@ -108,8 +143,10 @@ async function persistVerifiedPayment(input: {
         payload: { plan_id: input.planId, mock: input.mock },
       });
     }
+    return payment.id;
   } catch {
     // swallow — payment verification must succeed regardless of analytics
+    return undefined;
   }
 }
 
@@ -127,7 +164,16 @@ async function resolveVerifiedOrderPlan(input: {
     typeof notes.planId === "string" ? normalizePlanId(notes.planId) : null;
   const noteAmountPaise = Number(notes.amountPaise);
 
-  if (notes.product !== "lastminute-itr" || !notePlanId || !isPurchasablePlanId(notePlanId)) {
+  if (notes.product !== "lastminute-itr" || !notePlanId) {
+    return NextResponse.json(
+      { verified: false, error: "Payment order is not linked to a valid plan" },
+      { status: 400 }
+    );
+  }
+
+  const planOk =
+    isPurchasablePlanId(notePlanId) || isCaPurchasablePlanId(notePlanId);
+  if (!planOk) {
     return NextResponse.json(
       { verified: false, error: "Payment order is not linked to a valid plan" },
       { status: 400 }
@@ -155,6 +201,9 @@ async function resolveVerifiedOrderPlan(input: {
   return { planId: notePlanId };
 }
 
+/** Cap best-effort persistence so a slow/unavailable DB never blocks the user's unlock. */
+const PERSIST_TIMEOUT_MS = 4000;
+
 async function verifiedResponse(input: {
   mock: boolean;
   orderId: string;
@@ -163,16 +212,27 @@ async function verifiedResponse(input: {
   sessionId?: string;
   couponCode?: string;
   ipHash?: string;
+  userId?: string;
+  familyProfileId?: string;
+  tenantId?: string;
 }) {
-  await persistVerifiedPayment({
-    planId: input.planId,
-    orderId: input.orderId,
-    paymentId: input.paymentId,
-    mock: input.mock,
-    sessionId: input.sessionId,
-    couponCode: input.couponCode,
-    ipHash: input.ipHash,
-  });
+  await Promise.race([
+    persistVerifiedPayment({
+      planId: input.planId,
+      orderId: input.orderId,
+      paymentId: input.paymentId,
+      mock: input.mock,
+      sessionId: input.sessionId,
+      couponCode: input.couponCode,
+      ipHash: input.ipHash,
+      userId: input.userId,
+      familyProfileId: input.familyProfileId,
+      tenantId: input.tenantId,
+    }),
+    new Promise<undefined>((resolve) =>
+      setTimeout(() => resolve(undefined), PERSIST_TIMEOUT_MS)
+    ),
+  ]);
 
   const response = NextResponse.json({
     verified: true,
@@ -211,7 +271,12 @@ export async function POST(request: NextRequest) {
       mock?: boolean;
       sessionId?: string;
       couponCode?: string;
+      familyProfileId?: string;
     };
+
+    const b2cAuth = await getOptionalB2CUser(request);
+    const caToken = request.cookies.get(CA_SESSION_COOKIE)?.value;
+    const caSession = readCASession(caToken);
 
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
     const ipHash = hashIp(
@@ -240,7 +305,7 @@ export async function POST(request: NextRequest) {
       isMockAllowed &&
       razorpay_order_id.startsWith("order_mock_")
     ) {
-      if (!planId || !isPurchasablePlanId(planId)) {
+      if (!planId || (!isPurchasablePlanId(planId) && !isCaPurchasablePlanId(planId))) {
         return NextResponse.json({ error: "Invalid plan id" }, { status: 400 });
       }
       return await verifiedResponse({
@@ -251,6 +316,9 @@ export async function POST(request: NextRequest) {
         sessionId: body.sessionId,
         couponCode: body.couponCode,
         ipHash,
+        userId: b2cAuth?.user.id,
+        familyProfileId: body.familyProfileId,
+        tenantId: caSession?.tenantId,
       });
     }
 
@@ -263,6 +331,9 @@ export async function POST(request: NextRequest) {
           planId,
           sessionId: body.sessionId,
           ipHash,
+          userId: b2cAuth?.user.id,
+          familyProfileId: body.familyProfileId,
+          tenantId: caSession?.tenantId,
         });
       }
       return NextResponse.json(
@@ -313,6 +384,9 @@ export async function POST(request: NextRequest) {
       sessionId: body.sessionId,
       couponCode: body.couponCode,
       ipHash,
+      userId: b2cAuth?.user.id,
+      familyProfileId: body.familyProfileId,
+      tenantId: caSession?.tenantId,
     });
   } catch (error) {
     console.error("verify error:", error);
