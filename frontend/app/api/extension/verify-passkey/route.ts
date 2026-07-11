@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { all } from "@/lib/db/store";
+import { prisma } from "@/lib/db/store";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,10 +12,9 @@ export async function POST(request: NextRequest) {
     }
 
     const normalizedPasskey = body.passkey.trim().toUpperCase();
-    const grants = await all("companionGrants");
-    const grant = grants.find(
-      (g) => g.passkey?.trim().toUpperCase() === normalizedPasskey
-    );
+    const grant = await prisma.companionGrant.findFirst({
+      where: { passkey: { equals: normalizedPasskey, mode: "insensitive" } },
+    });
 
     if (!grant) {
       return NextResponse.json(

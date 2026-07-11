@@ -23,8 +23,10 @@ _DOC_WEIGHTS = {
     "has_capital_gains_statement": 5,  # only relevant if CG present
 }
 
-# Which docs are always required vs conditional
-_ALWAYS_REQUIRED = {"has_form16", "has_ais", "has_form26as"}
+# Which docs are always required vs conditional.
+# Form 16 is only relevant when the filer actually has salary income —
+# a pure freelancer/business filer never receives one.
+_ALWAYS_REQUIRED = {"has_ais", "has_form26as"}
 
 _CA_TRIGGERS = {
     "income_above_50l": "Total income above ₹50 lakh (surcharge applicable)",
@@ -50,6 +52,8 @@ def compute_confidence(user: UserInput, profile, gti: float) -> ConfidenceResult
 
     # Determine relevant docs
     relevant_docs = set(_ALWAYS_REQUIRED)
+    if user.salary.gross_salary > 0:
+        relevant_docs.add("has_form16")
     if user.other_income.fd_interest > 0 or user.other_income.savings_account_interest > 0:
         relevant_docs.add("has_bank_interest_cert")
     if has_home_loan:

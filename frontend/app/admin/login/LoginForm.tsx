@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 function LoginForm() {
   const router = useRouter();
@@ -42,9 +43,7 @@ function LoginForm() {
         className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-sm"
       >
         <div className="mb-5">
-          <p className="text-lg font-semibold text-foreground">
-            LastMinuteITR Admin
-          </p>
+          <BrandLogo href="/" size="sm" className="mb-3" />
           <p className="text-sm text-muted-foreground">
             Sign in to the operations dashboard
           </p>

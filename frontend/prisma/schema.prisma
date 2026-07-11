@@ -88,9 +88,15 @@ model Payment {
   status            String
   source            String
   sessionId         String?
+  userId            String?
+  familyProfileId   String?
+  tenantId          String?
   couponId          String?
   refundReason      String?
   ts                DateTime @default(now())
+
+  @@index([userId])
+  @@index([familyProfileId])
 }
 
 model CompanionGrant {
@@ -101,6 +107,28 @@ model CompanionGrant {
   expiresAt DateTime?
   ts        DateTime  @default(now())
   passkey   String?
+
+  @@index([sessionId])
+  @@index([passkey])
+}
+
+model Invoice {
+  id         String   @id @default(uuid())
+  seq        Int      @unique @default(autoincrement())
+  paymentId  String   @unique
+  plan       String
+  planName   String
+  grossInr   Int
+  taxableInr Int
+  gstInr     Int
+  gstRate    Float    @default(0.18)
+  buyerName  String?
+  buyerEmail String?
+  sessionId  String?
+  status     String   @default("issued")
+  ts         DateTime @default(now())
+
+  @@index([sessionId])
 }
 
 model CrmContact {
@@ -184,11 +212,36 @@ model Tenant {
 }
 
 model B2CUser {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  createdAt    DateTime @default(now())
+  id               String   @id @default(uuid())
+  name             String
+  email            String   @unique
+  passwordHash     String
+  referredBy       String?
+  status           String   @default("active") // "active" | "blocked"
+  flagReason       String?  // set when an admin flags this account for review
+  createdBy        String?  // admin email when created from the admin panel
+  filingsRemaining Int      @default(0) // wallet credits for multi-person filing packs
+  createdAt        DateTime @default(now())
+}
+
+/// Someone the account holder files ITR for (self, client, or family member).
+/// One login can manage up to N profiles; each stores its own draft and unlock.
+model FamilyProfile {
+  id            String    @id @default(uuid())
+  userId        String
+  name          String
+  relationship  String    @default("self") // self | spouse | father | mother | son | daughter | sibling | client | other
+  pan           String?
+  dob           String?
+  filingStatus  String    @default("not_started") // not_started | in_progress | filed
+  draftJson     Json?
+  unlockedPlanId String?
+  unlockedAt    DateTime?
+  lastPaymentId String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
 }
 
 model SessionEvent {

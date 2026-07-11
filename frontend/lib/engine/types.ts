@@ -97,6 +97,10 @@ export interface BusinessInput {
   profession_name?: string;
   cash_receipts_pct?: number;
   depreciation_blocks?: DepreciationBlockInput[];
+  /** Absolute F&O turnover for audit threshold checks. */
+  fno_turnover?: number;
+  fno_non_speculative_profit?: number;
+  fno_speculative_profit?: number;
 }
 
 /** Losses brought forward from earlier years (Schedule CFL / BFLA). */

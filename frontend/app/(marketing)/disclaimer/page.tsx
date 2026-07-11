@@ -35,7 +35,7 @@ export default function DisclaimerPage() {
         Final tax, refund, or demand is determined only by the Income Tax Department after
         processing. We make no guarantee of refund amount or processing time.
       </p>
-      <h2 className="text-base font-semibold text-foreground">Lawful optimization only</h2>
+      <h2 className="text-base font-semibold text-foreground">Only legal savings</h2>
       <p>
         We surface deductions and regimes permitted under Indian income tax law. We do not
         encourage concealment of income, false deductions, or any unlawful tax avoidance.

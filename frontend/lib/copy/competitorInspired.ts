@@ -1,3 +1,5 @@
+import { IMPORT_STRIP_CONNECTORS } from "@/lib/connectors/registry";
+
 /**
  * Competitor-inspired marketing copy — rewritten for companion-first, compliance-safe positioning.
  * Reference only in comments; never ship competitor claims verbatim.
@@ -45,13 +47,7 @@ export const IMPORT_STRIP = {
   headline: "Start with documents you already have",
   subhead:
     "Form 16 and AIS first — same activation pattern as leading filers, without promising zero manual entry.",
-  connectors: [
-    { id: "form16", label: "Form 16", status: "live" as const },
-    { id: "ais", label: "AIS", status: "soon" as const },
-    { id: "form26as", label: "Form 26AS", status: "soon" as const },
-    { id: "itd", label: "ITD pre-fill", status: "roadmap" as const },
-    { id: "groww", label: "Groww P&L", status: "soon" as const },
-  ],
+  connectors: IMPORT_STRIP_CONNECTORS,
 } as const;
 
 export const PERSONA_CAROUSEL = {

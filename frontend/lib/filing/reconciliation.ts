@@ -106,7 +106,25 @@ export function buildReconciliationFlags(
       id: "multi-employer",
       label: `Combined ${employers.length} employers`,
       detail:
-        "Each employer reports TDS separately. The portal expects the combined total — confirm it against Form 26AS/AIS.",
+        "Each employer reports TDS separately. The portal expects the combined total — confirm it against Form 26AS/AIS. Standard deduction applies once, not per Form 16.",
+      severity: "info",
+    });
+  }
+
+  // AIS interest (194A) and professional fees (194J) education cards
+  if (hasAis) {
+    flags.push({
+      id: "ais-194a",
+      label: "Check AIS for FD interest (194A)",
+      detail:
+        "AIS often shows bank FD interest under Section 194A that Form 16 never mentions. Add it under Other income if present.",
+      severity: "info",
+    });
+    flags.push({
+      id: "ais-194j",
+      label: "Check AIS for professional fees (194J)",
+      detail:
+        "Freelance / consulting receipts appear as 194J in AIS. Align turnover with your business or freelance figures.",
       severity: "info",
     });
   }

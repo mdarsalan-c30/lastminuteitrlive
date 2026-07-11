@@ -1,0 +1,205 @@
+General Information
+Permanent Account Number (PAN) Aadhaar Number Name of Assessee
+ABCDE1234F XXXX XXXX 0000 SAMPLE TAXPAYER
+Date of Birth Mobile Number E-mail Address
+01/01/1990 9999999999 sample@example.com
+Address
+SAMPLE ADDRESS, BANGALORE, KARNATAKA
+-------------------------------------------------------------------- Taxpayer Information Summary (TIS) --------------------------------------------------------------------
+(All amount values are in INR)
+SR. NO. INFORMATION CATEGORY PROCESSED BY
+SYSTEM
+ACCEPTED BY
+TAXPAYER/
+CONFIRMED BY
+SOURCE
+1 Salary 17,71,368 17,71,368
+2 Dividend 151 151
+3 Interest from savings bank 1,396 1,396
+4 Sale of securities and units of mutual fund 1,43,119 1,43,119
+The information details under each information category is provided on next page.
+Reported by Source - Value as reported by the information source
+Processed by System - Value after processing (including deduplication of information) based on pre-defined rules
+Accepted by Taxpayer/ Confirmed by Source - Value derived after considering the taxpayer's feedback or source's confirmation on taxpayer's feedback (if
+any) and value Processed by System
+Disclaimer
+Taxpayer Information Summary (TIS) includes information presently available with Income Tax Department. There may be other transactions relating to the
+taxpayer which are not presently displayed in Taxpayer Information Summary (TIS). Taxpayer is expected to check all related information and report complete
+and accurate information in the Income Tax Return.
+Taxpayer Information Summary (TIS) Financial Year 2025-26
+Download ID : ABCDE1234F202606300339 IP Address :
+Generation Date : 30/06/2026, 03:39:09 Page 1 of 3
+
+-- 1 of 3 --
+
+----------------------------------------------------------- Annexure to Taxpayer Information Summary (TIS) -----------------------------------------------------------
+SR. NO. INFORMATION CATEGORY PROCESSED BY
+SYSTEM
+ACCEPTED BY
+TAXPAYER/
+CONFIRMED BY
+SOURCE
+1 Salary 17,71,368 17,71,368
+SR. NO. PART INFORMATION
+DESCRIPTION
+INFORMATION SOURCE AMOUNT
+DESCRIPTION
+REPORTED BY
+SOURCE
+PROCESSED BY
+SYSTEM
+ACCEPTED BY TAXPAYER/
+CONFIRMED BY SOURCE
+1 Other Salary (TDS
+Annexure II)
+ANAND RATHI WEALTH
+LIMITED (MUMH05095G)
+Gross Salary
+Received
+17,71,368 17,71,368 17,71,368
+2 TDS/
+TCS
+Salary received
+(Section 192)
+ANAND RATHI WEALTH
+LIMITED (MUMH05095G)
+Amount paid/
+credited
+17,71,368 - -
+SR. NO. INFORMATION CATEGORY PROCESSED BY
+SYSTEM
+ACCEPTED BY
+TAXPAYER/
+CONFIRMED BY
+SOURCE
+2 Dividend 151 151
+SR. NO. PART INFORMATION
+DESCRIPTION
+INFORMATION SOURCE AMOUNT
+DESCRIPTION
+REPORTED BY
+SOURCE
+PROCESSED BY
+SYSTEM
+ACCEPTED BY
+TAXPAYER/
+CONFIRMED BY
+SOURCE
+1 SFT Dividend income
+(SFT-015)
+TATA STEEL LIMITED
+(AAACT2803M.AZ428)
+Total Dividend
+amount
+72 72 72
+2 SFT Dividend income
+(SFT-015)
+Canara Robeco Asset Management
+Company Limited
+(AAACC2031J.AZ476)
+Total Dividend
+amount
+47 47 47
+3 SFT Dividend income
+(SFT-015)
+AR VENTURE FUNDS MANAGEMENT
+PRIVATE LIMITED
+(AAACH8136P.AZ611)
+Total Dividend
+amount
+30 30 30
+4 SFT Dividend income
+(SFT-015)
+Reliance Strategic Investments
+Limited (AABCR1466K.AZ326)
+Total Dividend
+amount
+2 2 2
+SR. NO. INFORMATION CATEGORY PROCESSED BY
+SYSTEM
+ACCEPTED BY
+TAXPAYER/
+CONFIRMED BY
+SOURCE
+3 Interest from savings bank 1,396 1,396
+SR. NO. PART INFORMATION
+DESCRIPTION
+INFORMATION SOURCE AMOUNT
+DESCRIPTION
+REPORTED BY
+SOURCE
+PROCESSED BY
+SYSTEM
+ACCEPTED BY
+TAXPAYER/
+CONFIRMED BY
+SOURCE
+1 SFT Interest income
+(SFT-016) – Savings
+HDFC BANK LIMITED
+(AAACH2702H.AB772)
+Interest 1,090 1,090 1,090
+2 SFT Interest income
+(SFT-016) – Savings
+UNION BANK OF INDIA
+(AAACU0564G.AB646)
+Interest 169 169 169
+3 SFT Interest income
+(SFT-016) – Savings
+DBS BANK INDIA LIMITED
+(AAGCD5838A.AZ036)
+Interest 125 125 125
+4 SFT Interest income
+(SFT-016) – Savings
+AIRTEL PAYMENTS BANK
+LIMITED (AAICA4398J.AB943)
+Interest 12 12 12
+PAN Name Financial Year
+ABCDE1234F SAMPLE TAXPAYER 2025-26
+Download ID : ABCDE1234F202606300339 IP Address :
+Generation Date : 30/06/2026, 03:39:09 Page 2 of 3
+
+-- 2 of 3 --
+
+SR. NO. INFORMATION CATEGORY PROCESSED BY
+SYSTEM
+ACCEPTED BY
+TAXPAYER/
+CONFIRMED BY
+SOURCE
+4 Sale of securities and units of mutual fund 1,43,119 1,43,119
+SR. NO. PART INFORMATION
+DESCRIPTION
+INFORMATION SOURCE AMOUNT
+DESCRIPTION
+REPORTED
+BY SOURCE
+PROCESSED
+BY SYSTEM
+ACCEPTED BY
+TAXPAYER/
+CONFIRMED BY
+SOURCE
+1 SFT Sale of unit of equity
+oriented mutual fund
+(RTA)
+Computer Age Management
+Services Limited
+(AAACC3035G.AZ670)
+Value of
+consideration
+77,995 77,995 77,995
+2 SFT Sale of unit of equity
+oriented mutual fund
+(RTA)
+KFin Technologies Pvt. Ltd
+(AAGCK6303B)
+Value of
+consideration
+65,124 65,124 65,124
+PAN Name Financial Year
+ABCDE1234F SAMPLE TAXPAYER 2025-26
+Download ID : ABCDE1234F202606300339 IP Address :
+Generation Date : 30/06/2026, 03:39:09 Page 3 of 3
+
+-- 3 of 3 --

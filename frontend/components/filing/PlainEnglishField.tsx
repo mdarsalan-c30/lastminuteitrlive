@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FieldLabel, TextInput } from "./ui";
 import { HelpCircle, Languages, Sparkles } from "lucide-react";
 import { useDraftStore } from "@/lib/store/draft";
-import { FIELD_GUIDANCE } from "./ActiveAiCompanion";
+import { FIELD_GUIDANCE } from "@/lib/filing/genieKnowledge";
 
 export function PlainEnglishField({
   govLabel,

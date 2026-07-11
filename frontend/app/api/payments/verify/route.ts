@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   getPlan,
+  isPurchasablePlanId,
+  isCaPurchasablePlanId,
   normalizePlanId,
   type PlanId,
 } from "@/lib/payments/plans";
 import {
+  fetchRazorpayOrder,
   hasRazorpayKeys,
   verifyPaymentSignature,
 } from "@/lib/payments/razorpay";
@@ -15,13 +18,26 @@ import {
   PAYMENT_SESSION_COOKIE,
 } from "@/lib/payments/session";
 import { recordPayment } from "@/lib/admin/payments";
+import { createInvoiceForPayment } from "@/lib/billing/invoices";
 import { recordSessionEvent } from "@/lib/admin/events";
+import { getOptionalB2CUser } from "@/lib/auth/optionalB2c";
+import { unlockFamilyProfile } from "@/lib/family/server";
+import {
+  addTenantFilingCredits,
+  creditsForB2bPlan,
+  isB2bPackPlan,
+} from "@/lib/filings/credits";
+import { CA_SESSION_COOKIE, readCASession } from "@/lib/auth/ca";
 import {
   hashIp,
   recordRedemption,
   validateCoupon,
   generatePasskey,
 } from "@/lib/admin/coupons";
+import {
+  recordReferralRedemption,
+  validateReferralCode,
+} from "@/lib/admin/referrals";
 import { getPublishedPrice } from "@/lib/pricing/config";
 import { genId, insert } from "@/lib/db/store";
 import type { CompanionGrant } from "@/lib/db/types";
@@ -35,7 +51,10 @@ async function persistVerifiedPayment(input: {
   sessionId?: string;
   couponCode?: string;
   ipHash?: string;
-}): Promise<void> {
+  userId?: string;
+  familyProfileId?: string;
+  tenantId?: string;
+}): Promise<string | undefined> {
   try {
     const amount = input.orderId.startsWith("order_free_")
       ? 0
@@ -52,7 +71,6 @@ async function persistVerifiedPayment(input: {
         });
         couponId = result.coupon!.id;
       } else {
-        const { validateReferralCode, recordReferralRedemption } = await import("@/lib/admin/referrals");
         const refResult = await validateReferralCode(input.couponCode, input.planId);
         if (refResult.valid) {
           await recordReferralRedemption(refResult.referralCodeId, input.sessionId || "b2c", input.paymentId);
@@ -60,8 +78,9 @@ async function persistVerifiedPayment(input: {
       }
     }
 
-    await recordPayment({
-      amount: couponId ? Math.max(0, amount) : amount,
+    const paidAmount = couponId ? Math.max(0, amount) : amount;
+    const payment = await recordPayment({
+      amount: paidAmount,
       plan: input.planId,
       status: "paid",
       source: input.orderId.startsWith("order_free_") ? "free" : "razorpay",
@@ -69,7 +88,40 @@ async function persistVerifiedPayment(input: {
       razorpayPaymentId: input.paymentId,
       sessionId: input.sessionId,
       couponId,
+      userId: input.userId,
+      familyProfileId: input.familyProfileId,
+      tenantId: input.tenantId,
     });
+
+    if (
+      input.userId &&
+      input.familyProfileId &&
+      isPurchasablePlanId(input.planId)
+    ) {
+      await unlockFamilyProfile({
+        profileId: input.familyProfileId,
+        userId: input.userId,
+        planId: input.planId,
+        paymentId: payment.id,
+      });
+    }
+
+    if (input.tenantId && isB2bPackPlan(input.planId)) {
+      await addTenantFilingCredits(
+        input.tenantId,
+        creditsForB2bPlan(input.planId)
+      );
+    }
+
+    // GST invoice for every paid order (free/₹0 orders get none).
+    if (paidAmount > 0) {
+      await createInvoiceForPayment({
+        paymentId: payment.id,
+        plan: input.planId,
+        grossInr: paidAmount,
+        sessionId: input.sessionId,
+      });
+    }
 
     if (input.sessionId) {
       const passkey = generatePasskey();
@@ -91,14 +143,66 @@ async function persistVerifiedPayment(input: {
         payload: { plan_id: input.planId, mock: input.mock },
       });
     }
+    return payment.id;
   } catch {
     // swallow — payment verification must succeed regardless of analytics
+    return undefined;
   }
 }
 
 function resolvePlanId(raw: string | undefined): PlanId | null {
   return normalizePlanId(raw);
 }
+
+async function resolveVerifiedOrderPlan(input: {
+  orderId: string;
+  clientPlanId: PlanId | null;
+}): Promise<{ planId: PlanId } | NextResponse> {
+  const order = await fetchRazorpayOrder(input.orderId);
+  const notes = order.notes ?? {};
+  const notePlanId =
+    typeof notes.planId === "string" ? normalizePlanId(notes.planId) : null;
+  const noteAmountPaise = Number(notes.amountPaise);
+
+  if (notes.product !== "lastminute-itr" || !notePlanId) {
+    return NextResponse.json(
+      { verified: false, error: "Payment order is not linked to a valid plan" },
+      { status: 400 }
+    );
+  }
+
+  const planOk =
+    isPurchasablePlanId(notePlanId) || isCaPurchasablePlanId(notePlanId);
+  if (!planOk) {
+    return NextResponse.json(
+      { verified: false, error: "Payment order is not linked to a valid plan" },
+      { status: 400 }
+    );
+  }
+
+  if (input.clientPlanId && input.clientPlanId !== notePlanId) {
+    return NextResponse.json(
+      { verified: false, error: "Payment plan mismatch" },
+      { status: 400 }
+    );
+  }
+
+  if (
+    order.currency !== "INR" ||
+    !Number.isFinite(noteAmountPaise) ||
+    order.amount !== noteAmountPaise
+  ) {
+    return NextResponse.json(
+      { verified: false, error: "Payment amount mismatch" },
+      { status: 400 }
+    );
+  }
+
+  return { planId: notePlanId };
+}
+
+/** Cap best-effort persistence so a slow/unavailable DB never blocks the user's unlock. */
+const PERSIST_TIMEOUT_MS = 4000;
 
 async function verifiedResponse(input: {
   mock: boolean;
@@ -108,16 +212,27 @@ async function verifiedResponse(input: {
   sessionId?: string;
   couponCode?: string;
   ipHash?: string;
+  userId?: string;
+  familyProfileId?: string;
+  tenantId?: string;
 }) {
-  await persistVerifiedPayment({
-    planId: input.planId,
-    orderId: input.orderId,
-    paymentId: input.paymentId,
-    mock: input.mock,
-    sessionId: input.sessionId,
-    couponCode: input.couponCode,
-    ipHash: input.ipHash,
-  });
+  await Promise.race([
+    persistVerifiedPayment({
+      planId: input.planId,
+      orderId: input.orderId,
+      paymentId: input.paymentId,
+      mock: input.mock,
+      sessionId: input.sessionId,
+      couponCode: input.couponCode,
+      ipHash: input.ipHash,
+      userId: input.userId,
+      familyProfileId: input.familyProfileId,
+      tenantId: input.tenantId,
+    }),
+    new Promise<undefined>((resolve) =>
+      setTimeout(() => resolve(undefined), PERSIST_TIMEOUT_MS)
+    ),
+  ]);
 
   const response = NextResponse.json({
     verified: true,
@@ -156,7 +271,12 @@ export async function POST(request: NextRequest) {
       mock?: boolean;
       sessionId?: string;
       couponCode?: string;
+      familyProfileId?: string;
     };
+
+    const b2cAuth = await getOptionalB2CUser(request);
+    const caToken = request.cookies.get(CA_SESSION_COOKIE)?.value;
+    const caSession = readCASession(caToken);
 
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
     const ipHash = hashIp(
@@ -185,7 +305,7 @@ export async function POST(request: NextRequest) {
       isMockAllowed &&
       razorpay_order_id.startsWith("order_mock_")
     ) {
-      if (!planId) {
+      if (!planId || (!isPurchasablePlanId(planId) && !isCaPurchasablePlanId(planId))) {
         return NextResponse.json({ error: "Invalid plan id" }, { status: 400 });
       }
       return await verifiedResponse({
@@ -196,6 +316,9 @@ export async function POST(request: NextRequest) {
         sessionId: body.sessionId,
         couponCode: body.couponCode,
         ipHash,
+        userId: b2cAuth?.user.id,
+        familyProfileId: body.familyProfileId,
+        tenantId: caSession?.tenantId,
       });
     }
 
@@ -208,6 +331,9 @@ export async function POST(request: NextRequest) {
           planId,
           sessionId: body.sessionId,
           ipHash,
+          userId: b2cAuth?.user.id,
+          familyProfileId: body.familyProfileId,
+          tenantId: caSession?.tenantId,
         });
       }
       return NextResponse.json(
@@ -244,18 +370,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!planId) {
-      return NextResponse.json({ error: "Invalid plan id" }, { status: 400 });
-    }
+    const resolvedOrder = await resolveVerifiedOrderPlan({
+      orderId: razorpay_order_id,
+      clientPlanId: planId,
+    });
+    if (resolvedOrder instanceof NextResponse) return resolvedOrder;
 
     return await verifiedResponse({
       mock: false,
       orderId: razorpay_order_id,
       paymentId: razorpay_payment_id,
-      planId,
+      planId: resolvedOrder.planId,
       sessionId: body.sessionId,
       couponCode: body.couponCode,
       ipHash,
+      userId: b2cAuth?.user.id,
+      familyProfileId: body.familyProfileId,
+      tenantId: caSession?.tenantId,
     });
   } catch (error) {
     console.error("verify error:", error);

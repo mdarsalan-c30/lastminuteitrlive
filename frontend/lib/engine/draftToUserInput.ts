@@ -50,9 +50,6 @@ function scaleByOwnership(amount: number, coOwnerPercent: number): number {
   return Math.round(amount * share);
 }
 
-/** Minimal non-zero placeholder so profiler routes ITR-2 in estimate mode. */
-const CG_ESTIMATE_PLACEHOLDER = 1;
-
 function businessTypeCodeFromDraft(
   matrixBusiness: BusinessType,
   incomeChips: string[]
@@ -92,6 +89,21 @@ function businessFromChips(
   income: DraftState["income"],
   depreciationBlocks?: DepreciationBlockDraft[]
 ): BusinessInput | undefined {
+  if (incomeChips.includes("fno")) {
+    const turnover = income.fnoTurnover ?? 0;
+    const nonSpec = income.fnoNonSpeculativeProfit ?? 0;
+    const spec = income.fnoSpeculativeProfit ?? 0;
+    if (turnover > 0 || nonSpec !== 0 || spec !== 0) {
+      return {
+        business_type: "regular_books",
+        actual_gross_receipts: Math.max(0, nonSpec) + Math.max(0, spec),
+        actual_expenses: Math.max(0, -nonSpec) + Math.max(0, -spec),
+        fno_turnover: turnover,
+        fno_non_speculative_profit: nonSpec,
+        fno_speculative_profit: spec,
+      };
+    }
+  }
   if (matrixBusiness === "v") {
     const receipts = income.businessRevenue ?? 0;
     const expenses = income.businessExpenses ?? 0;
@@ -105,26 +117,46 @@ function businessFromChips(
   }
   if (incomeChips.includes("business_presumptive") || matrixBusiness === "w") {
     const turnover = income.businessRevenue ?? 0;
+    // Never invent turnover — route via profile_flags.business_type_code instead.
+    if (turnover <= 0) return undefined;
     return {
       business_type: "presumptive_business",
-      turnover: turnover > 0 ? turnover : CG_ESTIMATE_PLACEHOLDER,
+      turnover,
       digital_turnover_pct: 1,
     };
   }
   if (incomeChips.includes("freelance")) {
     const receipts = income.freelanceRevenue ?? 0;
+    if (receipts <= 0) return undefined;
     return {
       business_type: "presumptive_profession",
-      gross_professional_receipts:
-        receipts > 0 ? receipts : CG_ESTIMATE_PLACEHOLDER,
+      gross_professional_receipts: receipts,
     };
   }
   return undefined;
 }
 
-function capitalGainsFromChips(incomeChips: string[]): CapitalGainsInput | undefined {
-  if (!incomeChips.includes("capital_gains")) return undefined;
-  return { stcg_other: CG_ESTIMATE_PLACEHOLDER };
+/**
+ * Capital-gains chip alone must NOT invent STCG amounts.
+ * Real CG amounts come from CAMS / broker extract stored on draft.capitalGains.
+ */
+function capitalGainsFromDraft(
+  draft: { capitalGains?: DraftState["capitalGains"] | null }
+): CapitalGainsInput | undefined {
+  const cg = draft.capitalGains;
+  if (!cg) return undefined;
+
+  const out: CapitalGainsInput = {};
+  if (cg.stcg_111a != null && cg.stcg_111a > 0) out.stcg_111a = cg.stcg_111a;
+  if (cg.ltcg_112a != null && cg.ltcg_112a > 0) out.ltcg_112a = cg.ltcg_112a;
+  if (cg.stcg_other != null && cg.stcg_other > 0) out.stcg_other = cg.stcg_other;
+  if (cg.ltcg_other != null && cg.ltcg_other > 0) out.ltcg_other = cg.ltcg_other;
+  if (cg.stcl_equity != null && cg.stcl_equity > 0) {
+    out.stcl_equity = cg.stcl_equity;
+  }
+  if (cg.ltcl != null && cg.ltcl > 0) out.ltcl = cg.ltcl;
+
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 function profileFlagsFromDraft(
@@ -202,7 +234,11 @@ export function draftToUserInput(draft: Pick<
   | "connectedConnectors"
 > & Partial<Pick<
   DraftState,
-  "extraProperties" | "carryForward" | "depreciationBlocks"
+  | "extraProperties"
+  | "carryForward"
+  | "depreciationBlocks"
+  | "capitalGains"
+  | "profession"
 >>): UserInput {
   const age = ageFromBand(draft.profile.ageBand);
   const gross = draft.income.grossSalary;
@@ -210,9 +246,12 @@ export function draftToUserInput(draft: Pick<
   const hasForm16 = draft.connectedConnectors.includes("form16");
   const fdInterest = draft.income.fdInterest;
 
+  const employerCount = draft.income.employers?.length ?? 0;
   const salary: UserInput["salary"] = {
     gross_salary: gross,
     basic_salary: basic,
+    // Multiple Form 16s: engine still applies one std deduction; flag for Form 12B.
+    ...(employerCount > 1 ? { multiple_employers: true } : {}),
   };
   if (draft.income.hraReceived > 0) {
     salary.hra_received = draft.income.hraReceived;
@@ -247,13 +286,16 @@ export function draftToUserInput(draft: Pick<
     : undefined;
   const housePropertyInput = usePortfolio ? undefined : primaryHp;
 
-  const capitalGainsInput = capitalGainsFromChips(draft.incomeChips);
+  const capitalGainsInput = capitalGainsFromDraft(draft);
   const businessInput = businessFromChips(
     draft.matrix.business,
     draft.incomeChips,
     draft.income,
     draft.depreciationBlocks
   );
+  if (businessInput && draft.profession) {
+    businessInput.profession_name = draft.profession;
+  }
   const carryForwardInput = carryForwardToInput(draft.carryForward);
   const profileFlags = profileFlagsFromDraft(
     draft.matrix,
@@ -292,7 +334,7 @@ export function draftToUserInput(draft: Pick<
     profile_flags: profileFlags,
     documents: {
       has_form16: hasForm16,
-      ...(draft.incomeChips.includes("capital_gains")
+      ...(draft.incomeChips.includes("capital_gains") || draft.capitalGains
         ? { has_capital_gains_statement: true }
         : {}),
     },

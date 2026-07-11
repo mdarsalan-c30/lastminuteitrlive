@@ -124,7 +124,7 @@ export async function addCoins(email: string, amount: number) {
   });
 }
 
-export async function useCoins(email: string, amountToUse: number) {
+export async function spendCoins(email: string, amountToUse: number) {
   const wallet = await getB2CWallet(email);
   if (wallet.coins < amountToUse) {
     throw new Error("Insufficient coins");

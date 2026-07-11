@@ -47,6 +47,11 @@ export function resolveEngineValue(
     return formatValue(val, engineField);
   }
 
+  if (engineField.startsWith("carry_forward.")) {
+    const val = getByPath(userInput, engineField);
+    return formatValue(val, engineField);
+  }
+
   if (engineField.startsWith("business.") && !engineField.startsWith("business_income.")) {
     const val = getByPath(userInput, engineField);
     return formatValue(val, engineField);

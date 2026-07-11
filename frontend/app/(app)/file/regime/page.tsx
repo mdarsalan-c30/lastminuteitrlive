@@ -17,6 +17,10 @@ import { TaxTraceExplainer } from "@/components/filing/TaxTraceExplainer";
 import { WhyWeNeedThis } from "@/components/filing/OnboardingForm";
 import { WHY_WE_ASK } from "@/lib/copy/trust";
 import { FILING_REGIME } from "@/lib/copy/filing";
+import {
+  REGIME_COPY,
+  requiresForm10IeaAttestation,
+} from "@/lib/copy/regime";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
 import { useDraftStore } from "@/lib/store/draft";
 import { trackEvent } from "@/lib/analytics";
@@ -26,8 +30,10 @@ import { CheckCircle2, TrendingDown } from "lucide-react";
 
 export default function RegimePage() {
   const router = useRouter();
-  const { regime, setRegime, mismatchResolved, filingPath } = useDraftStore();
+  const { regime, setRegime, mismatchResolved, filingPath, incomeChips } =
+    useDraftStore();
   const [useSnapshot, setUseSnapshot] = useState(false);
+  const [form10IeaAttested, setForm10IeaAttested] = useState(false);
   const {
     loading,
     error,
@@ -52,8 +58,13 @@ export default function RegimePage() {
   const savings = rc?.tax_saving ?? Math.abs(oldPay - newPay);
   const selectedPay = selected === "old" ? oldPay : newPay;
   const isRefund = selectedPay < 0;
+  const needs10Iea = requiresForm10IeaAttestation(incomeChips, selected);
+  const blockedBy10Iea = needs10Iea && !form10IeaAttested;
 
   const handleChoose = (r: "old" | "new") => {
+    if (requiresForm10IeaAttestation(incomeChips, r) && !form10IeaAttested) {
+      return;
+    }
     setRegime(r);
     trackEvent("regime_compare_completion", {
       selected_regime: r,
@@ -89,6 +100,7 @@ export default function RegimePage() {
 
       <WhyWeNeedThis defaultOpen>
         <p>{WHY_WE_ASK.regime}</p>
+        <p>{REGIME_COPY.defaultNew}</p>
         <p>
           Our recommendation is an estimate from your draft — you can pick either regime
           on the portal if you prefer.
@@ -127,7 +139,11 @@ export default function RegimePage() {
           <Button
             className="w-full sm:w-auto"
             onClick={() => handleChoose(fallbackRegime)}
-            disabled={loading}
+            disabled={
+              loading ||
+              (requiresForm10IeaAttestation(incomeChips, fallbackRegime) &&
+                !form10IeaAttested)
+            }
           >
             Continue with estimates ({fallbackRegime === "new" ? "New" : "Old"}{" "}
             regime)
@@ -185,6 +201,27 @@ export default function RegimePage() {
         )}
       </div>
 
+      {needs10Iea && (
+        <div className="mb-4 rounded-2xl border border-amber-500/40 bg-amber-500/5 p-4 space-y-2">
+          <h3 className="font-semibold text-amber-950">{REGIME_COPY.form10IeaTitle}</h3>
+          <p className="text-sm text-amber-900">{REGIME_COPY.form10IeaBody}</p>
+          <label className="flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              className="mt-1"
+              checked={form10IeaAttested}
+              onChange={(e) => setForm10IeaAttested(e.target.checked)}
+            />
+            <span>{REGIME_COPY.form10IeaCheckbox}</span>
+          </label>
+          {blockedBy10Iea && (
+            <p className="text-xs text-amber-800">
+              {REGIME_COPY.blockedWithoutAttestation}
+            </p>
+          )}
+        </div>
+      )}
+
       {!loading && rc && (
         <TaxTraceExplainer
           comparison={rc}
@@ -213,7 +250,8 @@ export default function RegimePage() {
 
       {!loading && rc && (
         <p className="mb-6 text-xs text-slate-500">
-          Breakeven deductions ~{formatINR(rc.breakeven_deductions)} · GTI{" "}
+          Old regime beats new once your deductions cross ~
+          {formatINR(rc.breakeven_deductions)} · Total income{" "}
           {formatINR(effectiveResult?.income_heads.gross_total_income ?? 0)}
         </p>
       )}
@@ -228,7 +266,7 @@ export default function RegimePage() {
       >
         <Button
           onClick={() => handleChoose(selected)}
-          disabled={loading || (!rc && !computeFailed)}
+          disabled={loading || (!rc && !computeFailed) || blockedBy10Iea}
         >
           I choose {selected === "new" ? "New" : "Old"} regime
         </Button>
@@ -236,7 +274,8 @@ export default function RegimePage() {
 
       {!mismatchResolved && (
         <p className="mt-3 text-xs text-amber-700">
-          Resolve import mismatches before filing on the portal.
+          Some numbers in your documents don&apos;t match yet — sort them out
+          before you file on the portal.
         </p>
       )}
     </FilingLayout>

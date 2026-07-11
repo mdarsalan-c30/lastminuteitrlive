@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BlogCTA } from "@/components/marketing/BlogCTA";
@@ -7,6 +8,7 @@ import { RelatedArticles } from "@/components/marketing/RelatedArticles";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { SiteHeader } from "@/components/marketing/SiteHeader";
 import { Badge } from "@/components/ui/badge";
+import { BRAND_ICON_PATH, BRAND_LOGO_ALT } from "@/lib/brand";
 import { getAllBlogPosts, getBlogPost } from "@/lib/content/blogs";
 import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -59,32 +61,50 @@ export default async function BlogArticlePage({ params }: PageProps) {
       <SiteHeader />
       
       {/* Hero Banner / Thumbnail */}
-      <div className="w-full bg-muted relative h-[250px] sm:h-[350px] lg:h-[400px] overflow-hidden">
-         {post.coverImage && (
-           <Image src={post.coverImage} alt={post.title} fill className="object-cover" priority sizes="100vw" />
+      <div className="w-full bg-muted relative min-h-[200px] sm:min-h-[280px] lg:min-h-[320px] overflow-hidden">
+         {post.coverImage ? (
+           <Image
+             src={post.coverImage}
+             alt=""
+             fill
+             priority
+             className="object-cover"
+             sizes="100vw"
+           />
+         ) : (
+           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/40 mix-blend-multiply" />
          )}
+         <div className="absolute inset-0 bg-black/35" />
+         <div className="relative flex min-h-[200px] flex-col items-center justify-center text-center px-6 sm:min-h-[280px] lg:min-h-[320px] sm:px-10 lg:px-16">
+            <Badge variant="secondary" className="mb-3 sm:mb-4 py-1 px-3 text-[10px] tracking-widest uppercase font-bold">{post.tags[0] || 'Article'}</Badge>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold font-manrope text-white max-w-5xl tracking-tight leading-snug [overflow-wrap:anywhere] drop-shadow-sm">
+               {post.title}
+            </h1>
+         </div>
       </div>
 
-      <main className="mx-auto max-w-[900px] min-w-0 px-5 py-10 sm:px-8 sm:py-12 bg-white -mt-10 relative z-10 rounded-t-3xl shadow-sm border border-border/50">
-        <div className="mb-8">
-          <Badge variant="secondary" className="mb-4 py-1 px-3 text-xs tracking-widest uppercase font-bold">{post.tags[0] || 'Article'}</Badge>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-manrope text-[#0B1220] tracking-tight leading-tight mb-6">
-             {post.title}
-          </h1>
+      <main className="mx-auto w-full max-w-6xl min-w-0 px-6 py-10 sm:px-10 sm:py-14 lg:px-16 bg-white -mt-8 relative z-10 rounded-t-3xl shadow-sm border border-border/50">
+        <div className="mb-8 max-w-5xl">
           <Link href="/blogs" className="text-sm font-semibold text-primary hover:underline flex items-center gap-1 w-fit mb-6">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
             Back to blogs
           </Link>
           
-          <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed mb-6 font-medium">
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6">
              {post.excerpt}
           </p>
 
           {/* Author & Meta */}
           <div className="flex items-center justify-between flex-wrap gap-4 pt-6 border-t border-border/60">
              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center font-bold text-primary">
-                   TS
+                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-white ring-1 ring-border/60">
+                  <Image
+                    src={BRAND_ICON_PATH}
+                    alt={BRAND_LOGO_ALT}
+                    fill
+                    className="object-contain p-1"
+                    sizes="40px"
+                  />
                 </div>
                 <div>
                    <p className="text-sm font-bold text-foreground">LastMinuteITR Editorial Team</p>
@@ -100,7 +120,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
         
         <SocialShare url={`/blogs/${slug}`} title={post.title} />
 
-        <article suppressHydrationWarning className="prose prose-lg sm:prose-xl max-w-none prose-headings:font-manrope prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-primary prose-img:mx-auto prose-p:leading-relaxed">
+        <article suppressHydrationWarning className="prose prose-sm sm:prose-base max-w-none prose-headings:font-manrope prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-p:leading-relaxed">
           {/^\s*</.test(post.body) ? (
             <div dangerouslySetInnerHTML={{ __html: post.body }} className="quill-content break-words overflow-x-hidden [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-xl [&_img]:shadow-sm [&_iframe]:max-w-full [&_p]:min-h-[1.5em]" />
           ) : (

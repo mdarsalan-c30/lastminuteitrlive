@@ -64,18 +64,19 @@ export function PortalGuideTable({
   }, [steps, mismatches]);
 
   const paymentLocked = !exportUnlocked;
-  const exportBlocked = paymentLocked || blockExport || mismatches.length > 0;
+  const exportBlocked = blockExport || mismatches.length > 0;
+  const copyBlocked = paymentLocked || exportBlocked;
   const progressPct = steps.length > 0 ? Math.round((doneCount / steps.length) * 100) : 0;
 
   const copyValue = useCallback(
     async (step: PortalStep) => {
-      if (exportBlocked) return;
+      if (copyBlocked) return;
       const text = step.ourValue != null ? String(step.ourValue) : step.action;
       await navigator.clipboard.writeText(text);
       setCopiedStep(step.step);
       setTimeout(() => setCopiedStep(null), 1500);
     },
-    [exportBlocked]
+    [copyBlocked]
   );
 
   const toggleDone = (stepNum: number) => {
@@ -119,7 +120,7 @@ export function PortalGuideTable({
               disabled={exportBlocked}
               title={
                 paymentLocked
-                  ? "Pay to unlock print and export"
+                  ? "Print the free guide. Pay to unlock exact values."
                   : blockExport
                     ? "Resolve mismatches before export"
                     : "Print guide"
@@ -164,10 +165,10 @@ export function PortalGuideTable({
           <div className="flex items-start gap-3">
             <Lock className="mt-0.5 size-4 shrink-0" aria-hidden />
             <div>
-              <p className="font-semibold">Filing guide locked</p>
+              <p className="font-semibold">Free guide is open</p>
               <p className="mt-0.5 text-blue-800/90">
-                Preview the steps below. Pay to unlock copy, print, and PDF export for
-                incometax.gov.in.
+                Use the screen-by-screen instructions below. Pay to unlock exact
+                values, copy buttons, JSON export, and the evidence pack.
               </p>
             </div>
           </div>
@@ -175,7 +176,7 @@ export function PortalGuideTable({
             href="/file/checkout/plans"
             className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90"
           >
-            Pay & unlock filing guide
+            Unlock exact values
           </Link>
         </div>
       )}
@@ -192,17 +193,9 @@ export function PortalGuideTable({
 
       <div
         className={cn(
-          "space-y-3 print:space-y-2",
-          paymentLocked && "relative"
+          "space-y-3 print:space-y-2"
         )}
       >
-        {paymentLocked && (
-          <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 top-24 z-10 bg-gradient-to-b from-transparent via-white/60 to-white print:hidden"
-            aria-hidden
-          />
-        )}
-
         {filtered.map((step) => {
           const isDone = localDone.has(step.step) || step.status === "done";
           const isMismatch =
@@ -218,7 +211,7 @@ export function PortalGuideTable({
                 "companion-step print:border print:shadow-none",
                 status === "mismatch" && "border-red-200 bg-red-50/40",
                 status === "done" && "border-emerald-200 bg-emerald-50/30",
-                paymentLocked && "select-none"
+                paymentLocked && "bg-white"
               )}
             >
               <div className="flex items-start gap-4">
@@ -273,7 +266,7 @@ export function PortalGuideTable({
                         Our value
                       </p>
                       <p className="font-mono text-sm font-semibold tabular-nums text-slate-900">
-                        {paymentLocked ? "••••••" : displayValue(step.ourValue)}
+                        {paymentLocked ? "Unlock value" : displayValue(step.ourValue)}
                       </p>
                     </div>
                     {step.proofRequired.length > 0 && (
@@ -289,7 +282,7 @@ export function PortalGuideTable({
                   className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-primary shadow-sm transition-all hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 print:hidden"
                   onClick={() => copyValue(step)}
                   disabled={
-                    exportBlocked || (step.ourValue == null && !step.action)
+                    copyBlocked || (step.ourValue == null && !step.action)
                   }
                   title={paymentLocked ? "Pay to unlock copy" : "Copy value"}
                 >

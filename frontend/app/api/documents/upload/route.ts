@@ -4,22 +4,10 @@ import {
   parseForm16MultiPart,
   scrubPanFromLogMessage,
 } from "@/lib/parsers/form16";
+import { isKnownConnector, isLiveConnector } from "@/lib/connectors/registry";
 
 const MAX_FORM16_FILES = 5;
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
-
-/** Connectors with real parsers today. Others must not invent numbers. */
-const LIVE_CONNECTORS = new Set(["form16"]);
-
-const COMING_SOON_CONNECTORS = new Set([
-  "ais",
-  "form26as",
-  "cams",
-  "groww",
-  "zerodha",
-  "mfcentral",
-  "bank",
-]);
 
 function collectUploadFiles(formData: FormData): File[] {
   const files: File[] = [];
@@ -71,7 +59,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (COMING_SOON_CONNECTORS.has(connectorId) && !LIVE_CONNECTORS.has(connectorId)) {
+    if (isKnownConnector(connectorId) && !isLiveConnector(connectorId)) {
       return NextResponse.json(
         {
           error:

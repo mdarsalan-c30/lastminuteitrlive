@@ -1,0 +1,428 @@
+{
+  "schemaVersion": "AY2026-27.walkthrough.v1",
+  "form": "ITR-1",
+  "assessmentYear": "AY 2026-27",
+  "portalUrl": "https://www.incometax.gov.in/iec/foportal/",
+  "hasScreenshots": true,
+  "chapters": [
+    {
+      "id": "before-you-start",
+      "order": 0,
+      "title": "Before you start",
+      "subtitle": "Confirm ITR-1 fits you, and keep documents ready.",
+      "heroImage": "image1.jpg",
+      "portalPath": "incometax.gov.in → Individual / HUF → Salaried",
+      "tips": [
+        "ITR-1 is only for resident salaried filers with simple income.",
+        "Keep Form 16, Form 26AS, AIS, bank statements, and investment proofs open."
+      ],
+      "warnings": [
+        "If you have capital gains above ₹1.25 lakh (112A), business income, foreign assets, or more than two house properties — stop. You need ITR-2/3/4."
+      ],
+      "steps": [
+        {
+          "id": "open-portal",
+          "title": "Open the Income Tax portal",
+          "clickPath": "Browser → incometax.gov.in",
+          "plainEnglish": "Open https://www.incometax.gov.in/iec/foportal/ in a new tab. Keep LastMinute ITR open beside it.",
+          "hindiShort": "इनकम टैक्स पोर्टल नया टैब में खोलें।",
+          "action": "click",
+          "image": "image1.jpg"
+        },
+        {
+          "id": "check-form",
+          "title": "Check which ITR applies",
+          "clickPath": "Individual/HUF → Salaried Employees → Return / Forms applicable to me",
+          "plainEnglish": "Use this only if the portal (and LastMinute) say ITR-1. Otherwise switch the form selector above.",
+          "hindiShort": "पक्का करें कि आपका फॉर्म ITR-1 है।",
+          "action": "verify",
+          "image": "image2.jpg"
+        },
+        {
+          "id": "docs-ready",
+          "title": "Documents checklist",
+          "clickPath": "Your files",
+          "plainEnglish": "Form 16 (employer), Form 26AS, AIS, bank statements, and investment proofs (policy / document numbers).",
+          "action": "note",
+          "image": "image3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "prep-26as-ais",
+      "order": 1,
+      "title": "Login · 26AS · AIS",
+      "subtitle": "Download what the tax department already knows, then match it.",
+      "heroImage": "image4.jpg",
+      "portalPath": "Login → e-File → Form 26AS → AIS",
+      "tips": [
+        "Select Assessment Year AY 2026-27 (next year after FY 2025-26).",
+        "Match salary, dividend, and savings interest with your Form 16 and bank."
+      ],
+      "warnings": [
+        "If TDS on 26AS does not match Form 16, fix it before you file."
+      ],
+      "steps": [
+        {
+          "id": "login",
+          "title": "Login (or register)",
+          "clickPath": "Login → PAN / Aadhaar / User ID",
+          "plainEnglish": "Sign in with PAN or Aadhaar. Register first if you do not have an account.",
+          "hindiShort": "PAN या आधार से लॉगिन करें।",
+          "action": "click",
+          "image": "image4.jpg"
+        },
+        {
+          "id": "open-26as",
+          "title": "Open Form 26AS",
+          "clickPath": "e-File → Income Tax Returns → View Form 26AS",
+          "plainEnglish": "Click I Agree, then View Tax Credit (Form 26AS).",
+          "hindiShort": "Form 26AS खोलें।",
+          "action": "click",
+          "image": "image5.jpg"
+        },
+        {
+          "id": "download-26as",
+          "title": "Download 26AS for AY 2026-27",
+          "clickPath": "Assessment Year → AY 2026-27 → View as HTML → Export as PDF",
+          "plainEnglish": "Choose AY 2026-27, view as HTML, then export PDF. Check TDS lines carefully.",
+          "action": "verify",
+          "image": "image6.jpg",
+          "ourValueKey": "taxes_paid.tds_salary",
+          "tip": "Your LastMinute TDS (when unlocked) should be close to Form 16 + 26AS."
+        },
+        {
+          "id": "download-ais",
+          "title": "Download AIS / TIS",
+          "clickPath": "AIS → AIS → Download AIS/TIS (F.Y. 2025-26)",
+          "plainEnglish": "Download AIS for FY 2025-26. Match salary, dividend, and bank interest with your draft.",
+          "hindiShort": "AIS डाउनलोड कर के मिलान करें।",
+          "action": "verify",
+          "image": "image7.jpg"
+        }
+      ]
+    },
+    {
+      "id": "start-filing",
+      "order": 2,
+      "title": "Start filing ITR-1",
+      "subtitle": "Pick AY 2026-27, Online mode, and ITR-1.",
+      "heroImage": "image8.jpg",
+      "portalPath": "File Now → AY → Online → ITR-1",
+      "tips": [
+        "Mode of filing must be Online for this guide.",
+        "Choose Start New Filing unless you are revising an earlier draft."
+      ],
+      "steps": [
+        {
+          "id": "file-now",
+          "title": "File Now",
+          "clickPath": "Dashboard left panel → check details → File Now",
+          "plainEnglish": "Confirm the details on the left. Update if wrong, then click File Now.",
+          "action": "click",
+          "image": "image8.jpg"
+        },
+        {
+          "id": "ay-online",
+          "title": "Assessment year + Online",
+          "clickPath": "Assessment Year → AY 2026-27 → Mode of Filing → Online → Continue",
+          "plainEnglish": "Select AY 2026-27 and Online, then Continue.",
+          "action": "click",
+          "image": "image9.jpg"
+        },
+        {
+          "id": "new-filing",
+          "title": "Start New Filing",
+          "clickPath": "Start New Filing → Individual → Proceed",
+          "plainEnglish": "Choose Start New Filing, then Individual, then Proceed.",
+          "action": "click",
+          "image": "image10.jpg"
+        },
+        {
+          "id": "pick-itr1",
+          "title": "Select ITR-1",
+          "clickPath": "ITR-1 → Proceed With ITR-1 → Let’s Get Started",
+          "plainEnglish": "Select ITR-1, Proceed With ITR-1, then Let’s Get Started.",
+          "action": "click",
+          "image": "image11.jpg"
+        },
+        {
+          "id": "exemption-reason",
+          "title": "Why you are filing",
+          "clickPath": "Taxable income is more than basic exemption limit → Continue",
+          "plainEnglish": "Select that taxable income is more than the basic exemption limit, then Continue.",
+          "action": "click",
+          "image": "image12.jpg"
+        }
+      ]
+    },
+    {
+      "id": "personal-regime-bank",
+      "order": 3,
+      "title": "Personal info · Regime · Bank",
+      "subtitle": "Fix personal details, employment, old/new regime, and bank account.",
+      "heroImage": "image13.jpg",
+      "portalPath": "Personal Information → Nature of Employment → Regime → Bank",
+      "tips": [
+        "Portal regime question: Yes = Old tax regime, No = New tax regime.",
+        "Filed u/s 139(1) if on time; 139(4) if after the due date."
+      ],
+      "warnings": [
+        "If you are filing for yourself, answer No to the representative-assessee question."
+      ],
+      "steps": [
+        {
+          "id": "personal-info",
+          "title": "Personal Information",
+          "clickPath": "Select Personal Information → Edit if needed",
+          "plainEnglish": "Open Personal Information. Edit anything wrong, then save.",
+          "action": "verify",
+          "image": "image13.jpg"
+        },
+        {
+          "id": "employment-section",
+          "title": "Nature of employment + section",
+          "clickPath": "Nature of Employment → Others (private) → Filed u/s → 139(1) or 139(4)",
+          "plainEnglish": "Private employees usually pick Others. Use 139(1) before due date, or 139(4) if late.",
+          "action": "click",
+          "image": "image14.jpg",
+          "tip": "LastMinute uses your late-filing flag to suggest 139(1) vs 139(4)."
+        },
+        {
+          "id": "regime",
+          "title": "Old vs new regime",
+          "clickPath": "Are you opting out of new regime? → Yes (Old) / No (New)",
+          "plainEnglish": "Yes means Old regime. No means New regime. Match the regime LastMinute recommended.",
+          "hindiShort": "Yes = पुराना, No = नया टैक्स स्लैब।",
+          "action": "enter",
+          "image": "image15.jpg",
+          "ourValueKey": "regime_comparison.recommended_regime"
+        },
+        {
+          "id": "bank",
+          "title": "Bank account",
+          "clickPath": "Add / link bank account → verify IFSC & account",
+          "plainEnglish": "Add and link a bank account if missing. Refunds go only to a validated account.",
+          "action": "verify",
+          "image": "image16.jpg"
+        }
+      ]
+    },
+    {
+      "id": "gross-total-income",
+      "order": 4,
+      "title": "Gross total income",
+      "subtitle": "Salary, house property, other sources, exempt income, and small 112A gains.",
+      "heroImage": "image17.jpg",
+      "portalPath": "Gross Total Income → B1 / B2 / B3 / C3 / C3(a)",
+      "tips": [
+        "For dividends, enter month-wise breakup if the portal asks.",
+        "112A LTCG on ITR-1 must stay under ₹1.25 lakh with no other capital gains."
+      ],
+      "warnings": [
+        "If LTCG exceeds ₹1.25 lakh or you have STCG / other gains — switch to ITR-2."
+      ],
+      "steps": [
+        {
+          "id": "open-gti",
+          "title": "Open Gross Total Income",
+          "clickPath": "Select → Gross Total Income",
+          "plainEnglish": "Open the Gross Total Income section from the question list.",
+          "action": "click",
+          "image": "image17.jpg"
+        },
+        {
+          "id": "salary-b1",
+          "title": "B1 · Salary",
+          "clickPath": "B1. Income from Salary → Edit if wrong → Save",
+          "plainEnglish": "Check salary against Form 16. Use Add Another for exempt allowances if needed.",
+          "action": "enter",
+          "image": "image18.jpg",
+          "ourValueKey": "income_heads.gross_salary"
+        },
+        {
+          "id": "hp-b2",
+          "title": "B2 · House property",
+          "clickPath": "B2. Income from House Property → fill → Save",
+          "plainEnglish": "Fill house property if you have one. Skip if not applicable.",
+          "action": "enter",
+          "image": "image19.jpg",
+          "ourValueKey": "income_heads.net_house_property_income"
+        },
+        {
+          "id": "other-b3",
+          "title": "B3 · Other sources",
+          "clickPath": "B3. Income from Other Sources → Edit → Save",
+          "plainEnglish": "Check interest and dividend. Fix wrong AIS prefill with Edit.",
+          "action": "enter",
+          "image": "image20.jpg",
+          "ourValueKey": "income_heads.total_other_income"
+        },
+        {
+          "id": "exempt-c3",
+          "title": "C3 · Exempt income",
+          "clickPath": "C3. Exempt Income → fill if any → Save",
+          "plainEnglish": "Enter exempt income only if it applies to you.",
+          "action": "skip",
+          "image": "image21.jpg"
+        },
+        {
+          "id": "ltcg-112a",
+          "title": "C3(a) · LTCG 112A (≤ ₹1.25L)",
+          "clickPath": "C3(a). Long Term capital gains u/s 112A → fill → Save",
+          "plainEnglish": "Only if equity LTCG is under ₹1.25 lakh and you have no other capital gains.",
+          "action": "enter",
+          "image": "image22.jpg",
+          "ourValueKey": "income_heads.ltcg_112a_net",
+          "warning": "Above ₹1.25 lakh → ITR-2 required."
+        }
+      ]
+    },
+    {
+      "id": "deductions-tax-paid",
+      "order": 5,
+      "title": "Deductions · Tax paid",
+      "subtitle": "Claim only deductions you can prove. Match TDS with Form 16 and 26AS.",
+      "heroImage": "image23.jpg",
+      "portalPath": "Total Deductions → Tax Paid",
+      "tips": [
+        "Many Chapter VI-A deductions work only in the old regime.",
+        "New regime still allows standard deduction and employer NPS (80CCD(2)) where eligible."
+      ],
+      "steps": [
+        {
+          "id": "deductions",
+          "title": "Total Deductions",
+          "clickPath": "Total Deductions → enter eligible sections → Save",
+          "plainEnglish": "Open Total Deductions. Enter only amounts you have proof for (80C, 80D, etc.).",
+          "action": "enter",
+          "image": "image23.jpg",
+          "ourValueKey": "deductions.total_chapter_via"
+        },
+        {
+          "id": "tax-paid",
+          "title": "Tax Paid (TDS)",
+          "clickPath": "Tax Paid → verify TDS / advance tax",
+          "plainEnglish": "Verify TDS with Form 16 and Form 26AS. Fix mismatches before you continue.",
+          "action": "verify",
+          "image": "image24.jpg",
+          "ourValueKey": "taxes_paid.tds_salary"
+        }
+      ]
+    },
+    {
+      "id": "liability-confirm",
+      "order": 6,
+      "title": "Tax liability · Confirm",
+      "subtitle": "Check the computation once, then Confirm.",
+      "heroImage": "image25.jpg",
+      "portalPath": "Verify tax liability → D11 → Confirm → Proceed to Verification",
+      "tips": [
+        "Under the new regime, resident individuals may get rebate up to ₹60,000 when total income is within ₹12 lakh (slab tax only) — this is an estimate tip, not a guarantee."
+      ],
+      "steps": [
+        {
+          "id": "liability",
+          "title": "Verify tax liability",
+          "clickPath": "Verify your tax liability details",
+          "plainEnglish": "Open the liability screen. Compare totals with LastMinute’s estimate.",
+          "action": "verify",
+          "image": "image25.jpg",
+          "ourValueKey": "regime_comparison.recommended_regime_net_payable"
+        },
+        {
+          "id": "d11-confirm",
+          "title": "Check D11 and Confirm",
+          "clickPath": "D11. Total Tax, Fee and Interest → Confirm",
+          "plainEnglish": "Recheck D11 (D5+D7+D8+D9+D10+D10a−D6), then Confirm.",
+          "action": "click",
+          "image": "image26.jpg"
+        },
+        {
+          "id": "proceed-verification",
+          "title": "Proceed to Verification",
+          "clickPath": "Proceed to Verification",
+          "plainEnglish": "After all sections look right, click Proceed to Verification.",
+          "action": "click",
+          "image": "image27.jpg"
+        }
+      ]
+    },
+    {
+      "id": "pay-preview-submit",
+      "order": 7,
+      "title": "Pay / Refund · Preview · Submit",
+      "subtitle": "Pay now or later if tax is due. Preview carefully, then submit.",
+      "heroImage": "image28.jpg",
+      "portalPath": "Pay Now/Later → Preview → Validation → Submit",
+      "warnings": [
+        "If you Pay Now, wait until the challan appears in Tax Paid Schedule before you submit."
+      ],
+      "steps": [
+        {
+          "id": "refund-or-pay",
+          "title": "Refund or pay",
+          "clickPath": "Refund path OR Pay Later / Pay Now",
+          "plainEnglish": "If refund: continue. If tax due: Pay Later or Pay Now. After Pay Now, confirm challan updated.",
+          "action": "verify",
+          "image": "image28.jpg",
+          "ourValueKey": "regime_comparison.recommended_regime_net_payable"
+        },
+        {
+          "id": "preview-submit",
+          "title": "Preview and submit",
+          "clickPath": "Preview And Submit Your Return → tick boxes → Proceed to Validation → Preview",
+          "plainEnglish": "Preview the return. Leave the three optional verification shortcuts if following Aadhaar OTP later. Proceed to Validation, then Preview again.",
+          "action": "click",
+          "image": "image29.jpg"
+        },
+        {
+          "id": "final-validation",
+          "title": "Proceed to Verification",
+          "clickPath": "Proceed to Validation → Proceed To Verification",
+          "plainEnglish": "Re-check details, then Proceed to Verification.",
+          "action": "click",
+          "image": "image30.jpg"
+        }
+      ]
+    },
+    {
+      "id": "everify-receipt",
+      "order": 8,
+      "title": "E-verify · Download receipt",
+      "subtitle": "Finish with Aadhaar OTP. Save your acknowledgement.",
+      "heroImage": "image31.jpg",
+      "portalPath": "E-Verify Now → Aadhaar OTP → Submit → Download Receipt",
+      "tips": [
+        "We recommend Aadhaar OTP. E-verify within 30 days of filing."
+      ],
+      "steps": [
+        {
+          "id": "everify-now",
+          "title": "E-Verify Now",
+          "clickPath": "E-Verify Now → Continue",
+          "plainEnglish": "Choose E-Verify Now and Continue.",
+          "action": "click",
+          "image": "image31.jpg"
+        },
+        {
+          "id": "aadhaar-otp",
+          "title": "Aadhaar OTP",
+          "clickPath": "OTP on mobile linked to Aadhaar → I agree → Generate OTP → Validate",
+          "plainEnglish": "Select Aadhaar OTP, agree, generate OTP, enter it, Validate, then Submit.",
+          "hindiShort": "आधार OTP से वेरिफाई करें।",
+          "action": "click",
+          "image": "image32.jpg"
+        },
+        {
+          "id": "receipt",
+          "title": "Download receipt",
+          "clickPath": "Proceed → Download Receipt",
+          "plainEnglish": "Congratulations — download the receipt and paste the acknowledgement number in LastMinute Done.",
+          "action": "note",
+          "image": "image33.jpg"
+        }
+      ]
+    }
+  ]
+}

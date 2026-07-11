@@ -50,6 +50,35 @@ def compute_business_income(biz: BusinessInput) -> dict:
         }
 
     if biz.business_type == "regular_books":
+        # Prefer explicit F&O Schedule BP buckets when provided (isolated set-off).
+        if (
+            biz.fno_turnover > 0
+            or biz.fno_non_speculative_profit != 0
+            or biz.fno_speculative_profit != 0
+        ):
+            non_spec = biz.fno_non_speculative_profit
+            spec = biz.fno_speculative_profit
+            # Speculative and non-speculative losses stay in their own buckets —
+            # we do not net them against each other here.
+            profit = max(0.0, non_spec) + max(0.0, spec)
+            current_year_loss_cf = round(
+                max(0.0, -non_spec) + max(0.0, -spec), 2
+            )
+            return {
+                "presumptive_44ad": 0.0,
+                "presumptive_44ada": 0.0,
+                "books_profit": round(profit, 2),
+                "net_business_income": round(profit, 2),
+                "section_used": "books_fno",
+                "presumptive_eligible": False,
+                "depreciation_allowed": 0.0,
+                "depreciation_schedule": [],
+                "depreciation_st_gain_50": 0.0,
+                "current_year_business_loss_cf": current_year_loss_cf,
+                "fno_turnover": biz.fno_turnover,
+                "audit_flag_10cr": biz.fno_turnover >= 10_00_00_000,
+            }
+
         dep = compute_depreciation(biz.depreciation_blocks)
         raw_profit = (
             biz.actual_gross_receipts

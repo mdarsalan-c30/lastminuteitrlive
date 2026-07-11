@@ -7,6 +7,7 @@ import { Sheet, SheetCloseLink, SheetContent, SheetTrigger } from "@/components/
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
 
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { NavMenu } from "@/components/nav/NavMenu";
 
 const PRODUCTS_LINKS = [
@@ -47,14 +48,7 @@ export function SiteHeader() {
       )}
     >
       <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-4 px-8 h-[72px] max-[560px]:h-[64px] max-[560px]:px-5">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 font-manrope font-extrabold text-[18px] tracking-[-0.01em] text-[#0B1220] max-[560px]:text-base">
-          <svg className="size-[30px] max-[560px]:size-[26px] flex-shrink-0" viewBox="0 0 48 48" fill="none" aria-hidden>
-            <path d="M14 6h12l8 8v6H14V6z" fill="#bfe9e0"/>
-            <path d="M10 14h13v9h13l-13 13-13-13h9v-9z" fill="#0e5f63"/>
-          </svg>
-          <span>Lastminute<span className="text-[#0e5f63]">ITR</span></span>
-        </Link>
+        <BrandLogo variant="wordmark" size="sm" priority />
 
         {/* Desktop Nav */}
         <nav className="hidden items-center gap-9 lg:flex" aria-label="Main navigation">
@@ -70,14 +64,14 @@ export function SiteHeader() {
           {/* Upload Form 16 — secondary pill (hidden on mobile) */}
           <Link
             href="/file/import/documents?source=form16"
-            className="btn-pill-secondary hidden py-[10px] px-5 text-[14px] max-[860px]:hidden"
+            className="btn-pill-secondary hidden py-[10px] px-5 text-[14px] min-[860px]:inline-flex"
           >
             Upload Form 16
           </Link>
           {/* Start my return — primary pill */}
           <Link
             href="/#b2c-name"
-            className="btn-pill-primary py-[10px] px-5 text-[14px] max-[560px]:px-4 max-[380px]:hidden"
+            className="btn-pill-primary py-[10px] px-5 text-[14px] max-[560px]:px-3.5 max-[560px]:py-2 max-[560px]:text-[13px] max-[360px]:hidden"
           >
             Start my return
           </Link>

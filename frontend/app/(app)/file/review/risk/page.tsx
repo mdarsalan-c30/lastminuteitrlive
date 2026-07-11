@@ -18,8 +18,21 @@ import { PresubmitChecklist } from "@/components/filing/PresubmitChecklist";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
 
 export default function RiskReviewPage() {
-  const { mismatchResolved, income, deductions, recommendedForm, regime } =
-    useDraftStore();
+  const {
+    mismatchResolved,
+    income,
+    deductions,
+    recommendedForm,
+    regime,
+    connectedConnectors,
+  } = useDraftStore();
+  const aisGrossSalary = useDraftStore((s) => s.aisFigures?.grossSalary);
+  const hasAis = connectedConnectors.includes("ais");
+  const salaryMismatchOpen =
+    !mismatchResolved &&
+    hasAis &&
+    typeof aisGrossSalary === "number" &&
+    Math.abs(aisGrossSalary - income.grossSalary) > 100;
   const [useSnapshot, setUseSnapshot] = useState(false);
   const {
     loading,
@@ -34,7 +47,11 @@ export default function RiskReviewPage() {
   } = useDraftTaxCompute();
 
   const effectiveResult = result ?? (useSnapshot ? lastSnapshot : null);
-  const totalIncome = income.grossSalary + income.fdInterest;
+  // Prefer the engine's gross total income — it includes business, capital
+  // gains, and house property, not just salary + interest.
+  const totalIncome =
+    effectiveResult?.income_heads.gross_total_income ??
+    income.grossSalary + income.fdInterest;
   const activeRegime =
     regime ?? effectiveResult?.regime_comparison.recommended_regime ?? "new";
   const selectedPay = effectiveResult?.regime_comparison
@@ -110,18 +127,27 @@ export default function RiskReviewPage() {
             </p>
           )}
         <p className="text-sm text-slate-700 mt-1">
-          <strong>Mismatches:</strong> {mismatchResolved ? "2 resolved · 0 open" : "1 open"}
+          <strong>Number differences:</strong>{" "}
+          {salaryMismatchOpen
+            ? "1 open — your documents show different numbers; fix before filing"
+            : hasAis
+              ? "None open"
+              : "None open · AIS not imported yet (cross-check recommended)"}
         </p>
         <p className="text-sm text-slate-700 mt-1 flex items-center gap-2">
           <strong>ITR form:</strong> {recommendedForm}
-          <RiskBadge variant="green">Low risk</RiskBadge>
+          <RiskBadge variant={salaryMismatchOpen ? "yellow" : "green"}>
+            {salaryMismatchOpen ? "Needs attention" : "Low risk"}
+          </RiskBadge>
         </p>
       </Card>
 
       <PresubmitChecklist
         className="mt-8 pt-8 border-t border-slate-200"
         secondaryAction={
-          <Button variant="ghost">Download proof checklist (PDF)</Button>
+          <Button variant="ghost" onClick={() => window.print()}>
+            Print proof checklist
+          </Button>
         }
       />
     </FilingLayout>

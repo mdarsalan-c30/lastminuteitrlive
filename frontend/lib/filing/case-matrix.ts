@@ -46,6 +46,8 @@ export function resolveRecommendedForm(
     chips.has("business_presumptive") ||
     chips.has("freelance");
 
+  const hasFno = chips.has("fno");
+
   const hasComplexNonBusiness =
     chips.has("capital_gains") ||
     chips.has("foreign") ||
@@ -60,6 +62,15 @@ export function resolveRecommendedForm(
       caseId: `BLOCK-${effectiveIncome}${age}-${business}`,
       expert: true,
       reason: "Minor — income clubbed with parent",
+    };
+  }
+
+  if (hasFno) {
+    return {
+      form: "ITR-3",
+      caseId: `ITR3-${effectiveIncome}${age}-fno`,
+      expert: true,
+      reason: "F&O is non-speculative business income — ITR-3 with trading schedules",
     };
   }
   
@@ -123,7 +134,7 @@ export function getItrPathReasons(
     rec.reason,
     `Income band ${matrix.income} · Age ${matrix.age}`,
     `Business type ${matrix.business}`,
-    "Lawful optimization only — no blocked claims",
+    "Only legal savings — no blocked claims",
   ];
 }
 

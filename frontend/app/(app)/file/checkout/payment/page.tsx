@@ -11,6 +11,14 @@ import RazorpayButton from "@/components/filing/checkout/RazorpayButton";
 import { usePaymentSession } from "@/lib/hooks/usePaymentSession";
 import { CHECKOUT_PAYMENT, FILING_COMPANION } from "@/lib/copy/filing";
 import { PAYMENT_COPY } from "@/lib/copy/marketing";
+import { getBrowserSessionId } from "@/lib/store/sessionInit";
+import {
+  getActiveProfileId,
+  restoreWorkspace,
+  saveDraftToProfile,
+  setActiveProfileId,
+  useFilingCredit,
+} from "@/lib/family/client";
 import {
   Card,
   FilingActions,
@@ -41,6 +49,58 @@ export default function PaymentPage() {
     percentageOff?: number;
     amountOff?: number;
   } | null>(null);
+
+  const [filingForName, setFilingForName] = useState<string | null>(null);
+  const [activeProfileId, setActiveProfileIdState] = useState<string | null>(null);
+  const [filingsRemaining, setFilingsRemaining] = useState(0);
+  const [usingCredit, setUsingCredit] = useState(false);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const ws = await restoreWorkspace();
+        setFilingsRemaining(ws.filingsRemaining);
+        const pid = getActiveProfileId() ?? ws.activeProfileId;
+        setActiveProfileIdState(pid);
+        if (pid) setActiveProfileId(pid);
+        const person = ws.profiles.find((p) => p.id === pid);
+        setFilingForName(person?.name ?? null);
+      } catch {
+        setFilingForName(null);
+      }
+    })();
+  }, []);
+
+  const finishPayment = async () => {
+    const profileId = activeProfileId ?? getActiveProfileId();
+    if (!profileId) {
+      setPaymentError("Pick who you are filing for first (People I file for).");
+      return;
+    }
+    setPaymentVerified(plan);
+    await refreshPaymentSession();
+    // Best-effort save; never block the unlock redirect on it (can be slow).
+    void saveDraftToProfile(profileId).catch(() => {});
+    router.push("/file/companion?unlocked=1");
+  };
+
+  const handleUseCredit = async () => {
+    const profileId = activeProfileId ?? getActiveProfileId();
+    if (!profileId) {
+      setPaymentError("Pick who you are filing for first (People I file for).");
+      return;
+    }
+    setUsingCredit(true);
+    setPaymentError(null);
+    try {
+      await useFilingCredit(profileId, plan);
+      await finishPayment();
+    } catch (err) {
+      setPaymentError(err instanceof Error ? err.message : "Could not use credit");
+    } finally {
+      setUsingCredit(false);
+    }
+  };
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -97,6 +157,11 @@ export default function PaymentPage() {
 
   const handleFreeCheckout = async () => {
     setPaymentError(null);
+    const profileId = activeProfileId ?? getActiveProfileId();
+    if (!profileId) {
+      setPaymentError("Pick who you are filing for first (People I file for).");
+      return;
+    }
     try {
       const res = await fetch("/api/coupons/redeem", {
         method: "POST",
@@ -108,6 +173,7 @@ export default function PaymentPage() {
       
       setPaymentVerified(plan);
       await refreshPaymentSession();
+      await saveDraftToProfile(profileId).catch(() => {});
       router.push("/file/companion?unlocked=1");
     } catch (err) {
       setPaymentError(err instanceof Error ? err.message : "Checkout failed");
@@ -123,6 +189,25 @@ export default function PaymentPage() {
             title={CHECKOUT_PAYMENT.title}
             subtitle={CHECKOUT_PAYMENT.subtitle}
           />
+          {filingForName && (
+            <p className="mt-3 text-sm text-slate-600">
+              Unlocking guide for <strong>{filingForName}</strong>
+              {filingsRemaining > 0 && (
+                <span className="text-slate-500">
+                  {" "}
+                  · {filingsRemaining} filing credit{filingsRemaining === 1 ? "" : "s"} in wallet
+                </span>
+              )}
+            </p>
+          )}
+          {!filingForName && (
+            <p className="mt-3 text-sm text-amber-700">
+              <Link href="/file/family" className="font-semibold underline underline-offset-2">
+                Pick who you are filing for
+              </Link>{" "}
+              before payment — each person needs their own unlock.
+            </p>
+          )}
         </div>
 
         {/* Premium Plan Card */}
@@ -222,6 +307,56 @@ export default function PaymentPage() {
           </div>
         )}
 
+        {/* PAYMENT_API_TODO — Razorpay create/verify when production keys are live. */}
+        {!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID && !isFree && (
+          <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm space-y-2">
+            <p className="font-semibold">Payment gateway wiring in progress</p>
+            <p>
+              Razorpay will be connected here later. For now you can continue with a
+              development unlock so filing assistance stays testable.
+            </p>
+            <Button
+              variant="secondary"
+              className="w-full sm:w-auto"
+              onClick={async () => {
+                setPaymentError(null);
+                const profileId = activeProfileId ?? getActiveProfileId();
+                if (!profileId) {
+                  setPaymentError("Pick who you are filing for first (People I file for).");
+                  return;
+                }
+                try {
+                  const res = await fetch("/api/payments/verify", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "same-origin",
+                    body: JSON.stringify({
+                      razorpay_order_id: `order_mock_${Date.now()}`,
+                      razorpay_payment_id: `pay_mock_${Date.now()}`,
+                      razorpay_signature: "mock_signature",
+                      planId: plan,
+                      mock: true,
+                      sessionId: getBrowserSessionId(),
+                      familyProfileId: profileId ?? undefined,
+                    }),
+                  });
+                  const data = await res.json();
+                  if (!res.ok || !data.verified) {
+                    throw new Error(data.error ?? "Dev unlock failed");
+                  }
+                  await finishPayment();
+                } catch (err) {
+                  setPaymentError(
+                    err instanceof Error ? err.message : "Dev unlock failed"
+                  );
+                }
+              }}
+            >
+              Continue without live payment (dev)
+            </Button>
+          </div>
+        )}
+
         <FilingActions
           hint={
             <div className="flex items-center justify-center gap-2 text-slate-500 text-xs">
@@ -230,6 +365,16 @@ export default function PaymentPage() {
             </div>
           }
         >
+          {filingsRemaining > 0 && !isFree && (
+            <Button
+              variant="secondary"
+              className="min-h-12 w-full md:w-auto rounded-xl text-base"
+              onClick={handleUseCredit}
+              disabled={usingCredit}
+            >
+              {usingCredit ? "Applying credit…" : `Use 1 filing credit (${filingsRemaining} left)`}
+            </Button>
+          )}
           {isFree ? (
             <Button
               variant="primary"
@@ -242,11 +387,8 @@ export default function PaymentPage() {
             <RazorpayButton
               planId={plan}
               couponCode={validatedDiscount?.code}
-              onSuccess={async () => {
-                setPaymentVerified(plan);
-                await refreshPaymentSession();
-                router.push("/file/companion?unlocked=1");
-              }}
+              familyProfileId={activeProfileId}
+              onSuccess={finishPayment}
               onError={setPaymentError}
               className="min-h-12 w-full md:w-auto rounded-xl text-base shadow-lg"
             />

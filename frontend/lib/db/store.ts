@@ -15,6 +15,9 @@ const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 
 if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = prisma;
 
+/** Shared Prisma client for targeted queries (avoid full-table scans on hot paths). */
+export { prisma };
+
 export function genId(prefix: string): string {
   return `${prefix}_${randomUUID().replace(/-/g, "").slice(0, 16)}`;
 }
@@ -29,6 +32,7 @@ const modelMap: Record<string, keyof typeof prisma> = {
   couponRedemptions: "couponRedemption",
   payments: "payment",
   companionGrants: "companionGrant",
+  invoices: "invoice",
   sessionEvents: "sessionEvent",
   crmContacts: "crmContact",
   crmTasks: "crmTask",
@@ -41,7 +45,8 @@ const modelMap: Record<string, keyof typeof prisma> = {
   referralConfig: "referralConfig",
   referralCodes: "referralCode",
   referralRedemptions: "referralRedemption",
-  b2cWallets: "b2CWallet"
+  b2cWallets: "b2CWallet",
+  familyProfiles: "familyProfile"
 };
 
 function serializeDates(obj: any): any {

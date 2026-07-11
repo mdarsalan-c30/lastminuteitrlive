@@ -4,9 +4,8 @@ import {
   saveChatMessages,
   type ChatMessage,
 } from "@/lib/chat-store";
-
-const SUPPORT_REPLY =
-  "Thanks for reaching out. Our team will review your message and respond by email within 1–2 business days. For urgent filing help, continue with your companion guide on incometax.gov.in.";
+import { answerGenieQuestion } from "@/lib/filing/genieAnswer";
+import type { GenieChatContext } from "@/lib/filing/genieContext";
 
 export async function GET(request: NextRequest) {
   const sessionId = request.nextUrl.searchParams.get("sessionId");
@@ -22,58 +21,12 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ messages });
 }
 
-async function callGemini(question: string): Promise<string> {
-  const apiKey = "AIzaSyCezi2i9eAreTivaji9GFS15DM4HNhTRQo";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [
-              {
-                text: `You are LastMinuteITR Genie, a helpful, friendly, and expert Indian Tax Filing AI Assistant.
-The user is currently filing their ITR for AY 2026-27 (FY 2025-26) on the LastMinuteITR MVP app.
-Answer the following tax query in plain, simple English. Keep it concise, professional, and easy to understand (1-3 sentences).
-Do not use complicated legal jargon. Highlight key limits if applicable (e.g., Standard Deduction ₹75k in New Regime, HRA in Old Regime, Section 80C cap of ₹1.5L, 80D limits, NPS extra ₹50k, etc.).
-
-User Query: ${question}`,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          maxOutputTokens: 200,
-          temperature: 0.2,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Gemini status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return (
-      data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || SUPPORT_REPLY
-    );
-  } catch (error) {
-    console.error("Gemini API call failed, falling back to static reply:", error);
-    return SUPPORT_REPLY;
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as {
       text?: string;
       sessionId?: string;
+      context?: GenieChatContext;
     };
 
     if (!body.text?.trim() || !body.sessionId?.trim()) {
@@ -94,12 +47,16 @@ export async function POST(request: NextRequest) {
       createdAt: now,
     };
 
-    const aiReply = await callGemini(question);
+    const answer = await answerGenieQuestion(question, body.context);
+
+    // #region agent log
+    fetch('http://127.0.0.1:7563/ingest/b08ac730-6614-46b3-bb0c-a50e7f63316c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'2c61ed'},body:JSON.stringify({sessionId:'2c61ed',location:'chat/route.ts:POST',message:'genie answer',data:{source:answer.source,confidence:answer.confidence,hasDocs:!!body.context?.documents,connectors:body.context?.documents?.connectedConnectors??[]},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
 
     const supportMessage: ChatMessage = {
       id: `chat_${Date.now()}_reply`,
       role: "support",
-      text: aiReply,
+      text: answer.text,
       sessionId: body.sessionId.trim(),
       createdAt: new Date(Date.now() + 1).toISOString(),
     };
@@ -111,6 +68,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       messages: [userMessage, supportMessage],
+      meta: {
+        source: answer.source,
+        confidence: answer.confidence,
+        citations: answer.citations,
+      },
     });
   } catch (error) {
     console.error("chat POST error:", error);

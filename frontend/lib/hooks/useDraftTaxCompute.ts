@@ -43,6 +43,7 @@ export function useDraftTaxCompute(options?: { readOnly?: boolean }): UseDraftTa
   const depreciationBlocks = useDraftStore((s) => s.depreciationBlocks);
   const deductions = useDraftStore((s) => s.deductions);
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
+  const capitalGains = useDraftStore((s) => s.capitalGains);
   const mismatchResolved = useDraftStore((s) => s.mismatchResolved);
   const incomeChips = useDraftStore((s) => s.incomeChips);
   const lastParseResult = useDraftStore((s) => s.lastParseResult);
@@ -70,6 +71,7 @@ export function useDraftTaxCompute(options?: { readOnly?: boolean }): UseDraftTa
         depreciationBlocks,
         deductions,
         connectedConnectors,
+        capitalGains,
       }),
     [
       filingMode,
@@ -83,6 +85,7 @@ export function useDraftTaxCompute(options?: { readOnly?: boolean }): UseDraftTa
       depreciationBlocks,
       deductions,
       connectedConnectors,
+      capitalGains,
     ]
   );
 

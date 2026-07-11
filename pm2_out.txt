@@ -2,9 +2,9 @@
 │ id │ name        │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├────┼─────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
 │ 1  │ backend     │ default     │ N/A     │ fork    │ 8671     │ 3D     │ 0    │ online    │ 0%       │ 47.5mb   │ root     │ disabled │
-│ 0  │ frontend    │ default     │ N/A     │ fork    │ 88736    │ 2m     │ 49   │ online    │ 0%       │ 52.7mb   │ root     │ disabled │
+│ 0  │ frontend    │ default     │ N/A     │ fork    │ 88736    │ 4m     │ 49   │ online    │ 0%       │ 52.7mb   │ root     │ disabled │
 └────┴─────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
-host metrics | cpu: 2.7% | ram usage: 9.7% | disk: ⇓ 0mb/s ⇑ 0.017mb/s |
+host metrics | cpu: 3.5% | ram usage: 9.9% | eth0: ⇓ 0mb/s ⇑ 0.002mb/s | disk: ⇓ 0mb/s ⇑ 0.021mb/s |
 [TAILING] Tailing last 20 lines for [all] processes (change the value with --lines option)
 /root/.pm2/pm2.log last 20 lines:
 PM2        | 2026-07-08T07:34:24: PM2 log: App [frontend:0] exited with code [0] via signal [SIGINT]

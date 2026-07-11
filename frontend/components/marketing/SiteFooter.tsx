@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { PRICING_PLANS, SITE_NAME } from "@/lib/constants";
 import { getDisplayPricing, formatPlanPriceLabel } from "@/lib/marketing/pricing";
 
@@ -12,13 +13,7 @@ export function SiteFooter() {
         <div className="grid gap-10 mb-12 lg:grid-cols-[1.6fr_1fr_1fr_1fr] md:grid-cols-2">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2.5 font-manrope font-extrabold text-[18px] tracking-[-0.01em] text-[#0B1220]">
-              <svg className="size-[30px] flex-shrink-0" viewBox="0 0 48 48" fill="none" aria-hidden>
-                <path d="M14 6h12l8 8v6H14V6z" fill="#bfe9e0"/>
-                <path d="M10 14h13v9h13l-13 13-13-13h9v-9z" fill="#0e5f63"/>
-              </svg>
-              <span>Lastminute<span className="text-[#0e5f63]">ITR</span></span>
-            </div>
+            <BrandLogo href="/" variant="wordmark" size="sm" />
             <p className="mt-4 mb-4 text-[13.5px] text-[#6B7280] leading-[1.6] max-w-[280px]">
               AI-assisted ITR prep with mismatch and regime checks — you submit on incometax.gov.in.
               Companion mode: we never auto-file for you.

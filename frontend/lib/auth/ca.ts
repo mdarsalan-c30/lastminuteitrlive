@@ -1,10 +1,14 @@
 import crypto from "crypto";
-import { all } from "@/lib/db/store";
+import { all, update } from "@/lib/db/store";
 import type { Tenant } from "@/lib/db/types";
-import { hashPassword, verifyPassword } from "@/lib/auth/password";
+import {
+  hashPassword,
+  isLegacyPasswordHash,
+  verifyPassword,
+} from "@/lib/auth/password";
 import { requireSessionSecret } from "@/lib/auth/sessionSecret";
 
-export { hashPassword, verifyPassword };
+export { hashPassword, isLegacyPasswordHash, verifyPassword };
 
 export const CA_SESSION_COOKIE = "ts_ca_session";
 export const CA_SESSION_MAX_AGE_SEC = 60 * 60 * 12; // 12 hours
@@ -94,5 +98,10 @@ export async function verifyCACredentials(
   if (tenant.status !== "verified") throw new Error("CA_NOT_VERIFIED");
 
   if (!verifyPassword(password, tenant.passwordHash)) return null;
+  if (isLegacyPasswordHash(tenant.passwordHash)) {
+    await update("tenants", tenant.id, {
+      passwordHash: hashPassword(password),
+    });
+  }
   return tenant;
 }

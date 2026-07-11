@@ -32,11 +32,16 @@ export function getIncomeSectionStatuses(
     | "mismatchResolved"
   >
 ): Record<IncomeSectionId, SectionNavStatus> {
+  // Business/freelance receipts count as earned income for pure ITR-3/4
+  // filers so their sidebar doesn't stay stuck on "missing".
+  const businessReceipts =
+    (draft.income.businessRevenue ?? 0) + (draft.income.freelanceRevenue ?? 0);
   const hasSalary =
     draft.income.grossSalary > 0 ||
+    businessReceipts > 0 ||
     draft.connectedConnectors.includes("form16");
   const salary: SectionNavStatus = hasSalary
-    ? draft.income.tds > 0
+    ? draft.income.tds > 0 || businessReceipts > 0
       ? "complete"
       : "partial"
     : "missing";

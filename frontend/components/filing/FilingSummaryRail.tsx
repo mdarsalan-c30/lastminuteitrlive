@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
 import { useDraftStore } from "@/lib/store/draft";
 import { formatINR } from "@/lib/format";
+import { FILING_READY } from "@/lib/copy/strings";
 import { cn } from "@/lib/utils";
 
 const SUMMARY_PATH_PREFIXES = [
@@ -56,7 +57,7 @@ export function FilingSummaryRail({ className }: { className?: string }) {
           ) : netPayable !== null ? (
             <span
               className={cn(
-                "text-lg font-bold tabular-nums",
+                "text-base font-bold tabular-nums sm:text-lg",
                 isRefund ? "text-emerald-700" : "text-slate-900"
               )}
             >
@@ -76,7 +77,7 @@ export function FilingSummaryRail({ className }: { className?: string }) {
         <div className="flex items-center gap-3">
           <div className="hidden sm:block text-right">
             <p className="text-xs font-medium text-slate-600">
-              {confidence.filing_ready ? "Filing-ready" : "Not filing-ready"}
+              {confidence.filing_ready ? FILING_READY.ready : FILING_READY.rough}
             </p>
             <p className="text-sm font-semibold tabular-nums text-slate-900">
               {score}% complete

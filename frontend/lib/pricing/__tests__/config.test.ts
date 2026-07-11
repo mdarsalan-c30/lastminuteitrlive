@@ -1,22 +1,38 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-// Keep the admin store purely in-memory: no file reads/writes during the test.
-vi.mock("fs", () => ({
-  promises: {
-    readFile: vi.fn(() => Promise.reject(new Error("no file"))),
-    writeFile: vi.fn(() => Promise.resolve()),
-    mkdir: vi.fn(() => Promise.resolve()),
+const store = {
+  pricingConfig: [] as Array<Record<string, unknown>>,
+};
+
+vi.mock("@/lib/db/store", () => ({
+  resetCache: () => {
+    store.pricingConfig = [];
+  },
+  genId: (prefix: string) => `${prefix}_test`,
+  all: async (collection: string) => {
+    if (collection === "pricingConfig") return [...store.pricingConfig];
+    return [];
+  },
+  insert: async (_collection: string, row: Record<string, unknown>) => {
+    store.pricingConfig.push(row);
+    return row;
+  },
+  update: async (_collection: string, id: string, patch: Record<string, unknown>) => {
+    const idx = store.pricingConfig.findIndex((r) => r.id === id);
+    if (idx < 0) throw new Error("not found");
+    store.pricingConfig[idx] = { ...store.pricingConfig[idx], ...patch };
+    return store.pricingConfig[idx];
   },
 }));
 
-import { resetCache } from "@/lib/db/store";
 import { getPublishedPrice, upsertPricingRow } from "@/lib/pricing/config";
 
 describe("pricing config propagation", () => {
-  afterEach(() => resetCache());
+  afterEach(() => {
+    store.pricingConfig = [];
+  });
 
   it("getPublishedPrice reflects a published base price override", async () => {
-    resetCache();
     await upsertPricingRow({
       planId: "diy",
       basePriceInr: 1234,
@@ -26,7 +42,6 @@ describe("pricing config propagation", () => {
   });
 
   it("an active offer price wins over the base price", async () => {
-    resetCache();
     const future = new Date(Date.now() + 86_400_000).toISOString();
     await upsertPricingRow({
       planId: "ai_smart",
@@ -38,7 +53,6 @@ describe("pricing config propagation", () => {
   });
 
   it("an expired offer falls back to the base price", async () => {
-    resetCache();
     const past = new Date(Date.now() - 86_400_000).toISOString();
     await upsertPricingRow({
       planId: "ca",

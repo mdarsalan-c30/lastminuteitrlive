@@ -15,6 +15,9 @@ export async function recordPayment(input: {
   razorpayPaymentId?: string;
   sessionId?: string;
   couponId?: string;
+  userId?: string;
+  familyProfileId?: string;
+  tenantId?: string;
 }): Promise<Payment> {
   const payment: Payment = {
     id: genId("pay"),
@@ -26,6 +29,9 @@ export async function recordPayment(input: {
     source: input.source,
     sessionId: input.sessionId,
     couponId: input.couponId,
+    userId: input.userId,
+    familyProfileId: input.familyProfileId,
+    tenantId: input.tenantId,
     ts: new Date().toISOString(),
   };
   return insert("payments", payment);

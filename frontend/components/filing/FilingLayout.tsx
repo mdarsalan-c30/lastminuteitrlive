@@ -6,18 +6,18 @@ import { useState, type ReactNode } from "react";
 import { useDraftStore } from "@/lib/store/draft";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
 import { formatINR } from "@/lib/format";
+import { FILING_READY } from "@/lib/copy/strings";
 import { cn } from "@/lib/utils";
 import { getIncomeSectionStatuses, statusDotClass, type IncomeSectionId } from "@/lib/filing/navStatus";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { ProfileNavLink } from "@/components/marketing/ProfileNavLink";
 import { ActiveAiCompanion } from "./ActiveAiCompanion";
 import { FloatingGenie } from "./FloatingGenie";
+import { FilingSessionControls } from "./FilingSessionControls";
 import {
   UserCheck,
   UploadCloud,
   Coins,
-  PiggyBank,
-  GitCompare,
-  ShieldCheck,
   CreditCard,
   ExternalLink,
   FileText,
@@ -30,6 +30,7 @@ import {
   Wrench,
   LogOut,
   Sparkles,
+  UsersRound,
 } from "lucide-react";
 
 type SidebarStep = {
@@ -43,47 +44,46 @@ type SidebarStep = {
 
 const SIDEBAR_STEPS: SidebarStep[] = [
   {
+    id: "family",
+    label: "People I file for",
+    href: "/file/family",
+    match: ["/file/family"],
+    icon: UsersRound,
+  },
+  {
     id: "onboarding",
     label: "Get Started",
-    href: "/file/onboarding/eligibility?step=about-you",
-    match: ["/file/onboarding"],
+    href: "/file/start",
+    match: ["/file/start", "/file/onboarding"],
     icon: UserCheck,
   },
   {
     id: "import",
     label: "Import Documents",
     href: "/file/import/documents",
-    match: ["/file/import/documents", "/file/import/parsing"],
+    match: ["/file/import"],
     icon: UploadCloud,
   },
   {
-    id: "comprehensive",
-    label: "Comprehensive Profile",
-    href: "/file/comprehensive",
+    id: "review",
+    label: "Income & Deductions",
+    href: "/file/review",
     match: [
+      "/file/review",
       "/file/comprehensive",
       "/file/income",
       "/file/house-property",
       "/file/other",
       "/file/deductions",
-      "/file/regime",
-      "/file/cabrain",
     ],
     icon: Coins,
   },
   {
-    id: "advisor",
-    label: "AI Smart CA",
-    href: "/file/advisor",
-    match: ["/file/advisor"],
+    id: "regime",
+    label: "AI Smart CA · Regime",
+    href: "/file/regime",
+    match: ["/file/regime", "/file/advisor", "/file/cabrain"],
     icon: Sparkles,
-  },
-  {
-    id: "review",
-    label: "Audit & Review",
-    href: "/file/review",
-    match: ["/file/review"],
-    icon: ShieldCheck,
   },
   {
     id: "checkout",
@@ -132,14 +132,21 @@ function isSubItemActive(subId: string, pathname: string, activeNavSection?: str
 function getBreadcrumbs(pathname: string) {
   const parts = [{ label: "Filing Workspace", href: "/file" }];
   
-  if (pathname.startsWith("/file/onboarding")) {
-    parts.push({ label: "Get Started", href: "/file/onboarding/eligibility" });
+  if (pathname.startsWith("/file/family")) {
+    parts.push({ label: "People I file for", href: "/file/family" });
+  } else if (pathname.startsWith("/file/start") || pathname.startsWith("/file/onboarding")) {
+    parts.push({ label: "Get Started", href: "/file/start" });
   } else if (pathname.startsWith("/file/import")) {
     parts.push({ label: "Import Documents", href: "/file/import/documents" });
   } else if (pathname.startsWith("/file/comprehensive")) {
     parts.push({ label: "Comprehensive Profile", href: "/file/comprehensive" });
+  } else if (pathname.startsWith("/file/regime")) {
+    parts.push({ label: "Regime Choice", href: "/file/regime" });
   } else if (pathname.startsWith("/file/review")) {
     parts.push({ label: "Audit & Review", href: "/file/review" });
+  } else if (pathname.startsWith("/file/checkout/payment")) {
+    parts.push({ label: "Checkout & Plans", href: "/file/checkout/plans" });
+    parts.push({ label: "Payment", href: "/file/checkout/payment" });
   } else if (pathname.startsWith("/file/checkout")) {
     parts.push({ label: "Checkout & Plans", href: "/file/checkout/plans" });
   } else if (pathname.startsWith("/file/companion")) {
@@ -218,10 +225,15 @@ export function FilingLayout({
       return mismatchResolved ? "complete" : "partial";
     }
     if (stepId === "checkout") {
-      return pathname.startsWith("/file/companion") ? "complete" : "missing";
+      if (pathname.startsWith("/file/checkout/payment")) return "partial";
+      if (pathname.startsWith("/file/checkout")) return "partial";
+      return "missing";
     }
     if (stepId === "companion") {
-      return pathname.startsWith("/file/checkout/everify") ? "complete" : "missing";
+      if (pathname.startsWith("/file/companion")) return "partial";
+      if (pathname.startsWith("/file/done") || pathname.startsWith("/file/checkout/everify"))
+        return "complete";
+      return "missing";
     }
     return "missing";
   }
@@ -234,12 +246,7 @@ export function FilingLayout({
     <div className="flex flex-col h-full bg-white">
       {/* Brand Header */}
       <div className="flex h-16 shrink-0 items-center px-6 border-b border-slate-100/60 gap-2.5 bg-white">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/10">
-          <FileText className="size-4" />
-        </span>
-        <span className="font-semibold text-slate-900 tracking-tight text-base">
-          LastMinuteITR
-        </span>
+        <BrandLogo size="xs" variant="icon" />
         <span className="inline-flex items-center rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
           MVP
         </span>
@@ -422,7 +429,7 @@ export function FilingLayout({
                 />
               </div>
               <div className="flex items-center justify-between text-[10px] text-slate-400">
-                <span>{taxConfidence.filing_ready ? "Filing-ready" : "Incomplete"}</span>
+                <span>{taxConfidence.filing_ready ? FILING_READY.ready : "Incomplete"}</span>
                 {!taxConfidence.filing_ready && (
                   <Link href="/file/import/documents" className="text-blue-600 font-semibold hover:underline">
                     Upload
@@ -467,14 +474,7 @@ export function FilingLayout({
             >
               <Menu className="size-5" />
             </button>
-            <Link href="/" className="flex items-center gap-2">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm">
-                <FileText className="size-3.5" />
-              </span>
-              <span className="font-semibold text-slate-900 text-sm">
-                LastMinuteITR
-              </span>
-            </Link>
+            <BrandLogo size="xs" variant="icon" href="/" />
           </div>
 
           {/* Desktop Breadcrumbs */}
@@ -496,7 +496,10 @@ export function FilingLayout({
           </nav>
 
           {/* Quick exit & profile on mobile/desktop */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="hidden md:block">
+              <FilingSessionControls compact />
+            </div>
             <Link
               href="/"
               className="text-xs font-semibold text-slate-500 hover:text-slate-950 transition-colors hidden sm:block"
@@ -564,7 +567,7 @@ export function FilingLayout({
           </div>
         </div>
       )}
-      <FloatingGenie />
+      <FloatingGenie desktopHidden={!isCompanionLayout} />
     </div>
   );
 }

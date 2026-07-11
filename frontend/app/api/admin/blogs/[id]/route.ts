@@ -1,9 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { requireAdmin } from "@/lib/admin/rbac";
 
 const prisma = new PrismaClient();
 
-export async function PUT(request: Request, context: any) {
+interface BlogRouteContext {
+  params: Promise<{ id: string }>;
+}
+
+export async function PUT(request: NextRequest, context: BlogRouteContext) {
+  const auth = await requireAdmin(request, "editContent");
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const { id } = await context.params;
     const data = await request.json();
@@ -24,17 +32,24 @@ export async function PUT(request: Request, context: any) {
       },
     });
     return NextResponse.json(blog);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to update blog";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
-export async function DELETE(request: Request, context: any) {
+export async function DELETE(request: NextRequest, context: BlogRouteContext) {
+  const auth = await requireAdmin(request, "editContent");
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const { id } = await context.params;
     await prisma.blog.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to delete blog";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

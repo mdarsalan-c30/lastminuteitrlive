@@ -17,6 +17,7 @@ import {
   uploadKeyForMissingDoc,
 } from "@/lib/filing/confidence";
 import { Button, RiskBadge } from "@/components/filing/ui";
+import { FILING_READY } from "@/lib/copy/strings";
 import { cn } from "@/lib/utils";
 
 export interface ConfidencePanelProps {
@@ -170,7 +171,7 @@ export function ConfidencePanel({
           <ScoreRing score={87} tone="amber" compact />
           <div>
             <p className="text-sm font-semibold text-slate-900">87% complete</p>
-            <p className="text-xs text-slate-600">Upload AIS to reach filing-ready</p>
+            <p className="text-xs text-slate-600">Upload AIS to get ready to file</p>
           </div>
         </div>
       </div>
@@ -214,24 +215,25 @@ export function ConfidencePanel({
                 <>
                   {" "}
                   ·{" "}
-                  {confidence.filing_ready ? "Filing-ready" : "Not filing-ready"}
+                  {confidence.filing_ready ? FILING_READY.ready : FILING_READY.rough}
                 </>
               )}
             </p>
             {isCompact && confidence.missing_documents.length > 0 && (
               <p className="mt-1 text-xs text-slate-500">
-                {confidence.missing_documents.length} doc
-                {confidence.missing_documents.length > 1 ? "s" : ""} remaining
+                {confidence.missing_documents.length}{" "}
+                {confidence.missing_documents.length > 1 ? "docs" : "doc"}{" "}
+                remaining
               </p>
             )}
           </div>
         </div>
         <RiskBadge variant={confidence.filing_ready ? "green" : "yellow"}>
           {confidence.filing_ready
-            ? "Filing-ready"
+            ? FILING_READY.ready
             : confidence.is_estimate_mode
-              ? "Estimate mode"
-              : "Not filing-ready"}
+              ? FILING_READY.estimate
+              : FILING_READY.rough}
         </RiskBadge>
       </div>
 
@@ -239,8 +241,8 @@ export function ConfidencePanel({
         <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" />
           <p>
-            <strong>Estimate mode</strong> — not filing-ready. Switch to Exact and
-            upload all documents before you file on the portal.
+            <strong>These are estimates.</strong> Upload your Form 16 and AIS
+            before you file on the portal, so the numbers you copy are exact.
           </p>
         </div>
       )}

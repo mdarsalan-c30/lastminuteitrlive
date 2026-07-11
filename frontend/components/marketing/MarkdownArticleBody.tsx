@@ -12,7 +12,7 @@ export function MarkdownArticleBody({ body }: { body: string }) {
   if (isHtml) {
     return (
       <div 
-        className="html-article-body prose max-w-none"
+        className="html-article-body prose prose-sm sm:prose-base max-w-none"
         dangerouslySetInnerHTML={{ __html: body }} 
       />
     );
@@ -23,7 +23,7 @@ export function MarkdownArticleBody({ body }: { body: string }) {
       <MarkdownPreview 
         source={body} 
         style={{ backgroundColor: 'transparent', color: 'inherit' }}
-        className="prose prose-lg sm:prose-xl max-w-none prose-headings:font-manrope prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80"
+        className="prose prose-sm sm:prose-base max-w-none prose-headings:font-manrope prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-p:leading-relaxed"
       />
     </div>
   );

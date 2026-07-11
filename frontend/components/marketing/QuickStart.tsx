@@ -94,8 +94,8 @@ export function QuickStart() {
               </div>
             </div>
 
-            {/* Right: 2×2 doc cards */}
-            <div className="grid grid-cols-2 gap-3.5">
+            {/* Right: doc cards — single column on narrow phones */}
+            <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:gap-3.5">
               {QUICK_START_CONNECTORS.map((connector) => (
                 <Link
                   key={connector.id}
@@ -113,7 +113,7 @@ export function QuickStart() {
                     {DOC_ICONS[connector.id] ?? DOC_ICONS.form16}
                   </div>
                   <h5 className="font-manrope text-[15px] font-bold text-white mb-1.5">
-                    {connector.title}
+                    {connector.shortLabel}
                   </h5>
                   <p style={{ color: "#9AA3B5", fontSize: 12.5, lineHeight: 1.45 }}>
                     {connector.description}

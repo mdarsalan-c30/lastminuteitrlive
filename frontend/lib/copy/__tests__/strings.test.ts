@@ -44,12 +44,13 @@ describe("copy/strings — banned-words lint (doc 42 §1, §6)", () => {
     expect(NOT_GOVERNMENT).toContain("incometax.gov.in");
     expect(SELF_FILE_POSITIONING).toContain("file it yourself");
     expect(ESTIMATE_CHIP).toContain("Estimate");
-    expect(ESTIMATE_CHIP).toContain("AY 2026-27");
+    expect(ESTIMATE_CHIP).toContain("FY 2025-26");
   });
 
   it("never scolds and never guarantees (voice spot-checks)", () => {
-    // Blocked state is honest, not apologetic-vague.
-    expect(GATE.blockedTitle).toContain("won't pretend");
+    // Blocked state never says no — it routes to an expert with confidence.
+    expect(GATE.blockedTitle).toContain("expert");
+    expect(GATE.blockedBody.toLowerCase()).not.toContain("sorry");
     // Mismatch copy reassures before asking.
     expect(RECONCILE.mismatchReassure).toContain("normal");
     // Verified copy is honest about whose timeline the refund is on.

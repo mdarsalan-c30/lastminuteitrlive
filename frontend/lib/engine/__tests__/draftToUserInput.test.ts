@@ -16,6 +16,7 @@ function baseDraft(
       | "connectedConnectors"
       | "incomeChips"
       | "matrix"
+      | "capitalGains"
     >
   > = {}
 ): Pick<
@@ -30,7 +31,13 @@ function baseDraft(
   | "connectedConnectors"
 > &
   Partial<
-    Pick<DraftState, "extraProperties" | "carryForward" | "depreciationBlocks">
+    Pick<
+      DraftState,
+      | "extraProperties"
+      | "carryForward"
+      | "depreciationBlocks"
+      | "capitalGains"
+    >
   > {
   return {
     filingMode: "estimate",
@@ -239,32 +246,68 @@ describe("draftToUserInput", () => {
     expect(input.house_property?.annual_rent_received).toBeUndefined();
   });
 
-  it("maps capital_gains chip to capital gains input and CG document flag", () => {
+  it("maps capital_gains chip to ITR-2 routing without inventing STCG amounts", () => {
     const input = draftToUserInput(
       baseDraft({ incomeChips: ["salary", "capital_gains"] })
     );
 
-    expect(input.capital_gains?.stcg_other).toBe(1);
+    // Never invent ₹1 of STCG — route via business_type_code "z" instead.
+    expect(input.capital_gains).toBeUndefined();
     expect(input.profile_flags?.business_type_code).toBe("z");
     expect(input.documents?.has_capital_gains_statement).toBe(true);
   });
 
-  it("maps freelance chip to presumptive profession business input", () => {
+  it("maps CAMS-extracted capital gains into engine input", () => {
+    const input = draftToUserInput(
+      baseDraft({
+        incomeChips: ["salary", "capital_gains"],
+        capitalGains: {
+          stcl_equity: 5934.21,
+          ltcl: 3769.31,
+          sourceConnectorId: "cams",
+        },
+      })
+    );
+
+    expect(input.capital_gains).toEqual({
+      stcl_equity: 5934.21,
+      ltcl: 3769.31,
+    });
+    expect(input.documents?.has_capital_gains_statement).toBe(true);
+  });
+
+  it("maps freelance chip to ITR-4 routing without inventing receipts", () => {
     const input = draftToUserInput(
       baseDraft({ incomeChips: ["salary", "freelance"] })
     );
 
-    expect(input.business?.business_type).toBe("presumptive_profession");
+    // No invented receipts — route via business_type_code until user enters amount.
+    expect(input.business).toBeUndefined();
     expect(input.profile_flags?.business_type_code).toBe("w");
   });
 
-  it("maps business_presumptive chip to presumptive business input", () => {
+  it("maps business_presumptive chip to ITR-4 routing without inventing turnover", () => {
     const input = draftToUserInput(
       baseDraft({ incomeChips: ["salary", "business_presumptive"] })
     );
 
-    expect(input.business?.business_type).toBe("presumptive_business");
+    expect(input.business).toBeUndefined();
     expect(input.profile_flags?.business_type_code).toBe("w");
+  });
+
+  it("maps freelance revenue when the user entered an amount", () => {
+    const input = draftToUserInput(
+      baseDraft({
+        incomeChips: ["salary", "freelance"],
+        income: {
+          ...baseDraft().income,
+          freelanceRevenue: 500_000,
+        },
+      })
+    );
+
+    expect(input.business?.business_type).toBe("presumptive_profession");
+    expect(input.business?.gross_professional_receipts).toBe(500_000);
   });
 
   it("maps foreign and director chips to profile flags", () => {

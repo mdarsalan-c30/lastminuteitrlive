@@ -6,7 +6,7 @@ export const FILING_START = {
   welcomeBack: (name: string) => `Welcome back, ${name}`,
   subtitle:
     "Upload Form 16 and AIS. We run proof-based checks, then guide you to file on incometax.gov.in yourself.",
-  trustLine: "Lawful optimization · DPDP compliant · Estimate mode by default",
+  trustLine: "Only legal savings · Your data stays private · Estimate mode by default",
   primaryCta: "Start my return",
   secondaryCta: "Government portal companion",
 } as const;
@@ -32,8 +32,9 @@ export const IMPORT_REVEAL = {
   stillNeeded: [
     {
       id: "ais",
-      label: "AIS / 26AS reconciliation",
-      detail: "Match TDS and reported income against the ITD statement.",
+      label: "Cross-check with AIS / 26AS",
+      detail:
+        "These government statements show what the tax department already knows about your income — we match them against your Form 16.",
     },
     {
       id: "other-income",

@@ -20,6 +20,8 @@ describe("POST /api/payments/verify", () => {
     delete process.env.RAZORPAY_KEY_ID;
     delete process.env.RAZORPAY_KEY_SECRET;
     vi.stubEnv("NODE_ENV", "development");
+    // Pin the session secret so signing does not depend on ambient env.
+    vi.stubEnv("PAYMENT_SESSION_SECRET", "test-payment-session-secret");
   });
 
   afterEach(() => {

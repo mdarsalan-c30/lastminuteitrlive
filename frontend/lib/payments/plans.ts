@@ -22,11 +22,11 @@ export const PLANS: Record<PlanId, Plan> = {
     name: "Basic",
     price: 0,
     priceLabel: "₹0",
-    description: "Estimates and checklists — no portal guide unlock.",
+    description: "Estimates, checklists, and the free screen-by-screen portal guide.",
     features: [
       "Tax estimate",
       "ITR form recommendation",
-      "Filing checklist",
+      "Free portal guide (exact values unlock after payment)",
     ],
   },
   normal: {
@@ -113,6 +113,7 @@ export const PLANS: Record<PlanId, Plan> = {
     price: 2499,
     priceLabel: "₹2,499",
     description: "Optional human CA review before you file.",
+    comingSoon: true,
     features: [
       "Everything in AI Smart",
       "CA review of your draft",
@@ -124,15 +125,31 @@ export const PLANS: Record<PlanId, Plan> = {
 /** Plans shown on marketing + checkout. */
 export const PLAN_LIST: Plan[] = [PLANS.normal, PLANS.pro];
 
-/** Plans the payment APIs accept (consumer checkout). */
+/** Plans the payment APIs accept (consumer checkout). CA is blocked until live. */
 export const CHECKOUT_PLAN_IDS: PlanId[] = [
   "free",
   "normal",
   "pro",
   "diy",
   "ai_smart",
-  "ca",
 ];
+
+export const B2B_CHECKOUT_PLAN_IDS: PlanId[] = ["b2b_20", "b2b_40", "b2b_100"];
+
+/** True when a plan may be purchased via create-order / verify (B2C checkout). */
+export function isPurchasablePlanId(id: PlanId): boolean {
+  const plan = PLANS[id];
+  if (!plan) return false;
+  if (plan.comingSoon) return false;
+  return (CHECKOUT_PLAN_IDS as string[]).includes(id);
+}
+
+/** B2B bulk packs — CA session only. */
+export function isCaPurchasablePlanId(id: PlanId): boolean {
+  const plan = PLANS[id];
+  if (!plan) return false;
+  return (B2B_CHECKOUT_PLAN_IDS as string[]).includes(id);
+}
 
 /** Admin-editable pricing rows. */
 export const ADMIN_PRICING_PLAN_IDS: PlanId[] = [
@@ -152,10 +169,12 @@ export function isCheckoutPlanId(id: string): id is PlanId {
   return (CHECKOUT_PLAN_IDS as string[]).includes(id);
 }
 
-/** Map legacy aliases to current catalog ids. */
+/** Map legacy aliases to current catalog ids. CA / ca_review are not purchasable. */
 export function normalizePlanId(raw: string | undefined): PlanId | null {
   if (!raw) return null;
-  if (raw === "ca_review") return "ca";
-  if (!isCheckoutPlanId(raw)) return null;
-  return raw;
+  const id = raw === "ca_review" ? "ca" : raw;
+  if (isCheckoutPlanId(id) || (B2B_CHECKOUT_PLAN_IDS as string[]).includes(id)) {
+    return id as PlanId;
+  }
+  return null;
 }

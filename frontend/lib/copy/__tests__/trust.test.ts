@@ -15,15 +15,15 @@ import {
 
 describe("copy/trust constants", () => {
   it("positions AI-assisted filing without government affiliation", () => {
-    expect(AI_ASSISTED_POSITIONING).toContain("incometax.gov.in");
-    expect(AI_ASSISTED_TAGLINE).toContain("government portal");
+    expect(AI_ASSISTED_POSITIONING).toContain("ITR-1");
+    expect(AI_ASSISTED_TAGLINE).toContain("CA");
     expect(NO_CA_REPLACEMENT).toContain("professional advice");
   });
 
   it("defines complex-case escalation copy", () => {
-    expect(COMPLEX_CASE_ESCALATION_TITLE).toContain("tax professional");
-    expect(COMPLEX_CASE_ESCALATION_BODY).toContain("₹50L");
-    expect(COMPLEX_CASE_FLAG).toContain("Complex case");
+    expect(COMPLEX_CASE_ESCALATION_TITLE).toContain("guide");
+    expect(COMPLEX_CASE_ESCALATION_BODY).toContain("F&O");
+    expect(COMPLEX_CASE_FLAG).toContain("Guided");
     expect(SELF_FILE_ELIGIBLE).toContain("Self-file eligible");
   });
 

@@ -38,7 +38,10 @@ export interface QuestionEngineContext {
     | "deductions"
   > &
     Partial<
-      Pick<DraftState, "extraProperties" | "carryForward" | "depreciationBlocks">
+      Pick<
+        DraftState,
+        "extraProperties" | "carryForward" | "depreciationBlocks" | "profession"
+      >
     >;
   questionAnswers?: Record<string, unknown>;
 }

@@ -55,15 +55,22 @@ export function buildExplainFallback(
   const stepTitle = String(ctx.stepTitle ?? ctx.portalField ?? "Portal step");
   const ourValue =
     ctx.ourValue != null ? String(ctx.ourValue) : "your computed value";
+  const form = ctx.form ? String(ctx.form) : "your ITR form";
+  const tips = Array.isArray(ctx.screenTips)
+    ? (ctx.screenTips as string[]).slice(0, 3)
+    : [];
 
   return {
     title: stepTitle,
-    explanation: `On incometax.gov.in, enter ${ourValue} for this field if it matches your Form 16 and bank proofs. We guide — you submit on the official portal.`,
+    explanation: `On incometax.gov.in (${form}), enter ${ourValue} for this field after checking your documents.`,
     bulletPoints: [
-      "Open the official incometax.gov.in portal and navigate to the matching schedule.",
-      "Copy the value from your LastMinute ITR summary only after verifying documents.",
-      "Keep Form 16, AIS, and deduction proofs handy before submitting.",
-    ],
+      ctx.portalPath
+        ? `Go to: ${String(ctx.portalPath)}`
+        : "Open the matching schedule on incometax.gov.in",
+      "Copy our number only if it matches Form 16, AIS, or broker statements",
+      ...tips,
+      "Keep proofs handy before you click Submit on the government portal",
+    ].slice(0, 5),
     escalation: "none",
     disclaimer: DISCLAIMER,
   };

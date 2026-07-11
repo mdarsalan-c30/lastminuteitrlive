@@ -3,6 +3,13 @@
 import Link from "next/link";
 import { RegimeComparatorHero } from "@/components/marketing/RegimeComparatorHero";
 import { CaRegistrationForm } from "@/components/marketing/CaRegistrationForm";
+import { HERO_HEADLINE_ACCENT } from "@/lib/brand";
+import {
+  B2B_HERO_FEATURES,
+  B2B_HERO_HEADLINE,
+  B2B_HERO_HEADLINE_ACCENT,
+  B2B_HERO_SUBTEXT,
+} from "@/lib/copy/b2b";
 import { ASSESSMENT_YEAR } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -80,7 +87,7 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
           </div>
         </div>
 
-        <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] max-[980px]:grid-cols-1 max-[980px]:gap-12">
+        <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] max-[980px]:grid-cols-1 max-[980px]:gap-10 max-[560px]:gap-8">
           {/* Left copy */}
           <div>
             {mode === "b2c" ? (
@@ -90,27 +97,27 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                 <h1
                   className="font-manrope font-bold tracking-[-0.02em] text-[#0B1220]"
                   style={{
-                    fontSize: "clamp(34px, 4.2vw, 52px)",
-                    lineHeight: 1.08,
-                    marginBottom: 22,
+                    fontSize: "clamp(24px, 4.8vw, 48px)",
+                    lineHeight: 1.15,
+                    marginBottom: 16,
                   }}
                 >
-                  File your ITR before the deadline —{" "}
-                  <span style={{ color: "#0e5f63" }}>without the guesswork.</span>
+                  File your ITR under 10 min —{" "}
+                  <span style={{ color: "#0e5f63" }}>{HERO_HEADLINE_ACCENT}</span>
                 </h1>
 
                 <p
                   style={{
-                    fontSize: 17.5,
+                    fontSize: "clamp(14px, 1.8vw, 16.5px)",
                     color: "#2B3344",
-                    maxWidth: 480,
-                    marginBottom: 32,
-                    lineHeight: 1.6,
+                    maxWidth: 520,
+                    marginBottom: 28,
+                    lineHeight: 1.55,
                   }}
                 >
-                  We reconcile Form 16, AIS, and 26AS, pick the cheaper tax
-                  regime, and hand you a copy-ready guide. You file and e-verify
-                  yourself, directly on incometax.gov.in.
+                  Upload your Form 16, AIS, capital gains, F&amp;O, answer a few
+                  easy questions, and get a step-by-step guide to file directly
+                  on incometax.gov.in with an AI CA expert by your side.
                 </p>
 
                 <form
@@ -155,7 +162,7 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                           <path d="M8 1l5.5 2.2v4.3c0 4-2.5 6.6-5.5 7.5-3-0.9-5.5-3.5-5.5-7.5V3.2L8 1z" stroke="#0e5f63" strokeWidth="1.3"/>
                         </svg>
                       ),
-                      label: "Lawful optimisation",
+                      label: "Only legal savings",
                     },
                     {
                       icon: (
@@ -164,7 +171,7 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                           <path d="M5 6V4a3 3 0 016 0v2" stroke="#0e5f63" strokeWidth="1.3"/>
                         </svg>
                       ),
-                      label: "DPDP compliant",
+                      label: "Your data stays private",
                     },
                     {
                       icon: (
@@ -198,46 +205,46 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                 <h1
                   className="font-manrope font-bold tracking-[-0.02em] text-[#0B1220]"
                   style={{
-                    fontSize: "clamp(34px, 4.2vw, 52px)",
-                    lineHeight: 1.08,
-                    marginBottom: 22,
+                    fontSize: "clamp(24px, 4.8vw, 48px)",
+                    lineHeight: 1.15,
+                    marginBottom: 16,
                   }}
                 >
-                  Scale your tax practice —{" "}
-                  <span style={{ color: "#0e5f63" }}>automate the heavy lifting.</span>
+                  {B2B_HERO_HEADLINE}{" "}
+                  <span style={{ color: "#0e5f63" }}>{B2B_HERO_HEADLINE_ACCENT}</span>
                 </h1>
 
                 <p
                   style={{
-                    fontSize: 17.5,
+                    fontSize: "clamp(14px, 1.8vw, 16.5px)",
                     color: "#2B3344",
-                    maxWidth: 480,
-                    marginBottom: 32,
-                    lineHeight: 1.6,
+                    maxWidth: 520,
+                    marginBottom: 28,
+                    lineHeight: 1.55,
                   }}
                 >
-                  Join LastminuteITR’s partner program. Manage all your clients from a single dashboard, auto-read documents with AI, and optimize regimes instantly. Save hours per return.
+                  {B2B_HERO_SUBTEXT}
                 </p>
 
                 <div className="mb-3.5 flex flex-col gap-2.5">
-                  {[
-                    { label: "AI Document Parsing (Form 16, AIS, 26AS)" },
-                    { label: "Bulk Client Management Dashboard" },
-                    { label: "Custom Branded Reports for Clients" },
-                    { label: "Priority Expert Support" },
-                  ].map((feature) => (
+                  {B2B_HERO_FEATURES.map((feature) => (
                     <div
-                      key={feature.label}
-                      className="flex items-center gap-3 text-[15px] font-medium text-[#2B3344]"
+                      key={feature}
+                      className="flex items-center gap-3 text-[14.5px] font-medium text-[#2B3344]"
                     >
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
                         <circle cx="10" cy="10" r="10" fill="#F2F9E5" />
                         <path d="M6 10l3 3 5-6" stroke="#74A81F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      {feature.label}
+                      {feature}
                     </div>
                   ))}
                 </div>
+
+                <p style={{ fontSize: 12.5, color: "#6B7280", maxWidth: 480, lineHeight: 1.5 }}>
+                  You stay in control — clients file on the government portal. We never auto-submit
+                  on their behalf.
+                </p>
               </>
             )}
           </div>

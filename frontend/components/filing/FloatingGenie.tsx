@@ -3,111 +3,29 @@
 import { useState, useEffect } from "react";
 import { useDraftStore } from "@/lib/store/draft";
 import { formatINR } from "@/lib/format";
+import { FIELD_GUIDANCE } from "@/lib/filing/genieKnowledge";
+import { cn } from "@/lib/utils";
 import {
   Sparkles,
   Calculator,
   X,
-  Plus,
-  ArrowRight,
   Check,
-  PiggyBank,
   Info,
   ShieldCheck,
-  HelpCircle,
-  Lightbulb,
 } from "lucide-react";
 
-interface GenieGuidance {
-  title: string;
-  desc: string;
-  placeholderText?: string;
-  helperText?: string;
-  engineRule?: string;
-  hasCalculator?: "hra" | "section80c" | "nps";
+function fieldGuide(fieldId: string) {
+  const g = FIELD_GUIDANCE[fieldId];
+  if (!g) return null;
+  return {
+    title: g.title,
+    desc: g.tip,
+    engineRule: g.impact,
+    hasCalculator: g.hasCalculator,
+  };
 }
 
-const GENIE_FIELDS_GUIDE: Record<string, GenieGuidance> = {
-  employer: {
-    title: "Employer Name",
-    desc: "Type the legal name of your company. This must match the name on your Form 16.",
-    engineRule: "Used to cross-reference with TDS logs (Form 26AS/AIS) to ensure compliance.",
-  },
-  gross_salary: {
-    title: "Gross Salary",
-    desc: "Your total salary income under Section 17(1). Check Box 17(1) of your Form 16 Part B.",
-    engineRule: "Standard deduction of ₹75,000 (New Regime) or ₹50,000 (Old Regime) will be auto-applied.",
-  },
-  tds: {
-    title: "Tax Deducted (TDS)",
-    desc: "Total tax already cut by your employer. Confirm it matches certified TDS Part A logs.",
-    engineRule: "Mismatches between entered TDS and Form 26AS/AIS will flag an audit notice alert.",
-  },
-  hra_received: {
-    title: "HRA Allowance Received",
-    desc: "House Rent Allowance paid by your employer. Typically shown in your salary breakdown (Box 10(13A)).",
-    hasCalculator: "hra",
-    engineRule: "Exempt only under the Old Tax Regime. Tax engine computes the exempt amount in real-time.",
-  },
-  actual_rent_paid: {
-    title: "Actual Rent Paid",
-    desc: "The total amount of rent you paid to your landlord during the financial year.",
-    hasCalculator: "hra",
-    engineRule: "If rent exceeds ₹1 Lakh annually, your landlord's PAN is mandatory to prevent audit flags.",
-  },
-  section80c: {
-    title: "Section 80C Deductions",
-    desc: "Claim tax deductions up to ₹1,50,000 for EPF, PPF, ELSS, LIC, and school fees.",
-    hasCalculator: "section80c",
-    engineRule: "Maximum allowed cap is ₹1,50,000. Saves up to ₹46,800 in tax (at the 30% slab) under the Old Regime.",
-  },
-  section80d: {
-    title: "Section 80D (Health Insurance)",
-    desc: "Declare medical insurance premiums. Claims are allowed for self, family, and parents.",
-    engineRule: "Limit is ₹25,000 for self/spouse/kids, plus another ₹25,000 (or ₹50,000 for senior citizens) for parents.",
-  },
-  nps_extra: {
-    title: "NPS Extra (Section 80CCD(1B))",
-    desc: "Additional self-contribution to National Pension System (NPS) Tier 1.",
-    engineRule: "Saves tax on an extra ₹50,000, completely over-and-above the ₹1.5 Lakh limit of Section 80C.",
-  },
-  actual_rent_paid_80gg: {
-    title: "Rent Paid (No HRA received)",
-    desc: "Rent paid if you do not receive HRA from your employer. Claimable under Section 80GG.",
-    engineRule: "Deduction is capped at the least of: ₹5,000/month, 25% of total income, or Rent minus 10% of adjusted income.",
-  },
-  fd_interest: {
-    title: "Fixed Deposit & Savings Interest",
-    desc: "Total interest income earned from banks, post office, or cooperative societies.",
-    engineRule: "We automatically apply Section 80TTA (up to ₹10,000 for standard) or 80TTB (up to ₹50,000 for seniors).",
-  },
-  annualRent: {
-    title: "Annual Rental Income",
-    desc: "Gross rent received from letting out your owned house property to a tenant.",
-    engineRule: "A standard deduction of 30% is automatically subtracted for maintenance before taxing.",
-  },
-  homeLoanInterest: {
-    title: "Home Loan Interest (Section 24b)",
-    desc: "Interest portion of your home loan repayment. Look at your bank interest certificate.",
-    engineRule: "Deduction capped at ₹2,00,000 for self-occupied properties. No cap for let-out properties.",
-  },
-  municipalTax: {
-    title: "Municipal Property Tax Paid",
-    desc: "Local body property tax actually paid by you during the financial year.",
-    engineRule: "Directly deductible from gross rental income, reducing net taxable property income.",
-  },
-  coOwnerPercent: {
-    title: "Co-Ownership Share (%)",
-    desc: "Your share of ownership in this property. e.g. 100% if sole owner, 50% if owned half-half.",
-    engineRule: "All property incomes, taxes, and loan interest calculations will be scaled by this share.",
-  },
-  propertyType: {
-    title: "Property Occupancy Type",
-    desc: "Select Self-occupied if you live in it, or Let-out if you rent it out to tenants.",
-    engineRule: "Triggers Section 24b limits (₹2L cap for self-occupied, unlimited for let-out).",
-  },
-};
-
-export function FloatingGenie() {
+export function FloatingGenie({ desktopHidden = false }: { desktopHidden?: boolean }) {
   const activeField = useDraftStore((s) => s.activeField);
   const income = useDraftStore((s) => s.income);
   const deductions = useDraftStore((s) => s.deductions);
@@ -238,7 +156,7 @@ export function FloatingGenie() {
   // Set default tabs and sync calculator states on field change
   useEffect(() => {
     if (activeField) {
-      const fieldData = GENIE_FIELDS_GUIDE[activeField];
+      const fieldData = fieldGuide(activeField);
       if (fieldData?.hasCalculator) {
         setActiveTab("calculator");
       } else {
@@ -300,7 +218,7 @@ export function FloatingGenie() {
   };
 
   // If no field is focused, show general status
-  const currentGuidance = activeField ? GENIE_FIELDS_GUIDE[activeField] : null;
+  const currentGuidance = activeField ? fieldGuide(activeField) : null;
 
   if (!isOpen) {
     return (
@@ -310,7 +228,10 @@ export function FloatingGenie() {
         onMouseUp={handleButtonRelease}
         onTouchEnd={handleButtonRelease}
         style={{ transform: `translate(${position.x}px, calc(-50% + ${position.y}px))` }}
-        className="fixed top-1/2 right-6 z-40 flex size-12 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all select-none cursor-grab active:cursor-grabbing"
+        className={cn(
+          "fixed top-1/2 right-6 z-40 flex size-12 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all select-none cursor-grab active:cursor-grabbing",
+          desktopHidden && "xl:hidden"
+        )}
         aria-label="Open Tax Genie"
       >
         <Sparkles className="size-5 text-white animate-pulse" />
@@ -322,7 +243,10 @@ export function FloatingGenie() {
   return (
     <div
       style={{ transform: `translate(${position.x}px, calc(-50% + ${position.y}px))` }}
-      className="fixed top-1/2 right-6 z-40 max-w-sm w-[calc(100vw-3rem)] rounded-2xl border border-slate-100 bg-white shadow-2xl overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-right-5"
+      className={cn(
+        "fixed top-1/2 right-6 z-40 max-w-sm w-[calc(100vw-3rem)] rounded-2xl border border-slate-100 bg-white shadow-2xl overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-right-5",
+        desktopHidden && "xl:hidden"
+      )}
     >
       {/* Header */}
       <div

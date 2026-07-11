@@ -106,6 +106,9 @@ export const businessInputSchema = z.object({
   profession_name: z.string().optional(),
   cash_receipts_pct: z.number().min(0).max(1).optional(),
   depreciation_blocks: z.array(depreciationBlockInputSchema).optional(),
+  fno_turnover: z.number().min(0).optional(),
+  fno_non_speculative_profit: z.number().optional(),
+  fno_speculative_profit: z.number().optional(),
 });
 
 export const carryForwardInputSchema = z.object({

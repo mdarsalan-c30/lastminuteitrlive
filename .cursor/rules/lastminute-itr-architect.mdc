@@ -1,0 +1,23 @@
+---
+description: LastMinute ITR architect rules — blog scenarios, tax accuracy, AI/payment stubs
+globs:
+  - frontend/**/*
+  - backend/engine/**/*
+  - docs/**/*
+alwaysApply: false
+---
+
+# LastMinute ITR — Architect rule
+
+Before building or changing filing flows, read and follow:
+
+- `docs/CURSOR_MASTER_PROMPT.md` (full Cursor master prompt)
+- `docs/BLOG_PLATFORM_GAP_MATRIX.md` (blog → platform status)
+- `frontend/lib/ai/aiMasterPromptContext.ts` (document section routing for AI)
+
+Key invariants:
+
+1. Engine (`backend/engine`) is L1 truth — AI never invents tax numbers.
+2. Mark unfinished Payment / AI integrations with `PAYMENT_API_TODO` / `AI_API_TODO`.
+3. Keep UI in simple English wizards (doc 40: Answer → Upload → Fix → Number → File).
+4. AY 2026-27: multi Form 16 single std deduction, 87A ₹12L, VDA 30% no loss netting, F&O BP buckets, HRA least-of-three, 80D no cash.

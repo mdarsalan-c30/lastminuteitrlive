@@ -1,8 +1,12 @@
 import crypto from "crypto";
-import { hashPassword, verifyPassword } from "@/lib/auth/password";
+import {
+  hashPassword,
+  isLegacyPasswordHash,
+  verifyPassword,
+} from "@/lib/auth/password";
 import { requireSessionSecret } from "@/lib/auth/sessionSecret";
 
-export { hashPassword, verifyPassword };
+export { hashPassword, isLegacyPasswordHash, verifyPassword };
 
 export const B2C_SESSION_COOKIE = "ts_b2c_session";
 /** B2C session lifetime — 30 days. */

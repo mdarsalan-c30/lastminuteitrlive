@@ -31,12 +31,21 @@ import {
   COMPLEX_CASE_FLAG,
   SELF_FILE_ELIGIBLE,
 } from "@/lib/copy/trust";
+import {
+  AI_CA_CONFIDENCE_BODY,
+  AI_CA_CONFIDENCE_HEADLINE,
+  FNO_GUIDED_BODY,
+  FNO_GUIDED_HEADLINE,
+} from "@/lib/copy/itrForms";
+import { ItrFormGuideTable } from "@/components/filing/ItrFormGuideTable";
 
 const FORM_PLAIN_LABELS: Record<string, string> = {
   "ITR-1": "Simple return for salaried employees",
-  "ITR-2": "For capital gains, foreign income, or income above ₹50L",
-  "ITR-3": "Business income with books of accounts",
-  "ITR-4": "Presumptive business or profession",
+  "ITR-2": "For gains from shares/property, foreign income, or income above ₹50L",
+  "ITR-3": "Business income where you track full accounts",
+  "ITR-4": "Small business or freelancer — simplified flat-rate tax",
+  "ITR-5": "Partnership firms and LLPs — CA-assisted filing",
+  "ITR-6": "Companies — CA-assisted filing",
   BLOCK: "Parent must file for minor",
 };
 
@@ -66,8 +75,8 @@ export function GateContent() {
     setSeniorMode,
   } = useDraftStore();
 
-  const [pan, setPan] = useState("BOHPA6051D"); // Default demo pan as requested
-  const [mobile, setMobile] = useState("7204609907");
+  const [pan, setPan] = useState("");
+  const [mobile, setMobile] = useState("");
   const [localAgeBand, setLocalAgeBand] = useState("25-35");
 
   useEffect(() => {
@@ -94,24 +103,31 @@ export function GateContent() {
   const hasForeign = chips.has("foreign");
   const hasNRI = chips.has("nri");
   const hasCrypto = chips.has("crypto");
+  const hasEntity = chips.has("firm_llp") || chips.has("company");
 
   const rec = useMemo(() => resolveRecommendedForm(matrix, chips), [matrix, chips]);
 
-  // Adjusted form recommendation based on strict rules
-  let form = rec.form;
-  let reason = rec.reason;
-  if (hasFO) {
-    form = "ITR-3";
-    reason = "Futures and Options trading requires ITR-3 and audit check.";
-  } else if (hasNRI) {
-    form = "BLOCK";
-    reason =
-      "NRI / RNOR filing is not supported in this version. Please file on incometax.gov.in or with a CA.";
-  } else if (hasForeign || hasCrypto) {
-    form = "ITR-2";
-    if (hasBusiness) form = "ITR-3";
-    reason = "Foreign income or crypto requires complex ITR forms — consider CA help.";
-  }
+  const { form, reason } = useMemo(() => {
+    let nextForm = rec.form;
+    let nextReason = rec.reason;
+
+    if (hasEntity) {
+      nextForm = chips.has("company") ? "ITR-6" : "ITR-5";
+      nextReason =
+        "Firms, LLPs, and companies file entity returns — our partner CA files it with you.";
+    } else if (hasNRI || hasForeign || hasCrypto) {
+      nextForm = hasBusiness || hasFO ? "ITR-3" : "ITR-2";
+      nextReason = hasNRI
+        ? "NRI / RNOR filing needs residential-status checks and Schedule FA — we guide you step by step."
+        : "Foreign income or crypto requires complex ITR forms — we guide you through the schedules.";
+    }
+
+    return { form: nextForm, reason: nextReason };
+  }, [rec, chips, hasEntity, hasNRI, hasForeign, hasCrypto, hasBusiness, hasFO]);
+
+  useEffect(() => {
+    setRecommendedForm(form, rec.caseId);
+  }, [form, rec.caseId, setRecommendedForm]);
 
   const scope = useMemo(
     () =>
@@ -130,25 +146,41 @@ export function GateContent() {
     hasFO ||
     hasForeign ||
     hasNRI ||
-    hasCrypto;
+    hasCrypto ||
+    hasEntity;
 
   const plainFormLabel = FORM_PLAIN_LABELS[form] ?? form;
 
-  const toggleSource = (sourceId: string, isBusiness: boolean = false, isCapitalGains: boolean = false, isComplex: boolean = false) => {
+  const toggleSource = (
+    sourceId: string,
+    isBusiness: boolean = false,
+    isCapitalGains: boolean = false,
+    isComplex: boolean = false
+  ) => {
+    const wasSelected = chips.has(sourceId);
+    const nextChips = new Set(chips);
+    if (wasSelected) nextChips.delete(sourceId);
+    else nextChips.add(sourceId);
+
     toggleIncomeChip(sourceId);
-    
+
+    const hasBusinessChip =
+      nextChips.has("freelance") ||
+      nextChips.has("business_presumptive") ||
+      nextChips.has("fno");
+
     if (isBusiness || sourceId === "fno") {
-      if (!chips.has(sourceId)) {
+      if (nextChips.has("fno")) {
         setMatrix({ business: "w" });
-      } else if (!chips.has("freelance") && !chips.has("business_presumptive") && !chips.has("fno")) {
+      } else if (!hasBusinessChip) {
         setMatrix({ business: "x" });
       }
     }
-    
+
     if (isCapitalGains || isComplex) {
-      if (!chips.has(sourceId)) {
+      if (nextChips.has(sourceId)) {
         setMatrix({ business: "z" });
-      } else {
+      } else if (!hasBusinessChip) {
         setMatrix({ business: "x" });
       }
     }
@@ -173,9 +205,12 @@ export function GateContent() {
 
   return (
     <FilingLayout
-      mirrorText="Residency and income type decide which ITR form you must use. We match you to the simplest form the law allows — wrong form means notices later."
+      mirrorText={AI_CA_CONFIDENCE_HEADLINE}
     >
       <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm min-h-[400px]">
+        <p className="text-sm text-slate-600 mb-6 leading-relaxed border border-blue-100 bg-blue-50/60 rounded-xl px-4 py-3">
+          {AI_CA_CONFIDENCE_BODY}
+        </p>
         {/* Section 1: Basics */}
         <h2 className="text-xl font-bold text-slate-900 mb-4">Sec 1: Basic Details</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-8">
@@ -225,6 +260,18 @@ export function GateContent() {
           />
         </div>
 
+        {/* Form 16 fast path returns here to ask "anything else this year?" */}
+        {searchParams.get("step") === "additional-income" && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-3">
+            <Check className="mt-0.5 size-4 shrink-0 text-emerald-600" strokeWidth={3} />
+            <p className="text-sm text-emerald-900">
+              <strong>Form 16 imported.</strong> One more thing — did you earn
+              anything else this year? Tick everything that applies below, then
+              continue. It keeps your return safe from AIS mismatch notices.
+            </p>
+          </div>
+        )}
+
         {/* Section 2: Income Sources */}
         <h2 className="text-xl font-bold text-slate-900 mb-4">Sec 2: Select your Income Sources</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 mb-8">
@@ -237,6 +284,8 @@ export function GateContent() {
             { id: "foreign", icon: Globe, label: "Resident Having Foreign Income", desc: "RSUs, foreign dividend", active: hasForeign, isComplex: true },
             { id: "nri", icon: Plane, label: "Non Resident (NRI) Filing", desc: "NRI status", active: hasNRI, isComplex: true },
             { id: "crypto", icon: Bitcoin, label: "Cryptocurrency", desc: "VDA trades", active: hasCrypto, isComplex: true },
+            { id: "firm_llp", icon: Building2, label: "Partnership Firm / LLP", desc: "ITR-5 · CA-assisted", active: chips.has("firm_llp"), isComplex: true },
+            { id: "company", icon: Building2, label: "Company", desc: "ITR-6 · CA-assisted", active: chips.has("company"), isComplex: true },
           ].map((item) => (
             <button
               key={item.id}
@@ -286,15 +335,37 @@ export function GateContent() {
               
               <div className="p-5 bg-white">
                 <div className="mb-5 space-y-3">
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-800 mb-1">{COMPLEX_CASE_ESCALATION_TITLE}</h4>
-                    <p className="text-[13px] text-slate-600 leading-relaxed">{COMPLEX_CASE_ESCALATION_BODY}</p>
-                  </div>
+                  {hasFO ? (
+                    <div className="rounded-lg border border-blue-100 bg-blue-50/80 p-3">
+                      <h4 className="text-sm font-bold text-blue-900 mb-1">
+                        {FNO_GUIDED_HEADLINE}
+                      </h4>
+                      <p className="text-[13px] text-blue-900/80 leading-relaxed">
+                        {FNO_GUIDED_BODY}
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-800 mb-1">
+                        {COMPLEX_CASE_ESCALATION_TITLE}
+                      </h4>
+                      <p className="text-[13px] text-slate-600 leading-relaxed">
+                        {COMPLEX_CASE_ESCALATION_BODY}
+                      </p>
+                    </div>
+                  )}
                   <div className="bg-slate-50 border border-slate-100 rounded-lg p-3">
                     <p className="text-xs text-slate-600 font-medium">
                       <span className="text-slate-800 font-bold">Why?</span> {reason}
                     </p>
                   </div>
+                  {scope.guidance.length > 0 && (
+                    <ul className="text-xs text-slate-600 space-y-1 list-disc pl-4">
+                      {scope.guidance.map((g) => (
+                        <li key={g}>{g}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -303,8 +374,10 @@ export function GateContent() {
                     className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-blue-700"
                   >
                     {scope.verdict === "blocked"
-                      ? "See honest next steps"
-                      : "Continue to Self-Filing"}
+                      ? "See my guided path"
+                      : hasFO
+                        ? "Continue — guided ITR-3"
+                        : "Continue with our guide"}
                   </button>
                 </div>
               </div>
@@ -353,6 +426,17 @@ export function GateContent() {
               </div>
             </div>
           )}
+        </div>
+
+        <div className="mt-8">
+          <h2 className="text-lg font-bold text-slate-900 mb-2">
+            Which ITR form applies to you?
+          </h2>
+          <p className="text-xs text-slate-500 mb-3">
+            India has seven ITR forms — we support guided self-filing for ITR-1 to
+            ITR-4 and partner filing for ITR-5 to ITR-7.
+          </p>
+          <ItrFormGuideTable />
         </div>
       </div>
     </FilingLayout>

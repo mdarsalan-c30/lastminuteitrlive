@@ -1,4 +1,5 @@
 import { AI_GUARDRAILS, AI_SYSTEM_PROMPT } from "./guardrails";
+import { AI_MASTER_SYSTEM_PROMPT } from "@/lib/ai/aiMasterPromptContext";
 
 export function buildCompanionGuidancePrompt(context: {
   form?: string;
@@ -9,8 +10,16 @@ export function buildCompanionGuidancePrompt(context: {
   proofRequired?: string[];
   extra?: Record<string, unknown>;
 }): { systemPrompt: string; userPrompt: string } {
+  // AI_API_TODO — live companion LLM uses this system stack when keys exist.
+  const formHint =
+    context.form === "ITR-3" || context.form === "ITR-4"
+      ? "This user is on a business/profession form — emphasise Schedule BP / presumptive rules."
+      : context.form === "ITR-2"
+        ? "This user may have capital gains, VDA, or foreign assets — emphasise Schedule CG / VDA / FA."
+        : "This user is on a simple salaried path — keep steps short.";
+
   return {
-    systemPrompt: `${AI_SYSTEM_PROMPT}\n\n${AI_GUARDRAILS}`,
+    systemPrompt: `${AI_SYSTEM_PROMPT}\n\n${AI_GUARDRAILS}\n\n${AI_MASTER_SYSTEM_PROMPT}\n\n${formHint}`,
     userPrompt: `Explain how to complete this incometax.gov.in portal step. You guide — you do NOT file.
 
 Return ONLY valid JSON:

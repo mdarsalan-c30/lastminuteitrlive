@@ -18,16 +18,22 @@ export const YOUR_DATA_LINE =
 export const SELF_FILE_POSITIONING =
   "You file it yourself — we prepare and guide.";
 
-export const ESTIMATE_CHIP = "Estimate · AY 2026-27";
+export const ESTIMATE_CHIP = "Estimate · FY 2025-26 return";
+
+export const FILING_READY = {
+  ready: "Ready to file",
+  rough: "Numbers still rough",
+  estimate: "Estimate mode",
+} as const;
 
 // ── GATE ────────────────────────────────────────────────────────
 
 export const GATE = {
   whyCapitalGains:
     "Selling investments changes which form you need. We check so you never file the wrong one.",
-  blockedTitle: "We can't file your case correctly yet — and we won't pretend we can.",
+  blockedTitle: "Your case needs an expert's hands — and we bring the expert to you.",
   blockedBody:
-    "Your situation needs a form we don't support well enough to trust. Here's the honest path forward:",
+    "Your situation needs schedules that work best with a CA alongside you. Here's your guided path forward:",
 } as const;
 
 // ── COLLECT / EXTRACT ───────────────────────────────────────────
@@ -48,7 +54,9 @@ export const RECONCILE = {
   actionKeep: "Keep mine",
   actionDispute: "This is wrong",
   allClear:
-    "Everything matches — Form 16, AIS and 26AS all agree. That's the best start possible.",
+    "Everything matches — Form 16, AIS, and 26AS all agree. That's the best start possible.",
+  hubMirror:
+    "This dashboard is your match-and-review hub. Confirm imports, income, and deductions, then compare regimes before you file on the portal.",
 } as const;
 
 // ── CONFIRM ─────────────────────────────────────────────────────
@@ -63,6 +71,18 @@ export const COMPUTE = {
   refundLabel: "Your refund",
   payableLabel: "Tax to pay",
   bothChecked: "We checked both regimes.",
+} as const;
+
+// ── SAVINGS COACH ─────────────────────────────────────────────────
+
+export const SAVINGS_COACH = {
+  estimateLabel:
+    "Rough estimate — ITD confirms the final amount on the government portal.",
+  proofLine: "Only claim what you can prove with a receipt, statement, or Form 16.",
+  moreSavings:
+    "Your CA-style checklist found more lawful savings if you have proof.",
+  breakeven:
+    "Old regime needs more eligible deductions before it beats the new regime.",
 } as const;
 
 // ── RISK ────────────────────────────────────────────────────────

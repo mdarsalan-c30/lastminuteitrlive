@@ -5,6 +5,7 @@ import { HashScrollHandler } from "@/components/navigation/HashScrollHandler";
 import { SessionBootstrap } from "@/components/SessionBootstrap";
 import Script from "next/script";
 import { defaultOpenGraphImages, getSiteUrl } from "@/lib/seo";
+import { BRAND_ICON_PATH } from "@/lib/brand";
 import "./globals.css";
 
 const inter = Inter({
@@ -65,6 +66,10 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "xP0DgxeUNab32kzoTF4I1N7E0rYPGcjssQ0DBidRkqY",
+  },
+  icons: {
+    icon: BRAND_ICON_PATH,
+    apple: "/brand/favicon-180.png",
   },
 };
 

@@ -19,22 +19,25 @@ import {
   generateDeductionDiscoveryQuestions,
   type DiscoveryQuestion,
 } from "@/lib/engine/deductionDiscovery";
+import { PROFESSION_OPTIONS } from "@/lib/engine/professionQuestions";
+import type { ITRResult } from "@/lib/engine/types";
 import { WhyExpander } from "@/components/ds/WhyExpander";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { highlightCopyText } from "@/lib/copy/highlightCopy";
 import { Sparkles, IndianRupee, Check, X } from "lucide-react";
 
 /** Questions whose "yes" amount can be applied to a draft field directly. */
 const AMOUNT_TARGETS: Record<
   string,
-  { field: "section80C" | "section80D" | "npsExtra" | "section80GG"; label: string }
+  { field: "section80C" | "section80D" | "npsExtra" | "section80GG"; label: string; genieId?: string }
 > = {
-  disc_80c: { field: "section80C", label: "Total 80C amount (₹)" },
-  disc_home_loan_principal: { field: "section80C", label: "Principal repaid (₹)" },
-  disc_80d_self: { field: "section80D", label: "Premium paid (₹)" },
-  disc_80d_parents: { field: "section80D", label: "Premium for parents (₹)" },
-  disc_nps_1b: { field: "npsExtra", label: "NPS contribution (₹)" },
-  disc_rent_80gg: { field: "section80GG", label: "Annual rent paid (₹)" },
+  disc_80c: { field: "section80C", label: "Total 80C amount (₹)", genieId: "section80c" },
+  disc_home_loan_principal: { field: "section80C", label: "Principal repaid (₹)", genieId: "section80c" },
+  disc_80d_self: { field: "section80D", label: "Premium paid (₹)", genieId: "section80d" },
+  disc_80d_parents: { field: "section80D", label: "Premium for parents (₹)", genieId: "section80d" },
+  disc_nps_1b: { field: "npsExtra", label: "NPS contribution (₹)", genieId: "nps_extra" },
+  disc_rent_80gg: { field: "section80GG", label: "Annual rent paid (₹)", genieId: "actual_rent_paid_80gg" },
 };
 
 /** Carry-forward loss fields — one amount, applied to the right CFL bucket. */
@@ -61,16 +64,32 @@ const MANUAL_HINTS: Record<string, string> = {
   disc_digital_receipts:
     "Noted. Update your digital receipts share on the Business income screen.",
   disc_books_vs_presumptive:
-    "Noted. We'll flag your return for a books-vs-presumptive comparison.",
+    "Noted. We'll flag your return for a flat-rate vs actual-expenses comparison.",
   disc_bf_sec80:
     "Noted. If the loss-year return was late, capital and business losses cannot be carried forward.",
+  prof_doctor_indemnity:
+    "Noted. Keep the premium receipt — we'll flag your return for a flat-rate vs actual-expenses comparison.",
+  prof_doctor_equipment:
+    "Noted. Add the equipment cost as a depreciation block on the Income screen (15% rate).",
+  prof_doctor_pharmacy:
+    "Noted. We'll treat pharmacy sales as 44AD business income and consultations as 44ADA — usually lower tax.",
+  prof_lawyer_chamber:
+    "Noted. Keep expense proofs — we'll flag your return for a flat-rate vs actual-expenses comparison.",
+  prof_it_equipment:
+    "Noted. Add the equipment as a depreciation block on the Income screen (computers depreciate at 40%).",
+  prof_it_foreign_clients:
+    "Noted. Make sure all foreign receipts are in your gross receipts — AIS usually shows them.",
+  prof_creator_gifts:
+    "Noted. Barter and freebies above ₹20,000 count as income (194R) — include their fair value in receipts.",
+  prof_gig_tds:
+    "Noted. Check Form 26AS for platform TDS — it comes back as refund if your total tax is lower.",
 };
 
 function formatINR(n: number): string {
   return `₹${Math.round(n).toLocaleString("en-IN")}`;
 }
 
-export function SmartSavingsFinder() {
+export function SmartSavingsFinder({ result }: { result?: ITRResult | null }) {
   const filingMode = useDraftStore((s) => s.filingMode);
   const profile = useDraftStore((s) => s.profile);
   const matrix = useDraftStore((s) => s.matrix);
@@ -82,6 +101,7 @@ export function SmartSavingsFinder() {
   const depreciationBlocks = useDraftStore((s) => s.depreciationBlocks);
   const deductions = useDraftStore((s) => s.deductions);
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
+  const capitalGains = useDraftStore((s) => s.capitalGains);
   const mismatchResolved = useDraftStore((s) => s.mismatchResolved);
   const lastParseResult = useDraftStore((s) => s.lastParseResult);
   const questionAnswers = useDraftStore((s) => s.questionAnswers);
@@ -91,6 +111,15 @@ export function SmartSavingsFinder() {
   const addExtraProperty = useDraftStore((s) => s.addExtraProperty);
   const setDepreciationBlocks = useDraftStore((s) => s.setDepreciationBlocks);
   const setHouseProperty = useDraftStore((s) => s.setHouseProperty);
+  const profession = useDraftStore((s) => s.profession);
+  const setProfession = useDraftStore((s) => s.setProfession);
+  const ensureIncomeChip = useDraftStore((s) => s.ensureIncomeChip);
+  const setActiveField = useDraftStore((s) => s.setActiveField);
+
+  const hasBusinessChips =
+    incomeChips.includes("freelance") ||
+    incomeChips.includes("business_presumptive") ||
+    incomeChips.includes("fno");
 
   const [amountDraftById, setAmountDraftById] = useState<Record<string, string>>({});
   const [confirmation, setConfirmation] = useState<string | null>(null);
@@ -108,9 +137,12 @@ export function SmartSavingsFinder() {
       depreciationBlocks,
       deductions,
       connectedConnectors,
+      capitalGains,
+      profession,
     });
+    const recommendedRegime = result?.regime_comparison.recommended_regime;
     return generateDeductionDiscoveryQuestions({
-      result: null,
+      result,
       userInput,
       draft: {
         profile,
@@ -124,14 +156,29 @@ export function SmartSavingsFinder() {
         carryForward,
         depreciationBlocks,
         deductions,
+        profession,
       },
       questionAnswers,
-    }).slice(0, 6);
+    })
+      .filter((question) => {
+        if (question.regimeScope === "both") return true;
+        return recommendedRegime !== "new";
+      })
+      .slice(0, 6);
   }, [
     filingMode, profile, matrix, incomeChips, income, houseProperty,
     extraProperties, carryForward, depreciationBlocks, deductions,
-    connectedConnectors, mismatchResolved, lastParseResult, questionAnswers,
+    connectedConnectors, capitalGains, mismatchResolved, lastParseResult,
+    questionAnswers, result, profession,
   ]);
+
+  const handleSideIncome = (q: DiscoveryQuestion) => {
+    ensureIncomeChip("freelance");
+    setQuestionAnswer(q.id, { answer: "yes" });
+    setConfirmation(
+      "Great — we added Freelance to your income sources. Enter what you earned on the Income tab; presumptive tax makes it simple (often only 50% or less of receipts is taxed)."
+    );
+  };
 
   const handleYesWithAmount = (q: DiscoveryQuestion) => {
     const target = AMOUNT_TARGETS[q.id];
@@ -230,17 +277,41 @@ export function SmartSavingsFinder() {
   }
 
   return (
-    <div className="rounded-2xl border border-blue-100 bg-blue-50/30 p-5 md:p-6 space-y-4">
+    <div className="rounded-2xl border border-blue-100 bg-blue-50/30 p-4 sm:p-5 space-y-3 sm:space-y-4">
       <div className="flex items-center gap-2">
-        <Sparkles className="size-4.5 text-blue-600" />
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+        <Sparkles className="size-4 text-blue-600" />
+        <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-800 sm:text-xs">
           Your CA would ask you this
         </h3>
       </div>
-      <p className="text-xs text-slate-600 -mt-2">
+      <p className="text-[11px] leading-relaxed text-slate-600 sm:text-xs -mt-1">
         Lawful deductions and prior-year losses people commonly miss. Answer
         only what is true — every claim needs proof.
       </p>
+
+      {hasBusinessChips && (
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-white p-3">
+          <label
+            htmlFor="ssf-profession"
+            className="text-xs font-semibold text-slate-700"
+          >
+            What do you do? We ask sharper questions once we know.
+          </label>
+          <select
+            id="ssf-profession"
+            value={profession ?? ""}
+            onChange={(e) => setProfession(e.target.value || null)}
+            className="h-8 rounded-lg border border-slate-300 px-2 text-xs"
+          >
+            <option value="">Select your field…</option>
+            {PROFESSION_OPTIONS.map((opt) => (
+              <option key={opt.id} value={opt.id}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {confirmation && (
         <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-xs text-emerald-800">
@@ -255,16 +326,19 @@ export function SmartSavingsFinder() {
           const isSecondProperty = q.id === "disc_second_property";
           const isDepreciation = q.id === "disc_depreciation";
           const isSec80 = q.id === "disc_bf_sec80";
+          const isSideIncome = q.id === "prof_side_income";
 
           return (
             <div
               key={q.id}
-              className="rounded-xl border border-slate-200 bg-white p-4 space-y-3"
+              className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 space-y-2.5 sm:space-y-3"
             >
-              <div className="flex items-start justify-between gap-3">
-                <p className="text-sm font-medium text-slate-800">{q.prompt}</p>
+              <div className="flex items-start justify-between gap-2 sm:gap-3">
+                <p className="text-xs font-medium leading-relaxed text-slate-800 sm:text-sm">
+                  {highlightCopyText(q.prompt)}
+                </p>
                 {q.estimatedSaving > 0 && (
-                  <span className="shrink-0 inline-flex items-center gap-0.5 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                  <span className="shrink-0 inline-flex items-center gap-0.5 rounded-full bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 sm:px-2 sm:text-[11px]">
                     <IndianRupee className="size-3" />
                     up to {Math.round(q.estimatedSaving).toLocaleString("en-IN")}
                   </span>
@@ -281,6 +355,9 @@ export function SmartSavingsFinder() {
                       inputMode="numeric"
                       placeholder={amountTarget.label}
                       value={amountDraftById[q.id] ?? ""}
+                      onFocus={() => {
+                        if (amountTarget.genieId) setActiveField(amountTarget.genieId);
+                      }}
                       onChange={(e) =>
                         setAmountDraftById((prev) => ({
                           ...prev,
@@ -353,6 +430,14 @@ export function SmartSavingsFinder() {
                     onClick={() => handleSecondProperty(q)}
                   >
                     <Check className="size-3.5 mr-1" /> Yes, I have another
+                  </Button>
+                ) : isSideIncome ? (
+                  <Button
+                    size="sm"
+                    className="h-8 text-xs"
+                    onClick={() => handleSideIncome(q)}
+                  >
+                    <Check className="size-3.5 mr-1" /> Yes, I earned extra
                   </Button>
                 ) : isSec80 ? (
                   <>

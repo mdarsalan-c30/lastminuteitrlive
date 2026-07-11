@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "AY2026_27_ITR1_FOUNDATION",
+  "generatedBy": "LastMinute ITR",
+  "disclaimer": "Foundation export for portal mapping. User must preview, verify, submit, and e-verify on incometax.gov.in.",
+  "assessmentYear": "2026-27",
+  "form": "ITR-1",
+  "personalInfo": {
+    "residentialStatus": "resident",
+    "age": 32
+  },
+  "income": {
+    "salary": 875000,
+    "houseProperty": 0,
+    "otherSources": 18500,
+    "grossTotalIncome": 893500
+  },
+  "deductions": {
+    "section80C": 150000,
+    "section80D": 25000,
+    "section80CCD1B": 0,
+    "section80CCD2": 0,
+    "section80E": 0,
+    "section80G": 0,
+    "section80GG": 0,
+    "section80TTAOrTTB": 10000,
+    "totalChapterVIA": 185000
+  },
+  "tax": {
+    "regime": "old",
+    "taxableIncome": 708500,
+    "totalTax": 57200,
+    "tdsAndAdvanceTax": 65000,
+    "netPayable": -7800
+  },
+  "validation": {
+    "blocking": [],
+    "warnings": []
+  }
+}

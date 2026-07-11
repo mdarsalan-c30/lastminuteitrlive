@@ -11,7 +11,7 @@ import { PLANS } from "@/lib/payments/plans";
 import type { PlanId } from "@/lib/payments/plans";
 import { cookies } from "next/headers";
 import { B2C_SESSION_COOKIE, readB2CSession } from "@/lib/auth/b2c";
-import { useCoins } from "@/lib/admin/referrals";
+import { spendCoins } from "@/lib/admin/referrals";
 
 const VALID_PLANS = Object.keys(PLANS) as PlanId[];
 
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       const session = readB2CSession(token);
       if (session) {
         try {
-          await useCoins(session.email, body.useCoins);
+          await spendCoins(session.email, body.useCoins);
         } catch (e: any) {
           return NextResponse.json({ error: e.message }, { status: 400 });
         }

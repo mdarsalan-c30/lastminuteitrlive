@@ -6,7 +6,7 @@ import {
   PAYMENT_SESSION_COOKIE,
   paymentSessionCookieOptions,
 } from "@/lib/payments/session";
-import { all } from "@/lib/db/store";
+import { prisma } from "@/lib/db/store";
 
 export async function GET(request: NextRequest) {
   if (isPaymentBypassEnabled()) {
@@ -30,11 +30,13 @@ export async function GET(request: NextRequest) {
   
   if (session.sessionId) {
     try {
-      const grants = await all("companionGrants");
-      const match = grants.find((g) => g.sessionId === session.sessionId);
+      const match = await prisma.companionGrant.findFirst({
+        where: { sessionId: session.sessionId },
+        orderBy: { ts: "desc" },
+      });
       if (match) {
-        passkey = match.passkey;
-        expiresAt = match.expiresAt;
+        passkey = match.passkey ?? undefined;
+        expiresAt = match.expiresAt?.toISOString() ?? null;
       }
     } catch (err) {
       console.error("Failed to fetch companionGrants:", err);

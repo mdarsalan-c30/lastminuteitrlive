@@ -11,10 +11,19 @@ describe("importModes", () => {
     ).toBe("/file/start?source=form16&step=additional-income");
   });
 
-  it("routes standard form16 path to COLLECT documents", () => {
+  it("routes connected form16 to RECONCILE (no self-loop)", () => {
     expect(
       getImportContinueHref("form16", {
         form16Connected: true,
+        form16FastPath: false,
+      })
+    ).toBe("/file/import/mismatch");
+  });
+
+  it("keeps unconnected form16 on the documents screen", () => {
+    expect(
+      getImportContinueHref("form16", {
+        form16Connected: false,
         form16FastPath: false,
       })
     ).toBe("/file/import/documents");
@@ -29,12 +38,12 @@ describe("importModes", () => {
     ).toBe("/file/regime");
   });
 
-  it("returns null for capital gains (dedicated flow handles routing)", () => {
+  it("routes capital gains / F&O import to review hub", () => {
     expect(
       getImportContinueHref("capital_gains", {
         form16Connected: false,
         form16FastPath: false,
       })
-    ).toBeNull();
+    ).toBe("/file/review");
   });
 });

@@ -2,7 +2,50 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { CA_SESSION_COOKIE, readCASession } from "@/lib/auth/ca";
 import { all } from "@/lib/db/store";
-import { CheckCircle2, ShieldCheck, Quote } from "lucide-react";
+import { PLANS } from "@/lib/payments/plans";
+import { CheckCircle2, ShieldCheck } from "lucide-react";
+import { CaPackBuyButton } from "@/components/ca/CaPackBuyButton";
+
+const PACKS = [
+  {
+    planId: "b2b_20" as const,
+    title: "20 Applications",
+    perFiling: "₹250 / filing",
+    popular: false,
+    features: [
+      "Assign up to 20 clients",
+      "Credit wallet & analytics",
+      "Robust CRM dashboard tracking",
+    ],
+  },
+  {
+    planId: "b2b_40" as const,
+    title: "40 Applications",
+    perFiling: "₹225 / filing",
+    popular: true,
+    features: [
+      "Assign up to 40 clients",
+      "Credit wallet & analytics",
+      "Robust CRM dashboard tracking",
+      "Priority error rollback",
+    ],
+  },
+  {
+    planId: "b2b_100" as const,
+    title: "100 Applications",
+    perFiling: "₹170 / filing",
+    popular: false,
+    features: [
+      "Assign up to 100 clients",
+      "Credit wallet & analytics",
+      "Robust CRM dashboard tracking",
+    ],
+  },
+];
+
+function inr(n: number): string {
+  return `₹${n.toLocaleString("en-IN")}`;
+}
 
 export default async function CABillingPage() {
   const cookieStore = await cookies();
@@ -27,153 +70,74 @@ export default async function CABillingPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* 20 Pack */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:border-blue-300 transition-all flex flex-col overflow-hidden">
-          <div className="p-6 flex-1">
-            <h3 className="font-bold text-xl text-slate-900">20 Applications</h3>
-            <p className="text-xs text-slate-500 mb-6">Valid for 1 year</p>
-            
-            <div className="flex items-end gap-2 mb-6">
-              <span className="text-3xl font-black tabular-nums tracking-tight">₹5,000</span>
-              <span className="text-sm text-slate-400 line-through mb-1.5">₹7,180</span>
-            </div>
-            
-            <ul className="space-y-3 text-sm text-slate-600">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-blue-500 mt-0.5 shrink-0" />
-                <span>Assign up to 20 clients</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-blue-500 mt-0.5 shrink-0" />
-                <span>Credit wallet & analytics</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-blue-500 mt-0.5 shrink-0" />
-                <span>Robust CRM dashboard tracking</span>
-              </li>
-            </ul>
-          </div>
-          <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-            <span className="text-sm font-semibold text-blue-600">₹250 / filing</span>
-            <button className="px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition">
-              Buy Now
-            </button>
-          </div>
-        </div>
+        {PACKS.map((pack) => {
+          const plan = PLANS[pack.planId];
+          return (
+            <div
+              key={pack.planId}
+              className={
+                pack.popular
+                  ? "bg-white rounded-2xl border-2 border-blue-500 shadow-md relative flex flex-col overflow-hidden transform md:-translate-y-2"
+                  : "bg-white rounded-2xl border border-slate-200 shadow-sm hover:border-blue-300 transition-all flex flex-col overflow-hidden"
+              }
+            >
+              {pack.popular && (
+                <>
+                  <div className="absolute top-0 inset-x-0 h-1 bg-blue-500" />
+                  <div className="absolute top-4 right-4 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
+                    Most Popular
+                  </div>
+                </>
+              )}
+              <div className="p-6 flex-1">
+                <h3 className="font-bold text-xl text-slate-900">{pack.title}</h3>
+                <p className="text-xs text-slate-500 mb-6">Valid for 1 year</p>
 
-        {/* 40 Pack - Most Popular */}
-        <div className="bg-white rounded-2xl border-2 border-blue-500 shadow-md relative flex flex-col overflow-hidden transform md:-translate-y-2">
-          <div className="absolute top-0 inset-x-0 h-1 bg-blue-500" />
-          <div className="absolute top-4 right-4 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
-            Most Popular
-          </div>
-          <div className="p-6 flex-1">
-            <h3 className="font-bold text-xl text-slate-900">40 Applications</h3>
-            <p className="text-xs text-slate-500 mb-6">Valid for 1 year</p>
-            
-            <div className="flex items-end gap-2 mb-6">
-              <span className="text-3xl font-black tabular-nums tracking-tight">₹9,000</span>
-              <span className="text-sm text-slate-400 line-through mb-1.5">₹14,360</span>
-            </div>
-            
-            <ul className="space-y-3 text-sm text-slate-600">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-blue-500 mt-0.5 shrink-0" />
-                <span>Assign up to 40 clients</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-blue-500 mt-0.5 shrink-0" />
-                <span>Credit wallet & analytics</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-blue-500 mt-0.5 shrink-0" />
-                <span>Robust CRM dashboard tracking</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-emerald-500 mt-0.5 shrink-0" />
-                <span className="font-medium text-slate-900">Priority error rollback</span>
-              </li>
-            </ul>
-          </div>
-          <div className="p-6 bg-blue-50 border-t border-blue-100 flex items-center justify-between">
-            <span className="text-sm font-bold text-blue-700">₹225 / filing</span>
-            <button className="px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-sm">
-              Buy Now
-            </button>
-          </div>
-        </div>
+                <div className="flex items-end gap-2 mb-6">
+                  <span className="text-3xl font-black tabular-nums tracking-tight">
+                    {inr(plan.price)}
+                  </span>
+                  {plan.originalPrice && plan.originalPrice > plan.price && (
+                    <span className="text-sm text-slate-400 line-through mb-1.5">
+                      {inr(plan.originalPrice)}
+                    </span>
+                  )}
+                </div>
 
-        {/* 100 Pack */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:border-blue-300 transition-all flex flex-col overflow-hidden">
-          <div className="p-6 flex-1">
-            <h3 className="font-bold text-xl text-slate-900">100 Applications</h3>
-            <p className="text-xs text-slate-500 mb-6">Valid for 1 year</p>
-            
-            <div className="flex items-end gap-2 mb-6">
-              <span className="text-3xl font-black tabular-nums tracking-tight">₹15,999</span>
-              <span className="text-sm text-slate-400 line-through mb-1.5">₹35,900</span>
+                <ul className="space-y-3 text-sm text-slate-600">
+                  {pack.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2">
+                      <CheckCircle2 className="size-4 text-blue-500 mt-0.5 shrink-0" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div
+                className={
+                  pack.popular
+                    ? "p-6 bg-blue-50 border-t border-blue-100 flex items-center justify-between"
+                    : "p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between"
+                }
+              >
+                <span className="text-sm font-semibold text-blue-600">{pack.perFiling}</span>
+                <CaPackBuyButton planId={pack.planId} label="Credits added after payment" />
+              </div>
             </div>
-            
-            <ul className="space-y-3 text-sm text-slate-600">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-blue-500 mt-0.5 shrink-0" />
-                <span>Assign up to 100 clients</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-blue-500 mt-0.5 shrink-0" />
-                <span>Credit wallet & analytics</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="size-4 text-blue-500 mt-0.5 shrink-0" />
-                <span>Robust CRM dashboard tracking</span>
-              </li>
-            </ul>
-          </div>
-          <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-            <span className="text-sm font-semibold text-blue-600">₹160 / filing</span>
-            <button className="px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition">
-              Buy Now
-            </button>
-          </div>
-        </div>
+          );
+        })}
       </div>
 
-      <div className="bg-slate-900 rounded-3xl p-8 md:p-10 text-white">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <ShieldCheck className="size-6 text-emerald-400" />
-            <h3 className="text-xl font-bold">Trusted by Tax Professionals</h3>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700">
-              <Quote className="size-6 text-slate-500 mb-4" />
-              <p className="text-slate-300 italic text-sm mb-4">
-                "The CRM tool acts like a mini accounting tracker for my firm. I can see all my clients, enter the custom fees I charge them, and track my total earnings right from the dashboard. It's incredibly robust."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-sm">SP</div>
-                <div>
-                  <p className="text-sm font-bold">Sanjay Patel</p>
-                  <p className="text-xs text-slate-400">Chartered Accountant, Mumbai</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700">
-              <Quote className="size-6 text-slate-500 mb-4" />
-              <p className="text-slate-300 italic text-sm mb-4">
-                "The credit system is flawless. I bought the 40-pack, and it automatically deducts a credit only when filing is successful. If there's an error, the credit rolls back immediately. Production-ready logic."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-sm">RN</div>
-                <div>
-                  <p className="text-sm font-bold">Riya Nambiar</p>
-                  <p className="text-xs text-slate-400">Tax Consultant, Bengaluru</p>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 flex items-start gap-3">
+        <ShieldCheck className="size-5 text-emerald-600 mt-0.5 shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-slate-800">
+            How buying works right now
+          </p>
+          <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+            Pay online to add filing credits to your wallet instantly. Each credit
+            lets you file one client return. GST invoice is issued with every purchase.
+          </p>
         </div>
       </div>
     </div>

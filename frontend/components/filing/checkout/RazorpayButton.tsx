@@ -48,6 +48,7 @@ interface CreateOrderResponse {
 interface RazorpayButtonProps {
   planId: PlanId;
   couponCode?: string;
+  familyProfileId?: string | null;
   onSuccess?: (result: {
     orderId: string;
     paymentId: string;
@@ -77,6 +78,7 @@ function loadRazorpayScript(): Promise<void> {
 export default function RazorpayButton({
   planId,
   couponCode,
+  familyProfileId,
   onSuccess,
   onError,
   className = "",
@@ -98,6 +100,7 @@ export default function RazorpayButton({
           planId,
           sessionId: getBrowserSessionId(),
           couponCode,
+          familyProfileId: familyProfileId ?? undefined,
         }),
       });
       const data = await verifyRes.json();
@@ -106,7 +109,7 @@ export default function RazorpayButton({
       }
       return data;
     },
-    [planId, couponCode]
+    [planId, couponCode, familyProfileId]
   );
 
   const handleMockPayment = useCallback(

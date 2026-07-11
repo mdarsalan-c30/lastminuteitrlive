@@ -20,37 +20,15 @@ export const DEMO_REGIME_TAX: { old: number; new: number } = {
 };
 
 export const TRUST_ITEMS = [
-  "Lawful optimization only",
-  "DPDP compliant",
+  "Only legal savings",
+  "Your data stays private",
   "Companion filing on gov portal",
 ] as const;
 
 /** Seeded illustrative testimonials — not live analytics; do not show as verified metrics */
 export const BETA_TESTIMONIAL_COUNT = 6;
 
-export const QUICK_START_CONNECTORS = [
-  {
-    id: "form16",
-    title: "Form 16",
-    description: "Upload salary certificate from employer",
-    href: "/file/import/documents?source=form16",
-  },
-  {
-    id: "ais",
-    title: "AIS",
-    description: "Annual Information Statement from ITD",
-    href: "/file/import/documents?source=ais",
-  },
-  {
-    id: "groww",
-    title: "Groww",
-    description: "Capital gains and MF statements",
-    href: "/file/import/documents?source=groww",
-  },
-  {
-    id: "mfcentral",
-    title: "MFCentral",
-    description: "Consolidated mutual fund CAS",
-    href: "/file/import/documents?source=mfcentral",
-  },
-] as const;
+export {
+  QUICK_START_CONNECTORS,
+  type ConnectorStatus,
+} from "@/lib/connectors/registry";

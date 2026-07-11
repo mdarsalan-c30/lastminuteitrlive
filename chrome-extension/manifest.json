@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "LastMinute ITR Companion",
+  "description": "Helps users locate ITR portal fields while filing on incometax.gov.in.",
+  "version": "0.1.0",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "LastMinute ITR"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.incometax.gov.in/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": ["activeTab"],
+  "host_permissions": ["https://www.incometax.gov.in/*"]
+}

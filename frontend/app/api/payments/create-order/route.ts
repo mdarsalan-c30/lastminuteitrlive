@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  CHECKOUT_PLAN_IDS,
+  isPurchasablePlanId,
+  isCaPurchasablePlanId,
   normalizePlanId,
   type PlanId,
 } from "@/lib/payments/plans";
@@ -11,6 +12,7 @@ import {
 import { getPublishedPrice } from "@/lib/pricing/config";
 import { validateCoupon } from "@/lib/admin/coupons";
 import { validateReferralCode } from "@/lib/admin/referrals";
+import { CA_SESSION_COOKIE, readCASession } from "@/lib/auth/ca";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,11 +22,22 @@ export async function POST(request: NextRequest) {
     };
     const planId = normalizePlanId(body.planId);
 
-    if (!planId || !CHECKOUT_PLAN_IDS.includes(planId)) {
+    const caToken = request.cookies.get(CA_SESSION_COOKIE)?.value;
+    const caSession = readCASession(caToken);
+    const isCaCheckout = Boolean(caSession);
+
+    const planAllowed =
+      planId &&
+      (isCaCheckout
+        ? isCaPurchasablePlanId(planId)
+        : isPurchasablePlanId(planId));
+
+    if (!planId || !planAllowed) {
       return NextResponse.json(
         {
-          error:
-            "Invalid plan. Choose free, normal, pro, diy, ai_smart, or ca.",
+          error: isCaCheckout
+            ? "Invalid B2B pack. Choose b2b_20, b2b_40, or b2b_100."
+            : "Invalid plan. Choose free, normal, pro, diy, or ai_smart. CA Review is launching soon.",
         },
         { status: 400 }
       );
@@ -106,7 +119,11 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const order = await createRazorpayOrder(amountPaise, receipt);
+    const order = await createRazorpayOrder(amountPaise, receipt, {
+      planId,
+      amountPaise,
+      couponCode: body.couponCode ?? "",
+    });
 
     return NextResponse.json({
       orderId: order.id,
