@@ -1,6 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import {
+  B2B_FORM_SUBMIT_LABEL,
+  B2B_FORM_SUBTITLE,
+  B2B_FORM_SUCCESS_BODY,
+  B2B_FORM_SUCCESS_TITLE,
+  B2B_FORM_TITLE,
+} from "@/lib/copy/b2b";
 import { cn } from "@/lib/utils";
 
 export function CaRegistrationForm() {
@@ -56,10 +63,10 @@ export function CaRegistrationForm() {
           </svg>
         </div>
         <h3 className="font-manrope mb-2 text-xl font-bold text-[#0B1220]">
-          Application Received
+          {B2B_FORM_SUCCESS_TITLE}
         </h3>
         <p className="text-[14.5px] text-[#6B7280] leading-relaxed">
-          Thank you for applying. Our team will verify your ICAI membership details and grant B2B portal access within 1-2 business days.
+          {B2B_FORM_SUCCESS_BODY}
         </p>
       </div>
     );
@@ -75,10 +82,10 @@ export function CaRegistrationForm() {
     >
       <div className="mb-6">
         <h3 className="font-manrope text-[19px] font-bold tracking-[-0.01em] text-[#0B1220]">
-          Partner Onboarding
+          {B2B_FORM_TITLE}
         </h3>
         <p className="text-[13px] text-[#6B7280] mt-1">
-          Apply for CA portal access to manage your clients.
+          {B2B_FORM_SUBTITLE}
         </p>
       </div>
 
@@ -153,7 +160,7 @@ export function CaRegistrationForm() {
             loading && "opacity-70 pointer-events-none"
           )}
         >
-          {loading ? "Submitting..." : "Submit Application"}
+          {loading ? "Submitting..." : B2B_FORM_SUBMIT_LABEL}
         </button>
 
         <p className="mt-2 text-center text-[12px] text-[#9CA3AF]">

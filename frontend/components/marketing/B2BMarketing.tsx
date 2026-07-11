@@ -1,31 +1,40 @@
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
-import { Users, FileText, Cpu, CheckCircle, Bot, Zap, IndianRupee } from "lucide-react";
-import Link from "next/link";
+import {
+  B2B_PRICING_SUBTEXT,
+  B2B_PRICING_TITLE,
+  B2B_TOOLS_SUBTEXT,
+  B2B_TOOLS_EYEBROW,
+  B2B_TOOLS_TITLE,
+  B2B_WORKFLOW_EYEBROW,
+  B2B_WORKFLOW_SUBTEXT,
+  B2B_WORKFLOW_TITLE,
+} from "@/lib/copy/b2b";
+import { Users, FileText, Cpu, CheckCircle, Bot, Zap } from "lucide-react";
 
 export function B2BHowItWorks() {
   const steps = [
     {
       step: 1,
-      title: "Onboard Your Clients",
-      detail: "Add clients directly to your secure partner dashboard or send them a white-labeled onboarding link.",
+      title: "Add clients to your firm",
+      detail: "Create client profiles in your partner dashboard or share a branded link so they upload documents directly to you.",
       icon: <Users className="size-6 text-[#0e5f63]" />,
     },
     {
       step: 2,
-      title: "Upload & Parse",
-      detail: "Drop in Form 16s, AIS, and 26AS PDFs. Our AI extracts and maps all tax data automatically.",
+      title: "Let AI read the documents",
+      detail: "Upload Form 16, AIS and 26AS PDFs. Data is extracted, mapped and ready for your review — no manual typing.",
       icon: <FileText className="size-6 text-[#0e5f63]" />,
     },
     {
       step: 3,
-      title: "Optimize & Review",
-      detail: "The engine instantly compares regimes and flags AIS mismatches. Review the generated plan in seconds.",
+      title: "Review regimes & mismatches",
+      detail: "See old vs new regime side by side and catch AIS gaps before your client reaches the ITD portal.",
       icon: <Cpu className="size-6 text-[#0e5f63]" />,
     },
     {
       step: 4,
-      title: "File with Confidence",
-      detail: "Export a structured JSON or directly use the copy-ready guide to file on the ITD portal efficiently.",
+      title: "Guide clients to file",
+      detail: "Hand clients a clear, step-by-step portal guide. You review; they submit on incometax.gov.in themselves.",
       icon: <CheckCircle className="size-6 text-[#0e5f63]" />,
     },
   ];
@@ -34,12 +43,12 @@ export function B2BHowItWorks() {
     <section className="section-pad-lg px-4 sm:px-6 lg:px-8 bg-[#FAFAFB]">
       <div className="mx-auto w-full max-w-[1180px]">
         <ScrollReveal className="text-center mb-16">
-          <span className="eyebrow-label">WORKFLOW</span>
+          <span className="eyebrow-label">{B2B_WORKFLOW_EYEBROW}</span>
           <h2 className="font-manrope mt-3.5 text-[clamp(28px,3vw,42px)] font-bold tracking-[-0.02em] text-[#0B1220] leading-[1.15]">
-            How the Partner Program Works
+            {B2B_WORKFLOW_TITLE}
           </h2>
           <p className="mt-4 text-[16px] text-[#6B7280] leading-relaxed max-w-[600px] mx-auto">
-            Streamline your practice and process returns 10x faster.
+            {B2B_WORKFLOW_SUBTEXT}
           </p>
         </ScrollReveal>
 
@@ -78,18 +87,18 @@ export function B2BHowItWorks() {
 export function B2BTools() {
   const tools = [
     {
-      title: "AIS Mismatch Detector",
-      desc: "Automatically cross-reference client-provided data against AIS/TIS to flag discrepancies before you file.",
+      title: "Mismatch alerts before filing",
+      desc: "Cross-check client data against AIS and 26AS so you fix gaps early — not after a notice arrives.",
       icon: <Zap className="size-5 text-[#0e5f63]" />,
     },
     {
-      title: "WhatsApp Bot Integration",
-      desc: "Collect documents and missing details from clients directly through an automated WhatsApp flow.",
+      title: "Client document collection",
+      desc: "Send a simple link or use WhatsApp flows to collect Form 16 and missing details without endless follow-ups.",
       icon: <Bot className="size-5 text-[#0e5f63]" />,
     },
     {
-      title: "Bulk Processing",
-      desc: "Upload dozens of Form 16s at once. Let the engine calculate the optimal regime for all clients simultaneously.",
+      title: "Bulk processing at peak season",
+      desc: "Work through dozens of returns in one sitting — upload, parse and compare regimes across your client list.",
       icon: <Cpu className="size-5 text-[#0e5f63]" />,
     }
   ];
@@ -98,10 +107,13 @@ export function B2BTools() {
     <section className="section-pad-lg px-4 sm:px-6 lg:px-8 bg-white">
       <div className="mx-auto w-full max-w-[1180px]">
         <ScrollReveal className="text-center mb-16">
-          <span className="eyebrow-label">PRO TOOLS</span>
+          <span className="eyebrow-label">{B2B_TOOLS_EYEBROW}</span>
           <h2 className="font-manrope mt-3.5 text-[clamp(28px,3vw,42px)] font-bold tracking-[-0.02em] text-[#0B1220] leading-[1.15]">
-            Built specifically for CAs
+            {B2B_TOOLS_TITLE}
           </h2>
+          <p className="mt-4 text-[16px] text-[#6B7280] leading-relaxed max-w-[600px] mx-auto">
+            {B2B_TOOLS_SUBTEXT}
+          </p>
         </ScrollReveal>
         
         <div className="grid gap-8 md:grid-cols-3">
@@ -157,10 +169,10 @@ export function B2BPricing() {
         <ScrollReveal className="text-center mb-16">
           <span className="eyebrow-label">PRICING</span>
           <h2 className="font-manrope mt-3.5 text-[clamp(28px,3vw,42px)] font-bold tracking-[-0.02em] text-[#0B1220] leading-[1.15]">
-            Simple, pay-as-you-grow pricing
+            {B2B_PRICING_TITLE}
           </h2>
           <p className="mt-4 text-[16px] text-[#6B7280] leading-relaxed max-w-[600px] mx-auto">
-            Choose a package that fits your firm&apos;s volume. Purchase filing credits upfront and use them anytime.
+            {B2B_PRICING_SUBTEXT}
           </p>
         </ScrollReveal>
 
@@ -189,15 +201,15 @@ export function B2BPricing() {
                 </div>
 
                 <ul className="space-y-3 text-[14.5px] text-foreground flex-1 mb-8">
-                  <li className="flex gap-2.5"><CheckCircle className="size-4.5 text-[#0e5f63] flex-shrink-0 mt-0.5" /> Unlimited client onboarding</li>
-                  <li className="flex gap-2.5"><CheckCircle className="size-4.5 text-[#0e5f63] flex-shrink-0 mt-0.5" /> AI Document Parsing</li>
-                  <li className="flex gap-2.5"><CheckCircle className="size-4.5 text-[#0e5f63] flex-shrink-0 mt-0.5" /> White-labeled reports</li>
+                  <li className="flex gap-2.5"><CheckCircle className="size-4.5 text-[#0e5f63] flex-shrink-0 mt-0.5" /> Unlimited client profiles</li>
+                  <li className="flex gap-2.5"><CheckCircle className="size-4.5 text-[#0e5f63] flex-shrink-0 mt-0.5" /> AI document parsing</li>
+                  <li className="flex gap-2.5"><CheckCircle className="size-4.5 text-[#0e5f63] flex-shrink-0 mt-0.5" /> Branded client reports</li>
                 </ul>
                 <button
                   className={tier.popular ? "btn-pill-primary w-full justify-center" : "btn-pill-secondary w-full justify-center"}
                   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 >
-                  Apply Now
+                  Apply for access
                 </button>
               </div>
             </ScrollReveal>
@@ -212,15 +224,15 @@ export function B2BFAQ() {
   const faqs = [
     {
       q: "Is client data secure?",
-      a: "Yes. All client data is encrypted and strictly localized on Indian servers. We adhere to DPDP regulations, and data is deleted upon your request."
+      a: "Yes. Client data is encrypted, stored on Indian infrastructure, and handled under DPDP guidelines. You can request deletion when a matter closes."
     },
     {
-      q: "Can I white-label the reports?",
-      a: "Absolutely. Partner CAs can upload their firm's logo, which will appear on all client-facing tax optimization reports and dashboards."
+      q: "Can I use my firm's branding?",
+      a: "Yes. Upload your logo and issue client-facing tax summaries and reports under your firm's name — not ours."
     },
     {
-      q: "What documents does the AI support?",
-      a: "Currently, our engine automatically parses Form 16 (Part A & B), AIS PDFs, and 26AS PDFs. Support for Capital Gains statements is in beta."
+      q: "Which documents can the AI read?",
+      a: "Form 16 (Part A and B), AIS PDFs, and 26AS PDFs today. Capital gains statements are supported in beta for partner firms."
     }
   ];
 

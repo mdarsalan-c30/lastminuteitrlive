@@ -4,6 +4,12 @@ import Link from "next/link";
 import { RegimeComparatorHero } from "@/components/marketing/RegimeComparatorHero";
 import { CaRegistrationForm } from "@/components/marketing/CaRegistrationForm";
 import { HERO_HEADLINE_ACCENT } from "@/lib/brand";
+import {
+  B2B_HERO_FEATURES,
+  B2B_HERO_HEADLINE,
+  B2B_HERO_HEADLINE_ACCENT,
+  B2B_HERO_SUBTEXT,
+} from "@/lib/copy/b2b";
 import { ASSESSMENT_YEAR } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -188,46 +194,46 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                 <h1
                   className="font-manrope font-bold tracking-[-0.02em] text-[#0B1220]"
                   style={{
-                    fontSize: "clamp(27px, 5.5vw, 52px)",
-                    lineHeight: 1.12,
-                    marginBottom: 18,
+                    fontSize: "clamp(24px, 4.8vw, 48px)",
+                    lineHeight: 1.15,
+                    marginBottom: 16,
                   }}
                 >
-                  Scale your tax practice —{" "}
-                  <span style={{ color: "#0e5f63" }}>automate the heavy lifting.</span>
+                  {B2B_HERO_HEADLINE}{" "}
+                  <span style={{ color: "#0e5f63" }}>{B2B_HERO_HEADLINE_ACCENT}</span>
                 </h1>
 
                 <p
                   style={{
-                    fontSize: "clamp(15px, 2vw, 17.5px)",
+                    fontSize: "clamp(14px, 1.8vw, 16.5px)",
                     color: "#2B3344",
-                    maxWidth: 480,
+                    maxWidth: 520,
                     marginBottom: 28,
-                    lineHeight: 1.6,
+                    lineHeight: 1.55,
                   }}
                 >
-                  Join LastminuteITR’s partner program. Manage all your clients from a single dashboard, auto-read documents with AI, and optimize regimes instantly. Save hours per return.
+                  {B2B_HERO_SUBTEXT}
                 </p>
 
                 <div className="mb-3.5 flex flex-col gap-2.5">
-                  {[
-                    { label: "AI Document Parsing (Form 16, AIS, 26AS)" },
-                    { label: "Bulk Client Management Dashboard" },
-                    { label: "Custom Branded Reports for Clients" },
-                    { label: "Priority Expert Support" },
-                  ].map((feature) => (
+                  {B2B_HERO_FEATURES.map((feature) => (
                     <div
-                      key={feature.label}
-                      className="flex items-center gap-3 text-[15px] font-medium text-[#2B3344]"
+                      key={feature}
+                      className="flex items-center gap-3 text-[14.5px] font-medium text-[#2B3344]"
                     >
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
                         <circle cx="10" cy="10" r="10" fill="#F2F9E5" />
                         <path d="M6 10l3 3 5-6" stroke="#74A81F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      {feature.label}
+                      {feature}
                     </div>
                   ))}
                 </div>
+
+                <p style={{ fontSize: 12.5, color: "#6B7280", maxWidth: 480, lineHeight: 1.5 }}>
+                  You stay in control — clients file on the government portal. We never auto-submit
+                  on their behalf.
+                </p>
               </>
             )}
           </div>
