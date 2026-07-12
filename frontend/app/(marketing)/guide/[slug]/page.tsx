@@ -17,7 +17,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return pageMetadata({
     title: page.title,
     description: page.seoDescription || page.description || "",
-    keywords: page.seoKeywords ? page.seoKeywords.split(",").map(k => k.trim()) : undefined,
     path: `/guide/${slug}`,
   });
 }
