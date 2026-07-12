@@ -4,8 +4,8 @@ import { requireAdmin } from "@/lib/admin/rbac";
 
 export async function GET(req: Request) {
   try {
-    const admin = await requireAdmin();
-    if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const admin = await requireAdmin(req as any);
+    if (admin instanceof NextResponse) return admin;
 
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
@@ -26,8 +26,8 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const admin = await requireAdmin();
-    if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const admin = await requireAdmin(req as any);
+    if (admin instanceof NextResponse) return admin;
 
     const body = await req.json();
     const page = await prisma.landingPage.create({
@@ -49,8 +49,8 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   try {
-    const admin = await requireAdmin();
-    if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const admin = await requireAdmin(req as any);
+    if (admin instanceof NextResponse) return admin;
 
     const body = await req.json();
     const { id, ...data } = body;
@@ -66,8 +66,8 @@ export async function PUT(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
-    const admin = await requireAdmin();
-    if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const admin = await requireAdmin(req as any);
+    if (admin instanceof NextResponse) return admin;
 
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
