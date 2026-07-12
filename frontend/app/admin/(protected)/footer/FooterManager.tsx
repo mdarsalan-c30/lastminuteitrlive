@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../_components/ui";
+import { Table, Td } from "../../_components/ui";
 
 export function FooterManager({ initialLinks }: { initialLinks: any[] }) {
   const [links, setLinks] = useState(initialLinks);
@@ -123,38 +123,32 @@ export function FooterManager({ initialLinks }: { initialLinks: any[] }) {
       )}
 
       <div className="rounded-xl border border-slate-200 bg-white">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Section</TableHead>
-              <TableHead>Label</TableHead>
-              <TableHead>URL</TableHead>
-              <TableHead>Order</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {links.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-6 text-slate-500">
-                  No footer links yet. Add some to display on the public site!
-                </TableCell>
-              </TableRow>
-            ) : (
-              [...links].sort((a,b) => a.section.localeCompare(b.section) || a.order - b.order).map(link => (
-                <TableRow key={link.id}>
-                  <TableCell className="font-medium text-slate-600">{link.section}</TableCell>
-                  <TableCell>{link.label}</TableCell>
-                  <TableCell className="text-slate-500 text-sm">{link.href}</TableCell>
-                  <TableCell>{link.order}</TableCell>
-                  <TableCell className="text-right space-x-3">
-                    <button onClick={() => startEdit(link)} className="text-blue-600 hover:underline text-sm">Edit</button>
-                    <button onClick={() => handleDelete(link.id)} className="text-red-600 hover:underline text-sm">Delete</button>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
+        <Table headers={["Label", "URL", "Section", "Order", "External", "Actions"]}>
+          {links.length === 0 ? (
+            <tr>
+              <Td colSpan={6} className="text-center py-6 text-slate-500">
+                No footer links configured.
+              </Td>
+            </tr>
+          ) : (
+            links.map((link) => (
+              <tr key={link.id}>
+                <Td className="font-medium">{link.label}</Td>
+                <Td className="text-slate-500">{link.href}</Td>
+                <Td>{link.section}</Td>
+                <Td>{link.order}</Td>
+                <Td>{link.isExternal ? "Yes" : "No"}</Td>
+                <Td className="space-x-3">
+                  <button onClick={() => startEdit(link)} className="text-blue-600 hover:underline text-sm">
+                    Edit
+                  </button>
+                  <button onClick={() => handleDelete(link.id)} className="text-red-600 hover:underline text-sm">
+                    Delete
+                  </button>
+                </Td>
+              </tr>
+            ))
+          )}
         </Table>
       </div>
     </div>
