@@ -1,4 +1,4 @@
-import { PageHeader } from "../../../_components/ui";
+import { PageHeader } from "../../../../_components/ui";
 import { prisma } from "@/lib/prisma";
 import { PageEditorForm } from "./PageEditorForm";
 import { notFound } from "next/navigation";
