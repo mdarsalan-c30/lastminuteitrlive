@@ -4,8 +4,9 @@ import { getNativeHelpArticles } from "@/lib/content/help-articles";
 import { getIndexableGlossarySlugs } from "@/lib/content/glossary";
 import { SEO_LANDING_PAGES } from "@/lib/seo/landing-pages";
 import { getSiteUrl } from "@/lib/seo";
+import { prisma } from "@/lib/prisma";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getSiteUrl();
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
@@ -52,6 +53,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
+  const dbPages = await prisma.landingPage.findMany({ where: { published: true } });
+  const dbRoutes: MetadataRoute.Sitemap = dbPages.map((page) => ({
+    url: `${baseUrl}/guide/${page.slug}`,
+    lastModified: page.updatedAt,
+    changeFrequency: "weekly" as const,
+    priority: 0.85,
+  }));
+
   const glossaryRoutes: MetadataRoute.Sitemap = getIndexableGlossarySlugs().map((slug) => ({
     url: `${baseUrl}/glossary/${slug}`,
     lastModified: new Date(),
@@ -69,6 +78,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...staticRoutes,
     ...landingRoutes,
+    ...dbRoutes,
     ...learnRoutes,
     ...blogRoutes,
     ...glossaryRoutes,
