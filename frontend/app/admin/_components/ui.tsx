@@ -148,12 +148,14 @@ export function Table({
 export function Td({
   children,
   className,
+  colSpan,
 }: {
   children: React.ReactNode;
   className?: string;
+  colSpan?: number;
 }) {
   return (
-    <td className={cn("border-b border-border/60 px-4 py-3", className)}>
+    <td colSpan={colSpan} className={cn("border-b border-border/60 px-4 py-3", className)}>
       {children}
     </td>
   );
