@@ -60,7 +60,7 @@ export function SiteHeader() {
 
         {/* CTA cluster */}
         <div className="flex items-center gap-3.5">
-          <ProfileNavLink className="hidden sm:flex" />
+          <ProfileNavLink className="hidden lg:flex" />
           {/* Upload Form 16 — secondary pill (hidden on mobile) */}
           <Link
             href="/file/import/documents?source=form16"
@@ -71,7 +71,7 @@ export function SiteHeader() {
           {/* Start my return — primary pill */}
           <Link
             href="/#b2c-name"
-            className="btn-pill-primary py-[10px] px-5 text-[14px] max-[560px]:px-3.5 max-[560px]:py-2 max-[560px]:text-[13px] max-[360px]:hidden"
+            className="btn-pill-primary py-[10px] px-5 text-[14px] hidden lg:inline-flex"
           >
             Start my return
           </Link>
@@ -94,10 +94,22 @@ export function SiteHeader() {
                     {item.label}
                   </SheetCloseLink>
                 ))}
-                <div className="mt-3 border-t border-border/60 pt-3">
+                <div className="mt-3 border-t border-border/60 pt-3 space-y-2">
                   <SheetCloseLink
                     href="/file/import/documents?source=form16"
+                    className="btn-pill-secondary block w-full text-center py-3 mb-2"
+                  >
+                    Upload Form 16
+                  </SheetCloseLink>
+                  <SheetCloseLink
+                    href="/#b2c-name"
                     className="btn-pill-primary block w-full text-center py-3"
+                  >
+                    Start my return
+                  </SheetCloseLink>
+                  <SheetCloseLink
+                    href="/file/import/documents?source=form16"
+                    className="btn-pill-secondary block w-full text-center py-3"
                   >
                     Upload Form 16
                   </SheetCloseLink>

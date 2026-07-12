@@ -11,10 +11,10 @@ type BrandLogoSize = "xs" | "sm" | "md" | "lg";
 type BrandLogoVariant = "full" | "icon" | "wordmark";
 
 const ICON_SIZE_CLASS: Record<BrandLogoSize, string> = {
-  xs: "size-7",
-  sm: "size-8",
-  md: "size-9",
-  lg: "size-11",
+  xs: "size-8",
+  sm: "size-9",
+  md: "size-10",
+  lg: "size-12",
 };
 
 const FULL_HEIGHT_CLASS: Record<BrandLogoSize, string> = {
@@ -25,10 +25,10 @@ const FULL_HEIGHT_CLASS: Record<BrandLogoSize, string> = {
 };
 
 const ICON_PX: Record<BrandLogoSize, number> = {
-  xs: 28,
-  sm: 32,
-  md: 36,
-  lg: 44,
+  xs: 32,
+  sm: 36,
+  md: 40,
+  lg: 48,
 };
 
 const FULL_WIDTH: Record<BrandLogoSize, number> = {
@@ -77,7 +77,7 @@ export function BrandLogo({
   );
 
   const content = isWordmark ? (
-    <span className="inline-flex items-center gap-2.5 font-manrope font-extrabold text-[18px] tracking-[-0.01em] text-[#0B1220] max-[560px]:text-base">
+    <span className="inline-flex items-center gap-2.5 font-manrope font-extrabold text-[22px] tracking-[-0.01em] text-[#0B1220] max-[560px]:text-[20px]">
       {image}
       <span>
         Lastminute<span className="text-[#0e5f63]">ITR</span>

@@ -83,6 +83,7 @@ export default function RegimePage() {
     <FilingLayout
       showNavRail
       activeNavSection="regime"
+      variant="wide"
       mirrorText="Old regime lets you claim 80C, 80D, and HRA. New regime uses lower slabs but fewer deductions. You pick once per year."
     >
       <RiskBadge variant="green">Tax analysis</RiskBadge>

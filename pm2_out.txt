@@ -1,38 +1,32 @@
 ┌────┬─────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
 │ id │ name        │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├────┼─────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
-│ 1  │ backend     │ default     │ N/A     │ fork    │ 8671     │ 3D     │ 0    │ online    │ 0%       │ 47.5mb   │ root     │ disabled │
-│ 0  │ frontend    │ default     │ N/A     │ fork    │ 88736    │ 4m     │ 49   │ online    │ 0%       │ 52.7mb   │ root     │ disabled │
+│ 1  │ backend     │ default     │ N/A     │ fork    │ 0        │ 0      │ 31   │ errored   │ 0%       │ 0b       │ root     │ disabled │
+│ 2  │ frontend    │ default     │ N/A     │ fork    │ 120438   │ 51m    │ 5    │ online    │ 0%       │ 57.4mb   │ root     │ disabled │
 └────┴─────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
-host metrics | cpu: 3.5% | ram usage: 9.9% | eth0: ⇓ 0mb/s ⇑ 0.002mb/s | disk: ⇓ 0mb/s ⇑ 0.021mb/s |
+host metrics | cpu: 14.4% | ram usage: 21% | eth0: ⇓ 0.001mb/s ⇑ 0.001mb/s | disk: ⇓ 1.561mb/s ⇑ 0.518mb/s |
 [TAILING] Tailing last 20 lines for [all] processes (change the value with --lines option)
 /root/.pm2/pm2.log last 20 lines:
-PM2        | 2026-07-08T07:34:24: PM2 log: App [frontend:0] exited with code [0] via signal [SIGINT]
-PM2        | 2026-07-08T07:34:25: PM2 log: pid=42039 msg=process tree killed (3 pids)
-PM2        | 2026-07-08T07:34:25: PM2 log: App [frontend:0] starting in -fork mode-
-PM2        | 2026-07-08T07:34:25: PM2 log: App [frontend:0] online
-PM2        | 2026-07-08T07:49:17: PM2 log: Stopping app:frontend id:0
-PM2        | 2026-07-08T07:49:17: PM2 log: App [frontend:0] exited with code [0] via signal [SIGINT]
-PM2        | 2026-07-08T07:49:17: PM2 log: pid=42438 msg=process tree killed (3 pids)
-PM2        | 2026-07-08T07:49:17: PM2 log: App [frontend:0] starting in -fork mode-
-PM2        | 2026-07-08T07:49:17: PM2 log: App [frontend:0] online
-PM2        | 2026-07-08T08:39:32: PM2 log: Stopping app:frontend id:0
-PM2        | 2026-07-08T08:39:32: PM2 log: App [frontend:0] exited with code [0] via signal [SIGINT]
-PM2        | 2026-07-08T08:39:32: PM2 log: pid=42842 msg=process tree killed (3 pids)
-PM2        | 2026-07-08T08:39:32: PM2 log: App [frontend:0] starting in -fork mode-
-PM2        | 2026-07-08T08:39:32: PM2 log: App [frontend:0] online
-PM2        | 2026-07-09T17:58:10: PM2 log: Stopping app:frontend id:0
-PM2        | 2026-07-09T17:58:10: PM2 log: pid=43488 msg=failed to kill - retrying in 100ms
-PM2        | 2026-07-09T17:58:10: PM2 log: App [frontend:0] exited with code [0] via signal [SIGINT]
-PM2        | 2026-07-09T17:58:10: PM2 log: pid=43488 msg=process tree killed (3 pids)
-PM2        | 2026-07-09T17:58:10: PM2 log: App [frontend:0] starting in -fork mode-
-PM2        | 2026-07-09T17:58:10: PM2 log: App [frontend:0] online
-
-/root/.pm2/logs/backend-error.log last 20 lines:
-1|backend  | INFO:     Started server process [8671]
-1|backend  | INFO:     Waiting for application startup.
-1|backend  | INFO:     Application startup complete.
-1|backend  | INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+PM2        | 2026-07-11T17:28:32: PM2 log: Stopping app:frontend id:2
+PM2        | 2026-07-11T17:28:32: PM2 log: App [frontend:2] exited with code [0] via signal [SIGINT]
+PM2        | 2026-07-11T17:28:32: PM2 log: pid=118149 msg=process tree killed (3 pids)
+PM2        | 2026-07-11T17:28:32: PM2 log: App [frontend:2] starting in -fork mode-
+PM2        | 2026-07-11T17:28:32: PM2 log: App [frontend:2] online
+PM2        | 2026-07-11T17:34:40: PM2 log: Stopping app:frontend id:2
+PM2        | 2026-07-11T17:34:40: PM2 log: App [frontend:2] exited with code [0] via signal [SIGINT]
+PM2        | 2026-07-11T17:34:40: PM2 log: pid=118304 msg=process tree killed (3 pids)
+PM2        | 2026-07-11T17:34:40: PM2 log: App [frontend:2] starting in -fork mode-
+PM2        | 2026-07-11T17:34:40: PM2 log: App [frontend:2] online
+PM2        | 2026-07-11T18:01:41: PM2 log: Stopping app:frontend id:2
+PM2        | 2026-07-11T18:01:42: PM2 log: App [frontend:2] exited with code [0] via signal [SIGINT]
+PM2        | 2026-07-11T18:01:42: PM2 log: pid=118621 msg=process tree killed (3 pids)
+PM2        | 2026-07-11T18:01:42: PM2 log: App [frontend:2] starting in -fork mode-
+PM2        | 2026-07-11T18:01:42: PM2 log: App [frontend:2] online
+PM2        | 2026-07-11T18:22:57: PM2 log: Stopping app:frontend id:2
+PM2        | 2026-07-11T18:22:57: PM2 log: App [frontend:2] exited with code [0] via signal [SIGINT]
+PM2        | 2026-07-11T18:22:57: PM2 log: pid=119784 msg=process tree killed (3 pids)
+PM2        | 2026-07-11T18:22:57: PM2 log: App [frontend:2] starting in -fork mode-
+PM2        | 2026-07-11T18:22:57: PM2 log: App [frontend:2] online
 
 /root/.pm2/logs/backend-out.log last 20 lines:
 1|backend  | INFO:     117.196.252.33:0 - "POST /api/compute HTTP/1.1" 200 OK
@@ -43,9 +37,6 @@ PM2        | 2026-07-09T17:58:10: PM2 log: App [frontend:0] online
 1|backend  | INFO:     117.196.252.33:0 - "POST /api/compute HTTP/1.1" 200 OK
 1|backend  | INFO:     117.196.252.33:0 - "POST /api/compute HTTP/1.1" 200 OK
 1|backend  | INFO:     117.196.252.33:0 - "POST /api/compute HTTP/1.1" 200 OK
-1|backend  | INFO:     117.196.252.33:0 - "POST /api/compute HTTP/1.1" 200 OK
-1|backend  | INFO:     117.196.252.33:0 - "POST /api/compute HTTP/1.1" 200 OK
-1|backend  | INFO:     117.196.252.33:0 - "POST /api/compute HTTP/1.1" 200 OK
 1|backend  | INFO:     49.37.49.80:0 - "POST /api/compute HTTP/1.1" 200 OK
 1|backend  | INFO:     49.37.49.80:0 - "POST /api/compute HTTP/1.1" 200 OK
 1|backend  | INFO:     49.37.49.80:0 - "POST /api/compute HTTP/1.1" 200 OK
@@ -55,50 +46,75 @@ PM2        | 2026-07-09T17:58:10: PM2 log: App [frontend:0] online
 1|backend  | INFO:     49.37.49.80:0 - "POST /api/compute HTTP/1.1" 200 OK
 1|backend  | INFO:     49.37.49.80:0 - "POST /api/compute HTTP/1.1" 200 OK
 1|backend  | INFO:     49.37.49.80:0 - "POST /api/compute HTTP/1.1" 200 OK
+1|backend  | INFO:     49.37.51.196:0 - "POST /api/compute HTTP/1.1" 200 OK
+1|backend  | INFO:     49.37.51.196:0 - "POST /api/compute HTTP/1.1" 200 OK
+1|backend  | INFO:     49.37.51.196:0 - "POST /api/compute HTTP/1.1" 200 OK
 
-/root/.pm2/logs/frontend-error.log last 20 lines:
-0|frontend | [Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-0|frontend | Read more: https://nextjs.org/docs/messages/failed-to-find-server-action]
-0|frontend | [Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-0|frontend | Read more: https://nextjs.org/docs/messages/failed-to-find-server-action]
-0|frontend | [Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-0|frontend | Read more: https://nextjs.org/docs/messages/failed-to-find-server-action]
-0|frontend | [Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
-0|frontend | Read more: https://nextjs.org/docs/messages/failed-to-find-server-action]
-0|frontend | Gemini API call failed, falling back to static reply: Error: Gemini status: 400
-0|frontend |     at E (.next/server/app/api/chat/route.js:6:96)
-0|frontend |     at async F (.next/server/app/api/chat/route.js:6:627)
-0|frontend |     at async k (.next/server/app/api/chat/route.js:6:3563)
-0|frontend |     at async g (.next/server/app/api/chat/route.js:6:4566)
-0|frontend |     at async L (.next/server/app/api/chat/route.js:6:5688)
-0|frontend | Gemini API call failed, falling back to static reply: Error: Gemini status: 400
-0|frontend |     at E (.next/server/app/api/chat/route.js:6:96)
-0|frontend |     at async F (.next/server/app/api/chat/route.js:6:627)
-0|frontend |     at async k (.next/server/app/api/chat/route.js:6:3563)
-0|frontend |     at async g (.next/server/app/api/chat/route.js:6:4566)
-0|frontend |     at async L (.next/server/app/api/chat/route.js:6:5688)
+/root/.pm2/logs/backend-error.log last 20 lines:
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
+1|backend  | /usr/bin/bash: line 1: venv/bin/uvicorn: No such file or directory
 
 /root/.pm2/logs/frontend-out.log last 20 lines:
-0|frontend | 
-0|frontend | > lastminute-itr@0.1.0 start
-0|frontend | > next start
-0|frontend | 
-0|frontend |    ▲ Next.js 15.5.19
-0|frontend |    - Local:        http://localhost:3000
-0|frontend |    - Network:      http://200.97.160.215:3000
-0|frontend | 
-0|frontend |  ✓ Starting...
-0|frontend |  ✓ Ready in 549ms
-0|frontend | 
-0|frontend | > lastminute-itr@0.1.0 start
-0|frontend | > next start
-0|frontend | 
-0|frontend |    ▲ Next.js 15.5.19
-0|frontend |    - Local:        http://localhost:3000
-0|frontend |    - Network:      http://200.97.160.215:3000
-0|frontend | 
-0|frontend |  ✓ Starting...
-0|frontend |  ✓ Ready in 982ms
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+2|frontend |  ✓ Ready in 592ms
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+2|frontend |  ✓ Ready in 567ms
+
+/root/.pm2/logs/frontend-error.log last 20 lines:
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:05:41.624Z","durationMs":93,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:12.440Z","durationMs":65,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:12.485Z","durationMs":102,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:12.494Z","durationMs":102,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:12.838Z","durationMs":68,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:12.873Z","durationMs":96,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:12.878Z","durationMs":91,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:15.549Z","durationMs":60,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:15.599Z","durationMs":66,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:15.616Z","durationMs":60,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:17.564Z","durationMs":78,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:17.593Z","durationMs":97,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:17.602Z","durationMs":95,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:31.682Z","durationMs":64,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:31.718Z","durationMs":92,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:31.733Z","durationMs":97,"source":"server"}
+2|frontend | [Error: aborted] { code: 'ECONNRESET' }
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:36.270Z","durationMs":64,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:36.308Z","durationMs":83,"source":"server"}
+2|frontend | [monitoring] {"event":"compute_latency","timestamp":"2026-07-11T18:23:36.311Z","durationMs":95,"source":"server"}
 
 
 --- STDERR ---
