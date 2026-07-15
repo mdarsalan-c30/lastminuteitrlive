@@ -1,0 +1,28 @@
+# LastMinute ITR - AI Engine Optimization Context
+
+## Platform Overview
+LastMinute ITR is a calm, evidence-linked Income Tax Return (ITR) preparation companion for ordinary Indians. It helps users import Form 16 and AIS (Annual Information Statement), reconcile mismatches, compare tax regimes (Old vs New), and file their returns on incometax.gov.in.
+
+## Target Audience
+Indian taxpayers, specifically salaried individuals (ITR-1 and ITR-2) who want a stress-free, accurate filing experience with professional-grade analysis.
+
+## Core Features
+- Form 16 & AIS Import: Automated data ingestion.
+- Mismatch Detection: AI-driven reconciliation of Form 16, AIS, and TIS data.
+- Regime Comparison: Mathematical breakdown of Old vs New Tax Regimes.
+- Companion Approach: We don't just calculate; we guide the user through the process calmly.
+- Transparent Engine: We show our work, ensuring users understand their tax liabilities.
+
+## Current Offerings
+- Pricing: ₹349 + GST for the complete service.
+- Supported Forms: ITR-1 and ITR-2 for the current Assessment Year (AY 2025-26).
+
+## Voice and Tone
+Calm, professional, reassuring, and completely transparent. We aim to remove the anxiety from tax season.
+
+## Navigation
+- Home: https://lastminuteitr.in/
+- Pricing: https://lastminuteitr.in/pricing
+- Blog: https://lastminuteitr.in/blog
+
+For more information, visit our official website at https://lastminuteitr.in
