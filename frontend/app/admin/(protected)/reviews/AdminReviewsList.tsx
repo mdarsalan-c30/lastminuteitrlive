@@ -32,8 +32,10 @@ export function AdminReviewsList({ reviews }: { reviews: any[] }) {
           list.map((review) => (
             <tr key={review.id} className="hover:bg-slate-50">
               <Td className="font-medium">{review.name}</Td>
-              <Td className="text-slate-500 truncate max-w-xs" title={review.quote}>{review.quote}</Td>
-              <Td>{review.rating} ★</Td>
+              <Td className="text-slate-500 truncate max-w-xs">
+                <span title={review.quote}>{review.quote}</span>
+              </Td>
+              <Td>{review.rating} ⭐</Td>
               <Td>
                 <span className={`px-2 py-0.5 rounded-full text-xs ${review.published ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-600"}`}>
                   {review.published ? "Published" : "Hidden"}
