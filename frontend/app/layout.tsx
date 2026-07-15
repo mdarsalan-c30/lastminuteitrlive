@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     title: "LastMinute ITR",
     description:
       "Your tax companion for Form 16, AIS, and regime choice — you file on incometax.gov.in.",
-    images: ["/og-default.png"],
+    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,

@@ -25,6 +25,7 @@ export async function SiteFooter() {
           <div>
             <BrandLogo href="/" variant="wordmark" size="sm" />
             <p className="mt-4 mb-4 text-[13.5px] text-[#6B7280] leading-[1.6] max-w-[280px]">
+              <strong className="text-[#2B3344] block mb-1">LastminuteITR — Filing in 10 Min</strong>
               AI-assisted ITR prep with mismatch and regime checks — you submit on incometax.gov.in.
               Companion mode: we never auto-file for you.
             </p>
@@ -72,6 +73,7 @@ export async function SiteFooter() {
                   <li><Link href="/reviews" className="hover:text-[#0e5f63] transition-colors">Reviews</Link></li>
                   <li><Link href="/chat" className="hover:text-[#0e5f63] transition-colors">Support chat</Link></li>
                   <li><Link href="/file/onboarding/eligibility?step=about-you" className="hover:text-[#0e5f63] transition-colors">Start filing</Link></li>
+                  <li><Link href="/admin/pages" className="hover:text-[#0e5f63] transition-colors">Admin Panel</Link></li>
                 </>
               )}
             </ul>
@@ -107,6 +109,9 @@ export async function SiteFooter() {
           <Link href="/disclaimer" className="text-[#0e5f63] underline">
             Full disclaimer
           </Link>
+          <div className="mt-2 text-[12.5px]">
+            <strong>GSTIN:</strong> 27BOHPA6051D1ZD
+          </div>
         </div>
 
         {/* Footer bottom */}

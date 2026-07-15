@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const OG_IMAGE_PATH = "/og-default.png";
+export const OG_IMAGE_PATH = "/og-image.jpg";
 export const OG_IMAGE_ALT =
   "LastMinute ITR — File your own ITR with your Personal smart AI assisted CA";
 

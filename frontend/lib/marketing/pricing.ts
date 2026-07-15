@@ -49,7 +49,8 @@ export function getDisplayPricing(
 }
 
 export function formatPlanPriceLabel(amount: number): string {
-  return `₹${amount.toLocaleString("en-IN")}`;
+  if (amount === 0) return `₹${amount}`;
+  return `₹${amount.toLocaleString("en-IN")} + GST`;
 }
 
 export function getPlanPriceLabel(planId: PlanId, now: Date = new Date()): string {

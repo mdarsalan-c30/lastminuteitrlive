@@ -55,13 +55,26 @@ function ReviewCard({
 export function ReviewsCarousel() {
   const [index, setIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [reviews, setReviews] = useState<typeof TESTIMONIALS>(TESTIMONIALS);
 
   useEffect(() => {
+    fetch("/api/public/reviews")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.reviews && data.reviews.length > 0) {
+          setReviews(data.reviews);
+        }
+      })
+      .catch((err) => console.error("Failed to load reviews:", err));
+  }, []);
+
+  useEffect(() => {
+    if (reviews.length === 0) return;
     const id = setInterval(() => {
-      setIndex((i) => (i + 1) % TESTIMONIALS.length);
+      setIndex((i) => (i + 1) % reviews.length);
     }, 6000);
     return () => clearInterval(id);
-  }, []);
+  }, [reviews]);
 
   useEffect(() => {
     const container = scrollRef.current;
@@ -80,7 +93,7 @@ export function ReviewsCarousel() {
           <div>
             <span className="eyebrow-label">Reviews</span>
             <h2 className="font-manrope mt-2.5 text-[clamp(24px,3vw,32px)] font-bold tracking-[-0.02em] text-[#0B1220]">
-              What beta filers are saying
+              What filers are saying
             </h2>
           </div>
           <p className="text-[12.5px] text-[#9CA3AF] text-right self-end max-sm:text-left">
@@ -90,8 +103,8 @@ export function ReviewsCarousel() {
 
         {/* Desktop 4-col grid (lg+), mobile scroll */}
         <div className="hidden lg:grid lg:grid-cols-4 gap-4.5">
-          {TESTIMONIALS.slice(0, 4).map((t, i) => (
-            <ReviewCard key={t.id} testimonial={t} active={i === index} />
+          {reviews.slice(0, 4).map((t, i) => (
+            <ReviewCard key={t.id} testimonial={t as any} active={i === index} />
           ))}
         </div>
 
@@ -100,9 +113,9 @@ export function ReviewsCarousel() {
           ref={scrollRef}
           className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 lg:hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {TESTIMONIALS.map((t, i) => (
+          {reviews.map((t, i) => (
             <div key={t.id} className="w-[min(100%,17rem)] shrink-0 snap-start">
-              <ReviewCard testimonial={t} active={i === index} />
+              <ReviewCard testimonial={t as any} active={i === index} />
             </div>
           ))}
         </div>
@@ -110,7 +123,7 @@ export function ReviewsCarousel() {
         {/* Dots + read all */}
         <div className="mt-5 flex items-center justify-between gap-3 lg:hidden">
           <div className="flex gap-1.5">
-            {TESTIMONIALS.map((t, i) => (
+            {reviews.map((t, i) => (
               <button
                 key={t.id}
                 type="button"

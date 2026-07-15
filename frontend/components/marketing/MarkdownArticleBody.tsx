@@ -10,10 +10,13 @@ export function MarkdownArticleBody({ body }: { body: string }) {
   const isHtml = /<[a-z][\s\S]*>/i.test(body);
 
   if (isHtml) {
+    // Strip internal links from HTML string
+    const noInternalLinksBody = body.replace(/<a\s+[^>]*href=["'](\/|#)[^"']*["'][^>]*>(.*?)<\/a>/gi, '$2');
+
     return (
       <div 
         className="html-article-body prose prose-sm sm:prose-base max-w-none"
-        dangerouslySetInnerHTML={{ __html: body }} 
+        dangerouslySetInnerHTML={{ __html: noInternalLinksBody }} 
       />
     );
   }
@@ -24,6 +27,15 @@ export function MarkdownArticleBody({ body }: { body: string }) {
         source={body} 
         style={{ backgroundColor: 'transparent', color: 'inherit' }}
         className="prose prose-sm sm:prose-base max-w-none prose-headings:font-manrope prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-p:leading-relaxed"
+        components={{
+          a: ({ node, ...props }) => {
+            const isInternal = typeof props.href === "string" && (props.href.startsWith("/") || props.href.startsWith("#"));
+            if (isInternal) {
+              return <span className="font-semibold">{props.children}</span>;
+            }
+            return <a {...props} target="_blank" rel="noopener noreferrer" />;
+          }
+        }}
       />
     </div>
   );

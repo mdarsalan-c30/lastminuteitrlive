@@ -324,3 +324,18 @@ model B2CWallet {
   coins     Int      @default(0)
   updatedAt DateTime @updatedAt
 }
+
+model Review {
+  id        String   @id @default(uuid())
+  name      String
+  role      String?
+  city      String?
+  quote     String   @db.Text
+  rating    Int      @default(5)
+  plan      String?
+  outcomeTag String?
+  published Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

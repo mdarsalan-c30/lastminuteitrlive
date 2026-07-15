@@ -107,12 +107,6 @@ export function SiteHeader() {
                   >
                     Start my return
                   </SheetCloseLink>
-                  <SheetCloseLink
-                    href="/file/import/documents?source=form16"
-                    className="btn-pill-secondary block w-full text-center py-3"
-                  >
-                    Upload Form 16
-                  </SheetCloseLink>
                 </div>
               </nav>
             </SheetContent>
