@@ -1,15 +1,34 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { PRICING_PLANS, SITE_NAME } from "@/lib/constants";
 import { getDisplayPricing, formatPlanPriceLabel } from "@/lib/marketing/pricing";
-import { prisma } from "@/lib/prisma";
 
 const SUPPORT_EMAIL = "support@lastminute-itr.com";
 
-export async function SiteFooter() {
-  const dbLinks = await prisma.footerLink.findMany({
-    orderBy: { order: "asc" }
-  });
+interface FooterLinkData {
+  id: string;
+  label: string;
+  href: string;
+  section: string;
+  isExternal: boolean;
+}
+
+export function SiteFooter() {
+  const [dbLinks, setDbLinks] = useState<FooterLinkData[]>([]);
+
+  useEffect(() => {
+    fetch("/api/public/footer")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.links) {
+          setDbLinks(data.links);
+        }
+      })
+      .catch((err) => console.error("Failed to load footer links:", err));
+  }, []);
 
   const getLinksForSection = (section: string) => dbLinks.filter(l => l.section === section);
   const learnLinks = getLinksForSection("Learn");
