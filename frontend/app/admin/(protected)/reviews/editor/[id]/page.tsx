@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-import { PageHeader } from "../../../_components/ui";
+import { PageHeader } from "../../../../_components/ui";
 
 export default function ReviewEditor({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
