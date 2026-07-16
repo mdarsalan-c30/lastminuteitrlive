@@ -32,6 +32,7 @@ from models import (  # noqa: E402
     UserInput,
 )
 from orchestrator import build_layer2_handoff, compute_itr  # noqa: E402
+from rulesets import get_ruleset  # noqa: E402
 
 
 def _field_names(cls) -> set[str]:
@@ -111,6 +112,7 @@ def main() -> int:
             "ok": True,
             "result": serialize(result),
             "handoff": build_layer2_handoff(result, user),
+            "ruleset_id": get_ruleset(user.assessment_year).ruleset_id,
         }
         json.dump(output, sys.stdout, indent=2)
         return 0

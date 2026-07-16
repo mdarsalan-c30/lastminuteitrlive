@@ -61,20 +61,28 @@ export function SiteHeader() {
         {/* CTA cluster */}
         <div className="flex items-center gap-3.5">
           <ProfileNavLink className="hidden sm:flex" />
-          {/* Upload Form 16 — secondary pill (hidden on mobile) */}
-          <Link
-            href="/file/import/documents?source=form16"
-            className="btn-pill-secondary hidden py-[10px] px-5 text-[14px] min-[860px]:inline-flex"
-          >
-            Upload Form 16
-          </Link>
-          {/* Start my return — primary pill */}
-          <Link
-            href="/#b2c-name"
-            className="btn-pill-primary py-[10px] px-5 text-[14px] max-[560px]:px-3.5 max-[560px]:py-2 max-[560px]:text-[13px] max-[360px]:hidden"
-          >
-            Start my return
-          </Link>
+          {/*
+            Desktop-only CTAs. Visibility is controlled by THIS wrapper, not the
+            pills themselves: `.btn-pill-*` hard-set `display: inline-flex` in
+            globals.css, which has equal specificity to Tailwind's `hidden` and
+            wins the cascade — so `hidden` on the links is a no-op. A wrapper
+            with `display: none` removes the children regardless. Below `lg`
+            these collapse into the hamburger sheet.
+          */}
+          <div className="hidden items-center gap-3.5 lg:flex">
+            <Link
+              href="/file/import/documents?source=form16"
+              className="btn-pill-secondary py-[10px] px-5 text-[14px]"
+            >
+              Upload Form 16
+            </Link>
+            <Link
+              href="/#b2c-name"
+              className="btn-pill-primary py-[10px] px-5 text-[14px]"
+            >
+              Start my return
+            </Link>
+          </div>
           {/* Mobile hamburger */}
           <Sheet>
             <SheetTrigger
@@ -94,10 +102,16 @@ export function SiteHeader() {
                     {item.label}
                   </SheetCloseLink>
                 ))}
-                <div className="mt-3 border-t border-border/60 pt-3">
+                <div className="mt-3 flex flex-col gap-2.5 border-t border-border/60 pt-3">
+                  <SheetCloseLink
+                    href="/#b2c-name"
+                    className="btn-pill-primary block w-full text-center py-3"
+                  >
+                    Start my return
+                  </SheetCloseLink>
                   <SheetCloseLink
                     href="/file/import/documents?source=form16"
-                    className="btn-pill-primary block w-full text-center py-3"
+                    className="btn-pill-secondary block w-full text-center py-3"
                   >
                     Upload Form 16
                   </SheetCloseLink>

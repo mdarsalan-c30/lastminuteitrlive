@@ -299,3 +299,41 @@ model B2CWallet {
   coins     Int      @default(0)
   updatedAt DateTime @updatedAt
 }
+
+/// Append-only computed-ITR record. Never updated or deleted — a correction
+/// is a new row linked via parentId (original -> revised, mirroring how the
+/// ITD treats returns). Current lifecycle status is derived from the latest
+/// FilingAuditEvent, not stored mutably here.
+model Filing {
+  id              String   @id @default(uuid())
+  parentId        String?
+  userId          String
+  familyProfileId String?
+  assessmentYear  String
+  inputJson       Json
+  resultJson      Json
+  inputSha256     String
+  resultSha256    String
+  rulesetId       String
+  engineVersion   String
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([userId, assessmentYear])
+  @@index([parentId])
+  @@index([familyProfileId])
+}
+
+/// Append-only audit trail for a Filing (status transitions, integrity
+/// checks, etc). The latest "status:*" event for a filing is its current
+/// lifecycle status.
+model FilingAuditEvent {
+  id        String   @id @default(uuid())
+  filingId  String
+  event     String
+  detail    String?
+  createdAt DateTime @default(now())
+
+  @@index([filingId, createdAt])
+}

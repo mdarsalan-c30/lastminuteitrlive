@@ -14,11 +14,27 @@ legal until 31-Dec-2026 / 31-Mar-2027.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 
 # Slab tables: tuple of (upper_limit, rate); upper_limit None = top slab.
 SlabTable = tuple[tuple[float | None, float], ...]
+
+
+def round2(x: float) -> float:
+    """Round-half-up to 2 decimals — the statutory convention. Python's
+    built-in round() uses banker's rounding, which differs on exact
+    .xx5 paise boundaries."""
+    if x >= 0:
+        return math.floor(x * 100 + 0.5) / 100
+    return -math.floor(-x * 100 + 0.5) / 100
+
+
+def clamp0(x: float) -> float:
+    """Clamp a declared amount at zero. A negative parsed value (bad
+    input/parser error) must not reduce other deductions or income."""
+    return max(0.0, x)
 
 
 @dataclass(frozen=True)
@@ -54,6 +70,29 @@ class Ruleset:
     ltcg_112a_rate: float
     ltcg_112a_exemption: float
     ltcg_other_rate: float
+
+    # Chapter VI-A deduction caps (old regime only, except 80CCD(2))
+    cap_80c: float
+    cap_80ccd_1b: float
+    cap_80d_self_normal: float
+    cap_80d_self_senior: float
+    cap_80d_parents_normal: float
+    cap_80d_parents_senior: float
+    cap_80tta: float
+    cap_80ttb: float
+    cap_80u_normal: float
+    cap_80u_severe: float
+    cap_80gg_annual: float
+    rate_80ccd2_old: float          # employer NPS cap, old regime (% of basic)
+    rate_80ccd2_new: float          # employer NPS cap, new regime (% of basic)
+    rate_80gg_rent_offset: float    # 80GG: rent minus this % of ATI
+    rate_80gg_ati: float            # 80GG: this % of ATI
+    rate_80g_qualifying_limit: float  # 80G: 50%-category cap, % of GTI proxy
+
+    # Sec 234F late-filing fee
+    late_fee_234f_income_threshold: float
+    late_fee_234f_low: float
+    late_fee_234f_high: float
 
 
 _OLD_GENERAL: SlabTable = (
@@ -124,6 +163,25 @@ AY_2025_26 = Ruleset(
     ltcg_112a_rate=0.125,
     ltcg_112a_exemption=125_000,
     ltcg_other_rate=0.20,
+    cap_80c=150_000,
+    cap_80ccd_1b=50_000,
+    cap_80d_self_normal=25_000,
+    cap_80d_self_senior=50_000,
+    cap_80d_parents_normal=25_000,
+    cap_80d_parents_senior=50_000,
+    cap_80tta=10_000,
+    cap_80ttb=50_000,
+    cap_80u_normal=75_000,
+    cap_80u_severe=125_000,
+    cap_80gg_annual=60_000,
+    rate_80ccd2_old=0.10,
+    rate_80ccd2_new=0.14,
+    rate_80gg_rent_offset=0.10,
+    rate_80gg_ati=0.25,
+    rate_80g_qualifying_limit=0.10,
+    late_fee_234f_income_threshold=500_000,
+    late_fee_234f_low=1_000,
+    late_fee_234f_high=5_000,
 )
 
 AY_2026_27 = Ruleset(
@@ -155,6 +213,25 @@ AY_2026_27 = Ruleset(
     ltcg_112a_rate=0.125,
     ltcg_112a_exemption=125_000,
     ltcg_other_rate=0.20,
+    cap_80c=150_000,
+    cap_80ccd_1b=50_000,
+    cap_80d_self_normal=25_000,
+    cap_80d_self_senior=50_000,
+    cap_80d_parents_normal=25_000,
+    cap_80d_parents_senior=50_000,
+    cap_80tta=10_000,
+    cap_80ttb=50_000,
+    cap_80u_normal=75_000,
+    cap_80u_severe=125_000,
+    cap_80gg_annual=60_000,
+    rate_80ccd2_old=0.10,
+    rate_80ccd2_new=0.14,
+    rate_80gg_rent_offset=0.10,
+    rate_80gg_ati=0.25,
+    rate_80g_qualifying_limit=0.10,
+    late_fee_234f_income_threshold=500_000,
+    late_fee_234f_low=1_000,
+    late_fee_234f_high=5_000,
 )
 
 DEFAULT_RULESET = AY_2026_27

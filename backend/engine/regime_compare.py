@@ -14,8 +14,18 @@ Outputs
 
 from __future__ import annotations
 from models import SlabTaxResult, RegimeComparisonResult
-from rulesets import Ruleset, DEFAULT_RULESET
+from rulesets import Ruleset, DEFAULT_RULESET, round2
 from tax_slabs import compute_slab_tax, compute_special_rate_tax
+
+
+def _old_regime_exemption_limit(age: int, ruleset: Ruleset) -> float:
+    """Basic exemption limit = first slab boundary of the age-appropriate
+    old-regime table (2.5L / 3L / 5L for the loaded AYs)."""
+    if age >= 80:
+        return float(ruleset.old_super_senior_slabs[0][0])
+    if age >= 60:
+        return float(ruleset.old_senior_slabs[0][0])
+    return float(ruleset.old_general_slabs[0][0])
 
 
 def _build_slab_tax_result(
@@ -52,19 +62,14 @@ def _build_slab_tax_result(
             # Basic exemption limit = first slab boundary of the AY's new regime
             exemption_limit = float(ruleset.new_regime_slabs[0][0])
         else:
-            if age >= 80:
-                exemption_limit = 500000.0
-            elif age >= 60:
-                exemption_limit = 300000.0
-            else:
-                exemption_limit = 250000.0
+            exemption_limit = _old_regime_exemption_limit(age, ruleset)
         if gross_total_income > exemption_limit:
-            if taxable_income <= 500000.0:
-                late_filing_fee = 1000.0
+            if taxable_income <= ruleset.late_fee_234f_income_threshold:
+                late_filing_fee = ruleset.late_fee_234f_low
             else:
-                late_filing_fee = 5000.0
+                late_filing_fee = ruleset.late_fee_234f_high
 
-    net_payable = round(result["total_tax"] + late_filing_fee - tds_and_advance, 2)
+    net_payable = round2(result["total_tax"] + late_filing_fee - tds_and_advance)
 
     return SlabTaxResult(
         regime=regime,
@@ -170,8 +175,8 @@ def compute_regime_comparison(
     tax_saving = abs(old_result.total_tax - new_result.total_tax)
 
     # ── Effective rates ──
-    old_eff = round((old_result.total_tax / gti_old * 100), 2) if gti_old > 0 else 0.0
-    new_eff = round((new_result.total_tax / gti_new * 100), 2) if gti_new > 0 else 0.0
+    old_eff = round2(old_result.total_tax / gti_old * 100) if gti_old > 0 else 0.0
+    new_eff = round2(new_result.total_tax / gti_new * 100) if gti_new > 0 else 0.0
 
     # ── Breakeven deduction level ──
     # At what total old-regime deduction does old_tax = new_tax?
@@ -192,9 +197,9 @@ def compute_regime_comparison(
         old=old_result,
         new=new_result,
         recommended_regime=recommended,
-        tax_saving=round(tax_saving, 2),
-        breakeven_deductions=round(breakeven, 2),
-        deductions_lost_in_new=round(deductions_lost, 2),
+        tax_saving=round2(tax_saving),
+        breakeven_deductions=round2(breakeven),
+        deductions_lost_in_new=round2(deductions_lost),
         old_effective_rate=old_eff,
         new_effective_rate=new_eff,
     )

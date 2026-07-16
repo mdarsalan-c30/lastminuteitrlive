@@ -151,6 +151,8 @@ def compute_itr(user: UserInput) -> ITRResult:
     else:
         home_loan_principal_total = user.house_property.home_loan_principal
 
+    ruleset = get_ruleset(user.assessment_year)
+
     ded_old_dict = compute_deductions(
         d=user.deductions,
         salary=user.salary,
@@ -158,6 +160,7 @@ def compute_itr(user: UserInput) -> ITRResult:
         regime="old",
         home_loan_principal=home_loan_principal_total,
         adjusted_total_income=gti_old,
+        ruleset=ruleset,
     )
     ded_new_dict = compute_deductions(
         d=user.deductions,
@@ -165,6 +168,7 @@ def compute_itr(user: UserInput) -> ITRResult:
         is_senior=profile.is_senior,
         regime="new",
         home_loan_principal=0.0,
+        ruleset=ruleset,
     )
 
     deductions_result = DeductionsResult(
@@ -201,7 +205,7 @@ def compute_itr(user: UserInput) -> ITRResult:
         tds_and_advance=total_tax_paid,
         standard_deduction_delta=std_ded_delta,
         late_filing=user.late_filing,
-        ruleset=get_ruleset(user.assessment_year),
+        ruleset=ruleset,
     )
 
     income_heads = IncomeHeadsResult(

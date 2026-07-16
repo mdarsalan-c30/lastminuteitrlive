@@ -32,6 +32,7 @@ from models import (  # noqa: E402
     UserInput,
 )
 from orchestrator import build_layer2_handoff, compute_itr  # noqa: E402
+from rulesets import get_ruleset  # noqa: E402
 from api.advisor import handle_advisor_chat, handle_advisor_action  # noqa: E402
 
 try:
@@ -116,6 +117,7 @@ def run_compute(payload: dict) -> tuple[int, dict]:
             "ok": True,
             "result": serialize(result),
             "handoff": build_layer2_handoff(result, user),
+            "ruleset_id": get_ruleset(user.assessment_year).ruleset_id,
         }
     except Exception as exc:
         return 422, {
