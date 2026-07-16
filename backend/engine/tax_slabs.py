@@ -36,12 +36,18 @@ SPECIAL RATE TAXES (same for both regimes)
   Surcharge on 111A/112A income capped at 15%.
 
 CESS: 4% on (income tax + surcharge), applied after rebate/relief.
+
+Changes vs previous version (behaviour-preserving except where noted)
+---------------------------------------------------------------------
+- round2 (half-up, from rulesets.py) replaces round(x, 2) banker's
+  rounding throughout. Differs only on exact .xx5 paise boundaries —
+  these are corrections toward the statutory convention.
 """
 
 from __future__ import annotations
 from typing import Literal
 
-from rulesets import Ruleset, DEFAULT_RULESET
+from rulesets import Ruleset, DEFAULT_RULESET, round2
 
 
 # ─────────────────────────────────────────────────────────────
@@ -73,7 +79,7 @@ def _compute_slab_tax(income: float, slabs) -> float:
         if upper is None or income <= upper:
             break
         prev = upper
-    return round(tax, 2)
+    return round2(tax)
 
 
 def _surcharge_rate(total_income: float, bands) -> float:
@@ -118,7 +124,7 @@ def _surcharge_marginal_relief(
 
     relief = max(0.0, (gross_tax + surcharge) - reference)
     # Relief can never exceed the surcharge itself.
-    return round(min(relief, surcharge), 2)
+    return round2(min(relief, surcharge))
 
 
 # ─────────────────────────────────────────────────────────────
@@ -140,7 +146,7 @@ def compute_special_rate_tax(
     taxable_ltcg_112a = max(0.0, ltcg_112a - ruleset.ltcg_112a_exemption)
     tax_ltcg_112a = taxable_ltcg_112a * ruleset.ltcg_112a_rate
     tax_ltcg_other = max(0.0, ltcg_other) * ruleset.ltcg_other_rate
-    return round(tax_stcg + tax_ltcg_112a + tax_ltcg_other, 2)
+    return round2(tax_stcg + tax_ltcg_112a + tax_ltcg_other)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -194,8 +200,8 @@ def _apply_87a_marginal_relief_new_regime(
     max_tax = income_for_test - limit
     if tax_after_rebate <= max_tax:
         return tax_after_rebate, 0.0
-    relief = round(tax_after_rebate - max_tax, 2)
-    return round(max_tax, 2), relief
+    relief = round2(tax_after_rebate - max_tax)
+    return round2(max_tax), relief
 
 
 # ─────────────────────────────────────────────────────────────
@@ -302,7 +308,7 @@ def compute_slab_tax(
     # 4. Surcharge
     surcharge_bands = ruleset.surcharge_new if regime == "new" else ruleset.surcharge_old
     s_rate = _surcharge_rate(total_income_for_surcharge, surcharge_bands)
-    surcharge = round(gross_tax * s_rate, 2)
+    surcharge = round2(gross_tax * s_rate)
 
     # 4a. Marginal relief at surcharge threshold crossings
     marginal_relief = _surcharge_marginal_relief(
@@ -327,8 +333,8 @@ def compute_slab_tax(
         })
 
     # 5. Cess (after rebate, relief and surcharge)
-    cess = round(tax_plus_surcharge * ruleset.cess_rate, 2)
-    total_tax = round(tax_plus_surcharge + cess, 2)
+    cess = round2(tax_plus_surcharge * ruleset.cess_rate)
+    total_tax = round2(tax_plus_surcharge + cess)
     if cess > 0:
         trace.append({"rule": "cess", "params": {"cess": cess}})
 
