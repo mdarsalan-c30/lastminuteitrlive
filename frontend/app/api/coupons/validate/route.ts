@@ -43,6 +43,8 @@ export async function POST(request: NextRequest) {
       valid: true,
       discount: result.coupon!.discount,
       amountOff: result.coupon!.amountOff ?? null,
+      // Map internal discount types for frontend compatibility
+      // "full" → stays "full", "amount" → stays "amount"
     });
   } catch {
     return NextResponse.json(

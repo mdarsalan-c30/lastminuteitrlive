@@ -64,17 +64,21 @@ export async function POST(request: NextRequest) {
 
     const { getPublishedPrice } = await import("@/lib/pricing/config");
     let effectivePrice = await getPublishedPrice(planId);
-    
+
     if (isReferral && refResult) {
        effectivePrice = Math.max(0, effectivePrice - (effectivePrice * refResult.refereeDiscountPct) / 100);
     } else if (result.coupon) {
-       if (result.coupon.discount === "percentage") {
+       if (result.coupon.discount === "full") {
+           // Full discount coupon covers entire price
+           effectivePrice = 0;
+       } else if (result.coupon.discount === "percentage") {
            effectivePrice = Math.max(0, effectivePrice - (effectivePrice * (result.coupon.percentageOff ?? 0)) / 100);
-       } else {
+       } else if (result.coupon.discount === "amount") {
+           // Amount-off coupon: subtract the specific amount
            effectivePrice = Math.max(0, effectivePrice - (result.coupon.amountOff ?? 0));
        }
     }
-    
+
     if (effectivePrice > 0) {
       return NextResponse.json({ error: "Code does not cover full price. Please proceed to payment." }, { status: 400 });
     }
