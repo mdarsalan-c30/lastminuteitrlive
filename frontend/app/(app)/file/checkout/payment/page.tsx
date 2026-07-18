@@ -45,7 +45,7 @@ export default function PaymentPage() {
 
   const [validatedDiscount, setValidatedDiscount] = useState<{
     code: string;
-    discountType: "full" | "amount" | "percentage";
+    discountType: "percentage" | "fixed" | "full" | "amount";
     percentageOff?: number;
     amountOff?: number;
   } | null>(null);
@@ -136,10 +136,14 @@ export default function PaymentPage() {
 
   const calculateFinalPrice = () => {
     if (!validatedDiscount) return basePrice;
-
     // Handle full discount (coupons that cover entire price)
     if (validatedDiscount.discountType === "full") {
       return 0;
+    }
+
+    // Handle amount discount (amount-off coupons)
+    if (validatedDiscount.discountType === "amount" && validatedDiscount.amountOff) {
+      return Math.max(0, basePrice - validatedDiscount.amountOff);
     }
 
     // Handle percentage discount (referrals or percentage coupons)
@@ -147,8 +151,8 @@ export default function PaymentPage() {
       return Math.max(0, basePrice - (basePrice * validatedDiscount.percentageOff) / 100);
     }
 
-    // Handle amount discount (amount-off coupons)
-    if (validatedDiscount.discountType === "amount" && validatedDiscount.amountOff) {
+    // Fallback for previous misnamed types if any
+    if (validatedDiscount.discountType === "fixed" && validatedDiscount.amountOff) {
       return Math.max(0, basePrice - validatedDiscount.amountOff);
     }
 

@@ -7,6 +7,9 @@ import { TYPOGRAPHY_SCALE } from "@/lib/design/layout";
 import { getAllBlogPosts } from "@/lib/content/blogs";
 import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
+import Image from "next/image";
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = pageMetadata({
   title: "Tax & Finance Blog | LastMinute ITR",
@@ -14,6 +17,7 @@ export const metadata: Metadata = pageMetadata({
     "Expert articles on last-minute ITR filing, tax regimes, AIS mismatches, and lawful wealth optimization.",
   path: "/blogs",
 });
+
 
 export default async function BlogsPage() {
   const posts = await getAllBlogPosts();

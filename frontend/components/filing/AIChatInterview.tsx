@@ -31,6 +31,22 @@ export function AIChatInterview() {
     }
   }, [messages]);
 
+  useEffect(() => {
+    if (draft.name) {
+      setMessages((prev) => {
+        if (prev.length === 1 && prev[0].role === "assistant" && prev[0].content.startsWith("Hi!")) {
+          return [
+            {
+              role: "assistant",
+              content: `Hi ${draft.name}! I am your AI Smart CA. I'm reviewing your tax profile. To ensure we don't miss any deductions, could you tell me if you switched jobs this year or sold any mutual funds?`
+            }
+          ];
+        }
+        return prev;
+      });
+    }
+  }, [draft.name]);
+
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
@@ -45,7 +61,7 @@ export function AIChatInterview() {
       const res = await fetch(
         process.env.NEXT_PUBLIC_BACKEND_URL
           ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/advisor/chat`
-          : "/_/backend/api/advisor/chat", 
+          : "/api/advisor/chat", 
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -91,7 +107,7 @@ export function AIChatInterview() {
       const res = await fetch(
         process.env.NEXT_PUBLIC_BACKEND_URL
           ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/advisor/action`
-          : "/_/backend/api/advisor/action", 
+          : "/api/advisor/action", 
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

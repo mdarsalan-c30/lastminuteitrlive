@@ -5,6 +5,14 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   serverExternalPackages: ["pdf-parse"],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+    ],
+  },
   async redirects() {
     return [
       {

@@ -39,6 +39,9 @@ const NAV: NavGroup[] = [
     heading: "Content",
     items: [
       { href: "/admin/blogs", label: "Blogs" },
+      { href: "/admin/pages", label: "Pages" },
+      { href: "/admin/reviews", label: "Reviews" },
+      { href: "/admin/footer", label: "Footer Links" },
     ],
   },
   {

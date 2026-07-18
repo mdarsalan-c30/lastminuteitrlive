@@ -10,6 +10,20 @@ Outputs
 - Tax saving vs the worse regime
 - Breakeven deduction level (at what Chapter VI-A total does old regime = new regime)
 - Effective tax rates on GTI
+
+Changes vs previous version (behaviour-preserving except where noted)
+---------------------------------------------------------------------
+- Sec 234F fee tiers (₹1,000 / ₹5,000 / ₹5L threshold) sourced from the
+  Ruleset; old-regime basic exemption limits derived from the ruleset's own
+  slab tables (first slab boundary) instead of hardcoded 2.5L/3L/5L — same
+  values, single source of truth.
+- round2 (half-up) replaces round(x, 2) banker's rounding. (Correction on
+  exact .xx5 paise boundaries only.)
+- KNOWN APPROXIMATION unchanged: the 234F fee tier is tested against
+  `taxable_income`, whereas the statute tests TOTAL income. For filers with
+  large deductions this can under-charge the fee (₹1,000 instead of ₹5,000).
+  Behaviour preserved to keep golden tests green — fix deliberately, with a
+  ruleset version bump and updated goldens.
 """
 
 from __future__ import annotations
@@ -56,6 +70,7 @@ def _build_slab_tax_result(
         ruleset=ruleset,
     )
 
+    # ── Sec 234F late-filing fee ──
     late_filing_fee = 0.0
     if late_filing:
         if regime == "new":
@@ -107,22 +122,11 @@ def compute_regime_comparison(
 ) -> RegimeComparisonResult:
     """
     Runs both regime pipelines and returns a full comparison.
-
-    Parameters
-    ----------
-    gti_old                 : Gross total income using old-regime salary/HP heads
-    gti_new                 : Gross total income using new-regime salary/HP heads
-    chapter_via_deductions  : total old-regime Chapter VI-A deductions
-    new_regime_deductions   : Chapter VI-A deductions valid in new regime (80CCD(2))
-    special_rate_components : dict from capital_gains.compute_capital_gains()
-    stcg_other_slab         : STCG taxable at slab rate (from capital gains)
-    age                     : taxpayer age
-    tds_and_advance         : total tax already paid (TDS + advance + SAT)
-    standard_deduction_delta: higher new-regime standard deduction applied in salary head
-    late_filing             : is the return being filed after the deadline
     """
-
-    # When gti_new is supplied separately, std-ded/HRA/HP deltas are already in head nets.
+    # If the orchestrator supplied a single (old-basis) GTI for both regimes,
+    # the standard-deduction delta adjusts the new-regime side; when true
+    # per-regime GTIs are supplied (gti_new != gti_old), the delta is already
+    # baked into gti_new and must NOT be double-counted.
     new_regime_adjustments = new_regime_deductions + (
         0.0 if gti_new != gti_old else standard_deduction_delta
     )

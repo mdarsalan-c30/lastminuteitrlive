@@ -71,9 +71,8 @@ export default function RegimePage() {
       recommended_regime: recommended,
       savings_inr: savings,
     });
-    router.push(
-      filingPath === "cabrain" ? "/file/cabrain" : "/file/review/risk"
-    );
+    // Proceed to the AI Smart CA tab
+    router.push("/file/advisor");
   };
 
   const handleRetry = () => {
@@ -84,6 +83,7 @@ export default function RegimePage() {
     <FilingLayout
       showNavRail
       activeNavSection="regime"
+      variant="wide"
       mirrorText="Old regime lets you claim 80C, 80D, and HRA. New regime uses lower slabs but fewer deductions. You pick once per year."
     >
       <RiskBadge variant="green">Tax analysis</RiskBadge>

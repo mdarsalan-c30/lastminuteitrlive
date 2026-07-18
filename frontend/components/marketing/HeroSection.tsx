@@ -48,6 +48,17 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
 
       <div className="relative z-10 mx-auto max-w-[1180px] px-8 max-[560px]:px-5">
         
+        {/* Temporary Announcement Badge */}
+        <div className="mb-7 flex justify-center">
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-[#0e5f63]/20 bg-white px-4 py-1.5 text-[13.5px] font-semibold text-[#0e5f63] shadow-sm transition-all hover:border-[#0e5f63]/40 hover:bg-[#0e5f63]/5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0e5f63] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0e5f63]"></span>
+            </span>
+            Platform goes Live from 16th July!
+          </div>
+        </div>
+
         {/* Toggle Switch */}
         <div className="mb-6 flex justify-center">
           <div className="inline-flex rounded-full bg-white p-1.5 shadow-[0_2px_12px_rgba(11,18,32,0.06)] border border-[#E6E8EC] grid grid-cols-2 w-[400px] max-w-full">

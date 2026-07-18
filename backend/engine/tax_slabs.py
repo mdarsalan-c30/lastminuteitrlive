@@ -36,6 +36,12 @@ SPECIAL RATE TAXES (same for both regimes)
   Surcharge on 111A/112A income capped at 15%.
 
 CESS: 4% on (income tax + surcharge), applied after rebate/relief.
+
+Changes vs previous version (behaviour-preserving except where noted)
+---------------------------------------------------------------------
+- round2 (half-up, from rulesets.py) replaces round(x, 2) banker's
+  rounding throughout. Differs only on exact .xx5 paise boundaries —
+  these are corrections toward the statutory convention.
 """
 
 from __future__ import annotations

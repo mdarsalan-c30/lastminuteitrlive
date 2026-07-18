@@ -244,6 +244,31 @@ model FamilyProfile {
   @@index([userId])
 }
 
+model LandingPage {
+  id              String   @id @default(uuid())
+  slug            String   @unique
+  title           String
+  description     String?
+  bodyMarkdown    String
+  seoKeywords     String?
+  seoDescription  String?
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model FooterLink {
+  id         String   @id @default(uuid())
+  label      String
+  href       String
+  section    String   // "Learn", "Product", "Legal"
+  order      Int      @default(0)
+  isExternal Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+
 model SessionEvent {
   id        String   @id @default(uuid())
   sessionId String
@@ -336,4 +361,19 @@ model FilingAuditEvent {
   createdAt DateTime @default(now())
 
   @@index([filingId, createdAt])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  name      String
+  role      String?
+  city      String?
+  quote     String   @db.Text
+  rating    Int      @default(5)
+  plan      String?
+  outcomeTag String?
+  published Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

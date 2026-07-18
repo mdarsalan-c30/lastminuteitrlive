@@ -22,6 +22,7 @@ import {
   ExternalLink,
   FileText,
   Menu,
+  Calculator,
   X,
   Check,
   ChevronRight,
@@ -80,9 +81,16 @@ const SIDEBAR_STEPS: SidebarStep[] = [
   },
   {
     id: "regime",
-    label: "AI Smart CA · Regime",
+    label: "Tax Regime",
     href: "/file/regime",
-    match: ["/file/regime", "/file/advisor", "/file/cabrain"],
+    match: ["/file/regime"],
+    icon: Calculator,
+  },
+  {
+    id: "advisor",
+    label: "AI Smart CA",
+    href: "/file/advisor",
+    match: ["/file/advisor", "/file/cabrain"],
     icon: Sparkles,
   },
   {
@@ -510,7 +518,7 @@ export function FilingLayout({
             >
               Back to Home
             </Link>
-            <ProfileNavLink className="text-xs font-semibold" />
+            <ProfileNavLink className="text-xs font-semibold hidden lg:flex" />
           </div>
         </header>
 
@@ -535,7 +543,7 @@ export function FilingLayout({
           </main>
 
           {/* Context helper rail */}
-          {!isCompanionLayout && (
+          {!isWideLayout && (
             <aside className="hidden xl:block w-full shrink-0 self-start xl:sticky xl:top-20 xl:h-[calc(100vh-6rem)] xl:overflow-y-auto">
               <div className="h-full border border-slate-100 bg-white rounded-2xl shadow-sm overflow-hidden">
                 <ActiveAiCompanion />

@@ -22,8 +22,7 @@ export const SELLER = {
   name: "LastMinute ITR",
   address: "India",
   email: "support@lastminuteitr.com",
-  // PAYMENT_API_TODO: add GSTIN once registration is complete.
-  gstin: "",
+  gstin: "27BOHPA6051D1ZD",
   sacCode: "998231", // Tax consultancy and preparation services
 } as const;
 

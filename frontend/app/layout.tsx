@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans, Manrope } from "next/font/google";
 import { AnalyticsProvider } from "@/components/AnalyticsProvider";
 import { HashScrollHandler } from "@/components/navigation/HashScrollHandler";
 import { SessionBootstrap } from "@/components/SessionBootstrap";
+import Script from "next/script";
 import { defaultOpenGraphImages, getSiteUrl } from "@/lib/seo";
 import "./globals.css";
 
@@ -58,14 +59,15 @@ export const metadata: Metadata = {
     title: "File ITR Online - LastMinute ITR",
     description:
       "Your tax companion for Form 16, AIS, and regime choice — you file on incometax.gov.in.",
-    images: ["/og-default.png"],
+    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
     follow: true,
   },
-  // Icons are resolved from the app/ file conventions:
-  // app/favicon.ico (multi-size 16/32/48/64), app/icon.png (512), app/apple-icon.png (180).
+  verification: {
+    google: "xP0DgxeUNab32kzoTF4I1N7E0rYPGcjssQ0DBidRkqY",
+  },
 };
 
 import { cookies } from "next/headers";
@@ -119,6 +121,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body
         className={`${inter.variable} ${display.variable} ${manrope.variable} overflow-x-hidden font-sans`}
       >
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-02SK257800" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-02SK257800');
+          `}
+        </Script>
         <AnalyticsProvider>
           <SessionBootstrap session={session} />
           <HashScrollHandler />

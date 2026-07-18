@@ -4,6 +4,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { getAdminSession } from "@/lib/admin/rbac";
 import { redirect } from "next/navigation";
 import { PrismaClient } from "@prisma/client";
+import { DeleteBlogButton } from "./_components/DeleteBlogButton";
 
 const prisma = new PrismaClient();
 
@@ -70,7 +71,7 @@ export default async function AdminBlogsPage() {
                 <div className="col-span-2 text-muted-foreground">{new Date(blog.updatedAt).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })}</div>
                 <div className="col-span-1 text-right flex justify-end gap-2">
                    <Link href={`/admin/blogs/editor/${blog.id}`} className="text-blue-600 hover:underline text-xs font-medium">Edit</Link>
-                   <button className="text-red-600 hover:underline text-xs font-medium ml-2">Delete</button>
+                   <DeleteBlogButton id={blog.id} />
                 </div>
               </div>
             ))}

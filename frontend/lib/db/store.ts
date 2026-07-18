@@ -49,10 +49,25 @@ const modelMap: Record<string, keyof typeof prisma> = {
   familyProfiles: "familyProfile"
 };
 
+function serializeDates(obj: any): any {
+  if (obj === null || obj === undefined) return obj;
+  if (obj instanceof Date) return obj.toISOString();
+  if (Array.isArray(obj)) return obj.map(serializeDates);
+  if (typeof obj === 'object') {
+    const res: any = {};
+    for (const key of Object.keys(obj)) {
+      res[key] = serializeDates(obj[key]);
+    }
+    return res;
+  }
+  return obj;
+}
+
 export async function all<K extends string>(collection: K): Promise<any[]> {
   const modelName = modelMap[collection];
   if (!modelName) throw new Error(`Unknown collection: ${collection}`);
-  return (prisma[modelName as any] as any).findMany();
+  const result = await (prisma[modelName as any] as any).findMany();
+  return serializeDates(result);
 }
 
 export async function insert<K extends string>(collection: K, row: any): Promise<any> {
@@ -68,7 +83,8 @@ export async function insert<K extends string>(collection: K, row: any): Promise
     }
   }
 
-  return (prisma[modelName as any] as any).create({ data });
+  const result = await (prisma[modelName as any] as any).create({ data });
+  return serializeDates(result);
 }
 
 export async function update<K extends string>(collection: K, id: string, patch: any): Promise<any> {
@@ -84,7 +100,8 @@ export async function update<K extends string>(collection: K, id: string, patch:
   }
 
   try {
-    return await (prisma[modelName as any] as any).update({ where: { id }, data });
+    const result = await (prisma[modelName as any] as any).update({ where: { id }, data });
+    return serializeDates(result);
   } catch (err) {
     return null;
   }

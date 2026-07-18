@@ -13,13 +13,11 @@ import { getAllBlogPosts, getBlogPost } from "@/lib/content/blogs";
 import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
+
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   params: Promise<{ slug: string }>;
-}
-
-export async function generateStaticParams() {
-  const posts = await getAllBlogPosts();
-  return posts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -122,8 +120,12 @@ export default async function BlogArticlePage({ params }: PageProps) {
         
         <SocialShare url={`/blogs/${slug}`} title={post.title} />
 
-        <article className="prose prose-sm sm:prose-base max-w-none prose-headings:font-manrope prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-p:leading-relaxed">
-          <MarkdownArticleBody body={post.body} />
+        <article suppressHydrationWarning className="prose prose-sm sm:prose-base max-w-none prose-headings:font-manrope prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-p:leading-relaxed">
+          {/^\s*</.test(post.body) ? (
+            <div dangerouslySetInnerHTML={{ __html: post.body }} className="quill-content break-words overflow-x-hidden [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-xl [&_img]:shadow-sm [&_iframe]:max-w-full [&_p]:min-h-[1.5em]" />
+          ) : (
+            <MarkdownArticleBody body={post.body} />
+          )}
         </article>
         
         <SocialShare url={`/blogs/${slug}`} title={post.title} />

@@ -99,7 +99,7 @@ export async function POST(request: Request) {
 
     let output: string;
     try {
-      if (process.env.NEXT_PUBLIC_ENGINE_URL || process.env.NODE_ENV === "production") {
+      if (process.env.NEXT_PUBLIC_ENGINE_URL || process.env.VERCEL === "1") {
         return proxyToPythonServerless(request, payload);
       }
       try {

@@ -2,7 +2,7 @@
 
 import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Lock } from "lucide-react";
+import { ArrowRight, Lock, Menu, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useShallow } from "zustand/react/shallow";
 import { useDraftStore } from "@/lib/store/draft";
@@ -1028,6 +1028,7 @@ function ReviewDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeTab = parseReviewTab(searchParams.get("tab"));
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const regime = useDraftStore((s) => s.regime);
   const navDraft = useDraftStore(
@@ -1083,6 +1084,7 @@ function ReviewDashboard() {
   );
 
   const selectTab = (tab: ReviewTab) => {
+    setIsMobileMenuOpen(false);
     router.replace(buildReviewUrl(tab), { scroll: false });
   };
 
@@ -1098,10 +1100,56 @@ function ReviewDashboard() {
         savingsCoach={savingsCoach}
       />
 
+      {/* Mobile Hamburger Menu for Tabs */}
+      <div className="mb-4 md:hidden relative">
+        <button
+          type="button"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm"
+          aria-expanded={isMobileMenuOpen}
+        >
+          <span className="flex items-center gap-2">
+            <span
+              className={`size-2.5 rounded-full ${statusDotClass(tabStatuses[activeTab])}`}
+              aria-hidden
+            />
+            {TAB_LABELS[activeTab]}
+          </span>
+          {isMobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+        </button>
+
+        {isMobileMenuOpen && (
+          <div className="absolute top-full left-0 right-0 z-10 mt-1 flex flex-col gap-1 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+            {REVIEW_TABS.map((tab) => {
+              const active = tab === activeTab;
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => selectTab(tab)}
+                  className={`flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition text-left ${
+                    active
+                      ? "bg-primary/10 text-primary"
+                      : "text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  <span
+                    className={`size-2 rounded-full ${statusDotClass(tabStatuses[tab])}`}
+                    aria-hidden
+                  />
+                  {TAB_LABELS[tab]}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Tabs */}
       <div
         role="tablist"
         aria-label="Review sections"
-        className="mb-4 flex gap-1 overflow-x-auto border-b border-slate-200 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="mb-4 hidden md:flex gap-1 border-b border-slate-200"
       >
         {REVIEW_TABS.map((tab) => {
           const active = tab === activeTab;

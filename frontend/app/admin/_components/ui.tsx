@@ -5,14 +5,21 @@ export function PageHeader({
   title,
   subtitle,
   actions,
+  backHref,
 }: {
   title: string;
   subtitle?: string;
   actions?: React.ReactNode;
+  backHref?: string;
 }) {
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div>
+        {backHref && (
+          <Link href={backHref} className="text-sm text-blue-600 hover:underline mb-2 inline-block">
+            &larr; Back
+          </Link>
+        )}
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           {title}
         </h1>
@@ -148,12 +155,14 @@ export function Table({
 export function Td({
   children,
   className,
+  colSpan,
 }: {
   children: React.ReactNode;
   className?: string;
+  colSpan?: number;
 }) {
   return (
-    <td className={cn("border-b border-border/60 px-4 py-3", className)}>
+    <td colSpan={colSpan} className={cn("border-b border-border/60 px-4 py-3", className)}>
       {children}
     </td>
   );
