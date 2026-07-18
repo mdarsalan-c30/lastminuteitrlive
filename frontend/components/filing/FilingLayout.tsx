@@ -186,8 +186,8 @@ export function FilingLayout({
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
   const mismatchResolved = useDraftStore((s) => s.mismatchResolved);
   const plan = useDraftStore((s) => s.plan);
-  const paymentVerified = useDraftStore((s) => s.paymentVerified);
-  const isUnlocked = plan !== "none" && paymentVerified;
+  const paymentVerifiedAt = useDraftStore((s) => s.paymentVerifiedAt);
+  const isUnlocked = plan !== "none" && !!paymentVerifiedAt;
 
   const sectionStatuses = getIncomeSectionStatuses({
     income,

@@ -1,0 +1,33 @@
+
+> lastminute-itr@0.1.0 build
+> prisma generate && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 219ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want real-time updates to your database without manual polling? Discover how with Pulse: https://pris.ly/tip-0-pulse
+
+   ▲ Next.js 15.5.19
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 10.1s
+   Skipping linting
+   Checking validity of types ...
+Failed to compile.
+
+./components/filing/FilingLayout.tsx:189:50
+Type error: Property 'paymentVerified' does not exist on type 'DraftState'. Did you mean 'paymentVerifiedAt'?
+
+[0m [90m 187 |[39m   [36mconst[39m mismatchResolved [33m=[39m useDraftStore((s) [33m=>[39m s[33m.[39mmismatchResolved)[33m;[39m
+ [90m 188 |[39m   [36mconst[39m plan [33m=[39m useDraftStore((s) [33m=>[39m s[33m.[39mplan)[33m;[39m
+[31m[1m>[22m[39m[90m 189 |[39m   [36mconst[39m paymentVerified [33m=[39m useDraftStore((s) [33m=>[39m s[33m.[39mpaymentVerified)[33m;[39m
+ [90m     |[39m                                                  [31m[1m^[22m[39m
+ [90m 190 |[39m   [36mconst[39m isUnlocked [33m=[39m plan [33m!==[39m [32m"none"[39m [33m&&[39m paymentVerified[33m;[39m
+ [90m 191 |[39m
+ [90m 192 |[39m   [36mconst[39m sectionStatuses [33m=[39m getIncomeSectionStatuses({[0m
+Next.js build worker exited with code: 1 and signal: null
