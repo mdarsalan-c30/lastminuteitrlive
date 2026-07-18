@@ -229,21 +229,29 @@ export default function PaymentPage() {
               </p>
             </div>
             
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 min-w-[160px] text-right border border-white/10 shadow-inner">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 min-w-[160px] text-right border border-white/10 shadow-inner relative">
               <p className="text-xs text-slate-300 uppercase tracking-wider font-semibold mb-1">Total</p>
-              
-              {validatedDiscount ? (
-                <>
-                  <div className="text-sm text-slate-400 line-through mb-1">
+
+              <div className={validatedDiscount || isFree ? "" : "blur-sm opacity-40"}>
+                {validatedDiscount ? (
+                  <>
+                    <div className="text-sm text-slate-400 line-through mb-1">
+                      {formatPlanPriceLabel(basePrice)}
+                    </div>
+                    <div className="text-4xl font-black text-green-400">
+                      {finalPrice === 0 ? "FREE" : formatPlanPriceLabel(finalPrice)}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-4xl font-black text-white">
                     {formatPlanPriceLabel(basePrice)}
                   </div>
-                  <div className="text-4xl font-black text-green-400">
-                    {finalPrice === 0 ? "FREE" : formatPlanPriceLabel(finalPrice)}
-                  </div>
-                </>
-              ) : (
-                <div className="text-4xl font-black text-white">
-                  {formatPlanPriceLabel(basePrice)}
+                )}
+              </div>
+
+              {!validatedDiscount && !isFree && (
+                <div className="absolute inset-0 flex items-center justify-center rounded-xl">
+                  <p className="text-xs text-white/70 font-medium">Apply coupon or proceed</p>
                 </div>
               )}
             </div>
