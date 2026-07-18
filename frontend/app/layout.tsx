@@ -29,31 +29,33 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
-    default: "LastMinute ITR — your calm tax filing companion",
+    default: "File ITR Online - LastMinute ITR | Fast, Secure & AI-Assisted",
     template: "%s · LastMinute ITR",
   },
   description:
-    "Evidence-linked ITR prep for ordinary Indians. Import Form 16 & AIS, reconcile mismatches, compare regimes — then file yourself on incometax.gov.in.",
+    "File your Income Tax Return (ITR) online effortlessly with LastMinute ITR. Upload Form 16, reconcile AIS, compare tax regimes automatically, and file on incometax.gov.in securely.",
   keywords: [
-    "ITR filing",
-    "income tax return",
-    "old vs new regime",
-    "AIS mismatch",
-    "Form 16",
-    "India tax",
-    "ITR companion",
+    "ITR filing 2026",
+    "income tax return e-filing",
+    "file ITR online",
+    "Form 16 upload",
+    "AIS reconciliation",
+    "old vs new tax regime India",
+    "CA assisted tax filing",
+    "Income Tax India",
+    "tax calculator",
   ],
   openGraph: {
-    title: "LastMinute ITR — your calm tax filing companion",
+    title: "File ITR Online - LastMinute ITR | Fast, Secure & AI-Assisted",
     description:
-      "Prepare with Form 16 and AIS, see an honest estimate, file on the government portal yourself.",
+      "File your Income Tax Return (ITR) online effortlessly with LastMinute ITR. Upload Form 16, reconcile AIS, compare tax regimes automatically.",
     type: "website",
     locale: "en_IN",
     images: defaultOpenGraphImages,
   },
   twitter: {
     card: "summary_large_image",
-    title: "LastMinute ITR",
+    title: "File ITR Online - LastMinute ITR",
     description:
       "Your tax companion for Form 16, AIS, and regime choice — you file on incometax.gov.in.",
     images: ["/og-default.png"],
@@ -76,6 +78,44 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "name": "LastMinute ITR",
+                  "url": "https://lastminuteitr.in/",
+                  "description":
+                    "File your Income Tax Return (ITR) online effortlessly with LastMinute ITR. Upload Form 16, reconcile AIS, compare tax regimes automatically.",
+                  "publisher": {
+                    "@type": "Organization",
+                    "name": "LastMinute ITR",
+                    "logo": {
+                      "@type": "ImageObject",
+                      "url": "https://lastminuteitr.in/brand/lastminuteitr-logo.png",
+                    },
+                  },
+                },
+                {
+                  "@type": "SoftwareApplication",
+                  "name": "LastMinute ITR Platform",
+                  "applicationCategory": "FinanceApplication",
+                  "operatingSystem": "Web",
+                  "offers": {
+                    "@type": "Offer",
+                    "price": "349.00",
+                    "priceCurrency": "INR",
+                  },
+                },
+              ],
+            }),
+          }}
+        />
+      </head>
       <body
         className={`${inter.variable} ${display.variable} ${manrope.variable} overflow-x-hidden font-sans`}
       >

@@ -18,15 +18,13 @@ const PRODUCTS_LINKS = [
 
 const RESOURCES_LINKS = [
   { href: "/blogs", label: "Blog" },
-  { href: "/tools", label: "Free Tax Tools" },
-  { href: "/guides", label: "Filing Guides" },
+  { href: "/learn", label: "Filing Guides" },
   { href: "/glossary", label: "Tax Glossary" },
-  { href: "/news", label: "News & Updates" },
 ];
 
 const COMPANY_LINKS = [
-  { href: "/about", label: "About Us" },
-  { href: "/support", label: "Contact/Support" },
+  { href: "/#about", label: "About Us" },
+  { href: "mailto:support@lastminute-itr.com", label: "Contact/Support" },
 ];
 
 const MOBILE_EXTRA = [

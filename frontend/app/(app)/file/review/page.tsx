@@ -897,6 +897,7 @@ function ReconcileHero({
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
   const income = useDraftStore((s) => s.income);
   const mismatchResolved = useDraftStore((s) => s.mismatchResolved);
+  const isPaid = Boolean(useDraftStore((s) => s.paidPlanId));
 
   const rowSummary = useMemo(
     () =>
@@ -928,51 +929,64 @@ function ReconcileHero({
   return (
     <Card className="overflow-hidden bg-gradient-to-br from-white to-slate-50/80">
       <div className="grid gap-4 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] sm:items-center">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-            {selectedRegime === "new" ? "New regime" : "Old regime"} · estimate
-          </p>
-          {hasResult ? (
-            <div className="mt-1 flex items-center gap-2">
-              <p
-                className={`text-2xl font-bold tabular-nums sm:text-3xl ${
-                  isRefund ? "text-emerald-700" : "text-slate-900"
-                }`}
-              >
-                {isRefund ? "Estimated refund " : "Estimated tax to pay "}
-                <span>{formatINR(Math.abs(netPayable))}</span>
-              </p>
+        <div className="relative">
+          {!isPaid && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-xl bg-white/40 p-4 text-center backdrop-blur-md">
+              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 shadow-sm mb-3">
+                <Lock className="h-5 w-5 text-slate-500" aria-hidden />
+              </div>
+              <p className="text-sm font-bold text-slate-900">Unlock your snapshot</p>
+              <Button href="/file/checkout/plans" className="mt-3 min-h-8 text-xs px-4">
+                View plans & unlock
+              </Button>
             </div>
-          ) : (
-            <p className="mt-1 text-2xl font-bold text-slate-400">
-              Add income to see your estimate
+          )}
+          <div className={!isPaid ? "pointer-events-none select-none opacity-40 blur-[4px]" : ""}>
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+              {selectedRegime === "new" ? "New regime" : "Old regime"} · estimate
             </p>
-          )}
-          {regimeSavings && (
-            <p className="mt-1 text-sm font-medium text-emerald-700">{regimeSavings}</p>
-          )}
-          {savingsCoach.remainingUpside > 0 && (
-            <p className="mt-1 text-xs font-medium leading-relaxed text-emerald-700 sm:text-sm">
-              Your checklist found up to{" "}
-              <strong>{formatINR(savingsCoach.remainingUpside)}</strong> more legal
-              savings if you have proof.
-            </p>
-          )}
-          {savingsCoach.totalPossibleUpside > savingsCoach.regimeDelta && (
-            <p className="mt-1 text-sm font-semibold text-slate-800">
-              Total possible upside: up to {formatINR(savingsCoach.totalPossibleUpside)}.
-            </p>
-          )}
-          {savingsCoach.breakevenGap > 0 && (
+            {hasResult ? (
+              <div className="mt-1 flex items-center gap-2">
+                <p
+                  className={`text-2xl font-bold tabular-nums sm:text-3xl ${
+                    isRefund ? "text-emerald-700" : "text-slate-900"
+                  }`}
+                >
+                  {isRefund ? "Estimated refund " : "Estimated tax to pay "}
+                  <span>{formatINR(Math.abs(netPayable))}</span>
+                </p>
+              </div>
+            ) : (
+              <p className="mt-1 text-2xl font-bold text-slate-400">
+                Add income to see your estimate
+              </p>
+            )}
+            {regimeSavings && (
+              <p className="mt-1 text-sm font-medium text-emerald-700">{regimeSavings}</p>
+            )}
+            {savingsCoach.remainingUpside > 0 && (
+              <p className="mt-1 text-xs font-medium leading-relaxed text-emerald-700 sm:text-sm">
+                Your checklist found up to{" "}
+                <strong>{formatINR(savingsCoach.remainingUpside)}</strong> more legal
+                savings if you have proof.
+              </p>
+            )}
+            {savingsCoach.totalPossibleUpside > savingsCoach.regimeDelta && (
+              <p className="mt-1 text-sm font-semibold text-slate-800">
+                Total possible upside: up to {formatINR(savingsCoach.totalPossibleUpside)}.
+              </p>
+            )}
+            {savingsCoach.breakevenGap > 0 && (
+              <p className="mt-1 text-xs text-slate-500">
+                Old regime would need about {formatINR(savingsCoach.breakevenGap)} more
+                eligible deductions to beat the new regime.
+              </p>
+            )}
             <p className="mt-1 text-xs text-slate-500">
-              Old regime would need about {formatINR(savingsCoach.breakevenGap)} more
-              eligible deductions to beat the new regime.
+              An estimate, not a promise — the CPC (Centralised Processing Centre) decides
+              your final refund after you file and e-verify on incometax.gov.in.
             </p>
-          )}
-          <p className="mt-1 text-xs text-slate-500">
-            An estimate, not a promise — the CPC (Centralised Processing Centre) decides
-            your final refund after you file and e-verify on incometax.gov.in.
-          </p>
+          </div>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white/80 p-3.5">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">

@@ -46,7 +46,7 @@ export function SiteFooter() {
             <ul className="space-y-2.5 text-[14px] text-[#2B3344]">
               <li><Link href="/#pricing" className="hover:text-[#0e5f63] transition-colors">Pricing</Link></li>
               <li><Link href="/reviews" className="hover:text-[#0e5f63] transition-colors">Reviews</Link></li>
-              <li><Link href="/chat" className="hover:text-[#0e5f63] transition-colors">Support chat</Link></li>
+              <li><a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-[#0e5f63] transition-colors">Support</a></li>
               <li><Link href="/file/onboarding/eligibility?step=about-you" className="hover:text-[#0e5f63] transition-colors">Start filing</Link></li>
             </ul>
           </div>
