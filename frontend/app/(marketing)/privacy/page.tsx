@@ -37,16 +37,16 @@ export default function PrivacyPage() {
       <h2 className="text-base font-semibold text-foreground">Your rights</h2>
       <p>
         You may request access, correction, or deletion of data we hold by emailing{" "}
-        <a href="mailto:support@lastminute-itr.com" className="text-primary underline">
-          support@lastminute-itr.com
+        <a href="mailto:contact@lastminuteitr.in" className="text-primary underline">
+          contact@lastminuteitr.in
         </a>
         . We respond within reasonable time under applicable Indian law including the DPDP Act.
       </p>
       <h2 className="text-base font-semibold text-foreground">Contact</h2>
       <p>
         Questions:{" "}
-        <a href="mailto:support@lastminute-itr.com" className="text-primary underline">
-          support@lastminute-itr.com
+        <a href="mailto:contact@lastminuteitr.in" className="text-primary underline">
+          contact@lastminuteitr.in
         </a>
       </p>
     </LegalPageLayout>

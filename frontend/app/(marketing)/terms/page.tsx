@@ -3,7 +3,7 @@ import { LegalPageLayout } from "@/components/marketing/LegalPageLayout";
 import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
-const SUPPORT_EMAIL = "support@lastminute-itr.com";
+const SUPPORT_EMAIL = "contact@lastminuteitr.in";
 
 export const metadata: Metadata = pageMetadata({
   title: "Terms & Conditions",

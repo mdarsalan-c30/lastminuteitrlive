@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Your account has been temporarily blocked. Please contact support@lastminute-itr.com to restore access.",
+            "Your account has been temporarily blocked. Please contact contact@lastminuteitr.in to restore access.",
         },
         { status: 403 }
       );

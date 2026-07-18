@@ -185,155 +185,153 @@ export default function PaymentPage() {
 
   return (
     <FilingLayout mirrorText="You're paying for the step-by-step portal guide — not government filing.">
-      <div className="max-w-2xl mx-auto space-y-6 pb-24">
-        
-        <div className="text-center mb-8">
-          <ScreenTitle
-            title={CHECKOUT_PAYMENT.title}
-            subtitle={CHECKOUT_PAYMENT.subtitle}
-          />
+      <div className="max-w-2xl mx-auto space-y-5 pb-32">
+
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-slate-900">{CHECKOUT_PAYMENT.title}</h1>
+          <p className="text-sm text-slate-600 mt-2">{CHECKOUT_PAYMENT.subtitle}</p>
           {filingForName && (
-            <p className="mt-3 text-sm text-slate-600">
-              Unlocking guide for <strong>{filingForName}</strong>
+            <p className="mt-2 text-sm text-slate-700">
+              Unlocking for: <strong className="text-slate-900">{filingForName}</strong>
               {filingsRemaining > 0 && (
-                <span className="text-slate-500">
-                  {" "}
-                  · {filingsRemaining} filing credit{filingsRemaining === 1 ? "" : "s"} in wallet
+                <span className="text-slate-600 block text-xs mt-1">
+                  {filingsRemaining} filing credit{filingsRemaining === 1 ? "" : "s"} available
                 </span>
               )}
             </p>
           )}
-          {!filingForName && (
-            <p className="mt-3 text-sm text-amber-700">
-              <Link href="/file/family" className="font-semibold underline underline-offset-2">
-                Pick who you are filing for
-              </Link>{" "}
-              before payment — each person needs their own unlock.
-            </p>
-          )}
         </div>
 
-        {/* Premium Plan Card */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 p-8 text-white shadow-xl">
-          <div className="absolute top-0 right-0 p-6 opacity-10">
-            <Sparkles className="w-24 h-24" />
-          </div>
-          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div>
-              <span className="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white backdrop-blur-md mb-3">
-                Selected Plan
-              </span>
-              <h2 className="text-3xl font-bold">{selectedPlan.name}</h2>
-              <p className="text-slate-300 mt-2 max-w-sm text-sm leading-relaxed">
-                Unlock full access to the portal filing guide tailored for your income sources.
-              </p>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 min-w-[160px] text-right border border-white/10 shadow-inner relative">
-              <p className="text-xs text-slate-300 uppercase tracking-wider font-semibold mb-1">Total</p>
+        {/* Main Payment Card */}
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
 
-              <div className={validatedDiscount || isFree ? "" : "blur-sm opacity-40"}>
+          {/* Amount Section */}
+          <div className="mb-6 pb-6 border-b border-slate-200">
+            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Amount Due</p>
+            <div className="flex items-baseline justify-between">
+              <div className={validatedDiscount || isFree ? "" : "blur-sm opacity-40 flex-1"}>
                 {validatedDiscount ? (
-                  <>
-                    <div className="text-sm text-slate-400 line-through mb-1">
+                  <div className="space-y-1">
+                    <p className="text-sm text-slate-500 line-through">
                       {formatPlanPriceLabel(basePrice)}
-                    </div>
-                    <div className="text-4xl font-black text-green-400">
+                    </p>
+                    <p className="text-4xl font-black text-emerald-600">
                       {finalPrice === 0 ? "FREE" : formatPlanPriceLabel(finalPrice)}
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-4xl font-black text-white">
-                    {formatPlanPriceLabel(basePrice)}
+                    </p>
                   </div>
+                ) : isFree ? (
+                  <p className="text-4xl font-black text-emerald-600">FREE</p>
+                ) : (
+                  <p className="text-4xl font-black text-slate-900">
+                    {formatPlanPriceLabel(basePrice)}
+                  </p>
                 )}
               </div>
-
               {!validatedDiscount && !isFree && (
-                <div className="absolute inset-0 flex items-center justify-center rounded-xl">
-                  <p className="text-xs text-white/70 font-medium">Apply coupon or proceed</p>
-                </div>
+                <p className="text-xs text-slate-500 text-right">Apply coupon to unlock discount</p>
               )}
             </div>
           </div>
-        </div>
 
-        {/* Coupon Code Section */}
-        <Card className="border-0 shadow-sm bg-white rounded-2xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Tag className="w-5 h-5 text-primary" />
-            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">Coupon Code</h3>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="text"
-              placeholder="Enter code here"
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-              className="flex-1 min-h-12 px-4 py-3 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary uppercase font-mono bg-slate-50 text-slate-900 transition-all"
-              disabled={applyingCoupon || !!validatedDiscount}
-            />
-            {validatedDiscount ? (
-              <Button
-                variant="secondary"
-                className="min-h-12 px-6 rounded-xl text-sm font-medium"
-                onClick={() => {
-                  setValidatedDiscount(null);
-                  setCouponCode("");
-                  setCouponSuccess(null);
-                }}
-              >
-                Remove Code
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                className="min-h-12 px-8 rounded-xl text-sm font-medium shadow-md hover:shadow-lg transition-all"
-                onClick={handleApplyCoupon}
-                disabled={applyingCoupon || !couponCode.trim()}
-              >
-                {applyingCoupon ? "Applying..." : "Apply Code"}
-              </Button>
+          {/* Coupon Code Section */}
+          <div className="mb-6">
+            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Have a coupon code?</p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                type="text"
+                placeholder="Enter coupon code"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                className="flex-1 min-h-10 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 uppercase font-mono bg-white text-slate-900 transition-all"
+                disabled={applyingCoupon || !!validatedDiscount}
+              />
+              {validatedDiscount ? (
+                <Button
+                  variant="secondary"
+                  className="min-h-10 px-4 rounded-lg text-sm font-medium"
+                  onClick={() => {
+                    setValidatedDiscount(null);
+                    setCouponCode("");
+                    setCouponSuccess(null);
+                  }}
+                >
+                  Remove
+                </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  className="min-h-10 px-6 rounded-lg text-sm font-medium"
+                  onClick={handleApplyCoupon}
+                  disabled={applyingCoupon || !couponCode.trim()}
+                >
+                  {applyingCoupon ? "Applying..." : "Apply"}
+                </Button>
+              )}
+            </div>
+            {couponError && <p className="text-xs text-red-600 mt-2">{couponError}</p>}
+            {couponSuccess && (
+              <p className="text-xs text-emerald-600 mt-2 flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3" /> {couponSuccess}
+              </p>
             )}
           </div>
-          
-          {couponError && (
-            <div className="mt-3 text-sm text-red-500 flex items-center gap-1.5 bg-red-50 p-3 rounded-lg border border-red-100">
-              {couponError}
-            </div>
-          )}
-          
-          {couponSuccess && (
-            <div className="mt-3 text-sm text-emerald-600 flex items-center gap-1.5 bg-emerald-50 p-3 rounded-lg border border-emerald-100">
-              <ShieldCheck className="w-4 h-4" />
-              {couponSuccess}
-            </div>
-          )}
-        </Card>
 
+        </div>
+
+        {/* Error Message */}
         {paymentError && (
           <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
             {paymentError}
           </div>
         )}
 
-        {/* PAYMENT_API_TODO — Razorpay create/verify when production keys are live. */}
-        {!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID && !isFree && (
-          <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm space-y-2">
-            <p className="font-semibold">Payment gateway wiring in progress</p>
-            <p>
-              Razorpay will be connected here later. For now you can continue with a
-              development unlock so filing assistance stays testable.
-            </p>
+        {/* Payment Buttons - PROMINENT */}
+        <div className="space-y-3">
+          {filingsRemaining > 0 && !isFree && (
             <Button
               variant="secondary"
-              className="w-full sm:w-auto"
+              className="w-full min-h-14 rounded-xl text-base font-semibold"
+              onClick={handleUseCredit}
+              disabled={usingCredit}
+            >
+              {usingCredit ? "Applying credit…" : `Use Filing Credit (${filingsRemaining} left)`}
+            </Button>
+          )}
+
+          {isFree ? (
+            <Button
+              variant="primary"
+              className="w-full min-h-14 rounded-xl text-base font-semibold shadow-lg"
+              onClick={handleFreeCheckout}
+            >
+              Unlock Guide Now
+            </Button>
+          ) : (
+            <RazorpayButton
+              planId={plan}
+              couponCode={validatedDiscount?.code}
+              familyProfileId={activeProfileId}
+              onSuccess={finishPayment}
+              onError={setPaymentError}
+              className="w-full min-h-14 rounded-xl text-base font-semibold shadow-lg"
+            />
+          )}
+        </div>
+
+        {/* Dev Mode Notice */}
+        {!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID && !isFree && (
+          <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm">
+            <p className="font-semibold mb-2">Payment gateway setup in progress</p>
+            <p className="mb-3">For testing, you can continue with a development unlock.</p>
+            <Button
+              variant="secondary"
+              className="w-full"
               onClick={async () => {
                 setPaymentError(null);
                 const profileId = activeProfileId ?? getActiveProfileId();
                 if (!profileId) {
-                  setPaymentError("Pick who you are filing for first (People I file for).");
+                  setPaymentError("Pick who you are filing for first.");
                   return;
                 }
                 try {
@@ -363,52 +361,28 @@ export default function PaymentPage() {
                 }
               }}
             >
-              Continue without live payment (dev)
+              Continue with Dev Unlock
             </Button>
           </div>
         )}
 
-        <FilingActions
-          hint={
-            <div className="flex items-center justify-center gap-2 text-slate-500 text-xs">
-              <ShieldCheck className="w-4 h-4" />
-              <span>{PAYMENT_COPY.secureLine} · Payments processed securely</span>
-            </div>
-          }
-        >
-          {filingsRemaining > 0 && !isFree && (
-            <Button
-              variant="secondary"
-              className="min-h-12 w-full md:w-auto rounded-xl text-base"
-              onClick={handleUseCredit}
-              disabled={usingCredit}
-            >
-              {usingCredit ? "Applying credit…" : `Use 1 filing credit (${filingsRemaining} left)`}
-            </Button>
-          )}
-          {isFree ? (
-            <Button
-              variant="primary"
-              className="min-h-12 w-full md:w-auto rounded-xl text-base shadow-lg"
-              onClick={handleFreeCheckout}
-            >
-              Unlock Guide Now
-            </Button>
-          ) : (
-            <RazorpayButton
-              planId={plan}
-              couponCode={validatedDiscount?.code}
-              familyProfileId={activeProfileId}
-              onSuccess={finishPayment}
-              onError={setPaymentError}
-              className="min-h-12 w-full md:w-auto rounded-xl text-base shadow-lg"
-            />
-          )}
-        </FilingActions>
-        
-        <p className="text-center text-xs text-slate-400 mt-6 max-w-md mx-auto leading-relaxed">
-          By proceeding, you agree to our <Link href="/terms" className="underline hover:text-slate-600 transition-colors">Terms</Link> and <Link href="/refund-policy" className="underline hover:text-slate-600 transition-colors">Refund Policy</Link>. This unlocks the portal guide—you must manually submit your return on incometax.gov.in.
-        </p>
+        {/* Security & Info */}
+        <div className="text-center space-y-3">
+          <div className="flex items-center justify-center gap-2 text-slate-600 text-xs">
+            <ShieldCheck className="w-4 h-4" />
+            <span>{PAYMENT_COPY.secureLine} via Razorpay</span>
+          </div>
+          <p className="text-xs text-slate-500 leading-relaxed max-w-md mx-auto">
+            By paying, you unlock the portal filing guide. You manually submit your return on incometax.gov.in.{" "}
+            <Link href="/terms" className="text-slate-700 underline">
+              Terms
+            </Link>
+            {" · "}
+            <Link href="/refund-policy" className="text-slate-700 underline">
+              Refunds
+            </Link>
+          </p>
+        </div>
 
       </div>
     </FilingLayout>

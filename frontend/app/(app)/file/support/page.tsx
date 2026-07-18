@@ -37,7 +37,7 @@ export default function SupportPage() {
         <Button href="/file/companion" variant="secondary">
           Open companion guide (govt portal)
         </Button>
-        <Button href="mailto:support@lastminute-itr.com" variant="ghost">
+        <Button href="mailto:contact@lastminuteitr.in" variant="ghost">
           Email support
         </Button>
       </FilingActions>

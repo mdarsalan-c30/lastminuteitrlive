@@ -24,7 +24,7 @@ const RESOURCES_LINKS = [
 
 const COMPANY_LINKS = [
   { href: "/#about", label: "About Us" },
-  { href: "mailto:support@lastminute-itr.com", label: "Contact/Support" },
+  { href: "mailto:contact@lastminuteitr.in", label: "Contact/Support" },
 ];
 
 const MOBILE_EXTRA = [

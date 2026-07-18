@@ -38,8 +38,8 @@ export default function RefundPolicyPage() {
       <h2 className="text-base font-semibold text-foreground">How to request</h2>
       <p>
         Email{" "}
-        <a href="mailto:support@lastminute-itr.com" className="text-primary underline">
-          support@lastminute-itr.com
+        <a href="mailto:contact@lastminuteitr.in" className="text-primary underline">
+          contact@lastminuteitr.in
         </a>{" "}
         with your payment ID, assessment year, and reason. Approved refunds are processed to the
         original payment method within 7–10 business days.

@@ -3,7 +3,7 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { PRICING_PLANS, SITE_NAME } from "@/lib/constants";
 import { getDisplayPricing, formatPlanPriceLabel } from "@/lib/marketing/pricing";
 
-const SUPPORT_EMAIL = "support@lastminute-itr.com";
+const SUPPORT_EMAIL = "contact@lastminuteitr.in";
 
 export function SiteFooter() {
   return (
