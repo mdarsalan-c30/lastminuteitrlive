@@ -185,6 +185,9 @@ export function FilingLayout({
   const incomeChips = useDraftStore((s) => s.incomeChips);
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
   const mismatchResolved = useDraftStore((s) => s.mismatchResolved);
+  const plan = useDraftStore((s) => s.plan);
+  const paymentVerified = useDraftStore((s) => s.paymentVerified);
+  const isUnlocked = plan !== "none" && paymentVerified;
 
   const sectionStatuses = getIncomeSectionStatuses({
     income,
@@ -401,6 +404,7 @@ export function FilingLayout({
                 <p
                   className={cn(
                     "text-xl font-bold tracking-tight tabular-nums",
+                    !isUnlocked && "blur-sm select-none",
                     isRefund ? "text-emerald-600" : "text-slate-900"
                   )}
                 >

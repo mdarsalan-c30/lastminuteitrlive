@@ -45,6 +45,8 @@ interface CreateOrderResponse {
   message?: string;
 }
 
+import { cn } from "@/lib/utils";
+
 interface RazorpayButtonProps {
   planId: PlanId;
   couponCode?: string;
@@ -220,10 +222,10 @@ export default function RazorpayButton({
       type="button"
       onClick={handlePay}
       disabled={disabled || loading}
-      className={
-        className ||
-        "min-h-11 w-full rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-      }
+      className={cn(
+        "min-h-11 w-full rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg",
+        className
+      )}
     >
       {label}
     </button>

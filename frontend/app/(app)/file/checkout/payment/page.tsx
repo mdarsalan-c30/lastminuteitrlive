@@ -314,7 +314,7 @@ export default function PaymentPage() {
               familyProfileId={activeProfileId}
               onSuccess={finishPayment}
               onError={setPaymentError}
-              className="w-full min-h-14 rounded-xl text-base font-semibold shadow-lg"
+              className="w-full min-h-14 rounded-xl text-lg font-bold shadow-xl bg-indigo-600 hover:bg-indigo-700 text-white transition-all transform hover:scale-[1.02]"
             />
           )}
         </div>
