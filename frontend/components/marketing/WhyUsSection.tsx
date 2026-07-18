@@ -13,7 +13,7 @@ const WHY_ICONS = [
 
 export function WhyUsSection() {
   return (
-    <section id="why" className="section-pad-lg px-4 sm:px-6 lg:px-8">
+    <section id="about" className="section-pad-lg px-4 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-[1180px]">
         {/* Header */}
         <ScrollReveal className="text-center mb-14">
