@@ -1,0 +1,212 @@
+┌────┬─────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name        │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼─────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 4  │ backend     │ default     │ N/A     │ fork    │ 235091   │ 23h    │ 0    │ online    │ 0%       │ 47.5mb   │ root     │ disabled │
+│ 2  │ frontend    │ default     │ N/A     │ fork    │ 0        │ 0      │ 81   │ errored   │ 0%       │ 0b       │ root     │ disabled │
+└────┴─────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 0.2% | ram usage: 8.3% | disk: ⇓ 0mb/s ⇑ 0.002mb/s |
+[TAILING] Tailing last 100 lines for [frontend] process (change the value with --lines option)
+/root/.pm2/logs/frontend-out.log last 100 lines:
+2|frontend |  ✓ Starting...
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+2|frontend | 
+2|frontend | > lastminute-itr@0.1.0 start
+2|frontend | > next start
+2|frontend | 
+2|frontend |    ▲ Next.js 15.5.19
+2|frontend |    - Local:        http://localhost:3000
+2|frontend |    - Network:      http://200.97.160.215:3000
+2|frontend | 
+2|frontend |  ✓ Starting...
+
+/root/.pm2/logs/frontend-error.log last 100 lines:
+2|frontend |   [cause]: [AggregateError: ] { code: 'ECONNREFUSED' }
+2|frontend | }
+2|frontend | [proxyToPythonServerless] Fetch failed: TypeError: fetch failed
+2|frontend |     at async y (.next/server/app/api/compute/route.js:1:870)
+2|frontend |     at async k (.next/server/app/api/compute/route.js:1:4813)
+2|frontend |     at async g (.next/server/app/api/compute/route.js:1:5816)
+2|frontend |     at async F (.next/server/app/api/compute/route.js:1:6938) {
+2|frontend |   [cause]: [AggregateError: ] { code: 'ECONNREFUSED' }
+2|frontend | }
+2|frontend | [proxyToPythonServerless] Fetch failed: TypeError: fetch failed
+2|frontend |     at async y (.next/server/app/api/compute/route.js:1:870)
+2|frontend |     at async k (.next/server/app/api/compute/route.js:1:4813)
+2|frontend |     at async g (.next/server/app/api/compute/route.js:1:5816)
+2|frontend |     at async F (.next/server/app/api/compute/route.js:1:6938) {
+2|frontend |   [cause]: [AggregateError: ] { code: 'ECONNREFUSED' }
+2|frontend | }
+2|frontend | [proxyToPythonServerless] Fetch failed: TypeError: fetch failed
+2|frontend |     at async y (.next/server/app/api/compute/route.js:1:870)
+2|frontend |     at async k (.next/server/app/api/compute/route.js:1:4813)
+2|frontend |     at async g (.next/server/app/api/compute/route.js:1:5816)
+2|frontend |     at async F (.next/server/app/api/compute/route.js:1:6938) {
+2|frontend |   [cause]: [AggregateError: ] { code: 'ECONNREFUSED' }
+2|frontend | }
+2|frontend | [proxyToPythonServerless] Fetch failed: TypeError: fetch failed
+2|frontend |     at async y (.next/server/app/api/compute/route.js:1:870)
+2|frontend |     at async k (.next/server/app/api/compute/route.js:1:4813)
+2|frontend |     at async g (.next/server/app/api/compute/route.js:1:5816)
+2|frontend |     at async F (.next/server/app/api/compute/route.js:1:6938) {
+2|frontend |   [cause]: [AggregateError: ] { code: 'ECONNREFUSED' }
+2|frontend | }
+2|frontend | [proxyToPythonServerless] Fetch failed: TypeError: fetch failed
+2|frontend |     at async y (.next/server/app/api/compute/route.js:1:870)
+2|frontend |     at async k (.next/server/app/api/compute/route.js:1:4813)
+2|frontend |     at async g (.next/server/app/api/compute/route.js:1:5816)
+2|frontend |     at async F (.next/server/app/api/compute/route.js:1:6938) {
+2|frontend |   [cause]: [AggregateError: ] { code: 'ECONNREFUSED' }
+2|frontend | }
+2|frontend | [proxyToPythonServerless] Fetch failed: TypeError: fetch failed
+2|frontend |     at async y (.next/server/app/api/compute/route.js:1:870)
+2|frontend |     at async k (.next/server/app/api/compute/route.js:1:4813)
+2|frontend |     at async g (.next/server/app/api/compute/route.js:1:5816)
+2|frontend |     at async F (.next/server/app/api/compute/route.js:1:6938) {
+2|frontend |   [cause]: [AggregateError: ] { code: 'ECONNREFUSED' }
+2|frontend | }
+2|frontend | [proxyToPythonServerless] Fetch failed: TypeError: fetch failed
+2|frontend |     at async y (.next/server/app/api/compute/route.js:1:870)
+2|frontend |     at async k (.next/server/app/api/compute/route.js:1:4813)
+2|frontend |     at async g (.next/server/app/api/compute/route.js:1:5816)
+2|frontend |     at async F (.next/server/app/api/compute/route.js:1:6938) {
+2|frontend |   [cause]: [AggregateError: ] { code: 'ECONNREFUSED' }
+2|frontend | }
+2|frontend | [proxyToPythonServerless] Fetch failed: TypeError: fetch failed
+2|frontend |     at async y (.next/server/app/api/compute/route.js:1:870)
+2|frontend |     at async k (.next/server/app/api/compute/route.js:1:4813)
+2|frontend |     at async g (.next/server/app/api/compute/route.js:1:5816)
+2|frontend |     at async F (.next/server/app/api/compute/route.js:1:6938) {
+2|frontend |   [cause]: [AggregateError: ] { code: 'ECONNREFUSED' }
+2|frontend | }
+2|frontend | [Error: aborted] { code: 'ECONNRESET' }
+2|frontend | [Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+2|frontend | Read more: https://nextjs.org/docs/messages/failed-to-find-server-action]
+2|frontend | [Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+2|frontend | Read more: https://nextjs.org/docs/messages/failed-to-find-server-action]
+2|frontend | [Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+2|frontend | Read more: https://nextjs.org/docs/messages/failed-to-find-server-action]
+2|frontend | [Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+2|frontend | Read more: https://nextjs.org/docs/messages/failed-to-find-server-action]
+2|frontend | [Error: aborted] { code: 'ECONNRESET' }
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+2|frontend | [Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id]
+

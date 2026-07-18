@@ -1,0 +1,42 @@
+STDOUT:\n[PM2] Applying action stopProcessId on app [frontend](ids: [ 2 ])
+[PM2] [frontend](2) ✓
+┌────┬─────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name        │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼─────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 4  │ backend     │ default     │ N/A     │ fork    │ 235091   │ 23h    │ 0    │ online    │ 0%       │ 47.5mb   │ root     │ disabled │
+│ 2  │ frontend    │ default     │ N/A     │ fork    │ 0        │ 0      │ 96   │ stopped   │ 0%       │ 0b       │ root     │ disabled │
+└────┴─────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 0.5% | ram usage: 8.2% | eth0: ⇓ 0mb/s ⇑ 0.001mb/s | disk: ⇓ 0mb/s ⇑ 0.005mb/s |
+
+> lastminute-itr@0.1.0 build
+> prisma generate && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 236ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+   ▲ Next.js 15.5.19
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 9.9s
+   Skipping linting
+   Checking validity of types ...
+\nSTDERR:\nFailed to compile.
+
+./components/filing/FilingLayout.tsx:190:22
+Type error: This comparison appears to be unintentional because the types 'PlanId' and '"none"' have no overlap.
+
+[0m [90m 188 |[39m   [36mconst[39m plan [33m=[39m useDraftStore((s) [33m=>[39m s[33m.[39mplan)[33m;[39m
+ [90m 189 |[39m   [36mconst[39m paymentVerifiedAt [33m=[39m useDraftStore((s) [33m=>[39m s[33m.[39mpaymentVerifiedAt)[33m;[39m
+[31m[1m>[22m[39m[90m 190 |[39m   [36mconst[39m isUnlocked [33m=[39m plan [33m!==[39m [32m"none"[39m [33m&&[39m [33m![39m[33m![39mpaymentVerifiedAt[33m;[39m
+ [90m     |[39m                      [31m[1m^[22m[39m
+ [90m 191 |[39m
+ [90m 192 |[39m   [36mconst[39m sectionStatuses [33m=[39m getIncomeSectionStatuses({
+ [90m 193 |[39m     income[33m,[39m[0m
+Next.js build worker exited with code: 1 and signal: null

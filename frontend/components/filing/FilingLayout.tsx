@@ -185,9 +185,9 @@ export function FilingLayout({
   const incomeChips = useDraftStore((s) => s.incomeChips);
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
   const mismatchResolved = useDraftStore((s) => s.mismatchResolved);
-  const plan = useDraftStore((s) => s.plan);
   const paymentVerifiedAt = useDraftStore((s) => s.paymentVerifiedAt);
-  const isUnlocked = plan !== "none" && !!paymentVerifiedAt;
+  // plan defaults to "normal" in draft store, so we only need to check if payment is verified
+  const isUnlocked = !!paymentVerifiedAt;
 
   const sectionStatuses = getIncomeSectionStatuses({
     income,
