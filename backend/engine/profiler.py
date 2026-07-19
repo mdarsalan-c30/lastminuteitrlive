@@ -159,6 +159,12 @@ def route_itr_form(user: UserInput) -> tuple[ITRForm, list[str], bool]:
             )
             expert = True
             return "ITR-3", reasons, expert
+        if _has_capital_gains(user):
+            reasons.append(
+                "Presumptive income with capital gains — ITR-3"
+            )
+            expert = True
+            return "ITR-3", reasons, expert
         reasons.append("Presumptive business/profession — ITR-4 (44AD/44ADA)")
         return "ITR-4", reasons, expert
 

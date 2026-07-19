@@ -4,6 +4,8 @@ import { useProfileStore } from "@/lib/store/profile";
 import { useRouter } from "next/navigation";
 import { LogOut, User } from "lucide-react";
 import { useState } from "react";
+import { ReferralSectionClient } from "./ReferralSectionClient";
+import { DeleteAccountClient } from "./DeleteAccountClient";
 
 export default function ProfilePage() {
   const name = useProfileStore((s) => s.name);
@@ -24,30 +26,51 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-12 px-6">
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="flex size-16 items-center justify-center rounded-full bg-blue-100 text-blue-700">
-            <User className="size-8" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">{name || "Your Profile"}</h1>
-            <p className="text-slate-500">{email || "No email provided"}</p>
+    <div className="max-w-3xl mx-auto py-12 px-4 sm:px-6">
+      <div className="space-y-6">
+        {/* Main Profile Info */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="flex size-16 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
+              <User className="size-8" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">{name || "Your Profile"}</h1>
+              <p className="text-slate-500">{email || "No email provided"}</p>
+            </div>
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="border-t border-slate-100 pt-6">
-            <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Account Settings</h2>
-            
+        {/* Referrals & Wallet */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="border-b border-slate-100 bg-slate-50 px-6 py-4">
+            <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">Referrals & Wallet</h2>
+          </div>
+          <ReferralSectionClient />
+        </div>
+
+        {/* Account Settings */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="border-b border-slate-100 bg-slate-50 px-6 py-4">
+            <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">Account Settings</h2>
+          </div>
+          <div className="p-6">
             <button
               onClick={handleLogout}
               disabled={loading}
-              className="flex items-center gap-2 text-red-600 hover:text-red-700 font-medium transition-colors p-2 rounded-lg hover:bg-red-50 disabled:opacity-50"
+              className="flex items-center gap-2 text-slate-700 hover:text-slate-900 font-medium transition-colors py-2 px-4 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 mb-6"
             >
               <LogOut className="size-5" />
               {loading ? "Signing out..." : "Sign Out"}
             </button>
+
+            <div className="border-t border-slate-100 pt-6">
+              <h3 className="text-sm font-medium text-slate-900 mb-2">Danger Zone</h3>
+              <p className="text-xs text-slate-500 max-w-xl">
+                Deleting your account or data is permanent. You will lose access to all your drafts, uploaded documents, and history.
+              </p>
+              {email && <DeleteAccountClient verifiedEmail={email} />}
+            </div>
           </div>
         </div>
       </div>
