@@ -51,7 +51,7 @@ export function SiteHeader() {
         Platform is now Live! Only 12 days left to file your ITR penalty-free (July 31st deadline)
       </div>
       <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-4 px-8 h-[72px] max-[560px]:h-[64px] max-[560px]:px-5">
-        <BrandLogo variant="wordmark" size="sm" priority />
+        <BrandLogo variant="full" size="sm" priority />
 
         {/* Desktop Nav */}
         <nav className="hidden items-center gap-9 lg:flex" aria-label="Main navigation">

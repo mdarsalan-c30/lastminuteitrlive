@@ -42,7 +42,7 @@ export function SiteFooter() {
         <div className="grid gap-10 mb-12 lg:grid-cols-[1.6fr_1fr_1fr_1fr] md:grid-cols-2">
           {/* Brand */}
           <div>
-            <BrandLogo href="/" variant="wordmark" size="sm" />
+            <BrandLogo href="/" variant="full" size="sm" />
             <p className="mt-4 mb-4 text-[13.5px] text-[#6B7280] leading-[1.6] max-w-[280px]">
               <strong className="text-[#2B3344] block mb-1">LastminuteITR — Filing in 10 Min</strong>
               AI-assisted ITR prep with mismatch and regime checks — you submit on incometax.gov.in.
