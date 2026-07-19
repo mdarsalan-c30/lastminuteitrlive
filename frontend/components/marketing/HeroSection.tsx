@@ -94,8 +94,8 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                     marginBottom: 16,
                   }}
                 >
-                  Your Personal Income-Tax <br className="hidden sm:block" />
-                  filing companion
+                  File your ITR under 10 min — <br className="hidden sm:block" />
+                  Your personal smart <span style={{ color: "#0e5f63" }}>AI Tax companion</span>
                 </h1>
 
                 <p
@@ -106,7 +106,7 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                     marginBottom: 28,
                   }}
                 >
-                  Built for Indians, anyone can understand complex terms and prepare your returns faster by uploading Form 16 or start with an estimate. Get regime comparison, mismatch checks at each step, AIS, Capital gains, F&O, and guided filing for your ITR 1, ITR 2, ITR 3 and ITR 4 on incometax.gov.in.
+                  Upload your Form 16, AIS, and trading data, or start with a quick estimate. Answer a few smart questions to maximize your refund, run mismatch checks, and let a personal AI tax assistant guide you step-by-step to file ITR 1, ITR 2, ITR 3 & ITR 4 directly on incometax.gov.in.
                 </p>
 
                 <form
