@@ -39,14 +39,15 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Regular coupons are only "full" or "amount" (never "percentage" — that
+    // path is referral-only, handled above). So amountOff carries the value and
+    // percentageOff is always null here.
     const discountType = result.coupon!.discount;
     return NextResponse.json({
       valid: true,
       discount: discountType,
-      amountOff: discountType === "percentage" ? null : (result.coupon!.amountOff ?? null),
-      percentageOff: discountType === "percentage" ? (result.coupon!.amountOff ?? null) : null,
-      // Map internal discount types for frontend compatibility
-      // "full" → stays "full", "amount" → stays "amount"
+      amountOff: result.coupon!.amountOff ?? null,
+      percentageOff: null,
     });
   } catch {
     return NextResponse.json(
