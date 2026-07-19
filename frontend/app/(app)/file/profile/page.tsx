@@ -1,10 +1,12 @@
 "use client";
 
-import { useProfileStore } from "@/lib/store/profile";
+import { useProfileStore, profileInitials } from "@/lib/store/profile";
 import { useRouter } from "next/navigation";
-import { ChevronDown, MoreVertical, LogOut, ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import { ChevronDown, MoreVertical, LogOut, ArrowLeft, User } from "lucide-react";
 import Link from "next/link";
-import { profileInitials } from "@/lib/store/profile";
+import { ReferralSectionClient } from "./ReferralSectionClient";
+import { DeleteAccountClient } from "./DeleteAccountClient";
 
 export default function ProfilePage() {
   const name = useProfileStore((s) => s.name) || "New User";
