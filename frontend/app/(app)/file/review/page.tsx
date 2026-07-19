@@ -710,7 +710,7 @@ function ReconcileHero({
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
   const income = useDraftStore((s) => s.income);
   const mismatchResolved = useDraftStore((s) => s.mismatchResolved);
-  const isPaid = Boolean(useDraftStore((s) => s.paidPlanId));
+  const isPaid = Boolean(useDraftStore((s) => s.paymentVerifiedAt));
 
   const rowSummary = useMemo(
     () =>
@@ -734,9 +734,9 @@ function ReconcileHero({
   const openItems = rowSummary.attention + rowSummary.missing;
   const regimeSavings =
     rc && savingsCoach.regimeDelta > 0
-      ? `${rc.recommended_regime === "old" ? "Old" : "New"} regime saves ${formatINR(
-          savingsCoach.regimeDelta
-        )} on your numbers.`
+      ? `${rc.recommended_regime === "old" ? "Old" : "New"} regime saves ${
+          isPaid ? formatINR(savingsCoach.regimeDelta) : "₹***"
+        } on your numbers.`
       : null;
 
   return (
@@ -766,7 +766,7 @@ function ReconcileHero({
                   }`}
                 >
                   {isRefund ? "Estimated refund " : "Estimated tax to pay "}
-                  <span>{formatINR(Math.abs(netPayable))}</span>
+                  <span>{isPaid ? formatINR(Math.abs(netPayable)) : "₹***"}</span>
                 </p>
               </div>
             ) : (
@@ -780,18 +780,18 @@ function ReconcileHero({
             {savingsCoach.remainingUpside > 0 && (
               <p className="mt-1 text-xs font-medium leading-relaxed text-emerald-700 sm:text-sm">
                 Your checklist found up to{" "}
-                <strong>{formatINR(savingsCoach.remainingUpside)}</strong> more legal
+                <strong>{isPaid ? formatINR(savingsCoach.remainingUpside) : "₹***"}</strong> more legal
                 savings if you have proof.
               </p>
             )}
             {savingsCoach.totalPossibleUpside > savingsCoach.regimeDelta && (
               <p className="mt-1 text-sm font-semibold text-slate-800">
-                Total possible upside: up to {formatINR(savingsCoach.totalPossibleUpside)}.
+                Total possible upside: up to {isPaid ? formatINR(savingsCoach.totalPossibleUpside) : "₹***"}.
               </p>
             )}
             {savingsCoach.breakevenGap > 0 && (
               <p className="mt-1 text-xs text-slate-500">
-                Old regime would need about {formatINR(savingsCoach.breakevenGap)} more
+                Old regime would need about {isPaid ? formatINR(savingsCoach.breakevenGap) : "₹***"} more
                 eligible deductions to beat the new regime.
               </p>
             )}
