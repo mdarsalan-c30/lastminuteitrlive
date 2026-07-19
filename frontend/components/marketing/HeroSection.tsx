@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (m: "b2c" | "b2b") => void }) {
-  const [b2cSubmitted, setB2cSubmitted] = useState(false);
+
 
   return (
     <header
@@ -109,57 +109,39 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                   Built for Indians, anyone can understand complex terms and prepare your returns faster by uploading Form 16 or start with an estimate. Get regime comparison, mismatch checks at each step, AIS, Capital gains, F&O, and guided filing for your ITR 1, ITR 2, ITR 3 and ITR 4 on incometax.gov.in.
                 </p>
 
-                {b2cSubmitted ? (
-                  <div className="mb-9 max-w-sm rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-center">
-                    <h3 className="mb-2 font-bold text-emerald-900">Thank you!</h3>
-                    <p className="text-[14px] text-emerald-800">We will notify you once the platform is Live.</p>
+                <form
+                  className="mb-9 flex max-w-sm flex-col gap-3"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.currentTarget);
+                    const name = formData.get("name") as string;
+                    // Since it's B2C filing, send to register with name query param
+                    window.location.href = `/auth/register?name=${encodeURIComponent(name)}`;
+                  }}
+                >
+                  <div>
+                    <label htmlFor="b2c-name" className="sr-only">
+                      What should we call you?
+                    </label>
+                    <input
+                      id="b2c-name"
+                      name="name"
+                      type="text"
+                      required
+                      placeholder="What should we call you? (e.g. Rahul)"
+                      className="w-full rounded-[10px] border border-[#E6E8EC] px-4 py-3 text-[15px] outline-none transition-colors focus:border-[#0e5f63] focus:ring-1 focus:ring-[#0e5f63]"
+                    />
                   </div>
-                ) : (
-                  <form
-                    className="mb-9 flex max-w-sm flex-col gap-3"
-                    onSubmit={async (e) => {
-                      e.preventDefault();
-                      setB2cSubmitted(true);
-                    }}
-                  >
-                    <div>
-                      <input
-                        id="b2c-name"
-                        name="name"
-                        type="text"
-                        required
-                        placeholder="Your Name (e.g. Rahul)"
-                        className="w-full rounded-[10px] border border-[#E6E8EC] px-4 py-3 text-[15px] outline-none transition-colors focus:border-[#0e5f63] focus:ring-1 focus:ring-[#0e5f63]"
-                      />
-                    </div>
-                    <div>
-                      <input
-                        id="b2c-email"
-                        name="email"
-                        type="email"
-                        required
-                        placeholder="Your Email"
-                        className="w-full rounded-[10px] border border-[#E6E8EC] px-4 py-3 text-[15px] outline-none transition-colors focus:border-[#0e5f63] focus:ring-1 focus:ring-[#0e5f63]"
-                      />
-                    </div>
-                    <div>
-                      <input
-                        id="b2c-phone"
-                        name="phone"
-                        type="tel"
-                        required
-                        placeholder="Your Contact Number"
-                        className="w-full rounded-[10px] border border-[#E6E8EC] px-4 py-3 text-[15px] outline-none transition-colors focus:border-[#0e5f63] focus:ring-1 focus:ring-[#0e5f63]"
-                      />
-                    </div>
-                    <button type="submit" className="btn-pill-primary w-full justify-center">
-                      Notify me once it is Live
-                    </button>
-                    <p className="text-center text-[12.5px] text-[#6B7280]">
-                      Already have an account? <Link href="/auth/login" className="font-semibold text-[#0e5f63] hover:underline">Log in</Link>
-                    </p>
-                  </form>
-                )}
+                  <button type="submit" className="btn-pill-primary w-full justify-center">
+                    Proceed to file
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                  <p className="text-center text-[12.5px] text-[#6B7280]">
+                    Already have an account? <Link href="/auth/login" className="font-semibold text-[#0e5f63] hover:underline">Log in</Link>
+                  </p>
+                </form>
 
                 <div className="mb-3.5 flex flex-wrap gap-2.5">
                   {[
