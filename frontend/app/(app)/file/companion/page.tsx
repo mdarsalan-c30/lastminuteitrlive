@@ -169,14 +169,15 @@ function CompanionContent() {
     (draft.recommendedForm as PortalForm) || "ITR-1"
   );
   // Zustand persist hydrates after first render — follow the recommended form
-  // until the user explicitly picks one from the dropdown.
+  // until the user explicitly picks one from the dropdown. We also sync with the
+  // latest engine result if it's available.
   const [formManuallyChosen, setFormManuallyChosen] = useState(false);
   useEffect(() => {
-    const recommended = draft.recommendedForm as PortalForm | null;
+    const recommended = (effectiveResult?.profile.itr_form || draft.recommendedForm) as PortalForm | null;
     if (!formManuallyChosen && recommended && FORMS.includes(recommended)) {
       setForm(recommended);
     }
-  }, [draft.recommendedForm, formManuallyChosen]);
+  }, [draft.recommendedForm, effectiveResult?.profile.itr_form, formManuallyChosen]);
   const [guide, setGuide] = useState<PortalGuideResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);

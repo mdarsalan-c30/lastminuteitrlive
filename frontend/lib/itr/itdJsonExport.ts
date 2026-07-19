@@ -288,10 +288,10 @@ export function buildItr4Export(input: {
   }
 
   const hasCapitalGains =
-    result.income_heads.stcg_111a_net > 0 ||
-    result.income_heads.stcg_other_slab > 0 ||
-    result.income_heads.ltcg_112a_net > 0 ||
-    result.income_heads.ltcg_other_net > 0;
+    result.income_heads.stcg_111a_net !== 0 ||
+    result.income_heads.stcg_other_slab !== 0 ||
+    result.income_heads.ltcg_112a_net !== 0 ||
+    result.income_heads.ltcg_other_net !== 0;
   if (hasCapitalGains) {
     blocking.push(
       "Capital gains are not allowed in ITR-4. Use ITR-3 (with business) or ITR-2 instead."
