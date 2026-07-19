@@ -239,7 +239,9 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
           </div>
 
           {/* Right: Component depending on mode */}
-          {mode === "b2c" ? <RegimeComparatorHero /> : <CaRegistrationForm />}
+          <div className="xl:-mt-10 lg:-mt-6">
+            {mode === "b2c" ? <RegimeComparatorHero /> : <CaRegistrationForm />}
+          </div>
         </div>
       </div>
     </header>

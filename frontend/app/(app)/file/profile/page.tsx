@@ -41,6 +41,19 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* Tax Filing History */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="border-b border-slate-100 bg-slate-50 px-6 py-4">
+            <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">Tax Filing History</h2>
+          </div>
+          <div className="p-6">
+            <div className="text-center py-8">
+              <p className="text-slate-500 font-medium">No previous filings found.</p>
+              <p className="text-sm text-slate-400 mt-1">Your past ITR filings will appear here.</p>
+            </div>
+          </div>
+        </div>
+
         {/* Referrals & Wallet */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="border-b border-slate-100 bg-slate-50 px-6 py-4">
