@@ -259,9 +259,6 @@ export function FilingLayout({
       {/* Brand Header */}
       <div className="flex h-16 shrink-0 items-center px-6 border-b border-slate-100/60 gap-2.5 bg-white">
         <BrandLogo size="xs" variant="icon" />
-        <span className="inline-flex items-center rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-          MVP
-        </span>
       </div>
 
       {/* Steps List */}

@@ -183,9 +183,6 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                   ))}
                 </div>
 
-                <p style={{ fontSize: 13, color: "#475569", fontWeight: 500 }}>
-                  We have kept the minimum fees so that every user can access our platform. Built for people by the people :)
-                </p>
               </>
             ) : (
               <>
