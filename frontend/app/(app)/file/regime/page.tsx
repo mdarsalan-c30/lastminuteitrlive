@@ -30,8 +30,9 @@ import { CheckCircle2, TrendingDown } from "lucide-react";
 
 export default function RegimePage() {
   const router = useRouter();
-  const { regime, setRegime, mismatchResolved, filingPath, incomeChips } =
+  const { regime, setRegime, mismatchResolved, filingPath, incomeChips, paidPlanId } =
     useDraftStore();
+  const isPaid = Boolean(paidPlanId);
   const [useSnapshot, setUseSnapshot] = useState(false);
   const [form10IeaAttested, setForm10IeaAttested] = useState(false);
   const {
@@ -159,13 +160,19 @@ export default function RegimePage() {
       )}
 
       {!loading && rc && (
-        isRefund ? (
-          <Banner variant="success">
-            Refund of {formatINR(Math.abs(selectedPay))} under the {selected} regime.
-          </Banner>
+        isPaid ? (
+          isRefund ? (
+            <Banner variant="success">
+              Refund of {formatINR(Math.abs(selectedPay))} under the {selected} regime.
+            </Banner>
+          ) : (
+            <Banner variant="warning">
+              Tax payable: {formatINR(selectedPay)} before filing. Plan payment after review.
+            </Banner>
+          )
         ) : (
-          <Banner variant="warning">
-            Tax payable: {formatINR(selectedPay)} before filing. Plan payment after review.
+          <Banner variant="success">
+            ✓ Both regimes computed — {recommended === "old" ? "Old" : "New"} regime saves you more. Pay to see exact amounts.
           </Banner>
         )
       )}
@@ -182,21 +189,23 @@ export default function RegimePage() {
               title="Old regime"
               netLabel={oldPay < 0 ? "refund" : "payable"}
               amount={Math.abs(oldPay)}
-              detail={`Tax ${formatINR(rc?.old.total_tax ?? 0)} · VI-A ${formatINR(effectiveResult?.deductions.total_chapter_via ?? 0)}`}
+              detail={isPaid ? `Tax ${formatINR(rc?.old.total_tax ?? 0)} · VI-A ${formatINR(effectiveResult?.deductions.total_chapter_via ?? 0)}` : "Pay to see exact breakdown"}
               selected={selected === "old"}
               recommended={recommended === "old"}
               disabled={!rc && !computeFailed}
               onClick={() => setRegime("old")}
+              blurAmount={!isPaid}
             />
             <RegimeOption
               title="New regime"
               netLabel={newPay < 0 ? "refund" : "payable"}
               amount={Math.abs(newPay)}
-              detail={`Tax ${formatINR(rc?.new.total_tax ?? 0)} · std ded + 80CCD(2) only`}
+              detail={isPaid ? `Tax ${formatINR(rc?.new.total_tax ?? 0)} · std ded + 80CCD(2) only` : "Pay to see exact breakdown"}
               selected={selected === "new"}
               recommended={recommended === "new"}
               disabled={!rc && !computeFailed}
               onClick={() => setRegime("new")}
+              blurAmount={!isPaid}
             />
           </>
         )}
@@ -223,7 +232,7 @@ export default function RegimePage() {
         </div>
       )}
 
-      {!loading && rc && (
+      {isPaid && !loading && rc && (
         <TaxTraceExplainer
           comparison={rc}
           selectedRegime={selected}
@@ -240,7 +249,7 @@ export default function RegimePage() {
         />
       )}
 
-      {!loading && effectiveResult?.regime_comparison && (
+      {isPaid && !loading && effectiveResult?.regime_comparison && (
         <OptimizationTips
           recommendations={effectiveResult.recommendations}
           netPayable={selectedPay}
@@ -249,7 +258,7 @@ export default function RegimePage() {
         />
       )}
 
-      {!loading && rc && (
+      {isPaid && !loading && rc && (
         <p className="mb-6 text-xs text-slate-500">
           Old regime beats new once your deductions cross ~
           {formatINR(rc.breakeven_deductions)} · Total income{" "}
@@ -304,6 +313,7 @@ function RegimeOption({
   selected,
   recommended,
   disabled,
+  blurAmount,
   onClick,
 }: {
   title: string;
@@ -313,6 +323,7 @@ function RegimeOption({
   selected: boolean;
   recommended: boolean;
   disabled: boolean;
+  blurAmount?: boolean;
   onClick: () => void;
 }) {
   return (
@@ -337,7 +348,7 @@ function RegimeOption({
       <h4 className="font-bold text-slate-900">{title}</h4>
       <p className="mt-2 text-sm text-slate-600">
         Net {netLabel}{" "}
-        <strong className="text-lg tabular-nums text-foreground">
+        <strong className={cn("text-lg tabular-nums text-foreground", blurAmount && "blur-sm select-none opacity-50")}>
           {formatINR(amount)}
         </strong>
       </p>
