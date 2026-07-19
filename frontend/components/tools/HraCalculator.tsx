@@ -20,6 +20,7 @@ function NumberField({
   value,
   onChange,
   hint,
+  tooltip,
 }: {
   id: string;
   label: string;

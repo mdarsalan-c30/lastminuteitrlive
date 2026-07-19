@@ -77,6 +77,7 @@ function NumberField({
   onChange,
   prefix = "₹",
   note,
+  tooltip,
 }: {
   id: string;
   label: string;
