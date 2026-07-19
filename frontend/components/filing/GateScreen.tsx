@@ -12,7 +12,7 @@ import {
   scopeGateToQuery,
 } from "@/lib/filing/scopeGate";
 import { STATE_ROUTES } from "@/lib/filing/stateMachine";
-import { SelectInput } from "@/components/filing/ui";
+import { SelectInput, FieldLabel, TextInput } from "@/components/filing/ui";
 import {
   Check,
   ChevronRight,
@@ -212,21 +212,19 @@ export function GateContent() {
         {/* Section 1: Basics */}
         <h2 className="text-xl font-bold text-slate-900 mb-4">1. Basic Details</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-8">
-          <div className="flex items-center justify-between border border-slate-200 p-3 rounded-xl bg-slate-50">
-            <span className="text-sm font-semibold text-slate-700">PAN Number</span>
-            <input 
-              className="bg-transparent text-right font-medium text-slate-900 outline-none w-32 uppercase" 
+          <div className="w-full">
+            <FieldLabel>PAN Number</FieldLabel>
+            <TextInput 
               value={pan}
-              onChange={e => setPan(e.target.value)}
+              onChange={setPan}
               placeholder="ABCDE1234F"
             />
           </div>
-          <div className="flex items-center justify-between border border-slate-200 p-3 rounded-xl bg-slate-50">
-            <span className="text-sm font-semibold text-slate-700">Mobile Number</span>
-            <input 
-              className="bg-transparent text-right font-medium text-slate-900 outline-none w-32" 
+          <div className="w-full">
+            <FieldLabel>Mobile Number</FieldLabel>
+            <TextInput 
               value={mobile}
-              onChange={e => setMobile(e.target.value)}
+              onChange={setMobile}
               placeholder="9876543210"
             />
           </div>
