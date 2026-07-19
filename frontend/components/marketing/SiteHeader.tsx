@@ -28,6 +28,7 @@ const COMPANY_LINKS = [
 ];
 
 const MOBILE_EXTRA = [
+  { href: "/file/profile", label: "My Profile" },
   ...PRODUCTS_LINKS,
   ...RESOURCES_LINKS,
   ...COMPANY_LINKS,

@@ -96,6 +96,21 @@ function spawnLocalPython(payload: string, pythonBin = "python3"): Promise<strin
   });
 }
 
+// Run the pure-stdlib Python engine via a local subprocess. Tries `python3`
+// first, then falls back to `python` (Windows Store stub / pyenv shims expose
+// only one of the two). Throws Error("ENGINE_UNAVAILABLE") when no interpreter
+// is usable so the caller can decide whether to proxy instead.
+async function computeViaLocalPython(payload: string): Promise<string> {
+  try {
+    return await spawnLocalPython(payload);
+  } catch (firstErr) {
+    const firstMessage =
+      firstErr instanceof Error ? firstErr.message : "Compute failed";
+    if (firstMessage !== "ENGINE_UNAVAILABLE") throw firstErr;
+    return await spawnLocalPython(payload, "python");
+  }
+}
+
 export async function POST(request: Request) {
   const startedAt = Date.now();
   try {
@@ -109,20 +124,26 @@ export async function POST(request: Request) {
     }
 
     const payload = JSON.stringify(userInput);
+    const preferProxy =
+      !!process.env.NEXT_PUBLIC_ENGINE_URL || process.env.VERCEL === "1";
 
     let output: string;
     try {
-      if (process.env.NEXT_PUBLIC_ENGINE_URL || process.env.VERCEL === "1") {
-        return proxyToPythonServerless(request, payload);
-      }
-      try {
-        output = await spawnLocalPython(payload);
-      } catch (firstErr) {
-        const firstMessage =
-          firstErr instanceof Error ? firstErr.message : "Compute failed";
-        if (firstMessage !== "ENGINE_UNAVAILABLE") throw firstErr;
-        // Some machines only expose `python` (e.g. Windows, pyenv shims).
-        output = await spawnLocalPython(payload, "python");
+      if (preferProxy) {
+        // A remote/serverless engine is configured — try it first.
+        const proxied = await proxyToPythonServerless(request, payload);
+        // <500 is a real engine answer (200 = ok, 422 = ok:false) — return it.
+        // A 5xx means the engine was unreachable or errored at the transport
+        // layer; on a host that ships Python (e.g. our VPS) we can still compute
+        // locally, so fall through to the subprocess instead of hard-failing.
+        if (proxied.status < 500) return proxied;
+        try {
+          output = await computeViaLocalPython(payload);
+        } catch {
+          return proxied; // local engine also unavailable — surface proxy error
+        }
+      } else {
+        output = await computeViaLocalPython(payload);
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Compute failed";

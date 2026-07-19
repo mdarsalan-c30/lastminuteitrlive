@@ -304,10 +304,27 @@ function CompanionContent() {
           <p className="text-sm font-medium text-slate-900">
             Checking payment access…
           </p>
-          <p className="mt-2 text-sm text-slate-600">
-            You can still use the free screen-by-screen guide. Exact copy-ready
-            values unlock after payment.
+        </div>
+      </FilingLayout>
+    );
+  }
+
+  if (!exportUnlocked) {
+    return (
+      <FilingLayout mirrorText="Portal guide is locked. Pay to unlock copy-ready values.">
+        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center max-w-lg mx-auto mt-12 shadow-sm">
+          <div className="flex justify-center mb-4">
+            <span className="flex size-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+          </div>
+          <h2 className="text-xl font-bold text-slate-900 mb-2">File on Portal is Locked</h2>
+          <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+            This section provides a step-by-step personalized guide to file on the government portal with your exact numbers. Complete your payment to unlock it.
           </p>
+          <Button href="/file/checkout/plans?reason=companion" variant="primary" className="w-full">
+            Unlock Guide
+          </Button>
         </div>
       </FilingLayout>
     );

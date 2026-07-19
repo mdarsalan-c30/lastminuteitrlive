@@ -518,7 +518,7 @@ export function FilingLayout({
             >
               Back to Home
             </Link>
-            <ProfileNavLink className="text-xs font-semibold hidden lg:flex" />
+            <ProfileNavLink className="text-xs font-semibold" />
           </div>
         </header>
 
