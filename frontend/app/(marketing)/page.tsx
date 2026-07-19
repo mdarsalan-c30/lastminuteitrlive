@@ -6,8 +6,8 @@ import { pageMetadata } from "@/lib/seo";
 import { SITE_TAGLINE } from "@/lib/constants";
 
 export const metadata: Metadata = pageMetadata({
-  title: "File your own ITR — Your Smart AI Tax Assistant",
-  description: SITE_TAGLINE,
+  title: "Your Personal Income-Tax filing companion",
+  description: "Built for quick and easy ITR filing, suggesting smart ways to claim your returns.",
   path: "/",
 });
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Calculator, FileText, TrendingUp, ArrowRight } from "lucide-react";
+import { Calculator, FileText, TrendingUp, ArrowRight, Info } from "lucide-react";
 
 export function ToolsSection() {
   const tools = [
@@ -56,8 +56,9 @@ export function ToolsSection() {
                   >
                     {tool.icon}
                   </div>
-                  <h3 className="text-xl font-bold mb-3" style={{ color: "#0e5f63" }}>
+                  <h3 className="text-xl font-bold mb-3 flex items-center gap-2" style={{ color: "#0e5f63" }}>
                     {tool.title}
+                    <Info className="size-5 opacity-70" />
                   </h3>
                   <p className="text-sm font-medium leading-relaxed opacity-80" style={{ color: "#0e5f63" }}>
                     {tool.description}

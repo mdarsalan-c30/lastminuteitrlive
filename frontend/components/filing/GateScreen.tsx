@@ -208,11 +208,9 @@ export function GateContent() {
       mirrorText={AI_CA_CONFIDENCE_HEADLINE}
     >
       <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm min-h-[400px]">
-        <p className="text-sm text-slate-600 mb-6 leading-relaxed border border-blue-100 bg-blue-50/60 rounded-xl px-4 py-3">
-          {AI_CA_CONFIDENCE_BODY}
-        </p>
+
         {/* Section 1: Basics */}
-        <h2 className="text-xl font-bold text-slate-900 mb-4">Sec 1: Basic Details</h2>
+        <h2 className="text-xl font-bold text-slate-900 mb-4">1. Basic Details</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-8">
           <div className="flex items-center justify-between border border-slate-200 p-3 rounded-xl bg-slate-50">
             <span className="text-sm font-semibold text-slate-700">PAN Number</span>
@@ -273,7 +271,7 @@ export function GateContent() {
         )}
 
         {/* Section 2: Income Sources */}
-        <h2 className="text-xl font-bold text-slate-900 mb-4">Sec 2: Select your Income Sources</h2>
+        <h2 className="text-xl font-bold text-slate-900 mb-4">2. Select your Income Sources</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 mb-8">
           {[
             { id: "salary", icon: Briefcase, label: "Salary / Pension", desc: "Form 16 from employer", active: mostlySalary },
@@ -312,7 +310,7 @@ export function GateContent() {
         </div>
 
         {/* Section 3: Recommendation */}
-        <h2 className="text-xl font-bold text-slate-900 mb-4">Sec 3: Recommended ITR</h2>
+        <h2 className="text-xl font-bold text-slate-900 mb-4">ITR Recommendation</h2>
         <div className="pt-4 border-t border-slate-100">
           {showExpert ? (
             <div className="animate-in fade-in duration-500 overflow-hidden rounded-2xl border border-amber-200 bg-white shadow-sm">

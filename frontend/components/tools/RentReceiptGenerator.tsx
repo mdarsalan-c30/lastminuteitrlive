@@ -99,7 +99,25 @@ export function RentReceiptGenerator() {
         </div>
       ) : (
         <div className="space-y-6">
-          <div className="rounded-lg border-2 border-dashed p-6 bg-white" style={{ borderColor: "#0e5f63" }}>
+          <style>{`
+            @media print {
+              body * {
+                visibility: hidden;
+              }
+              #printable-receipt, #printable-receipt * {
+                visibility: visible;
+              }
+              #printable-receipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none !important;
+                padding: 0 !important;
+              }
+            }
+          `}</style>
+          <div id="printable-receipt" className="rounded-lg border-2 border-dashed p-6 bg-white" style={{ borderColor: "#0e5f63" }}>
             <h3 className="mb-4 text-center text-lg font-bold uppercase underline" style={{ color: "#0e5f63" }}>Rent Receipt</h3>
             <p className="mb-4 text-sm text-slate-800 leading-relaxed">
               Received sum of <strong>₹ {rentAmount}</strong> from <strong>{tenantName}</strong> towards the rent of property located at <strong>{address}</strong> for the period of <strong>{month}</strong>.

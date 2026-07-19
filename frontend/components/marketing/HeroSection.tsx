@@ -13,7 +13,10 @@ import {
 import { ASSESSMENT_YEAR } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
+import { useState } from "react";
+
 export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (m: "b2c" | "b2b") => void }) {
+  const [b2cSubmitted, setB2cSubmitted] = useState(false);
 
   return (
     <header
@@ -84,64 +87,79 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                 {/* B2C Content */}
 
                 <h1
-                  className="font-manrope font-bold tracking-[-0.02em] text-[#0B1220]"
+                  className="font-manrope font-black tracking-tight text-slate-900"
                   style={{
-                    fontSize: "clamp(24px, 4.8vw, 48px)",
-                    lineHeight: 1.15,
+                    fontSize: "clamp(28px, 5vw, 56px)",
+                    lineHeight: 1.1,
                     marginBottom: 16,
                   }}
                 >
-                  File your ITR under 10 min —{" "}
-                  <span style={{ color: "#0e5f63" }}>{HERO_HEADLINE_ACCENT}</span>
+                  Your Personal Income-Tax <br className="hidden sm:block" />
+                  filing companion
                 </h1>
 
                 <p
+                  className="text-slate-700 font-medium leading-relaxed"
                   style={{
-                    fontSize: "clamp(14px, 1.8vw, 16.5px)",
-                    color: "#2B3344",
-                    maxWidth: 520,
+                    fontSize: "clamp(15px, 1.8vw, 17px)",
+                    maxWidth: 580,
                     marginBottom: 28,
-                    lineHeight: 1.55,
                   }}
                 >
-                  Upload your Form 16, AIS, capital gains, F&amp;O, answer a few
-                  easy questions, and get a step-by-step guide to file directly
-                  on incometax.gov.in with a smart AI assistant by your side.
+                  Built for Indians, anyone can understand complex terms and prepare your returns faster by uploading Form 16 or start with an estimate. Get regime comparison, mismatch checks at each step, AIS, Capital gains, F&O, and guided filing for your ITR 1, ITR 2, ITR 3 and ITR 4 on incometax.gov.in.
                 </p>
 
-                <form
-                  className="mb-9 flex max-w-sm flex-col gap-3"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.currentTarget);
-                    const name = formData.get("name") as string;
-                    // Since it's B2C filing, send to register with name query param
-                    window.location.href = `/auth/register?name=${encodeURIComponent(name)}`;
-                  }}
-                >
-                  <div>
-                    <label htmlFor="b2c-name" className="sr-only">
-                      What should we call you?
-                    </label>
-                    <input
-                      id="b2c-name"
-                      name="name"
-                      type="text"
-                      required
-                      placeholder="What should we call you? (e.g. Rahul)"
-                      className="w-full rounded-[10px] border border-[#E6E8EC] px-4 py-3 text-[15px] outline-none transition-colors focus:border-[#0e5f63] focus:ring-1 focus:ring-[#0e5f63]"
-                    />
+                {b2cSubmitted ? (
+                  <div className="mb-9 max-w-sm rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-center">
+                    <h3 className="mb-2 font-bold text-emerald-900">Thank you!</h3>
+                    <p className="text-[14px] text-emerald-800">We will notify you once the platform is Live.</p>
                   </div>
-                  <button type="submit" className="btn-pill-primary w-full justify-center">
-                    Proceed to file
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-                      <path d="M3 8h10M9 4l4 4-4 4" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                  <p className="text-center text-[12.5px] text-[#6B7280]">
-                    Already have an account? <Link href="/auth/login" className="font-semibold text-[#0e5f63] hover:underline">Log in</Link>
-                  </p>
-                </form>
+                ) : (
+                  <form
+                    className="mb-9 flex max-w-sm flex-col gap-3"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      setB2cSubmitted(true);
+                    }}
+                  >
+                    <div>
+                      <input
+                        id="b2c-name"
+                        name="name"
+                        type="text"
+                        required
+                        placeholder="Your Name (e.g. Rahul)"
+                        className="w-full rounded-[10px] border border-[#E6E8EC] px-4 py-3 text-[15px] outline-none transition-colors focus:border-[#0e5f63] focus:ring-1 focus:ring-[#0e5f63]"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        id="b2c-email"
+                        name="email"
+                        type="email"
+                        required
+                        placeholder="Your Email"
+                        className="w-full rounded-[10px] border border-[#E6E8EC] px-4 py-3 text-[15px] outline-none transition-colors focus:border-[#0e5f63] focus:ring-1 focus:ring-[#0e5f63]"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        id="b2c-phone"
+                        name="phone"
+                        type="tel"
+                        required
+                        placeholder="Your Contact Number"
+                        className="w-full rounded-[10px] border border-[#E6E8EC] px-4 py-3 text-[15px] outline-none transition-colors focus:border-[#0e5f63] focus:ring-1 focus:ring-[#0e5f63]"
+                      />
+                    </div>
+                    <button type="submit" className="btn-pill-primary w-full justify-center">
+                      Notify me once it is Live
+                    </button>
+                    <p className="text-center text-[12.5px] text-[#6B7280]">
+                      Already have an account? <Link href="/auth/login" className="font-semibold text-[#0e5f63] hover:underline">Log in</Link>
+                    </p>
+                  </form>
+                )}
 
                 <div className="mb-3.5 flex flex-wrap gap-2.5">
                   {[
@@ -182,9 +200,8 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                   ))}
                 </div>
 
-                <p style={{ fontSize: 12.5, color: "#6B7280" }}>
-                  Independently operated — not affiliated with the Income Tax
-                  Department. Estimates only; ITD confirms your final refund.
+                <p style={{ fontSize: 13, color: "#475569", fontWeight: 500 }}>
+                  We have kept the minimum fees so that every user can access our platform. Built for people by the people :)
                 </p>
               </>
             ) : (

@@ -20,6 +20,7 @@ const RESOURCES_LINKS = [
   { href: "/blogs", label: "Blog" },
   { href: "/learn", label: "Filing Guides" },
   { href: "/glossary", label: "Tax Glossary" },
+  { href: "/tools", label: "Tools" },
 ];
 
 const COMPANY_LINKS = [
@@ -57,6 +58,7 @@ export function SiteHeader() {
           <NavMenu label="Products" items={PRODUCTS_LINKS} triggerClassName="text-[14.5px] font-medium text-[#2B3344] hover:text-[#0e5f63]" />
           <NavMenu label="Resources" items={RESOURCES_LINKS} triggerClassName="text-[14.5px] font-medium text-[#2B3344] hover:text-[#0e5f63]" />
           <NavMenu label="Company" items={COMPANY_LINKS} triggerClassName="text-[14.5px] font-medium text-[#2B3344] hover:text-[#0e5f63]" />
+          <Link href="/tools" className="text-[14.5px] font-medium text-[#2B3344] hover:text-[#0e5f63]">Tools</Link>
           <Link href="/blogs" className="text-[14.5px] font-medium text-[#2B3344] hover:text-[#0e5f63]">Blog</Link>
         </nav>
 

@@ -12,7 +12,7 @@ import {
   ITR_FILING_DEADLINE_LABEL,
 } from "@/lib/constants";
 import { pageMetadata } from "@/lib/seo";
-import { Calendar, Scale, ArrowRight, Calculator, FileText } from "lucide-react";
+import { Calendar, Scale, ArrowRight, Calculator, FileText, Info } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = pageMetadata({
@@ -104,8 +104,9 @@ export default function ToolsPage() {
                     >
                       {tool.icon}
                     </div>
-                    <h3 className="text-xl font-bold mb-3" style={{ color: "#0e5f63" }}>
+                    <h3 className="text-xl font-bold mb-3 flex items-center gap-2" style={{ color: "#0e5f63" }}>
                       {tool.title}
+                      <Info className="size-5 opacity-70" />
                     </h3>
                     <p className="text-sm font-medium leading-relaxed opacity-80" style={{ color: "#0e5f63" }}>
                       {tool.description}

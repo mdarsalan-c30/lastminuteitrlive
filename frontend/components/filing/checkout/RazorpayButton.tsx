@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import type { PlanId } from "@/lib/payments/plans";
 import { getPlan } from "@/lib/payments/plans";
-import { getEffectivePrice, getPlanPriceLabel } from "@/lib/marketing/pricing";
+import { getEffectivePrice, getPlanPriceLabel, formatPlanPriceLabel } from "@/lib/marketing/pricing";
 import { getBrowserSessionId } from "@/lib/store/sessionInit";
 
 declare global {
@@ -60,6 +60,7 @@ interface RazorpayButtonProps {
   onError?: (message: string) => void;
   className?: string;
   disabled?: boolean;
+  displayAmount?: number;
 }
 
 function loadRazorpayScript(): Promise<void> {
@@ -85,11 +86,14 @@ export default function RazorpayButton({
   onError,
   className = "",
   disabled = false,
+  displayAmount,
 }: RazorpayButtonProps) {
   const [loading, setLoading] = useState(false);
   const plan = getPlan(planId);
-  const effectivePrice = getEffectivePrice(planId);
-  const priceLabel = getPlanPriceLabel(planId);
+  
+  // Use displayAmount if provided (e.g. from coupon logic in checkout), else fallback
+  const effectivePrice = displayAmount !== undefined ? displayAmount : getEffectivePrice(planId);
+  const priceLabel = displayAmount !== undefined ? formatPlanPriceLabel(displayAmount) : getPlanPriceLabel(planId);
 
   const verifyPayment = useCallback(
     async (response: RazorpayResponse) => {

@@ -321,6 +321,7 @@ export default function PaymentPage() {
               onSuccess={finishPayment}
               onError={setPaymentError}
               className="w-full"
+              displayAmount={finalPrice}
             />
           )}
         </div>
