@@ -95,8 +95,8 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                   }}
                 >
                   File your ITR under 10 <br className="hidden sm:block" />
-                  min — Your personal smart <br className="hidden sm:block" />
-                  <span style={{ color: "#0e5f63" }}>AI Tax companion</span>
+                  min — Your personal <br className="hidden sm:block" />
+                  <span style={{ color: "#0e5f63" }}>smart AI Tax companion</span>
                 </h1>
 
                 <p
@@ -107,7 +107,7 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                     marginBottom: 28,
                   }}
                 >
-                  Upload your Form 16, AIS, and trading data, or start with a quick estimate. Answer a few smart questions to maximize your refund, run mismatch checks, and let a personal AI tax assistant guide you step-by-step to file ITR 1, ITR 2, ITR 3 & ITR 4 directly on incometax.gov.in.
+                  Upload your Form 16, AIS, and trading data, or start with a quick estimate. Answer a few smart questions to maximize your refund, run mismatch checks, and let a personal AI tax assistant guide you step-by-step to file ITR 1, ITR 2, ITR 3 & ITR 4 directly on <a href="https://www.incometax.gov.in" target="_blank" rel="noopener noreferrer" className="text-[#0e5f63] hover:underline font-semibold">incometax.gov.in</a>.
                 </p>
 
                 <form
