@@ -89,13 +89,14 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                 <h1
                   className="font-manrope font-black tracking-tight text-slate-900"
                   style={{
-                    fontSize: "clamp(28px, 5vw, 56px)",
+                    fontSize: "clamp(28px, 4.5vw, 50px)",
                     lineHeight: 1.1,
                     marginBottom: 16,
                   }}
                 >
-                  File your ITR under 10 min — <br className="hidden sm:block" />
-                  Your personal smart <span style={{ color: "#0e5f63" }}>AI Tax companion</span>
+                  File your ITR under 10 min — <br />
+                  Your personal smart <br />
+                  <span style={{ color: "#0e5f63" }}>AI Tax companion</span>
                 </h1>
 
                 <p
