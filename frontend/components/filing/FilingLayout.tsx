@@ -32,6 +32,7 @@ import {
   LogOut,
   Sparkles,
   UsersRound,
+  Lock,
 } from "lucide-react";
 
 type SidebarStep = {
