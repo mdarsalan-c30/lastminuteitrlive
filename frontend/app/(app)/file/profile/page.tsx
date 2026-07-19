@@ -46,12 +46,9 @@ export default function ProfilePage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column (Main Content) */}
-        <div className="lg:col-span-2 space-y-6">
-          
-          {/* User Card & Filings */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="space-y-6">
+        {/* Main Profile Info */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             {/* User Info Header */}
             <div className="flex items-center justify-between p-5 border-b border-slate-100 cursor-pointer hover:bg-slate-50 transition-colors">
               <div className="flex items-center gap-4">
@@ -73,36 +70,11 @@ export default function ProfilePage() {
               <ChevronDown className="w-5 h-5 text-slate-400" />
             </div>
 
-            {/* Tax Filing History Details */}
-            <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h3 className="text-base font-bold text-slate-900">AY 2026-2027</h3>
-                <p className="text-[13px] text-slate-500 mt-0.5">(Current year)</p>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-2 text-[13px]">
-                  <span className="flex size-4 items-center justify-center rounded-full bg-orange-100 text-orange-600 font-bold text-[10px]">!</span>
-                  <span className="font-semibold text-slate-700">E-Filed</span>
-                  <span className="text-orange-600 font-medium">Pending</span>
-                </div>
-                <div className="flex items-center gap-2 text-[13px]">
-                  <span className="flex size-4 items-center justify-center rounded-full bg-orange-100 text-orange-600 font-bold text-[10px]">!</span>
-                  <span className="font-semibold text-slate-700">E-Verification</span>
-                  <span className="text-orange-600 font-medium">Pending</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Link 
-                  href="/file/dashboard"
-                  className="text-blue-600 border border-blue-600 hover:bg-blue-50 font-medium text-sm py-2 px-4 rounded-md transition-colors"
-                >
-                  Continue Filing
-                </Link>
-                <button className="text-slate-400 hover:text-slate-600 p-1">
-                  <MoreVertical className="w-5 h-5" />
-                </button>
+            {/* Tax Filing History */}
+            <div className="p-5 border-t border-slate-100">
+              <div className="text-center py-6">
+                <p className="text-slate-500 font-medium">No previous filings found.</p>
+                <p className="text-sm text-slate-400 mt-1">Your past ITR filings will appear here.</p>
               </div>
             </div>
           </div>
@@ -154,57 +126,7 @@ export default function ProfilePage() {
           </div>
 
         </div>
-
-        {/* Right Column (Sidebar) */}
-        <div className="lg:col-span-1">
-          <div className="bg-[#F8FAFC] rounded-xl border border-slate-200 overflow-hidden sticky top-24 shadow-sm">
-            <div className="h-40 bg-blue-50 relative">
-              <div className="absolute inset-0 bg-gradient-to-t from-[#F8FAFC] to-transparent z-10" />
-              {/* Decorative elements representing the image */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-80">
-                <div className="w-24 h-24 bg-white rounded-full border-4 border-blue-100 flex items-center justify-center shadow-lg -translate-x-6 z-20">
-                  <User className="w-10 h-10 text-slate-400" />
-                </div>
-                <div className="w-20 h-20 bg-white rounded-full border-4 border-slate-100 flex items-center justify-center shadow-md translate-x-6 -translate-y-4">
-                  <User className="w-8 h-8 text-blue-300" />
-                </div>
-              </div>
-            </div>
-            <div className="p-6 relative z-20 -mt-8">
-              <h3 className="text-lg font-bold text-slate-900 mb-1">Need an expert to file?</h3>
-              <p className="text-[14px] text-slate-600 mb-5">
-                Let an expert handle it - you relax. Our CAs will ensure maximum refund and zero notices.
-              </p>
-              <button className="w-full py-2.5 px-4 bg-white border border-blue-600 text-blue-600 font-medium rounded-md hover:bg-blue-50 transition-colors">
-                Book Now
-              </button>
-            </div>
-          </div>
-        </div>
-
       </div>
-      
-      {/* Footer text (mimicking the reference) */}
-      <div className="mt-16 pt-8 border-t border-slate-200 text-[11px] text-slate-400 flex flex-col md:flex-row justify-between gap-8">
-        <div className="max-w-2xl leading-relaxed">
-          LastminuteITR is a technology platform to simplify tax filing. Any transaction in respect of ERI Services is strictly a bilateral transaction between the technology facilitator and the user.
-          <div className="mt-3 flex gap-4">
-            <Link href="#" className="hover:text-slate-600 underline">Terms of Use</Link>
-            <Link href="#" className="hover:text-slate-600 underline">Privacy</Link>
-          </div>
-        </div>
-        <div className="flex items-center gap-6 shrink-0 text-slate-500">
-          <div className="flex items-center gap-2">
-            <div className="size-8 rounded bg-slate-100 flex items-center justify-center font-bold text-[10px]">ISO</div>
-            <span>ISO 27001<br/>Data Center</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="size-8 rounded bg-slate-100 flex items-center justify-center font-bold text-[10px]">SSL</div>
-            <span>SSL Certified Site<br/>128-bit encryption</span>
-          </div>
-        </div>
-      </div>
-
     </div>
   );
 }
