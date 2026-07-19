@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
-import { Calculator } from "lucide-react";
+import { Calculator, Info } from "lucide-react";
 import { formatINR } from "@/lib/format";
 import { useTaxCompute } from "@/lib/hooks/useTaxCompute";
 import {
@@ -84,14 +84,28 @@ function NumberField({
   onChange: (v: number) => void;
   prefix?: string;
   note?: string;
+  tooltip?: string;
 }) {
   return (
-    <label htmlFor={id} className="block">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-foreground">{label}</span>
+    <label htmlFor={id} className="block relative">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-sm font-medium text-foreground flex items-center gap-1.5 w-max">
+          {label}
+          {tooltip && (
+            <span className="group relative flex items-center">
+              <Info className="size-4 text-slate-500 hover:text-[#0e5f63] transition-colors cursor-help" />
+              <span className="pointer-events-none absolute bottom-full left-0 mb-2 w-max max-w-[200px] rounded-md bg-slate-800 px-2.5 py-1.5 text-xs font-normal text-white opacity-0 shadow-sm transition-opacity group-hover:opacity-100 z-10 whitespace-normal leading-relaxed">
+                {tooltip}
+                <svg className="absolute left-2 top-full h-1.5 w-3 text-slate-800" viewBox="0 0 12 6" fill="currentColor">
+                  <path d="M0 0l6 6 6-6z" />
+                </svg>
+              </span>
+            </span>
+          )}
+        </span>
         {note && <span className="text-[10px] uppercase font-bold text-muted-foreground bg-white/50 px-2 py-0.5 rounded-full">{note}</span>}
       </div>
-      <div className="mt-1 flex items-center rounded-lg border border-border/70 bg-white px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15">
+      <div className="flex items-center rounded-lg border border-border/70 bg-white px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15">
         {prefix && <span className="text-sm text-muted-foreground mr-1">{prefix}</span>}
         <input
           id={id}
@@ -185,28 +199,28 @@ export function TaxEstimator() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           {incomeMode === "simple" ? (
-             <NumberField id="est-salary" label="Gross annual salary" value={inputs.grossSalary} onChange={patch("grossSalary")} note="Total Income" />
+             <NumberField id="est-salary" label="Gross annual salary" value={inputs.grossSalary} onChange={patch("grossSalary")} note="Total Income" tooltip="Your total salary income before any deductions like EPF." />
           ) : (
             <>
               <div className="sm:col-span-2 grid gap-4 sm:grid-cols-2 p-4 bg-white/40 rounded-xl border border-white/60">
                  <div className="sm:col-span-2 text-sm font-bold text-[#0e5f63]">Detailed Income Heads</div>
-                 <NumberField id="est-salary" label="Salary Income" value={inputs.grossSalary} onChange={patch("grossSalary")} note="Engine ded. 75K" />
-                 <NumberField id="est-hp" label="House Property (Rent)" value={inputs.housePropertyRent} onChange={patch("housePropertyRent")} note="Engine ded. 30%" />
-                 <NumberField id="est-cg" label="Capital Gains" value={inputs.capitalGain} onChange={patch("capitalGain")} />
-                 <NumberField id="est-fd" label="Other Sources (Interest)" value={inputs.fdInterest} onChange={patch("fdInterest")} />
-                 <NumberField id="est-biz" label="Business Income" value={inputs.businessIncome} onChange={patch("businessIncome")} />
+                 <NumberField id="est-salary" label="Salary Income" value={inputs.grossSalary} onChange={patch("grossSalary")} note="Engine ded. 75K" tooltip="Your salary income (the engine will automatically deduct ₹75,000 standard deduction for you)." />
+                 <NumberField id="est-hp" label="House Property (Rent)" value={inputs.housePropertyRent} onChange={patch("housePropertyRent")} note="Engine ded. 30%" tooltip="Total rent you received if you let out a property. We will auto-deduct 30% for standard deductions." />
+                 <NumberField id="est-cg" label="Capital Gains" value={inputs.capitalGain} onChange={patch("capitalGain")} tooltip="Profits from the sale of mutual funds, stocks, or property." />
+                 <NumberField id="est-fd" label="Other Sources (Interest)" value={inputs.fdInterest} onChange={patch("fdInterest")} tooltip="Interest earned from Fixed Deposits, Savings Accounts, or Dividends." />
+                 <NumberField id="est-biz" label="Business Income" value={inputs.businessIncome} onChange={patch("businessIncome")} tooltip="Income or receipts from your business or freelance profession." />
               </div>
             </>
           )}
 
           <div className="sm:col-span-2 h-px bg-[#0e5f63]/10 my-2"></div>
           
-          <NumberField id="est-age" label="Age (years)" value={inputs.age} onChange={patch("age")} prefix="" />
-          {incomeMode === "simple" && <NumberField id="est-fd" label="FD / interest income" value={inputs.fdInterest} onChange={patch("fdInterest")} />}
-          <NumberField id="est-80c" label="80C investments (max ₹1.5L)" value={inputs.section80C} onChange={patch("section80C")} />
-          <NumberField id="est-80d" label="80D health insurance" value={inputs.section80D} onChange={patch("section80D")} />
-          <NumberField id="est-nps" label="80CCD(1B) extra NPS" value={inputs.npsExtra} onChange={patch("npsExtra")} />
-          <NumberField id="est-tds" label="TDS already deducted" value={inputs.tds} onChange={patch("tds")} />
+          <NumberField id="est-age" label="Age (years)" value={inputs.age} onChange={patch("age")} prefix="" tooltip="Your age determines your basic exemption limit and senior citizen benefits." />
+          {incomeMode === "simple" && <NumberField id="est-fd" label="FD / interest income" value={inputs.fdInterest} onChange={patch("fdInterest")} tooltip="Interest earned from Fixed Deposits, Savings Accounts, or Dividends." />}
+          <NumberField id="est-80c" label="80C investments (max ₹1.5L)" value={inputs.section80C} onChange={patch("section80C")} tooltip="Includes EPF, PPF, ELSS mutual funds, Life Insurance, and Principal repayment of home loans. Max deduction is ₹1.5 Lakhs." />
+          <NumberField id="est-80d" label="80D health insurance" value={inputs.section80D} onChange={patch("section80D")} tooltip="Premiums paid for health/medical insurance for yourself, family, or parents." />
+          <NumberField id="est-nps" label="80CCD(1B) extra NPS" value={inputs.npsExtra} onChange={patch("npsExtra")} tooltip="Additional ₹50,000 deduction allowed specifically for National Pension System (NPS) contributions." />
+          <NumberField id="est-tds" label="TDS already deducted" value={inputs.tds} onChange={patch("tds")} tooltip="Tax already deducted at source by your employer (check Form 16) or banks." />
         </div>
       </div>
 

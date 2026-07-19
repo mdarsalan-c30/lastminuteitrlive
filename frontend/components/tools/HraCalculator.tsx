@@ -5,7 +5,7 @@ import Link from "next/link";
 import { computeHraExemption, type CityTier } from "@/lib/calculators/hra";
 import { formatINR } from "@/lib/format";
 import { useDraftStore } from "@/lib/store/draft";
-import { Home } from "lucide-react";
+import { Home, Info } from "lucide-react";
 
 const LIMB_LABEL: Record<string, string> = {
   actual_hra: "Actual HRA received is the smallest",
@@ -26,10 +26,24 @@ function NumberField({
   value: number;
   onChange: (v: number) => void;
   hint?: string;
+  tooltip?: string;
 }) {
   return (
-    <label htmlFor={id} className="block">
-      <span className="text-sm font-medium text-foreground">{label}</span>
+    <label htmlFor={id} className="block relative">
+      <span className="text-sm font-medium text-foreground flex items-center gap-1.5 w-max">
+        {label}
+        {tooltip && (
+          <span className="group relative flex items-center">
+            <Info className="size-4 text-slate-500 hover:text-[#0e5f63] transition-colors cursor-help" />
+            <span className="pointer-events-none absolute bottom-full left-1/2 mb-2 w-max max-w-[200px] -translate-x-1/2 rounded-md bg-slate-800 px-2.5 py-1.5 text-xs text-white opacity-0 shadow-sm transition-opacity group-hover:opacity-100 z-10 whitespace-normal text-center leading-relaxed">
+              {tooltip}
+              <svg className="absolute left-1/2 top-full h-1.5 w-3 -translate-x-1/2 text-slate-800" viewBox="0 0 12 6" fill="currentColor">
+                <path d="M0 0l6 6 6-6z" />
+              </svg>
+            </span>
+          </span>
+        )}
+      </span>
       <div className="mt-1 flex items-center rounded-lg border border-border/70 bg-white px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15">
         <span className="text-sm text-muted-foreground">₹</span>
         <input
@@ -91,6 +105,7 @@ export function HraCalculator() {
           value={basicSalary}
           onChange={setBasicSalary}
           hint="Basic + dearness allowance forming part of pay"
+          tooltip="This is your fixed basic pay plus dearness allowance (if it forms part of retirement benefits). Check your payslip or Form 16."
         />
         <NumberField
           id="hra-received"
@@ -98,6 +113,7 @@ export function HraCalculator() {
           value={hraReceived}
           onChange={setHraReceived}
           hint="From Form 16 Part B / salary slips"
+          tooltip="The actual House Rent Allowance given by your employer over the financial year."
         />
         <NumberField
           id="hra-rent"
@@ -105,6 +121,7 @@ export function HraCalculator() {
           value={rentPaid}
           onChange={setRentPaid}
           hint="Total rent paid in the financial year"
+          tooltip="The total amount of rent you actually paid to your landlord during the year."
         />
         <div>
           <span className="text-sm font-medium text-slate-800">City type</span>
