@@ -21,8 +21,9 @@ export default function RefundPolicyPage() {
           Duplicate payment for the same assessment year and plan — contact us within 7 days.
         </li>
         <li>
-          Technical failure preventing access to a paid feature you purchased — we will fix or
-          refund at our discretion.
+          Platform downtime or system failure preventing access to a paid feature you purchased
+          (Note: This does not include AI calculation errors) — we will fix or refund at our
+          discretion.
         </li>
         <li>
           CA review plan: if review has not started within 48 hours of document submission, you may
@@ -31,7 +32,12 @@ export default function RefundPolicyPage() {
       </ul>
       <h2 className="text-base font-semibold text-foreground">Non-refundable</h2>
       <ul className="ml-6 list-disc space-y-1">
-        <li>Plans where companion guide or CA review has already been delivered.</li>
+        <li>Plans where companion guide or CA review has already been delivered or unlocked.</li>
+        <li>
+          Claims that the AI generated an incorrect figure, missed a deduction, or misinterpreted
+          a document. Because you are required to review all numbers before filing on the government
+          portal, AI calculation errors do not qualify for a refund once the guide has been unlocked.
+        </li>
         <li>Dissatisfaction with a lawful tax outcome (e.g. no refund due from ITD).</li>
         <li>User error after export or guide unlock (wrong figures copied to portal).</li>
       </ul>

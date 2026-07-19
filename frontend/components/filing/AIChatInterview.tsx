@@ -18,7 +18,7 @@ export function AIChatInterview() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! I am your AI Smart CA. I'm reviewing your tax profile. To ensure we don't miss any deductions, could you tell me if you switched jobs this year or sold any mutual funds?"
+      content: "Hi! I am your Smart AI Tax Assistant. I'm reviewing your tax profile. To ensure we don't miss any deductions, could you tell me if you switched jobs this year or sold any mutual funds?"
     }
   ]);
   const [input, setInput] = useState("");
@@ -38,7 +38,7 @@ export function AIChatInterview() {
           return [
             {
               role: "assistant",
-              content: `Hi ${draft.name}! I am your AI Smart CA. I'm reviewing your tax profile. To ensure we don't miss any deductions, could you tell me if you switched jobs this year or sold any mutual funds?`
+              content: `Hi ${draft.name}! I am your Smart AI Tax Assistant. I'm reviewing your tax profile. To ensure we don't miss any deductions, could you tell me if you switched jobs this year or sold any mutual funds?`
             }
           ];
         }
@@ -86,7 +86,7 @@ export function AIChatInterview() {
         setMessages((prev) => [...prev, { role: "assistant", content: errorMsg }]);
       }
     } catch (err) {
-      setMessages((prev) => [...prev, { role: "assistant", content: "Error connecting to the AI CA." }]);
+      setMessages((prev) => [...prev, { role: "assistant", content: "Error connecting to the AI assistant." }]);
     } finally {
       setLoading(false);
     }
@@ -144,7 +144,7 @@ export function AIChatInterview() {
             <Bot className="w-4 h-4" />
           </div>
           <div className="flex flex-col justify-center">
-            <h3 className="font-semibold text-slate-800 text-sm leading-none">Smart CA Advisory</h3>
+            <h3 className="font-semibold text-slate-800 text-sm leading-none">Smart AI Advisory</h3>
             <p className="text-[11px] text-slate-500 mt-1">I help you find missed deductions</p>
           </div>
         </div>

@@ -45,6 +45,9 @@ export function SiteHeader() {
           : "border-[#E6E8EC]/60 bg-[rgba(250,250,251,0.70)] backdrop-blur-md"
       )}
     >
+      <div className="bg-[#0e5f63] text-white text-center py-2 px-4 text-sm font-medium tracking-wide">
+        Platform is now Live! Only 12 days left to file your ITR penalty-free (July 31st deadline)
+      </div>
       <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-4 px-8 h-[72px] max-[560px]:h-[64px] max-[560px]:px-5">
         <BrandLogo variant="wordmark" size="sm" priority />
 

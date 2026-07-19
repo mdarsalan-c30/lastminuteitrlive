@@ -30,7 +30,7 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
-    default: "File ITR Online - LastMinute ITR | Fast, Secure & AI-Assisted",
+    default: "File ITR Online - LastMinute ITR | Fast, Secure & Smart AI",
     template: "%s · LastMinute ITR",
   },
   description:
@@ -42,12 +42,12 @@ export const metadata: Metadata = {
     "Form 16 upload",
     "AIS reconciliation",
     "old vs new tax regime India",
-    "CA assisted tax filing",
+    "AI tax assistant India",
     "Income Tax India",
     "tax calculator",
   ],
   openGraph: {
-    title: "File ITR Online - LastMinute ITR | Fast, Secure & AI-Assisted",
+    title: "File ITR Online - LastMinute ITR | Fast, Secure & Smart AI",
     description:
       "File your Income Tax Return (ITR) online effortlessly with LastMinute ITR. Upload Form 16, reconcile AIS, compare tax regimes automatically.",
     type: "website",

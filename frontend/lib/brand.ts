@@ -7,6 +7,6 @@ export const BRAND_ICON_PATH = "/brand/lastminuteitr-icon.png";
 export const BRAND_LOGO_ALT = "LastminuteITR — Filing in 10 Min";
 
 export const HERO_HEADLINE =
-  "File your ITR under 10 min — Your personal Smart AI-Assisted CA";
+  "File your ITR under 10 min — Your Smart AI Tax Assistant";
 
-export const HERO_HEADLINE_ACCENT = "Your personal Smart AI-Assisted CA";
+export const HERO_HEADLINE_ACCENT = "Your Smart AI Tax Assistant";

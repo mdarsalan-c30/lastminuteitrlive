@@ -106,7 +106,7 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                 >
                   Upload your Form 16, AIS, capital gains, F&amp;O, answer a few
                   easy questions, and get a step-by-step guide to file directly
-                  on incometax.gov.in with an AI CA expert by your side.
+                  on incometax.gov.in with a smart AI assistant by your side.
                 </p>
 
                 <form

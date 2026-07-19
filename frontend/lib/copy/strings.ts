@@ -80,7 +80,7 @@ export const SAVINGS_COACH = {
     "Rough estimate — ITD confirms the final amount on the government portal.",
   proofLine: "Only claim what you can prove with a receipt, statement, or Form 16.",
   moreSavings:
-    "Your CA-style checklist found more lawful savings if you have proof.",
+    "Your AI-powered checklist found more lawful savings if you have proof.",
   breakeven:
     "Old regime needs more eligible deductions before it beats the new regime.",
 } as const;

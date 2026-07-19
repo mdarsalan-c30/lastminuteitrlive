@@ -1,10 +1,10 @@
 /** Shared trust, escalation, and why-we-ask copy — Phase 6. */
 
 export const AI_ASSISTED_POSITIONING =
-  "Your AI-assisted CA — we guide ITR-1 through ITR-7 and you submit on incometax.gov.in.";
+  "Your Smart AI Tax Assistant — we guide ITR-1 through ITR-7 and you submit on incometax.gov.in.";
 
 export const AI_ASSISTED_TAGLINE =
-  "Smart document reading, form selection, and step-by-step filing — like having a CA beside you.";
+  "Smart document reading, form selection, and step-by-step filing — like having a tax expert beside you.";
 
 export const NO_CA_REPLACEMENT =
   "Not a substitute for professional advice on complex cases (business books, foreign assets, litigation).";

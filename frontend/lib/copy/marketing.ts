@@ -2,13 +2,13 @@ import { getEntryPriceInr, LAUNCH_OFFER } from "@/lib/marketing/offer";
 import { formatPlanPriceLabel } from "@/lib/marketing/pricing";
 
 export const HERO_HEADLINE =
-  "File your own ITR — Your Personal smart AI assisted CA.";
+  "File your own ITR — Your Smart AI Tax Assistant.";
 
 export const HERO_HEADLINE_ACCENT =
   "Upload Form 16, AIS, capital gains, F&O — step-by-step guide on incometax.gov.in.";
 
 export const HERO_EMOTIONAL_HOOK =
-  "Upload your Form 16, AIS, capital gains, F&O, answer a few easy questions, and get a step-by-step guide to file directly on incometax.gov.in with an expert by your side.";
+  "Upload your Form 16, AIS, capital gains, F&O, answer a few easy questions, and get a step-by-step guide to file directly on incometax.gov.in with a smart AI assistant by your side.";
 
 export const HERO_TRUST_LINE =
   "Estimate only — ITD confirms your final refund · You file on incometax.gov.in · Not a government service";

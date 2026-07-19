@@ -28,6 +28,13 @@ export default function PrivacyPage() {
         guides, and support. We do not sell personal data. We do not file your return on the
         government portal — you submit on incometax.gov.in yourself.
       </p>
+      <h2 className="text-base font-semibold text-foreground">AI Processing</h2>
+      <p>
+        Uploaded documents (such as Form 16 and AIS) may be processed by third-party Large Language
+        Models (LLMs) and Artificial Intelligence to extract relevant tax data. While we take
+        measures to secure this transmission, you acknowledge that AI extraction is probabilistic and
+        assume the responsibility to verify all extracted figures.
+      </p>
       <h2 className="text-base font-semibold text-foreground">Storage & security</h2>
       <p>
         Uploaded documents and draft data are processed with reasonable technical safeguards.

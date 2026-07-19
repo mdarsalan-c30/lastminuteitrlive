@@ -16,7 +16,7 @@ import {
 describe("copy/trust constants", () => {
   it("positions AI-assisted filing without government affiliation", () => {
     expect(AI_ASSISTED_POSITIONING).toContain("ITR-1");
-    expect(AI_ASSISTED_TAGLINE).toContain("CA");
+    expect(AI_ASSISTED_TAGLINE).toContain("tax expert");
     expect(NO_CA_REPLACEMENT).toContain("professional advice");
   });
 

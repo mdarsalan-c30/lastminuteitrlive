@@ -26,11 +26,11 @@ export function HomePageContent() {
         {/* Dynamic Content based on Mode */}
         {mode === "b2c" ? (
           <>
+            <ReviewsCarousel />
             <HowItWorks />
             <ToolsSection />
             <QuickStart />
             <WhyUsSection />
-            <ReviewsCarousel />
             <PricingSection />
             <FinalCta />
             <ExpandedFaq maxItems={5} />

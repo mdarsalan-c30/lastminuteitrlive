@@ -50,7 +50,7 @@ export const HOW_IT_WORKS = {
 
 export const AI_CA_CHECKS = {
   eyebrow: "AI checks",
-  headline: "What your AI CA reviews before you file",
+  headline: "What your AI assistant reviews before you file",
   checks: [
     "Form 16 salary vs AIS TDS reconciliation",
     "Old vs new regime tax comparison",
