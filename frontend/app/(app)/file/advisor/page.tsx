@@ -12,10 +12,10 @@ export default function AdvisorPage() {
   return (
     <FilingLayout
       variant="companion"
-      mirrorText="Your AI Smart CA provides real-time advisory on your tax deductions, saving opportunities, and mistakes."
+      mirrorText="Your Smart AI Tax Assistant provides real-time advisory on your tax deductions, saving opportunities, and mistakes."
     >
       <ScreenTitle
-        title="AI Smart CA"
+        title="Smart AI Tax Assistant"
         subtitle="Your personalized AI tax assistant to help you save more and file confidently."
       />
 
