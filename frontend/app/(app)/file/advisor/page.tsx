@@ -8,7 +8,6 @@ import { AIChatInterview } from "@/components/filing/AIChatInterview";
 
 export default function AdvisorPage() {
   const router = useRouter();
-  const reviewHref = "/file/review/risk#final-check";
 
   return (
     <FilingLayout
@@ -25,7 +24,7 @@ export default function AdvisorPage() {
       </div>
 
       <FilingActions>
-        <Button onClick={() => router.push(reviewHref)}>Continue to review</Button>
+        <Button onClick={() => router.push("/file/checkout/plans")}>Continue to Plans & Pay</Button>
       </FilingActions>
     </FilingLayout>
   );

@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { all, genId, insert, update } from "@/lib/db/store";
 import type { PlanId } from "@/lib/payments/plans";
+import { normalizePlanId } from "@/lib/payments/plans";
 import type {
   Coupon,
   CouponRedemption,
@@ -75,7 +76,7 @@ export interface CouponValidation {
 export async function validateCoupon(
   code: string,
   planId: PlanId,
-  lane: "b2c" | "b2b" = "b2c"
+  lane: "b2c" | "b2b" | "both" = "b2c"
 ): Promise<CouponValidation> {
   const coupon = await getCouponByCode(code);
   if (!coupon) return { valid: false, reason: "Invalid coupon code" };
@@ -86,11 +87,15 @@ export async function validateCoupon(
   if (coupon.usedCount >= coupon.maxUses) {
     return { valid: false, reason: "Coupon fully redeemed" };
   }
-  if (coupon.lane !== "both" && coupon.lane !== lane) {
-    return { valid: false, reason: "Coupon not valid for this plan" };
+  if (coupon.lane !== "both" && lane !== "both" && coupon.lane !== lane) {
+    return { valid: false, reason: "Coupon not valid for this account type" };
   }
-  if (coupon.planScope !== "any" && coupon.planScope !== planId) {
-    return { valid: false, reason: "Coupon not valid for this plan" };
+  
+  const normalizedRequestedPlan = normalizePlanId(planId) || planId;
+  const normalizedScope = coupon.planScope === "any" ? "any" : (normalizePlanId(coupon.planScope) || coupon.planScope);
+
+  if (normalizedScope !== "any" && normalizedScope !== normalizedRequestedPlan) {
+    return { valid: false, reason: `Coupon not valid for this plan` };
   }
   return { valid: true, coupon };
 }

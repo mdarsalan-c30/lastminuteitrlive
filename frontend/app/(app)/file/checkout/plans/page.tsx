@@ -218,35 +218,6 @@ function PlansContent() {
         {hasCapitalGainsIncome ? " · capital gains covered" : ""}
       </p>
 
-      <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h3 className="text-sm font-semibold text-slate-900 mb-3 uppercase tracking-wider">Have a Coupon Code?</h3>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <input
-            type="text"
-            id="plans-coupon"
-            placeholder="Enter coupon code"
-            aria-describedby="plans-coupon-note"
-            onChange={(e) => setCouponNoteVisible(e.target.value.length > 0)}
-            className="flex-1 min-h-12 px-4 py-3 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary uppercase font-mono bg-slate-50 text-slate-900"
-          />
-          <button
-            type="button"
-            className="min-h-12 px-6 rounded-xl text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-800 transition-all"
-            onClick={() => {
-              const el = document.getElementById("plans-coupon") as HTMLInputElement;
-              setCouponNoteVisible(Boolean(el?.value));
-            }}
-          >
-            Apply Code
-          </button>
-        </div>
-        {couponNoteVisible && (
-          <p id="plans-coupon-note" className="mt-3 text-sm text-slate-600" role="status">
-            {CHECKOUT_STRINGS.couponAtPayment}
-          </p>
-        )}
-      </div>
-
       <div className="mb-6 rounded-xl border border-slate-200 bg-white px-4">
         <Accordion defaultValue={[]} multiple>
           <AccordionItem value="portal-guide-coverage" className="border-b-0">

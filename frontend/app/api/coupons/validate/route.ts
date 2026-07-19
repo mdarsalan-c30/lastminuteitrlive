@@ -39,10 +39,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    const discountType = result.coupon!.discount;
     return NextResponse.json({
       valid: true,
-      discount: result.coupon!.discount,
-      amountOff: result.coupon!.amountOff ?? null,
+      discount: discountType,
+      amountOff: discountType === "percentage" ? null : (result.coupon!.amountOff ?? null),
+      percentageOff: discountType === "percentage" ? (result.coupon!.amountOff ?? null) : null,
       // Map internal discount types for frontend compatibility
       // "full" → stays "full", "amount" → stays "amount"
     });

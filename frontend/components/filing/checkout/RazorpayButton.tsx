@@ -223,7 +223,9 @@ export default function RazorpayButton({
       onClick={handlePay}
       disabled={disabled || loading}
       className={cn(
-        "min-h-11 w-full rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg",
+        "min-h-14 w-full rounded-xl text-lg font-bold transition-all duration-300 transform",
+        "bg-slate-900 hover:bg-slate-800 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5",
+        "disabled:cursor-not-allowed disabled:opacity-50 disabled:animate-none disabled:hover:translate-y-0",
         className
       )}
     >

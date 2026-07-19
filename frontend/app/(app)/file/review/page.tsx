@@ -14,6 +14,7 @@ import {
   Banner,
   Button,
   Card,
+  FilingActions,
   ScreenTitle,
 } from "@/components/filing/ui";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
@@ -372,6 +373,10 @@ function ImportTab() {
           Only claim deductions that actually happened and that you can prove.
         </p>
       </Card>
+
+      <FilingActions>
+        <Button href="/file/review?tab=income">Next: Income Sources</Button>
+      </FilingActions>
     </div>
   );
 }
@@ -566,6 +571,10 @@ function IncomeTab({ result }: { result?: ITRResult | null }) {
           <strong>Interest income:</strong> {formatINR(income.fdInterest)}
         </p>
       </Card>
+
+      <FilingActions>
+        <Button href="/file/review?tab=deductions">Next: Deductions</Button>
+      </FilingActions>
     </div>
   );
 }
@@ -681,206 +690,10 @@ function DeductionsTab({ result }: { result: ITRResult | null }) {
           Labels are factual — only claim deductions that actually happened and that you can prove.
         </p>
       </Card>
-    </div>
-  );
-}
 
-function TaxesTab({
-  result,
-  selectedRegime,
-}: {
-  result: ITRResult | null;
-  selectedRegime: TaxRegime;
-}) {
-  const isPaid = Boolean(useDraftStore((s) => s.paidPlanId));
-  if (!result) return null;
-
-  const rc = result.regime_comparison;
-  const slab = rc[selectedRegime];
-  const netPayable = slab.net_payable ?? 0;
-  const isRefund = netPayable < 0;
-
-  return (
-    <div className="relative space-y-4">
-      {!isPaid && (
-        <PaywallOverlay 
-          title="Unlock tax breakdown" 
-          message="See your exact tax calculation, deductions, and regime savings." 
-        />
-      )}
-      <div className={`space-y-4 ${!isPaid ? "pointer-events-none select-none opacity-40 blur-[2px]" : ""}`}>
-        <Card>
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-            {selectedRegime === "new" ? "New regime" : "Old regime"} · estimate
-          </p>
-          <p
-            className={`mt-1 text-2xl font-bold tabular-nums ${
-              isRefund ? "text-emerald-700" : "text-slate-900"
-            }`}
-          >
-            {isRefund ? "Est. refund " : "Est. tax due "}
-            {formatINR(Math.abs(netPayable))}
-          </p>
-          <p className="mt-1 text-xs text-slate-500">
-            Not guaranteed — incometax.gov.in confirms the final amount.
-          </p>
-        </Card>
-
-        <Card>
-          <h3 className="font-semibold text-slate-900">How we got there</h3>
-          <dl className="mt-3 divide-y divide-slate-100">
-            {[
-              { label: "Taxable income", value: formatINR(slab.taxable_income) },
-              { label: "Tax + surcharge", value: formatINR(slab.tax_plus_surcharge) },
-              { label: "Health & education cess", value: formatINR(slab.cess) },
-              { label: "Total tax", value: formatINR(slab.total_tax) },
-              { label: "TDS + advance tax", value: formatINR(slab.tds_and_advance_tax) },
-            ].map((row) => (
-              <div key={row.label} className="flex items-center justify-between py-2">
-                <dt className="text-sm text-slate-600">{row.label}</dt>
-                <dd className="text-sm font-semibold tabular-nums text-slate-900">
-                  {row.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <Button href="/file/regime" variant="ghost" className="mt-3 self-start">
-            Change regime
-          </Button>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-function SummaryTab({
-  result,
-  selectedRegime,
-}: {
-  result: ITRResult | null;
-  selectedRegime: TaxRegime;
-}) {
-  const isPaid = Boolean(useDraftStore((s) => s.paidPlanId));
-  const recommendedForm = useDraftStore((s) => s.recommendedForm);
-
-  if (!result) return null;
-
-  const rc = result.regime_comparison;
-  const slab = rc[selectedRegime];
-  const netPayable = slab.net_payable ?? 0;
-  const isRefund = netPayable < 0;
-  const recommended = rc.recommended_regime;
-
-  return (
-    <div className="space-y-4">
-      {!isPaid && (
-        <PaywallOverlay 
-          title="Unlock filing companion" 
-          message="Choose a plan to view your final summary and file on the portal." 
-        />
-      )}
-      <div className={`space-y-4 ${!isPaid ? "pointer-events-none select-none opacity-40 blur-[2px]" : ""}`}>
-        <Card>
-          <h3 className="font-semibold text-slate-900">Old vs new regime</h3>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            {(["old", "new"] as const).map((regime) => {
-              const pay = rc[regime].net_payable;
-              const isRefund = pay < 0;
-              const winner = recommended === regime;
-              return (
-                <div
-                  key={regime}
-                  className={`rounded-2xl border p-4 text-center ${
-                    winner ? "border-primary/40 bg-primary/5 ring-2 ring-primary/15" : "border-slate-200"
-                  }`}
-                >
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                    {regime === "old" ? "Old regime" : "New regime"}
-                  </p>
-                  <p
-                    className={`mt-1 text-xl font-bold tabular-nums ${
-                      isRefund ? "text-emerald-700" : "text-slate-900"
-                    }`}
-                  >
-                    {isRefund ? "Refund " : ""}
-                    {formatINR(Math.abs(pay))}
-                  </p>
-                  {winner && (
-                    <span className="mt-1 inline-block rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-white">
-                      Lower tax
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          <p className="mt-3 text-sm text-slate-700">
-            {rc.tax_saving > 0 ? (
-              <>
-                {recommended === "old" ? "Old" : "New"} regime is lower by{" "}
-                <span className="font-semibold text-emerald-700">
-                  {formatINR(rc.tax_saving)}
-                </span>{" "}
-                on your numbers.
-              </>
-            ) : (
-              "Both regimes are about the same on your numbers."
-            )}
-          </p>
-          <p className="mt-1 text-xs text-slate-500">
-            You&apos;re currently set to the {selectedRegime} regime. This is an estimate — ITD confirms the final amount when you file.
-          </p>
-          <Button href="/file/regime" variant="ghost" className="mt-2 self-start">
-            Review regime choice
-          </Button>
-        </Card>
-
-        <Card>
-          <h3 className="font-semibold text-slate-900">Filing summary</h3>
-          <p className="mt-2 text-sm text-slate-700">
-            <strong>ITR form:</strong> {result.profile.itr_form || recommendedForm}
-          </p>
-          <p className="mt-1 text-sm text-slate-700">
-            <strong>Completeness:</strong> {Math.round(result.confidence.completeness_score)}%
-            {result.confidence.filing_ready ? " · filing-ready" : " · keep going"}
-          </p>
-          {result.confidence.missing_documents.length > 0 && (
-            <p className="mt-1 text-sm text-slate-600">
-              Still missing: {result.confidence.missing_documents.join(", ")}
-            </p>
-          )}
-        </Card>
-      </div>
-
-      <Card>
-        <h3 className="font-semibold text-slate-900">File on the government portal</h3>
-        <p className="mt-1 text-sm text-slate-600">
-          When your draft is ready, open the companion to copy verified values into
-          incometax.gov.in — you submit and e-verify yourself.
-          {!isPaid && (
-            <span className="block mt-1 text-xs text-slate-500">
-              Free screen-by-screen guide available now. Pay to unlock exact copy-ready values.
-            </span>
-          )}
-        </p>
-        <Button href="/file/companion" className="mt-3 self-start">
-          Open portal companion
-        </Button>
-        <p className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-          Jump to a portal section
-        </p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {PORTAL_ITR1_SECTIONS.map((section) => (
-            <Link
-              key={section.id}
-              href={`/file/companion?section=${section.id}`}
-              className="rounded-full border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-primary/30 hover:text-primary"
-            >
-              {section.label}
-            </Link>
-          ))}
-        </div>
-      </Card>
+      <FilingActions>
+        <Button href="/file/regime">Next: Tax Regime</Button>
+      </FilingActions>
     </div>
   );
 }
@@ -1100,82 +913,6 @@ function ReviewDashboard() {
         savingsCoach={savingsCoach}
       />
 
-      {/* Mobile Hamburger Menu for Tabs */}
-      <div className="mb-4 md:hidden relative">
-        <button
-          type="button"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm"
-          aria-expanded={isMobileMenuOpen}
-        >
-          <span className="flex items-center gap-2">
-            <span
-              className={`size-2.5 rounded-full ${statusDotClass(tabStatuses[activeTab])}`}
-              aria-hidden
-            />
-            {TAB_LABELS[activeTab]}
-          </span>
-          {isMobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
-        </button>
-
-        {isMobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 z-10 mt-1 flex flex-col gap-1 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
-            {REVIEW_TABS.map((tab) => {
-              const active = tab === activeTab;
-              return (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => selectTab(tab)}
-                  className={`flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition text-left ${
-                    active
-                      ? "bg-primary/10 text-primary"
-                      : "text-slate-600 hover:bg-slate-50"
-                  }`}
-                >
-                  <span
-                    className={`size-2 rounded-full ${statusDotClass(tabStatuses[tab])}`}
-                    aria-hidden
-                  />
-                  {TAB_LABELS[tab]}
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Desktop Tabs */}
-      <div
-        role="tablist"
-        aria-label="Review sections"
-        className="mb-4 hidden md:flex gap-1 border-b border-slate-200"
-      >
-        {REVIEW_TABS.map((tab) => {
-          const active = tab === activeTab;
-          return (
-            <button
-              key={tab}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => selectTab(tab)}
-              className={`flex shrink-0 items-center gap-2 border-b-2 px-3.5 py-2.5 text-sm font-medium transition ${
-                active
-                  ? "border-primary text-primary"
-                  : "border-transparent text-slate-500 hover:text-slate-800"
-              }`}
-            >
-              <span
-                className={`size-2 rounded-full ${statusDotClass(tabStatuses[tab])}`}
-                aria-hidden
-              />
-              {TAB_LABELS[tab]}
-            </button>
-          );
-        })}
-      </div>
-
       {needsCompute && error && (
         <EngineComputeFallback
           loading={loading}
@@ -1186,22 +923,10 @@ function ReviewDashboard() {
         />
       )}
 
-      <div role="tabpanel">
+      <div className="mb-4 flex flex-col gap-4">
         {activeTab === "import" && <ImportTab />}
         {activeTab === "income" && <IncomeTab result={effectiveResult} />}
         {activeTab === "deductions" && <DeductionsTab result={effectiveResult} />}
-        {activeTab === "taxes" &&
-          (loading && !effectiveResult ? (
-            <SkeletonRows />
-          ) : (
-            <TaxesTab result={effectiveResult} selectedRegime={selectedRegime} />
-          ))}
-        {activeTab === "summary" &&
-          (loading && !effectiveResult ? (
-            <SkeletonRows />
-          ) : (
-            <SummaryTab result={effectiveResult} selectedRegime={selectedRegime} />
-          ))}
       </div>
     </FilingLayout>
   );

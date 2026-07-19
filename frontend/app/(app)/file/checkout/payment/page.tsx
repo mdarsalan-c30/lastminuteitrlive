@@ -208,7 +208,9 @@ export default function PaymentPage() {
         </div>
 
         {/* Main Payment Card */}
-        <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+        <div className="bg-white rounded-2xl border-2 border-indigo-100 p-6 sm:p-8 shadow-xl relative overflow-hidden">
+          {/* Subtle background glow for emphasis */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-80" />
 
           {/* Amount Section */}
           <div className="mb-6 pb-6 border-b border-slate-200">
@@ -247,13 +249,13 @@ export default function PaymentPage() {
                 placeholder="Enter coupon code"
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                className="flex-1 min-h-10 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 uppercase font-mono bg-white text-slate-900 transition-all"
+                className="flex-1 min-h-14 px-4 py-3 text-base border-2 border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-900 uppercase font-mono bg-white text-slate-900 transition-all shadow-sm"
                 disabled={applyingCoupon || !!validatedDiscount}
               />
               {validatedDiscount ? (
                 <Button
                   variant="secondary"
-                  className="min-h-10 px-4 rounded-lg text-sm font-medium"
+                  className="min-h-14 px-6 rounded-xl text-base font-semibold shadow-sm"
                   onClick={() => {
                     setValidatedDiscount(null);
                     setCouponCode("");
@@ -265,7 +267,7 @@ export default function PaymentPage() {
               ) : (
                 <Button
                   variant="primary"
-                  className="min-h-10 px-6 rounded-lg text-sm font-medium"
+                  className="min-h-14 px-8 rounded-xl text-base font-semibold shadow-sm"
                   onClick={handleApplyCoupon}
                   disabled={applyingCoupon || !couponCode.trim()}
                 >
@@ -318,7 +320,7 @@ export default function PaymentPage() {
               familyProfileId={activeProfileId}
               onSuccess={finishPayment}
               onError={setPaymentError}
-              className="w-full min-h-14 rounded-xl text-lg font-bold shadow-xl bg-indigo-600 hover:bg-indigo-700 text-white transition-all transform hover:scale-[1.02]"
+              className="w-full"
             />
           )}
         </div>
