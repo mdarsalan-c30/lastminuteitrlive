@@ -72,6 +72,19 @@ function spawnLocalPython(payload: string, pythonBin = "python3"): Promise<strin
     });
     proc.on("close", (code) => {
       if (code !== 0 && !stdout.trim()) {
+        // On Windows, `python3` is usually a Microsoft Store stub that exits
+        // 9009 (or prints "Python was not found ... Microsoft Store") WITHOUT
+        // running — it never surfaces as an ENOENT spawn error. Treat that (and
+        // shell "command not found", code 127) as ENGINE_UNAVAILABLE so the
+        // caller falls back to the `python` interpreter instead of hard-failing.
+        const interpreterMissing =
+          code === 9009 ||
+          code === 127 ||
+          /was not found|Microsoft Store|No such file/i.test(stderr);
+        if (interpreterMissing) {
+          reject(new Error("ENGINE_UNAVAILABLE"));
+          return;
+        }
         reject(new Error(stderr || `compute_cli exited with code ${code}`));
       } else {
         resolve(stdout);
