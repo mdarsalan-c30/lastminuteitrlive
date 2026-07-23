@@ -6,7 +6,7 @@ export const COMPANION_HERO_SUBTITLE =
   "We prepare your return and guide you screen-by-screen on incometax.gov.in — you file and submit yourself. We never auto-submit to the Income Tax Department.";
 
 export const COMPANION_ITD_DISCLAIMER =
-  "Independently operated — not affiliated with the Income Tax Department.";
+  "LastMinuteITR is an independent platform and is not affiliated with the Income Tax Department.";
 
 /** Single source of truth — shared with the homepage HowItWorks section. */
 export const COMPANION_HOW_IT_WORKS = HOW_IT_WORKS.steps;

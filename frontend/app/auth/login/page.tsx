@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/lib/store/profile";
-
+import { Mail, Lock, ArrowRight, ShieldCheck, Loader2 } from "lucide-react";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -52,69 +53,116 @@ function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#FAFAFB] px-4 py-12">
-      <div className="w-full max-w-[420px] rounded-[24px] bg-white p-8" style={{ border: "1px solid #E6E8EC", boxShadow: "0 24px 60px -24px rgba(11,18,32,.16)" }}>
+    <div className="relative flex min-h-screen items-center justify-center bg-[#f4f7f6] px-4 py-12 overflow-hidden font-sans">
+      {/* Background Ambient Glow */}
+      <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[#0e5f63]/10 blur-[100px] pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-emerald-500/10 blur-[100px] pointer-events-none" />
+
+      {/* Main Login Card */}
+      <div className="relative w-full max-w-[440px] rounded-[28px] bg-white p-8 sm:p-10 shadow-[0_20px_60px_-15px_rgba(14,95,99,0.14)] border border-slate-200/80">
+        
+        {/* Brand Header & Logo */}
         <div className="mb-8 text-center">
-          <h1 className="font-manrope text-2xl font-bold tracking-tight text-[#0B1220]">
+          <div className="inline-flex items-center justify-center gap-2 mb-4">
+            <BrandLogo size="xs" variant="icon" />
+            <span className="text-lg font-bold tracking-tight text-slate-950">
+              LastminuteITR
+            </span>
+          </div>
+
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
             {initialName ? `Welcome back, ${initialName}` : "Welcome back"}
           </h1>
-          <p className="mt-2 text-[14px] text-[#6B7280]">
-            Log in to continue your tax filing
+          <p className="mt-2 text-[14px] text-slate-500">
+            Log in to continue your tax filing journey
           </p>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          {/* Email */}
           <div>
-            <label htmlFor="email" className="mb-1.5 block text-[13px] font-semibold text-[#2B3344]">
+            <label htmlFor="email" className="mb-1.5 block text-[13px] font-semibold text-slate-700">
               Email Address
             </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              placeholder="you@example.com"
-              className="w-full rounded-[10px] border border-[#E6E8EC] px-3.5 py-2.5 text-[14px] outline-none transition-colors focus:border-[#0e5f63]"
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                <Mail className="h-4 w-4" />
+              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="you@example.com"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-3 text-[14px] text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-[#0e5f63] focus:bg-white focus:ring-4 focus:ring-[#0e5f63]/10"
+              />
+            </div>
           </div>
 
+          {/* Password */}
           <div>
-            <label htmlFor="password" className="mb-1.5 block text-[13px] font-semibold text-[#2B3344]">
+            <label htmlFor="password" className="mb-1.5 block text-[13px] font-semibold text-slate-700">
               Password
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              placeholder="Enter your password"
-              className="w-full rounded-[10px] border border-[#E6E8EC] px-3.5 py-2.5 text-[14px] outline-none transition-colors focus:border-[#0e5f63]"
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                <Lock className="h-4 w-4" />
+              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                placeholder="Enter your password"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-3 text-[14px] text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-[#0e5f63] focus:bg-white focus:ring-4 focus:ring-[#0e5f63]/10"
+              />
+            </div>
           </div>
 
+          {/* Error Message */}
           {error && (
-            <div className="rounded-[8px] bg-red-50 px-3 py-2 text-[13px] text-red-600">
-              {error}
+            <div className="rounded-xl bg-red-50 p-3.5 text-[13px] font-medium text-red-600 border border-red-100 flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
+          {/* Green Submit Button */}
           <button
             type="submit"
             disabled={loading}
             className={cn(
-              "btn-pill-primary mt-2 w-full py-3",
-              loading && "opacity-70 pointer-events-none"
+              "group relative flex w-full items-center justify-center gap-2 rounded-xl bg-[#0e5f63] px-5 py-3.5 text-[15px] font-semibold text-white shadow-md shadow-[#0e5f63]/25 transition-all hover:bg-[#0b4b4e] active:scale-[0.99]",
+              loading && "opacity-75 cursor-not-allowed"
             )}
           >
-            {loading ? "Logging in..." : "Log In"}
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Logging in...</span>
+              </>
+            ) : (
+              <>
+                <span>Log In</span>
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </>
+            )}
           </button>
         </form>
 
-        <p className="mt-8 text-center text-sm text-slate-500">
+        {/* Security Badge */}
+        <div className="mt-6 flex items-center justify-center gap-1.5 text-[12px] font-medium text-slate-400">
+          <ShieldCheck className="h-3.5 w-3.5 text-[#0e5f63]" />
+          <span>256-Bit SSL Encrypted & Tax Department Compliant</span>
+        </div>
+
+        {/* Footer */}
+        <p className="mt-6 text-center text-sm text-slate-500 border-t border-slate-100 pt-6">
           Don&apos;t have an account?{" "}
           <Link
             href={initialName ? `/auth/register?name=${encodeURIComponent(initialName)}` : "/auth/register"}
-            className="font-semibold text-[#0e5f63] hover:underline"
+            className="font-bold text-[#0e5f63] hover:underline"
           >
             Sign up
           </Link>
@@ -126,7 +174,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#FAFAFB]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#f4f7f6]" />}>
       <LoginForm />
     </Suspense>
   );

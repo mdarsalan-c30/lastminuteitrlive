@@ -12,7 +12,7 @@ import {
   scopeGateToQuery,
 } from "@/lib/filing/scopeGate";
 import { STATE_ROUTES } from "@/lib/filing/stateMachine";
-import { SelectInput, FieldLabel, TextInput } from "@/components/filing/ui";
+import { SelectInput, FieldLabel } from "@/components/filing/ui";
 import {
   Check,
   ChevronRight,
@@ -23,6 +23,7 @@ import {
   Globe,
   Plane,
   Bitcoin,
+  AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -32,7 +33,6 @@ import {
   SELF_FILE_ELIGIBLE,
 } from "@/lib/copy/trust";
 import {
-  AI_CA_CONFIDENCE_BODY,
   AI_CA_CONFIDENCE_HEADLINE,
   FNO_GUIDED_BODY,
   FNO_GUIDED_HEADLINE,
@@ -49,9 +49,12 @@ const FORM_PLAIN_LABELS: Record<string, string> = {
   BLOCK: "Parent must file for minor",
 };
 
+// Validations Regex
+const PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+const MOBILE_REGEX = /^[6-9]\d{9}$/;
+
 function profileAgeToMatrixAge(ageBand: string): AgeBand {
-  // Age bands: "15-20", "20-25", "25-35", "35-60", "60+"
-  if (ageBand === "60+") return "b"; // senior
+  if (ageBand === "60+") return "b";
   return "a";
 }
 
@@ -63,11 +66,9 @@ export function GateContent() {
   const {
     matrix,
     incomeChips,
-    profile,
     itrConfirmed,
     setName,
     setMatrix,
-    setProfile,
     toggleIncomeChip,
     ensureIncomeChip,
     setRecommendedForm,
@@ -78,6 +79,8 @@ export function GateContent() {
   const [pan, setPan] = useState("");
   const [mobile, setMobile] = useState("");
   const [localAgeBand, setLocalAgeBand] = useState("25-35");
+  const [touchedPan, setTouchedPan] = useState(false);
+  const [touchedMobile, setTouchedMobile] = useState(false);
 
   useEffect(() => {
     const landingName = searchParams.get("name");
@@ -93,6 +96,42 @@ export function GateContent() {
     setMatrix({ age: profileAgeToMatrixAge(localAgeBand) });
     setSeniorMode(localAgeBand === "60+");
   }, [localAgeBand, setMatrix, setSeniorMode]);
+
+  // Live Error Calculation for PAN
+  const panError = useMemo(() => {
+    if (!pan && !touchedPan) return "";
+    if (!pan) return "PAN number is required";
+    if (pan.length < 10) return `PAN must be 10 characters (${pan.length}/10)`;
+    if (!PAN_REGEX.test(pan)) return "Invalid PAN format (5 letters, 4 numbers, 1 letter, e.g. ABCDE1234F)";
+    return "";
+  }, [pan, touchedPan]);
+
+  // Live Error Calculation for Mobile
+  const mobileError = useMemo(() => {
+    if (!mobile && !touchedMobile) return "";
+    if (!mobile) return "Mobile number is required";
+    if (mobile.length < 10) return `Mobile must be 10 digits (${mobile.length}/10)`;
+    if (!MOBILE_REGEX.test(mobile)) return "Mobile number must start with 6, 7, 8, or 9";
+    return "";
+  }, [mobile, touchedMobile]);
+
+  const isFormValid = useMemo(() => {
+    return PAN_REGEX.test(pan) && MOBILE_REGEX.test(mobile);
+  }, [pan, mobile]);
+
+  // Input Handler for PAN: Auto UpperCase & Max 10 Chars
+  const handlePanChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
+    setPan(formatted);
+    if (!touchedPan) setTouchedPan(true);
+  };
+
+  // Input Handler for Mobile: Digits only & Max 10 Digits
+  const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = e.target.value.replace(/\D/g, "").slice(0, 10);
+    setMobile(formatted);
+    if (!touchedMobile) setTouchedMobile(true);
+  };
 
   const chips = useMemo(() => new Set(incomeChips), [incomeChips]);
   const mostlySalary = chips.has("salary");
@@ -187,16 +226,19 @@ export function GateContent() {
   };
 
   const handleContinue = () => {
+    setTouchedPan(true);
+    setTouchedMobile(true);
+
+    if (!isFormValid) return;
+
     setSeniorMode(localAgeBand === "60+");
     setRecommendedForm(form, rec.caseId);
 
-    // Finding 5: hard-gate unsupported personas — honest exit, no mis-file.
     if (scope.verdict === "blocked") {
       router.push(`${STATE_ROUTES.BLOCKED}?${scopeGateToQuery(scope)}`);
       return;
     }
 
-    // EXTRACT is inline on COLLECT — parsing route is dead (doc 40).
     const docsUrl = form16FastPath
       ? `${STATE_ROUTES.COLLECT}?source=form16`
       : STATE_ROUTES.COLLECT;
@@ -204,30 +246,63 @@ export function GateContent() {
   };
 
   return (
-    <FilingLayout
-      mirrorText={AI_CA_CONFIDENCE_HEADLINE}
-    >
+    <FilingLayout mirrorText={AI_CA_CONFIDENCE_HEADLINE}>
       <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm min-h-[400px]">
 
         {/* Section 1: Basics */}
         <h2 className="text-xl font-bold text-slate-900 mb-4">1. Basic Details</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 mb-8">
+          
+          {/* PAN Field with Live Error */}
           <div className="w-full">
             <FieldLabel>PAN Number</FieldLabel>
-            <TextInput 
+            <input
+              type="text"
               value={pan}
-              onChange={setPan}
+              onChange={handlePanChange}
+              onBlur={() => setTouchedPan(true)}
+              maxLength={10}
               placeholder="ABCDE1234F"
+              className={cn(
+                "w-full rounded-xl border px-3.5 py-2.5 text-sm uppercase tracking-wider font-mono outline-none transition-all",
+                panError
+                  ? "border-red-500 bg-red-50/30 focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                  : "border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+              )}
             />
+            {panError && (
+              <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-500 animate-in fade-in">
+                <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                <span>{panError}</span>
+              </p>
+            )}
           </div>
+
+          {/* Mobile Field with Live Error */}
           <div className="w-full">
             <FieldLabel>Mobile Number</FieldLabel>
-            <TextInput 
+            <input
+              type="text"
               value={mobile}
-              onChange={setMobile}
+              onChange={handleMobileChange}
+              onBlur={() => setTouchedMobile(true)}
+              maxLength={10}
               placeholder="9876543210"
+              className={cn(
+                "w-full rounded-xl border px-3.5 py-2.5 text-sm tracking-wider font-mono outline-none transition-all",
+                mobileError
+                  ? "border-red-500 bg-red-50/30 focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                  : "border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+              )}
             />
+            {mobileError && (
+              <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-500 animate-in fade-in">
+                <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                <span>{mobileError}</span>
+              </p>
+            )}
           </div>
+
           <SelectInput
             label="Annual Income Range"
             value={matrix.income}
@@ -256,7 +331,7 @@ export function GateContent() {
           />
         </div>
 
-        {/* Form 16 fast path returns here to ask "anything else this year?" */}
+        {/* Form 16 fast path */}
         {searchParams.get("step") === "additional-income" && (
           <div className="mb-6 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-3">
             <Check className="mt-0.5 size-4 shrink-0 text-emerald-600" strokeWidth={3} />
@@ -367,7 +442,8 @@ export function GateContent() {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={handleContinue}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+                    disabled={!isFormValid}
+                    className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {scope.verdict === "blocked"
                       ? "See my guided path"
@@ -413,8 +489,8 @@ export function GateContent() {
                 <div className="flex justify-end pt-2">
                   <button
                     onClick={handleContinue}
-                    disabled={!itrConfirmed}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-slate-800 disabled:opacity-50"
+                    disabled={!itrConfirmed || !isFormValid}
+                    className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Start Filing <ChevronRight className="size-4" />
                   </button>
@@ -438,4 +514,3 @@ export function GateContent() {
     </FilingLayout>
   );
 }
-

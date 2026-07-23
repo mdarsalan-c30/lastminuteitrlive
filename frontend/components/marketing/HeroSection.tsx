@@ -94,7 +94,7 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                     marginBottom: 16,
                   }}
                 >
-                  File your ITR under 10 <br className="hidden sm:block" />
+                  File ITR under 10 <br className="hidden sm:block" />
                   min — Your personal <br className="hidden sm:block" />
                   <span style={{ color: "#0e5f63" }}>smart AI Tax companion</span>
                 </h1>

@@ -64,8 +64,8 @@ export function PaywallValueStack({
     },
     {
       icon: <FileText className="size-4 text-blue-600" />,
-      label: "Personalized portal filing guide",
-      detail: `${companionStepCount}-step incometax.gov.in walkthrough — you file and submit yourself`,
+      label: "Step-by-Step Filing Guide",
+      detail: `Step-by-step guidance for filing your ITR on the Income Tax Portal.`,
     },
     {
       icon: <Sparkles className="size-4 text-blue-600" />,
@@ -110,7 +110,7 @@ export function PaywallValueStack({
       aria-label="Your earned value before checkout"
     >
       <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">
-        What you&apos;ve already earned
+        Your Tax Summary
       </p>
       <h2 className="mt-1 text-lg font-bold text-slate-900">
         {FILING_COMPANION.paywallHeadline}
@@ -143,9 +143,9 @@ export function PaywallValueStack({
       <div className="my-5 border-t border-slate-200" />
 
       <div className="rounded-xl border border-blue-200/60 bg-white p-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        {/* <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
           Your unlock
-        </p>
+        </p> */}
         <p className="mt-1 text-base font-bold text-slate-900">
           {plan.name} ·{" "}
           <span className="tabular-nums text-blue-700">
@@ -161,12 +161,18 @@ export function PaywallValueStack({
             )}
           </span>
         </p>
-        <p className="mt-1 text-sm text-slate-600">{plan.description}</p>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-1 text-sm text-slate-600">
+          AI-powered tax review, capital gains alerts, and priority expert guidance.
+        </p>
+        {/* <p className="mt-2 text-xs text-slate-500">
           Fraction of typical CA consultation cost · lawful optimization only · no
           government submission from this app
+        </p> */}
+        <p className="mt-2 text-xs text-slate-500">
+          
+          {COMPANION_ITD_DISCLAIMER}
+
         </p>
-        <p className="mt-2 text-xs text-slate-500">{COMPANION_ITD_DISCLAIMER}</p>
       </div>
     </section>
   );
