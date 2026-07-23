@@ -222,5 +222,19 @@
     "text": "• From your Form 16: Gross salary = ₹12,00,000\n• These numbers are already in your draft — use Review to confirm before filing",
     "sessionId": "debug-session-1",
     "createdAt": "2026-07-11T07:03:54.380Z"
+  },
+  {
+    "id": "chat_1784579238971",
+    "role": "user",
+    "text": "How to fix AIS mismatch?",
+    "sessionId": "cc2b1cdd-39e6-43c8-902c-2cca23386308",
+    "createdAt": "2026-07-20T20:27:18.971Z"
+  },
+  {
+    "id": "chat_1784579238994_reply",
+    "role": "support",
+    "text": "• Mismatch means Form 16, AIS, or 26AS show different numbers\n• Fix before filing — ITD auto-matches TDS and income\n• Ask employer to correct TDS if Form 16 is wrong\n• Or file matching AIS to avoid a notice\n\nFor your return:\n• Your draft suggests ITR-1\n• Fix AIS/Form 16 mismatches on Review before paying",
+    "sessionId": "cc2b1cdd-39e6-43c8-902c-2cca23386308",
+    "createdAt": "2026-07-20T20:27:18.995Z"
   }
 ]

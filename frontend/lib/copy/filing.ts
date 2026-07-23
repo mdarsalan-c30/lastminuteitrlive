@@ -71,7 +71,7 @@ export const FILING_COMPANION = {
     "Step-by-step guide with your numbers ready to copy — you file and submit on the government portal yourself.",
   paywallHeadline: "Pay to unlock your personalized portal filing guide",
   paywallSubtitle:
-    "Unlocks your incometax.gov.in walkthrough — you still file and e-verify yourself.",
+    "Select a plan to unlock your step-by-step filing guide.",
 } as const;
 
 export const CHECKOUT_PLANS = {

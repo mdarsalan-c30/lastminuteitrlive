@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/lib/store/profile";
-
+import { User, Mail, Lock, Tag, ArrowRight, ShieldCheck, Loader2 } from "lucide-react";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -52,96 +53,158 @@ function RegisterForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#FAFAFB] px-4 py-12">
-      <div className="w-full max-w-[420px] rounded-[24px] bg-white p-8" style={{ border: "1px solid #E6E8EC", boxShadow: "0 24px 60px -24px rgba(11,18,32,.16)" }}>
+    <div className="relative flex min-h-screen items-center justify-center bg-[#f4f7f6] px-4 py-12 overflow-hidden font-sans">
+      {/* Background Ambient Glow */}
+      <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[#0e5f63]/10 blur-[100px] pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-emerald-500/10 blur-[100px] pointer-events-none" />
+
+      {/* Main Register Card */}
+      <div className="relative w-full max-w-[440px] rounded-[28px] bg-white p-8 sm:p-10 shadow-[0_20px_60px_-15px_rgba(14,95,99,0.14)] border border-slate-200/80">
+        
+        {/* Brand Header & Custom Logo */}
         <div className="mb-8 text-center">
-          <h1 className="font-manrope text-2xl font-bold tracking-tight text-[#0B1220]">
+          <div className="inline-flex items-center justify-center gap-2 mb-4">
+            <BrandLogo size="xs" variant="icon" />
+            <span className="text-lg font-bold tracking-tight text-slate-950">
+              LastminuteITR
+            </span>
+          </div>
+
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
             {initialName ? `Continue, ${initialName}` : "Create an account"}
           </h1>
-          <p className="mt-2 text-[14px] text-[#6B7280]">
-            Let&apos;s get started with your tax filing
+          <p className="mt-2 text-[14px] text-slate-500">
+            Let&apos;s get started with your tax filing journey
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {/* Name Field */}
           <div>
-            <label htmlFor="name" className="mb-1.5 block text-[13px] font-semibold text-[#2B3344]">
-              What should we call you?
+            <label htmlFor="name" className="mb-1.5 block text-[13px] font-semibold text-slate-700">
+              Name
             </label>
-            <input
-              key={`name-input-${initialName}`}
-              id="name"
-              name="name"
-              type="text"
-              required
-              defaultValue={initialName}
-              placeholder="e.g. Rahul"
-              className="w-full rounded-[10px] border border-[#E6E8EC] px-3.5 py-2.5 text-[14px] outline-none transition-colors focus:border-[#0e5f63]"
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                <User className="h-4 w-4" />
+              </div>
+              <input
+                key={`name-input-${initialName}`}
+                id="name"
+                name="name"
+                type="text"
+                required
+                defaultValue={initialName}
+                placeholder="e.g. Rahul"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2.5 text-[14px] text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-[#0e5f63] focus:bg-white focus:ring-4 focus:ring-[#0e5f63]/10"
+              />
+            </div>
           </div>
 
+          {/* Email Field */}
           <div>
-            <label htmlFor="email" className="mb-1.5 block text-[13px] font-semibold text-[#2B3344]">
+            <label htmlFor="email" className="mb-1.5 block text-[13px] font-semibold text-slate-700">
               Email Address
             </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              placeholder="you@example.com"
-              className="w-full rounded-[10px] border border-[#E6E8EC] px-3.5 py-2.5 text-[14px] outline-none transition-colors focus:border-[#0e5f63]"
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                <Mail className="h-4 w-4" />
+              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="you@example.com"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2.5 text-[14px] text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-[#0e5f63] focus:bg-white focus:ring-4 focus:ring-[#0e5f63]/10"
+              />
+            </div>
           </div>
 
+          {/* Password Field */}
           <div>
-            <label htmlFor="password" className="mb-1.5 block text-[13px] font-semibold text-[#2B3344]">
+            <label htmlFor="password" className="mb-1.5 block text-[13px] font-semibold text-slate-700">
               Password
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              placeholder="Create a password"
-              className="w-full rounded-[10px] border border-[#E6E8EC] px-3.5 py-2.5 text-[14px] outline-none transition-colors focus:border-[#0e5f63]"
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                <Lock className="h-4 w-4" />
+              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                placeholder="Create a password"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2.5 text-[14px] text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-[#0e5f63] focus:bg-white focus:ring-4 focus:ring-[#0e5f63]/10"
+              />
+            </div>
           </div>
 
+          {/* Referral Code (Optional) */}
           <div>
-            <label htmlFor="referralCode" className="mb-1.5 block text-[13px] font-semibold text-[#2B3344]">
-              Referral Code (Optional)
+            <label htmlFor="referralCode" className="mb-1.5 block text-[13px] font-semibold text-slate-700">
+              Referral Code <span className="font-normal text-slate-400">(Optional)</span>
             </label>
-            <input
-              id="referralCode"
-              name="referralCode"
-              type="text"
-              placeholder="Enter referral code"
-              className="w-full rounded-[10px] border border-[#E6E8EC] px-3.5 py-2.5 text-[14px] outline-none transition-colors focus:border-[#0e5f63] uppercase font-mono"
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                <Tag className="h-4 w-4" />
+              </div>
+              <input
+                id="referralCode"
+                name="referralCode"
+                type="text"
+                placeholder="Enter referral code"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2.5 text-[14px] text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-[#0e5f63] focus:bg-white focus:ring-4 focus:ring-[#0e5f63]/10 uppercase font-mono tracking-wider"
+              />
+            </div>
           </div>
 
+          {/* Error Alert */}
           {error && (
-            <div className="rounded-[8px] bg-red-50 px-3 py-2 text-[13px] text-red-600">
-              {error}
+            <div className="rounded-xl bg-red-50 p-3 text-[13px] font-medium text-red-600 border border-red-100 flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
+          {/* Green Continue Button */}
           <button
             type="submit"
             disabled={loading}
             className={cn(
-              "btn-pill-primary mt-2 w-full py-3",
-              loading && "opacity-70 pointer-events-none"
+              "group relative flex w-full items-center justify-center gap-2 rounded-xl bg-[#0e5f63] px-5 py-3.5 text-[15px] font-semibold text-white shadow-md shadow-[#0e5f63]/25 transition-all hover:bg-[#0b4b4e] active:scale-[0.99] mt-2",
+              loading && "opacity-75 cursor-not-allowed"
             )}
           >
-            {loading ? "Creating account..." : "Continue"}
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Creating account...</span>
+              </>
+            ) : (
+              <>
+                <span>Continue</span>
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </>
+            )}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-[13px] text-[#6B7280]">
+        {/* Security Badge */}
+        <div className="mt-5 flex items-center justify-center gap-1.5 text-[12px] font-medium text-slate-400">
+          <ShieldCheck className="h-3.5 w-3.5 text-[#0e5f63]" />
+          <span>256-Bit SSL Encrypted & Tax Department Compliant</span>
+        </div>
+
+        {/* Footer Link */}
+        <p className="mt-5 text-center text-sm text-slate-500 border-t border-slate-100 pt-5">
           Already have an account?{" "}
-          <Link href={initialName ? `/auth/login?name=${encodeURIComponent(initialName)}` : "/auth/login"} className="font-semibold text-[#0e5f63] hover:underline">
+          <Link
+            href={initialName ? `/auth/login?name=${encodeURIComponent(initialName)}` : "/auth/login"}
+            className="font-bold text-[#0e5f63] hover:underline"
+          >
             Log in
           </Link>
         </p>
@@ -152,7 +215,7 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#FAFAFB]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#f4f7f6]" />}>
       <RegisterForm />
     </Suspense>
   );

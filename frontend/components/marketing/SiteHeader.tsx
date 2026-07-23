@@ -37,7 +37,7 @@ const MOBILE_EXTRA = [
 
 export function SiteHeader() {
   const { scrolled } = useScrollNav();
-
+  const text ="🚀 File your ITR in minutes • AI-powered guidance • Secure filing • Maximum refund assistance";
   return (
     <header
       className={cn(
@@ -47,9 +47,33 @@ export function SiteHeader() {
           : "border-[#E6E8EC]/60 bg-[rgba(250,250,251,0.70)] backdrop-blur-md"
       )}
     >
-      <div className="bg-[#0e5f63] text-white text-center py-2 px-4 text-sm font-medium tracking-wide">
+      {/* <div className="bg-[#0e5f63] text-white text-center py-2 px-4 text-sm font-medium tracking-wide">
         Platform is now Live! Only 12 days left to file your ITR penalty-free (July 31st deadline)
+      </div> */}
+      <div className="relative overflow-hidden bg-[#0e5f63] py-2.5 text-white shadow-sm select-none">
+      {/* CSS Animation Keyframes */}
+      <style>{`
+        @keyframes marquee {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee-smooth {
+          display: flex;
+          width: max-content;
+          animation: marquee 25s linear infinite;
+        }
+        .animate-marquee-smooth:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+      {/* Marquee Ticker Loop */}
+      <div className="animate-marquee-smooth flex items-center gap-12 whitespace-nowrap text-sm font-medium tracking-wide">
+        <span className="flex items-center gap-2">{text}</span>
+        <span className="flex items-center gap-2">{text}</span>
+        <span className="flex items-center gap-2">{text}</span>
+        <span className="flex items-center gap-2">{text}</span>
       </div>
+    </div>
       <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-4 px-8 h-[72px] max-[560px]:h-[64px] max-[560px]:px-5">
         <BrandLogo variant="wordmark" size="sm" priority />
 

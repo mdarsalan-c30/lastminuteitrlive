@@ -38,9 +38,10 @@ import { cn } from "@/lib/utils";
 function BrokerChip({ name, selected, onClick }: { name: string; selected: boolean; onClick: () => void }) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={cn(
-        "relative flex items-center justify-center rounded-lg border px-3 py-1.5 transition-all text-xs font-semibold",
+        "relative flex items-center justify-center rounded-lg border px-3 py-1.5 transition-all text-xs font-semibold cursor-pointer",
         selected
           ? "border-blue-600 bg-blue-50/80 text-blue-700 shadow-sm"
           : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
@@ -58,13 +59,17 @@ function CompactUploadOrInputRow({
   inputValue,
   onInputChange,
   inputPlaceholder,
+  onFileSelect,
 }: {
   title: string;
   uploadLabel: string;
   inputValue: string;
   onInputChange: (v: string) => void;
   inputPlaceholder: string;
+  onFileSelect?: (file: File) => void;
 }) {
+  const [fileName, setFileName] = useState<string | null>(null);
+
   return (
     <div className="flex flex-col md:flex-row items-center gap-3 p-3 border border-slate-200 rounded-xl bg-white hover:border-blue-200 transition-colors">
       <div className="w-full md:w-44 font-semibold text-slate-800 text-sm shrink-0 leading-tight">
@@ -72,12 +77,25 @@ function CompactUploadOrInputRow({
       </div>
       
       <div className="flex-1 flex w-full items-center gap-3">
-        {/* Upload Zone */}
-        <div className="flex-1 border border-dashed border-slate-300 rounded-lg p-2 bg-slate-50 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-colors">
+        {/* Upload Zone - Changed to <label> so click triggers file picker */}
+        <label className="flex-1 border border-dashed border-slate-300 rounded-lg p-2 bg-slate-50 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-colors">
           <UploadCloud className="size-4 text-blue-500 mr-2 shrink-0" />
-          <span className="text-xs font-medium text-slate-600 truncate">{uploadLabel}</span>
-          <input type="file" className="hidden" />
-        </div>
+          <span className="text-xs font-medium text-slate-600 truncate">
+            {fileName || uploadLabel}
+          </span>
+          <input
+            type="file"
+            accept=".pdf,.xlsx,.csv,.xls"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setFileName(file.name);
+                onFileSelect?.(file);
+              }
+            }}
+          />
+        </label>
 
         {/* Divider */}
         <span className="text-[10px] font-bold text-slate-400 uppercase">OR</span>
@@ -217,8 +235,6 @@ function DocumentsContent() {
     setIncome({
       grossSalary: estimateValues.grossSalary,
       tds: estimateValues.tds,
-      // Business receipts land in freelanceRevenue (44ADA default);
-      // the review "Business & freelance" card lets the user re-bucket to 44AD or books.
       ...(estimateValues.businessReceipts > 0
         ? { freelanceRevenue: estimateValues.businessReceipts }
         : {}),
@@ -268,15 +284,12 @@ function DocumentsContent() {
       const fnoAmt = Number(fnoProfit) || 0;
       if (fnoAmt !== 0 || brokers.length > 0) {
         ensureIncomeChip("fno");
-        // Absolute turnover unknown from a single P&L figure — store profit and
-        // ask for turnover on review. Audit flag uses turnover when provided.
         setIncome({
           fnoNonSpeculativeProfit: fnoAmt,
           fnoTurnover: Math.abs(fnoAmt),
         });
       }
       if (Number(mfProfit) !== 0) {
-        // Rough MF estimate → STCG other until statement parsed
         useDraftStore.getState().setCapitalGains({
           stcg_other: Math.max(0, Number(mfProfit) || 0),
           sourceConnectorId: "manual_estimate",
@@ -301,38 +314,14 @@ function DocumentsContent() {
     <FilingLayout
       mirrorText="Upload your documents once, and our AI securely extracts every figure you need. No more manual data entry."
     >
-      <div className="mb-4 w-full border-b border-slate-100 pb-4">
-        <h2 className="text-lg font-bold text-slate-900 tracking-tight mb-1">AI Document Processing</h2>
-        <div className="mt-3">
-          <AiSectionChecklist
-            kind={
-              importMode === "capital_gains"
-                ? "broker_pnl"
-                : importMode === "form16"
-                  ? "form16"
-                  : "form16"
-            }
-          />
-        </div>
-        <p className="mt-2 text-xs text-slate-500">
-          Also available:{" "}
-          <Link href="/file/import/vda" className="text-primary font-medium underline">
-            Crypto / VDA wizard
-          </Link>
-          {" · "}
-          <Link href="/file/import/foreign" className="text-primary font-medium underline">
-            NRI / foreign assets
-          </Link>
-        </p>
-      </div>
-
       {/* Mode Selection Grid */}
       {!form16FastPath && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6 mt-4">
           <button
+            type="button"
             onClick={() => handleModeSelect("form16")}
             className={cn(
-              "flex flex-col text-left rounded-xl border-2 p-4 transition-all",
+              "flex flex-col text-left rounded-xl border-2 p-4 transition-all cursor-pointer",
               importMode === "form16" 
                 ? "border-blue-600 bg-blue-50/80 shadow-sm" 
                 : "border-slate-100 bg-white hover:border-blue-200"
@@ -346,9 +335,10 @@ function DocumentsContent() {
           </button>
 
           <button
+            type="button"
             onClick={() => handleModeSelect("capital_gains")}
             className={cn(
-              "flex flex-col text-left rounded-xl border-2 p-4 transition-all",
+              "flex flex-col text-left rounded-xl border-2 p-4 transition-all cursor-pointer",
               importMode === "capital_gains"
                 ? "border-blue-600 bg-blue-50/80 shadow-sm"
                 : "border-slate-100 bg-white hover:border-blue-200"
@@ -362,9 +352,10 @@ function DocumentsContent() {
           </button>
 
           <button
+            type="button"
             onClick={() => handleModeSelect("manual")}
             className={cn(
-              "flex flex-col text-left rounded-xl border-2 p-4 transition-all",
+              "flex flex-col text-left rounded-xl border-2 p-4 transition-all cursor-pointer",
               importMode === "manual" 
                 ? "border-blue-600 bg-blue-50/80 shadow-sm" 
                 : "border-slate-100 bg-white hover:border-blue-200"
@@ -382,7 +373,7 @@ function DocumentsContent() {
 
       {importMode !== null && !form16FastPath && (
         <div className="flex justify-end mb-4">
-          <button onClick={handleClearImportMode} className="text-xs font-semibold text-slate-500 hover:text-slate-800 underline">
+          <button type="button" onClick={handleClearImportMode} className="text-xs font-semibold text-slate-500 hover:text-slate-800 underline">
             Change selection
           </button>
         </div>

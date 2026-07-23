@@ -17,7 +17,7 @@ import {
 import type { GenieChatContext } from "@/lib/filing/genieContext";
 import { buildGenieDocumentSnapshot } from "@/lib/filing/genieDocumentContext";
 import { Sparkles, MessageSquare, Send, Lightbulb } from "lucide-react";
-
+import { BrandLogo } from "@/components/brand/BrandLogo";
 interface Message {
   id: string;
   role: "user" | "assistant";
@@ -271,25 +271,24 @@ export function ActiveAiCompanion() {
   return (
     <div className="flex flex-col h-full bg-slate-50/20 border-l border-slate-100/80">
       <div className="flex items-center gap-3 p-4 border-b border-slate-100 bg-white">
-        <div className="relative">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20 relative overflow-hidden">
-            <Sparkles className="size-4 animate-pulse text-blue-100" />
-          </div>
-          <span className="absolute bottom-0 right-0 block h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+        <div className="relative shrink-0">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-white">
+            <BrandLogo size="xs" variant="icon" />
         </div>
-        <div className="min-w-0">
-          <h4 className="text-xs font-semibold text-slate-800">LastMinuteITR Genie</h4>
-          <p className="text-[10px] text-slate-500 truncate">
-            {connectedConnectors.length > 0
-              ? `Reading ${connectedConnectors.length} upload${connectedConnectors.length === 1 ? "" : "s"} · ask about your files`
-              : netPayable != null
-                ? `Est. ${formatINR(netPayable)} · 150+ tax guides`
-                : "Upload Form 16/CAMS — I'll read them"}
-          </p>
-        </div>
-      </div>
+    </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
+    <div className="min-w-0">
+      <h4 className="text-xs font-semibold text-slate-800">LastMinuteITR Genie</h4>
+      <p className="text-[10px] text-slate-500 truncate">
+        {connectedConnectors.length > 0
+          ? `Reading ${connectedConnectors.length} upload${connectedConnectors.length === 1 ? "" : "s"} · ask about your files`
+          : netPayable != null
+            ? `Est. ${formatINR(netPayable)} · 150+ tax guides`
+            : "Upload Form 16/CAMS — I'll read them"}
+      </p>
+    </div>
+  </div>     
+  <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
         {activeField && currentFieldGuidance ? (
           <div className="bg-gradient-to-br from-blue-50/70 to-blue-50/30 border border-blue-100/60 rounded-2xl p-4 shadow-sm space-y-2">
             <p className="text-xs font-bold text-blue-900 uppercase tracking-wider">

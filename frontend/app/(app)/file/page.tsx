@@ -8,7 +8,6 @@ import { Shield } from "lucide-react";
 import { FILING_START } from "@/lib/copy/filing";
 import {
   applySalariedFastPathDefaults,
-  buildDocumentsFastPathUrl,
   isForm16FastPath,
 } from "@/lib/filing/routes";
 
@@ -27,7 +26,7 @@ function FileWelcomePage() {
         { setName, setFilingMode, setFilingPath, ensureIncomeChip, setItrConfirmed },
         landingName
       );
-      router.replace(buildDocumentsFastPathUrl(landingName));
+      router.replace("/file/family");
       return;
     }
 
@@ -36,16 +35,14 @@ function FileWelcomePage() {
         { setName, setFilingMode, setFilingPath, ensureIncomeChip, setItrConfirmed },
         landingName
       );
-      router.replace(buildDocumentsFastPathUrl(landingName));
+      router.replace("/file/family");
       return;
     }
 
     if (landingName) {
       setName(landingName);
       setFilingMode("estimate");
-      router.replace(
-        `/file/start?name=${encodeURIComponent(landingName)}`
-      );
+      router.replace("/file/family");
     }
   }, [
     searchParams,
@@ -75,11 +72,11 @@ function FileWelcomePage() {
           </p>
 
           <FilingActions className="mt-8">
-            <Button href="/file/import/documents?source=form16" className="w-full">
-              Upload Form 16
+            <Button href="/file/family" className="w-full">
+              Start Filing
             </Button>
-            <Button href="/file/start" variant="secondary" className="w-full">
-              {FILING_START.primaryCta}
+            <Button href="/file/import/documents?source=form16" variant="secondary" className="w-full">
+              Upload Form 16
             </Button>
             <Button href="/file/companion?demo=1" variant="ghost" className="w-full">
               {FILING_START.secondaryCta}
