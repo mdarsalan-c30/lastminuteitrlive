@@ -25,7 +25,7 @@ export default function DisclaimerPage() {
       </p>
       <h2 className="text-base font-semibold text-foreground">AI Risk Disclaimer &amp; Hold Harmless</h2>
       <p>
-        Our Smart AI Tax Assistant is an experimental software tool. While designed to interpret
+        Our Filing Assistant is an experimental software tool. While designed to interpret
         tax documents, it can make calculation errors, hallucinate data, or misinterpret complex
         tax laws. It does not replace a human tax professional. By using this tool, you agree to
         hold LastMinute ITR harmless from any tax liabilities, ITD notices, audits, or legal

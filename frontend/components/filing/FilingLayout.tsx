@@ -205,9 +205,9 @@ export function FilingLayout({
         </span>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-7 scrollbar-thin">
+      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5 scrollbar-thin">
         <div>
-          <h1 className="px-3 mb-4 text-sm font-bold uppercase tracking-wide text-white/80">
+          <h1 className="px-2.5 mb-2.5 text-sm font-bold uppercase tracking-wide text-white/80">
             Filing Journey
           </h1>
 
@@ -220,23 +220,26 @@ export function FilingLayout({
 
               return (
                 <li key={step.id} className="space-y-1">
-                  <Link
-                    href={step.href}
-                    onClick={() => setIsSidebarOpen(false)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all relative group",
+                  <div>
+                    <Link
+                      href={step.href}
+                      onClick={() => setIsSidebarOpen(false)}
+                      className={cn(
+                      "flex min-w-0 w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-all relative group",
                       active
                         ? "bg-white/15 font-semibold text-white shadow-[inset_1px_0_0_rgba(255,255,255,0.18)]"
                         : "text-white/75 hover:bg-white/10 hover:text-white"
                     )}
-                  >
+                    >
                     {active && (
                       <span className="absolute left-0 top-1/4 bottom-1/4 w-0.5 rounded bg-white" />
                     )}
 
                     <Icon className={cn("size-4.5 shrink-0", active ? "text-white" : "text-white/60 group-hover:text-white")} />
 
-                    <span className="flex-1 truncate">{step.label}</span>
+                    <span className="min-w-0 flex-1 whitespace-normal break-words leading-tight">
+                      {step.label}
+                    </span>
 
                     {status === "complete" ? (
                       <span className="flex size-4.5 shrink-0 items-center justify-center rounded-full bg-white text-[#0e5f63] ring-1 ring-white/20">
@@ -245,10 +248,11 @@ export function FilingLayout({
                     ) : (
                       <span className="h-1.5 w-1.5 rounded-full bg-white/30 shrink-0 mr-1.5" />
                     )}
-                  </Link>
+                    </Link>
+                  </div>
 
                   {hasSubItems && active && (
-                    <ul className="pl-9 space-y-1 mt-0.5 border-l border-white/10 ml-5">
+                    <ul className="pl-7 space-y-0.5 mt-0.5 border-l border-white/10 ml-4">
                       {step.subItems!.map((sub) => {
                         const subActive = isSubItemActive(sub.id, pathname, activeNavSection);
                         const subStatus = sectionStatuses[sub.statusKey];
@@ -259,13 +263,15 @@ export function FilingLayout({
                               href={sub.href}
                               onClick={() => setIsSidebarOpen(false)}
                               className={cn(
-                                "flex items-center justify-between rounded-lg px-2.5 py-2 text-[13px] transition-all",
+                                "flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-[13px] transition-all",
                                 subActive
                                   ? "font-semibold text-white bg-white/15"
                                   : "text-white/65 hover:text-white hover:bg-white/10"
                               )}
                             >
-                              <span>{sub.label}</span>
+                              <span className="min-w-0 whitespace-normal break-words leading-tight">
+                                {sub.label}
+                              </span>
                               <span className={cn("h-1.5 w-1.5 rounded-full", statusDotClass(subStatus))} />
                             </Link>
                           </li>
@@ -280,25 +286,25 @@ export function FilingLayout({
         </div>
 
         <div>
-          <h4 className="px-3 mb-3 text-[11px] font-semibold uppercase tracking-wider text-white/55">
+          <h4 className="px-2.5 mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/55">
             Resources
           </h4>
 
           <ul className="space-y-1">
             <li>
-              <Link href="/help" className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-white/75 hover:bg-white/10 hover:text-white">
+              <Link href="/help" className="flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-sm text-white/75 hover:bg-white/10 hover:text-white">
                 <HelpCircle className="size-4.5 text-white/60" />
                 <span>Help Center</span>
               </Link>
             </li>
             <li>
-              <Link href="/learn" className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-white/75 hover:bg-white/10 hover:text-white">
+              <Link href="/learn" className="flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-sm text-white/75 hover:bg-white/10 hover:text-white">
                 <BookOpen className="size-4.5 text-white/60" />
                 <span>Tax Guides</span>
               </Link>
             </li>
             <li>
-              <Link href="/tools" className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-white/75 hover:bg-white/10 hover:text-white">
+              <Link href="/tools" className="flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-sm text-white/75 hover:bg-white/10 hover:text-white">
                 <Wrench className="size-4.5 text-white/60" />
                 <span>Tax Tools</span>
               </Link>

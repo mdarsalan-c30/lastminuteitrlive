@@ -1,5 +1,4 @@
 import { formatPlanPriceLabel } from "@/lib/marketing/pricing";
-import { LAUNCH_OFFER } from "@/lib/marketing/offer";
 
 export const FILING_START = {
   headline: "Start your return",
@@ -79,7 +78,7 @@ export const CHECKOUT_PLANS = {
   subtitle: FILING_COMPANION.paywallSubtitle,
   nextStep:
     "Pay securely — your portal filing guide unlocks immediately. You file on incometax.gov.in; we never auto-submit to ITD.",
-  aiSmartOfferNote: `AI Smart launch offer: ${formatPlanPriceLabel(LAUNCH_OFFER.launchPriceInr)} (was ${formatPlanPriceLabel(LAUNCH_OFFER.originalPriceInr)})`,
+  aiSmartOfferNote: "Guided plan includes additional checks and priority support.",
 } as const;
 
 export const CHECKOUT_PAYMENT = {

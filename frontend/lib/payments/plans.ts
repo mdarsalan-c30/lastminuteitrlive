@@ -9,6 +9,8 @@ export interface Plan {
   originalPrice?: number;
   priceLabel: string;
   description: string;
+  subtitle?: string;
+  subtext?: string;
   features: string[];
   recommended?: boolean;
   comingSoon?: boolean;
@@ -31,13 +33,12 @@ export const PLANS: Record<PlanId, Plan> = {
   },
   normal: {
     id: "normal",
-    name: "Starter",
+    name: "Essential",
     price: 349,
-    originalPrice: 999,
     priceLabel: "₹349",
-    description: "For simple salaried filers who want AI-guided checks and a portal companion.",
+    description: "For salaried filers who want guided checks and a portal filing companion.",
     recommended: false,
-    buttonText: "Get Starter",
+    buttonText: "Choose Essential",
     features: [
       "Form 16 upload & review",
       "Old vs new regime comparison",
@@ -47,17 +48,16 @@ export const PLANS: Record<PlanId, Plan> = {
   },
   pro: {
     id: "pro",
-    name: "AI Smart",
+    name: "Guided",
     price: 599,
-    originalPrice: 1999,
     priceLabel: "₹599",
     description:
-      "Deeper AI checks, priority companion guidance, and capital-gains alerts for complex salaried cases.",
+      "Additional guided checks and priority support for more involved filing situations.",
     recommended: true,
-    buttonText: "Get AI Smart",
+    buttonText: "Choose Guided",
     features: [
-      "Everything in Starter",
-      "Personalised AI tax companion",
+      "Everything in Essential",
+      "Personalised filing guidance",
       "Priority mismatch review",
       "Capital gains & F&O alerts",
       "Regime recommendation on your draft",
@@ -93,18 +93,18 @@ export const PLANS: Record<PlanId, Plan> = {
   },
   diy: {
     id: "diy",
-    name: "Starter (Legacy)",
+    name: "Essential (Legacy)",
     price: 349,
     priceLabel: "₹349",
-    description: "Legacy plan id — maps to Starter pricing.",
+    description: "Legacy plan id — maps to Essential pricing.",
     features: [],
   },
   ai_smart: {
     id: "ai_smart",
-    name: "AI Smart (Legacy)",
+    name: "Guided (Legacy)",
     price: 599,
     priceLabel: "₹599",
-    description: "Legacy plan id — maps to AI Smart pricing.",
+    description: "Legacy plan id — maps to Guided pricing.",
     features: [],
   },
   ca: {
@@ -115,7 +115,7 @@ export const PLANS: Record<PlanId, Plan> = {
     description: "Optional human CA review before you file.",
     comingSoon: true,
     features: [
-      "Everything in AI Smart",
+      "Everything in Guided",
       "CA review of your draft",
       "Notice-risk walkthrough",
     ],

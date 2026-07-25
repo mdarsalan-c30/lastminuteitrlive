@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
+import { runAdvisorAction } from "@/lib/ai/groqAdvisor";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  const payload = await request.text();
   try {
-    const payload = await request.text();
     // Default to localhost:5000 if not provided
     const RAILWAY_URL = process.env.NEXT_PUBLIC_ENGINE_URL || "http://localhost:5000";
     // If it ends with /api/compute, remove it
@@ -18,6 +19,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: payload,
+      signal: AbortSignal.timeout(4_000),
     });
     
     const contentType = res.headers.get("content-type");
@@ -26,9 +28,21 @@ export async function POST(request: Request) {
     }
 
     const data = await res.json();
-    return NextResponse.json(data, { status: res.status });
+    if (res.ok && data?.reply) {
+      return NextResponse.json(data, { status: res.status });
+    }
   } catch (error) {
     console.error("[proxyToAdvisorAction] Fetch failed:", error);
-    return NextResponse.json({ ok: false, error: "Failed to reach AI advisor engine" }, { status: 502 });
+  }
+
+  try {
+    const reply = await runAdvisorAction(JSON.parse(payload));
+    return NextResponse.json({ reply, source: "groq-fallback" });
+  } catch (error) {
+    console.error("[advisorActionFallback] Failed:", error instanceof Error ? error.message : "unknown");
+    return NextResponse.json(
+      { ok: false, error: "AI advisor is temporarily unavailable. Please try again shortly." },
+      { status: 502 }
+    );
   }
 }

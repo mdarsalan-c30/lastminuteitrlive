@@ -38,7 +38,7 @@ export function CABrainAlert({
         <Lightbulb className={`mt-0.5 size-5 shrink-0 ${iconClass}`} />
         <div>
           <h4 className={`text-[14px] font-bold tracking-tight ${titleClass}`}>
-            CA Brain: {title}
+            Guided check: {title}
           </h4>
           <p className="mt-1 text-[13px] leading-relaxed text-slate-700">
             {description}

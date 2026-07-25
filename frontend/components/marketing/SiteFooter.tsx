@@ -44,9 +44,9 @@ export function SiteFooter() {
           <div>
             <BrandLogo href="/" variant="wordmark" size="sm" />
             <p className="mt-4 mb-4 text-[13.5px] text-[#6B7280] leading-[1.6] max-w-[280px]">
-              <strong className="text-[#2B3344] block mb-1">LastminuteITR — Filing in 10 Min</strong>
-              AI-assisted ITR prep with mismatch and regime checks — you submit on incometax.gov.in.
-              Companion mode: we never auto-file for you.
+              <strong className="text-[#2B3344] block mb-1">LastminuteITR — guided ITR preparation</strong>
+              Organise your information, review mismatch and regime checks, then submit and
+              e-verify on incometax.gov.in. We never auto-file for you.
             </p>
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
@@ -110,7 +110,6 @@ export function SiteFooter() {
                   <li><Link href="/reviews" className="hover:text-[#0e5f63] transition-colors">Reviews</Link></li>
                   <li><a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-[#0e5f63] transition-colors">Support</a></li>
                   <li><Link href="/file/onboarding/eligibility?step=about-you" className="hover:text-[#0e5f63] transition-colors">Start filing</Link></li>
-                  <li><Link href="/admin/pages" className="hover:text-[#0e5f63] transition-colors">Admin Panel</Link></li>
                 </>
               )}
             </ul>
@@ -168,16 +167,7 @@ export function SiteFooter() {
               return (
                 <span key={plan.id}>
                   {plan.name}:{" "}
-                  {pricing.showOffer && pricing.original !== undefined ? (
-                    <>
-                      {formatPlanPriceLabel(pricing.current)}{" "}
-                      <span className="line-through opacity-70">
-                        {formatPlanPriceLabel(pricing.original)}
-                      </span>
-                    </>
-                  ) : (
-                    formatPlanPriceLabel(pricing.current)
-                  )}
+                  {formatPlanPriceLabel(pricing.current)}
                 </span>
               );
             })}

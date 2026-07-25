@@ -356,7 +356,7 @@ export const STEP_GUIDANCE: Record<
     banner: "Unlock the step-by-step portal guide for this person.",
     tips: [
       "Starter plan covers most salaried filers.",
-      "AI Smart adds deeper checks and capital gains help.",
+      "The Guided plan adds more checks and capital-gains support.",
       "Use wallet credit if you bought a multi-filing pack.",
     ],
   },
@@ -364,7 +364,7 @@ export const STEP_GUIDANCE: Record<
     banner: "File on incometax.gov.in beside this screen. Copy each value across.",
     tips: [
       "Use Parallel view to see all sections at once.",
-      "Capital gains and loss schedules need extra care — follow Smart CA tips.",
+      "Capital gains and loss schedules need extra care — follow the portal guide and review every value.",
       "E-verify within 30 days after submitting on the portal.",
     ],
   },

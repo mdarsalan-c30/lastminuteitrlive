@@ -18,7 +18,7 @@ export function AIChatInterview() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! I am your Smart AI Tax Assistant. I'm reviewing your tax profile. To ensure we don't miss any deductions, could you tell me if you switched jobs this year or sold any mutual funds?"
+      content: "Hi! I’m reviewing the information in your draft. Did you switch jobs or sell any mutual funds during this financial year?"
     }
   ]);
   const [input, setInput] = useState("");
@@ -38,7 +38,7 @@ export function AIChatInterview() {
           return [
             {
               role: "assistant",
-              content: `Hi ${draft.name}! I am your Smart AI Tax Assistant. I'm reviewing your tax profile. To ensure we don't miss any deductions, could you tell me if you switched jobs this year or sold any mutual funds?`
+              content: `Hi ${draft.name}! I’m reviewing the information in your draft. Did you switch jobs or sell any mutual funds during this financial year?`
             }
           ];
         }
@@ -82,11 +82,11 @@ export function AIChatInterview() {
       if (res.ok && json.reply) {
         setMessages((prev) => [...prev, { role: "assistant", content: json.reply }]);
       } else {
-        const errorMsg = json.error || "Sorry, I am having trouble connecting to my brain right now. Please try again.";
+        const errorMsg = json.error || "The Tax Assistant is temporarily unavailable. Your saved information is safe—please try again.";
         setMessages((prev) => [...prev, { role: "assistant", content: errorMsg }]);
       }
     } catch (err) {
-      setMessages((prev) => [...prev, { role: "assistant", content: "Error connecting to the AI assistant." }]);
+      setMessages((prev) => [...prev, { role: "assistant", content: "The Tax Assistant is temporarily unavailable. Please try again." }]);
     } finally {
       setLoading(false);
     }
@@ -98,8 +98,8 @@ export function AIChatInterview() {
     
     // add user message
     let label = "";
-    if (action === "optimize") label = "Find Tax Savings";
-    if (action === "anomalies") label = "Scan for Mistakes";
+    if (action === "optimize") label = "Check Eligible Deductions";
+    if (action === "anomalies") label = "Check My Information";
     if (action === "explain") label = "Explain My Taxes";
     setMessages((prev) => [...prev, { role: "user", content: label }]);
 
@@ -144,13 +144,13 @@ export function AIChatInterview() {
             <Bot className="w-4 h-4" />
           </div>
           <div className="flex flex-col justify-center">
-            <h3 className="font-semibold text-slate-800 text-sm leading-none">Smart AI Advisory</h3>
-            <p className="text-[11px] text-slate-500 mt-1">I help you find missed deductions</p>
+            <h3 className="font-semibold text-slate-800 text-sm leading-none">Tax Assistant</h3>
+            <p className="text-[11px] text-slate-500 mt-1">Review missing information and filing questions</p>
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <Button variant="outline" size="sm" onClick={() => handleAction('optimize')} disabled={loading} className="text-xs h-7 px-2">Find Tax Savings</Button>
-          <Button variant="outline" size="sm" onClick={() => handleAction('anomalies')} disabled={loading} className="text-xs h-7 px-2">Scan for Mistakes</Button>
+          <Button variant="outline" size="sm" onClick={() => handleAction('optimize')} disabled={loading} className="text-xs h-7 px-2">Check Eligible Deductions</Button>
+          <Button variant="outline" size="sm" onClick={() => handleAction('anomalies')} disabled={loading} className="text-xs h-7 px-2">Check My Information</Button>
           <Button variant="outline" size="sm" onClick={() => handleAction('explain')} disabled={loading} className="text-xs h-7 px-2">Explain My Taxes</Button>
         </div>
       </div>

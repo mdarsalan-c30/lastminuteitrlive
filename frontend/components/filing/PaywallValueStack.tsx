@@ -162,7 +162,7 @@ export function PaywallValueStack({
           </span>
         </p>
         <p className="mt-1 text-sm text-slate-600">
-          AI-powered tax review, capital gains alerts, and priority expert guidance.
+          Additional tax checks, capital-gains reminders, and priority support.
         </p>
         {/* <p className="mt-2 text-xs text-slate-500">
           Fraction of typical CA consultation cost · lawful optimization only · no

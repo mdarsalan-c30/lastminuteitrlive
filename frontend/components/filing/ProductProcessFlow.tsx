@@ -86,9 +86,9 @@ export function ProductProcessFlow({
             <>
               {pill}
               {state === "active" && isAiAssistedStep(step.id) ? (
-                <span className="macro-process-ai-hint" title="AI-assisted step">
+                <span className="macro-process-ai-hint" title="Guided check included">
                   <Sparkles className="size-2.5" aria-hidden />
-                  <span className="sr-only">AI-assisted</span>
+                  <span className="sr-only">Guided check included</span>
                 </span>
               ) : null}
             </>

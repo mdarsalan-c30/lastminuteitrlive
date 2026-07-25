@@ -26,7 +26,7 @@ export default function SupportPage() {
           <br />
           10 Jun 9:50 · Mismatch salary resolved
           <br />
-          10 Jun 10:05 · Plan selected · AI Smart
+          10 Jun 10:05 · Plan selected · Guided
           <br />
           10 Jun 10:06 · Payment completed · Filing guide unlocked
         </p>

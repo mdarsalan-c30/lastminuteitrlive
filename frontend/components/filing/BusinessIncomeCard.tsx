@@ -237,7 +237,7 @@ export function BusinessIncomeCard({ result }: { result?: ITRResult | null }) {
         <Link href="/learn" className="font-medium text-primary underline">
           Read our 44AD vs 44ADA guide
         </Link>{" "}
-        or ask the Genie on the right.
+        or ask the Filing Assistant on the right.
       </p>
     </Card>
   );

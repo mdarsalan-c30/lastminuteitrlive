@@ -33,7 +33,7 @@ export function HomePageContent() {
             <ReviewsCarousel />
             <PricingSection />
             <FinalCta />
-            <ExpandedFaq maxItems={5} />
+            <ExpandedFaq maxItems={7} />
           </>
         ) : (
           <>

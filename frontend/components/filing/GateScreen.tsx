@@ -240,7 +240,7 @@ export function GateContent() {
     }
 
     const docsUrl = form16FastPath
-      ? `${STATE_ROUTES.COLLECT}?source=form16`
+      ? `${STATE_ROUTES.COLLECT}?source=form16&step=requirements`
       : STATE_ROUTES.COLLECT;
     router.push(docsUrl);
   };

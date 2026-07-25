@@ -4,7 +4,7 @@ import { absoluteUrl, getSiteUrl, OG_IMAGE_PATH } from "@/lib/seo";
 import { BRAND_LOGO_PATH } from "@/lib/brand";
 
 export function LandingJsonLd() {
-  const aiSmart = getDisplayPricing("ai_smart");
+  const guided = getDisplayPricing("pro");
   const siteUrl = getSiteUrl();
   const orgId = `${siteUrl}/#organization`;
   const siteId = `${siteUrl}/#website`;
@@ -50,8 +50,8 @@ export function LandingJsonLd() {
           offers: [
             {
               "@type": "Offer",
-              name: "AI Smart",
-              price: String(aiSmart.current),
+              name: "Guided",
+              price: String(guided.current),
               priceCurrency: "INR",
             },
           ],

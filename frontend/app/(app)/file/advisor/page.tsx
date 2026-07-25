@@ -5,6 +5,7 @@ import { useDraftStore } from "@/lib/store/draft";
 import { FilingLayout } from "@/components/filing/FilingLayout";
 import { Button, FilingActions, ScreenTitle } from "@/components/filing/ui";
 import { AIChatInterview } from "@/components/filing/AIChatInterview";
+import { FILING_HELP, FILING_TERMS } from "@/lib/copy/filingTerms";
 
 export default function AdvisorPage() {
   const router = useRouter();
@@ -12,11 +13,12 @@ export default function AdvisorPage() {
   return (
     <FilingLayout
       variant="companion"
-      mirrorText="Your Smart AI Tax Assistant provides real-time advisory on your tax deductions, saving opportunities, and mistakes."
+      mirrorText="Review questions about your draft in plain language. The assistant can point out items to check, but you decide what to claim and file."
     >
       <ScreenTitle
-        title="Smart AI Tax Assistant"
-        subtitle="Your personalized AI tax assistant to help you save more and file confidently."
+        title={FILING_TERMS.guidedTaxCheck}
+        subtitle="Review possible missing information and ask questions about the tax details in your draft."
+        helpText={FILING_HELP.check}
       />
 
       <div className="mb-6 h-[550px] rounded-2xl border border-slate-200 overflow-hidden shadow-sm">

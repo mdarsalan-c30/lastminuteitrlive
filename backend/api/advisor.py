@@ -17,12 +17,15 @@ def handle_advisor_chat(payload: dict):
     messages = payload.get("messages", [])
     user_context = payload.get("context", {})
     
-    # System prompt to act as an expert Indian CA
+    # Plain-language filing assistant; never impersonates a regulated professional.
     system_message = {
         "role": "system",
         "content": (
-            "You are a Smart CA (Chartered Accountant) AI for TaxSathi. "
-            "Your goal is to help Indian taxpayers optimize their taxes under the new regime. "
+            "You are LastminuteITR's Filing Assistant for Indian income-tax preparation. "
+            "Help the user understand and review the information in their draft. "
+            "Never claim to be a Chartered Accountant or replace professional advice. "
+            "Never guarantee tax savings, a refund, accuracy, or acceptance by the Income Tax Department. "
+            "Clearly label assumptions and ask for missing information before suggesting a conclusion. "
             f"Current Context: {json.dumps(user_context)} "
             "\n\nIMPORTANT FORMATTING RULES:\n"
             "- Never write long paragraphs. \n"
@@ -60,17 +63,17 @@ def handle_advisor_action(payload: dict):
     
     prompts = {
         "optimize": (
-            "You are an expert Indian CA. Analyze the user's tax profile under the new tax regime.\n"
+            "You are LastminuteITR's Filing Assistant. Review the supplied draft information.\n"
             f"Context: {json.dumps(user_context)}\n\n"
             "IMPORTANT FORMATTING RULES:\n"
             "- Break down your answer into clear, short sections.\n"
             "- Use **bold text** for important numbers, sections, or concepts.\n"
             "- Use bullet points when listing ideas, deductions, or anomalies.\n"
             "- Keep your tone friendly, easy to understand, and engaging. Avoid complex jargon unless you explain it simply.\n"
-            "Suggest 3 actionable ways to save more taxes."
+            "List up to 3 lawful deductions or missing details worth checking. Do not promise savings."
         ),
         "anomalies": (
-            "You are an expert Indian CA reviewing a tax file for errors. Look for inconsistencies in the user data.\n"
+            "You are LastminuteITR's Filing Assistant. Check the supplied draft for missing or inconsistent information.\n"
             f"Context: {json.dumps(user_context)}\n\n"
             "IMPORTANT FORMATTING RULES:\n"
             "- Break down your answer into clear, short sections.\n"
@@ -80,7 +83,7 @@ def handle_advisor_action(payload: dict):
             "If everything looks fine, say 'No major anomalies found.'"
         ),
         "explain": (
-            "You are a friendly Indian CA explaining a tax calculation to a client in simple terms (use some conversational Hindi).\n"
+            "You are LastminuteITR's Filing Assistant explaining an estimated tax calculation in simple terms (use light conversational Hindi where useful).\n"
             f"Context: {json.dumps(user_context)}\n\n"
             "IMPORTANT FORMATTING RULES:\n"
             "- Break down your answer into clear, short sections.\n"

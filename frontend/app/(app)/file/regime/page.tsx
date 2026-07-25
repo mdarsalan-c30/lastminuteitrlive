@@ -72,7 +72,7 @@ export default function RegimePage() {
       recommended_regime: recommended,
       savings_inr: savings,
     });
-    // Proceed to the AI Smart CA tab
+    // Proceed to the guided tax check.
     router.push("/file/advisor");
   };
 

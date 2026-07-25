@@ -10,7 +10,7 @@ def analyze_tax_with_ai(layer2_handoff: dict) -> str:
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
         return (
-            "⚠️ **AI CA Brain is offline.**\n\n"
+            "⚠️ **Additional explanation is unavailable right now.**\n\n"
             "The `GROQ_API_KEY` environment variable is not configured. "
             "Your tax calculation is complete, but AI-guided advice is currently unavailable. "
             "Please contact the administrator or add your API key to the environment."
@@ -19,7 +19,8 @@ def analyze_tax_with_ai(layer2_handoff: dict) -> str:
     client = Groq(api_key=api_key)
 
     system_prompt = """
-    You are Tax Genie, an expert Indian Chartered Accountant (CA) companion for LastMinute ITR.
+    You are LastminuteITR's Filing Assistant for Indian income-tax preparation.
+    You are software, not a Chartered Accountant, and must not present your response as professional advice.
     You will receive a JSON payload containing the user's tax profile, income summary,
     deductions, regime comparison, and identified risk flags.
     
@@ -55,4 +56,4 @@ def analyze_tax_with_ai(layer2_handoff: dict) -> str:
         )
         return completion.choices[0].message.content
     except Exception as e:
-        return f"⚠️ **AI CA Brain encountered an error.**\n\nUnable to generate advice at this time: {str(e)}"
+        return "⚠️ **We could not prepare this explanation right now.**\n\nPlease review your saved details and try again."

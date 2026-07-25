@@ -86,13 +86,13 @@ export function PlainEnglishField({
         <p className="mt-2 text-xs leading-relaxed text-slate-500">{helper}</p>
       )}
 
-      {/* Genie hint popup below input field when focused */}
+      {/* Plain-language hint below the input when focused. */}
       {useDraftStore((s) => s.activeField) === activeId && FIELD_GUIDANCE[activeId] && (
         <div className="mt-2 rounded-xl bg-blue-50/60 border border-blue-100/60 p-3 flex items-start gap-2.5 shadow-sm animate-in fade-in slide-in-from-top-1 duration-200">
           <Sparkles className="size-4 text-blue-600 shrink-0 mt-0.5 animate-bounce" />
           <div className="space-y-0.5">
             <p className="text-[10px] font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1">
-              Genie Hint <span className="inline-block animate-ping size-1 h-1 rounded-full bg-blue-600" />
+              Helpful information <span className="inline-block animate-ping size-1 h-1 rounded-full bg-blue-600" />
             </p>
             <p className="text-xs text-slate-700 leading-relaxed">
               {FIELD_GUIDANCE[activeId].tip}

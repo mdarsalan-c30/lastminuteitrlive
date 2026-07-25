@@ -232,7 +232,7 @@ export function FloatingGenie({ desktopHidden = false }: { desktopHidden?: boole
           "fixed top-1/2 right-6 z-40 flex size-12 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all select-none cursor-grab active:cursor-grabbing",
           desktopHidden && "xl:hidden"
         )}
-        aria-label="Open Tax Genie"
+        aria-label="Open Filing Assistant"
       >
         <Sparkles className="size-5 text-white animate-pulse" />
         <span className="absolute inset-0 bg-blue-400/20 rounded-full animate-ping pointer-events-none" />
@@ -259,8 +259,8 @@ export function FloatingGenie({ desktopHidden = false }: { desktopHidden?: boole
             <Sparkles className="size-4 animate-pulse text-blue-100" />
           </span>
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider">Super Genie Helper</h4>
-            <p className="text-[10px] text-blue-100/80">Interactive input assistant</p>
+            <h4 className="text-xs font-bold uppercase tracking-wider">Help with this step</h4>
+            <p className="text-[10px] text-blue-100/80">Plain-language filing help</p>
           </div>
         </div>
         <button

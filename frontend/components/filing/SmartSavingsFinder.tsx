@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * SmartSavingsFinder — the "personal CA asks the right questions" panel.
+ * SmartSavingsFinder — asks focused questions about potentially eligible deductions.
  *
  * Renders deterministic deduction-discovery questions (lib/engine/
  * deductionDiscovery.ts), each with an "up to ₹X" saving estimate.

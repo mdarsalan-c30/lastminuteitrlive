@@ -18,6 +18,7 @@ export const PERMISSION_KEYS = [
   "editContent",
   "viewAudit",
   "manageTeam",
+  "manageAi",
 ] as const;
 
 export type Permission = (typeof PERMISSION_KEYS)[number];
@@ -35,6 +36,7 @@ export const PERMISSION_LABELS: Record<Permission, string> = {
   editContent: "Edit marketing/help content",
   viewAudit: "View audit log",
   manageTeam: "Manage team & roles",
+  manageAi: "Manage AI provider keys",
 };
 
 export interface BuiltinRoleDef {
@@ -68,7 +70,7 @@ export const BUILTIN_ROLES: BuiltinRoleDef[] = [
   {
     key: "engineering",
     label: "Engineering",
-    permissions: ["viewDashboard", "viewAudit"],
+    permissions: ["viewDashboard", "viewAudit", "manageAi"],
   },
   {
     key: "content",

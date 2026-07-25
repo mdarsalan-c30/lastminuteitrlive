@@ -37,7 +37,7 @@ const MOBILE_EXTRA = [
 
 export function SiteHeader() {
   const { scrolled } = useScrollNav();
-  const text ="🚀 File your ITR in minutes • AI-powered guidance • Secure filing • Maximum refund assistance";
+  const text = "Prepare with guided checks • Review every number • Submit on incometax.gov.in";
   return (
     <header
       className={cn(

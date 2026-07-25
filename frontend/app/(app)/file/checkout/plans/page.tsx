@@ -133,7 +133,7 @@ function PlansContent() {
       {companionRedirect && (
         <Banner variant="info">
           Unlock the portal filing guide by choosing a plan below.{" "}
-          {CA_REVIEW_COMING_SOON} DIY and AI Smart are available now.
+          {CA_REVIEW_COMING_SOON} Essential and Guided plans are available now.
         </Banner>
       )}
 

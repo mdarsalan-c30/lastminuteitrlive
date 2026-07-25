@@ -48,6 +48,7 @@ const NAV: NavGroup[] = [
     heading: "System",
     items: [
       { href: "/admin/compliance", label: "Compliance" },
+      { href: "/admin/ai-settings", label: "AI Provider Keys" },
       { href: "/admin/settings", label: "Team & roles" },
       { href: "/admin/credentials", label: "Credentials (Dev)" },
     ],

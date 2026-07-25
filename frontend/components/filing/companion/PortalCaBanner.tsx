@@ -2,9 +2,9 @@
 
 import { Sparkles } from "lucide-react";
 
-/** Smart CA voice — plain English, no jargon, tells user what to do next on the portal. */
+/** Plain-language next-step explanation for the government portal. */
 export function PortalCaBanner({
-  title = "Your Smart CA says",
+  title = "What to do next",
   children,
 }: {
   title?: string;

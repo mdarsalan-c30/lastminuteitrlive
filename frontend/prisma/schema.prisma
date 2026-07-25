@@ -39,6 +39,13 @@ model AuditLog {
   ts         DateTime @default(now())
 }
 
+model AiProviderConfig {
+  id            String   @id @default("groq")
+  encryptedKeys Json
+  updatedAt     DateTime @updatedAt
+  updatedBy     String?
+}
+
 model PricingConfig {
   id            String    @id @default(uuid())
   planId        String

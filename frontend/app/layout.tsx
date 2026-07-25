@@ -30,7 +30,7 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
-    default: "File ITR Online - LastMinute ITR | Fast, Secure & Smart AI",
+    default: "File ITR Online with Guided Help | LastminuteITR",
     template: "%s · LastMinute ITR",
   },
   description:
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     "tax calculator",
   ],
   openGraph: {
-    title: "File ITR Online - LastMinute ITR | Fast, Secure & Smart AI",
+    title: "File ITR Online with Guided Help | LastminuteITR",
     description:
       "File your Income Tax Return (ITR) online effortlessly with LastMinute ITR. Upload Form 16, reconcile AIS, compare tax regimes automatically.",
     type: "website",

@@ -30,11 +30,11 @@ export const HERO_CTAS = {
 
 export const PRICING_SECTION = {
   eyebrow: "Pricing",
-  headline: "Pay to unlock your portal guide",
+  headline: "Choose the guidance you need",
   subhead:
-    "Start free with estimates. Pay only to unlock your personalized incometax.gov.in walkthrough — you still file and e-verify yourself.",
+    "Review plan inclusions before checkout. You remain in control and submit and e-verify on incometax.gov.in.",
   helperLine:
-    "Prices in ₹ · Secure Razorpay checkout · We never store card details · Your files stay on the portal after you submit",
+    "Secure Razorpay checkout · We do not store card details · Review plan inclusions before payment",
 } as const;
 
 export const PAYMENT_COPY = {

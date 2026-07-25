@@ -2,10 +2,8 @@
 
 import Link from "next/link";
 import { PlanCard } from "@/components/pricing/PlanCard";
-import { CountdownOffer } from "@/components/marketing/CountdownOffer";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { PRICING_SECTION } from "@/lib/copy/marketing";
-import { OFFER_HELPER_COPY } from "@/lib/marketing/offer";
 import { ASSESSMENT_YEAR, PRICING_PLANS } from "@/lib/constants";
 
 export function PricingSection() {
@@ -25,11 +23,6 @@ export function PricingSection() {
           <p className="mt-3.5 text-[16px] text-[#6B7280] leading-relaxed max-w-[600px] mx-auto">
             {PRICING_SECTION.subhead} · {ASSESSMENT_YEAR}
           </p>
-        </ScrollReveal>
-
-        {/* Countdown timer */}
-        <ScrollReveal className="flex justify-center mb-10" delay={2}>
-          <CountdownOffer />
         </ScrollReveal>
 
         {/* Pricing cards */}
@@ -83,10 +76,9 @@ export function PricingSection() {
 
         {/* Footer note */}
         <ScrollReveal className="mt-10 text-center text-[12.5px] text-[#6B7280] leading-[1.7] space-y-1" delay={4}>
-          <p>{OFFER_HELPER_COPY}</p>
           <p>{PRICING_SECTION.helperLine}</p>
           <p className="flex flex-wrap items-center justify-center gap-3">
-            <span>Prices shown in Indian Rupees (₹), inclusive unless noted at checkout.</span>
+            <span>Prices shown in Indian Rupees (₹), plus applicable GST.</span>
             <Link href="/refund-policy" className="font-medium text-[#0e5f63] hover:underline">
               See refund policy
             </Link>

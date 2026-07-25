@@ -278,7 +278,7 @@ export function ActiveAiCompanion() {
     </div>
 
     <div className="min-w-0">
-      <h4 className="text-xs font-semibold text-slate-800">LastMinuteITR Genie</h4>
+      <h4 className="text-xs font-semibold text-slate-800">Filing Assistant</h4>
       <p className="text-[10px] text-slate-500 truncate">
         {connectedConnectors.length > 0
           ? `Reading ${connectedConnectors.length} upload${connectedConnectors.length === 1 ? "" : "s"} · ask about your files`
@@ -327,13 +327,13 @@ export function ActiveAiCompanion() {
                 )}
               >
                 <p className="font-semibold text-[9px] uppercase text-slate-400">
-                  {msg.role === "user" ? "You" : "Genie"}
+                  {msg.role === "user" ? "You" : "Filing Assistant"}
                 </p>
                 <p className="whitespace-pre-line text-xs">{msg.text}</p>
               </div>
             ))}
             {loading && (
-              <div className="text-xs text-slate-500 animate-pulse p-2">Genie is typing…</div>
+              <div className="text-xs text-slate-500 animate-pulse p-2">Preparing a response…</div>
             )}
             <div ref={messagesEndRef} />
           </div>

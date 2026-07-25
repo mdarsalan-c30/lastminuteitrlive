@@ -132,9 +132,13 @@ function DocumentsContent() {
     setDeductions,
     connectedConnectors,
     lastParseResult,
+    questionAnswers,
+    setQuestionAnswer,
   } = useDraftStore();
 
   const form16FastPath = isForm16FastPath(searchParams);
+  const requirementsStep =
+    form16FastPath && searchParams.get("step") === "requirements";
   const addEmployerMode = searchParams.get("addEmployer") === "1";
   const form16Connected = connectedConnectors.includes("form16");
   
@@ -260,8 +264,108 @@ function DocumentsContent() {
   ]);
 
   const effectiveImportMode: ImportStartMode | null = form16FastPath ? "form16" : importMode;
-  const continueHref =
-    effectiveImportMode !== null
+  const selectedAdditionalSources = useMemo(
+    () =>
+      [
+        {
+          id: "rent_received",
+          label: "House property details",
+          connectorIds: [] as string[],
+        },
+        {
+          id: "freelance",
+          label: "Business or freelance income details",
+          connectorIds: [] as string[],
+        },
+        {
+          id: "business_presumptive",
+          label: "Business income details",
+          connectorIds: [] as string[],
+        },
+        {
+          id: "capital_gains",
+          label: "Capital gains statement",
+          connectorIds: ["cams", "groww", "zerodha", "upstox", "dhan", "angelone"],
+        },
+        {
+          id: "fno",
+          label: "F&O Tax P&L",
+          connectorIds: ["groww", "zerodha", "upstox", "dhan", "angelone"],
+        },
+        {
+          id: "crypto",
+          label: "Crypto / VDA statement",
+          connectorIds: ["crypto"],
+        },
+        {
+          id: "foreign",
+          label: "Foreign income details",
+          connectorIds: [] as string[],
+        },
+        {
+          id: "nri",
+          label: "NRI income and residential-status details",
+          connectorIds: [] as string[],
+        },
+      ].filter((item) => incomeChips.includes(item.id)),
+    [incomeChips]
+  );
+
+  const collectionRequirements = useMemo(() => {
+    if (!requirementsStep) return [];
+
+    const documentRequirements = [
+      {
+        id: "form16",
+        label: "Form 16",
+        complete: form16Connected,
+        allowManual: false,
+      },
+      {
+        id: "ais",
+        label: "AIS / TIS",
+        complete:
+          connectedConnectors.includes("ais") ||
+          questionAnswers.document_ais_unavailable === true,
+        allowManual: true,
+      },
+      {
+        id: "form26as",
+        label: "Form 26AS",
+        complete:
+          connectedConnectors.includes("form26as") ||
+          questionAnswers.document_form26as_unavailable === true,
+        allowManual: true,
+      },
+    ];
+
+    const additionalRequirements = selectedAdditionalSources.map((source) => ({
+      id: source.id,
+      label: source.label,
+      complete:
+        source.connectorIds.some((id) => connectedConnectors.includes(id)) ||
+        questionAnswers[`document_${source.id}_manual`] === true,
+      allowManual: true,
+    }));
+
+    return [...documentRequirements, ...additionalRequirements];
+  }, [
+    connectedConnectors,
+    form16Connected,
+    questionAnswers,
+    requirementsStep,
+    selectedAdditionalSources,
+  ]);
+
+  const incompleteRequirements = collectionRequirements.filter(
+    (requirement) => !requirement.complete
+  );
+  const collectionComplete =
+    !requirementsStep || incompleteRequirements.length === 0;
+
+  const continueHref = requirementsStep
+    ? "/file/review?tab=income"
+    : effectiveImportMode !== null
       ? getImportContinueHref(effectiveImportMode, {
           form16Connected,
           form16FastPath,
@@ -305,6 +409,7 @@ function DocumentsContent() {
 
   const continueDisabled =
     effectiveImportMode === null ||
+    !collectionComplete ||
     (effectiveImportMode === "manual" &&
       estimateValues.grossSalary <= 0 &&
       estimateValues.businessReceipts <= 0) ||
@@ -517,11 +622,82 @@ function DocumentsContent() {
         </div>
       )}
 
+      {requirementsStep && (
+        <div className="mt-6">
+          <Banner variant={collectionComplete ? "success" : "warning"}>
+            <div className="space-y-3">
+              <div>
+                <strong>
+                  {collectionComplete
+                    ? "Document step complete."
+                    : "Complete these items before moving ahead."}
+                </strong>{" "}
+                {collectionComplete
+                  ? "You will not be sent back here for a hidden document requirement."
+                  : "Upload the document above, or clearly choose manual entry when the document is unavailable."}
+              </div>
+              <ul className="space-y-2">
+                {collectionRequirements.map((requirement) => (
+                  <li
+                    key={requirement.id}
+                    className="flex flex-wrap items-center justify-between gap-2"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "inline-flex size-5 items-center justify-center rounded-full text-xs font-bold",
+                          requirement.complete
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-amber-100 text-amber-800"
+                        )}
+                      >
+                        {requirement.complete ? "✓" : "!"}
+                      </span>
+                      <span>{requirement.label}</span>
+                    </span>
+                    {!requirement.complete && requirement.allowManual && (
+                      <button
+                        type="button"
+                        className="text-xs font-semibold text-primary underline underline-offset-2"
+                        onClick={() =>
+                          setQuestionAnswer(
+                            requirement.id === "ais" ||
+                              requirement.id === "form26as"
+                              ? `document_${requirement.id}_unavailable`
+                              : `document_${requirement.id}_manual`,
+                            true
+                          )
+                        }
+                      >
+                        {requirement.id === "ais" ||
+                        requirement.id === "form26as"
+                          ? "I don’t have this document"
+                          : "I’ll enter this manually next"}
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              {(questionAnswers.document_ais_unavailable === true ||
+                questionAnswers.document_form26as_unavailable === true) && (
+                <p className="text-xs">
+                  Missing AIS/26AS means the result remains an estimate. We will
+                  not unexpectedly send you back to this page later.
+                </p>
+              )}
+            </div>
+          </Banner>
+        </div>
+      )}
+
       {/* Continue Action */}
-      {importMode !== null && (
+      {(importMode !== null || requirementsStep) && (
         <div className="mt-6 pt-5 border-t border-slate-100 flex justify-end">
-          {continueHref && effectiveImportMode !== "manual" && effectiveImportMode !== "capital_gains" ? (
-            <Button href={continueHref} disabled={continueDisabled}>
+          {continueHref &&
+          effectiveImportMode !== "manual" &&
+          effectiveImportMode !== "capital_gains" ? (
+            <Button onClick={handleContinue} disabled={continueDisabled}>
               Next Step <ChevronRight className="size-4 ml-1" />
             </Button>
           ) : (

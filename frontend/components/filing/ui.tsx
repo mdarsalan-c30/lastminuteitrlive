@@ -1,23 +1,83 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
+import { Info, X } from "lucide-react";
+
+export function InfoHelp({
+  text,
+  label = "What does this mean?",
+  className = "",
+}: {
+  text: string;
+  label?: string;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const panelId = useId();
+
+  return (
+    <span className={`relative inline-flex shrink-0 ${className}`}>
+      <button
+        type="button"
+        aria-label={label}
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((value) => !value)}
+        className="inline-flex size-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+      >
+        <Info className="size-3.5" aria-hidden />
+      </button>
+      {open && (
+        <span
+          id={panelId}
+          role="note"
+          className="absolute left-0 top-9 z-50 w-[min(19rem,calc(100vw-2rem))] rounded-xl border border-slate-200 bg-white p-3 text-left text-xs font-normal leading-relaxed text-slate-700 shadow-xl"
+        >
+          <span className="flex items-start gap-2">
+            <span className="flex-1">{text}</span>
+            <button
+              type="button"
+              aria-label="Close explanation"
+              onClick={() => setOpen(false)}
+              className="rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            >
+              <X className="size-3.5" aria-hidden />
+            </button>
+          </span>
+        </span>
+      )}
+    </span>
+  );
+}
 
 export function ScreenTitle({
   title,
   subtitle,
   badge,
+  helpText,
 }: {
   title: string;
   subtitle?: string;
   badge?: ReactNode;
+  helpText?: string;
 }) {
   return (
     <div className="mb-2 min-w-0 sm:mb-3">
       {badge}
-      <h1 className="text-xl sm:text-2xl font-semibold tracking-[-0.015em] text-slate-900">
-        {title}
-      </h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-xl sm:text-2xl font-semibold tracking-[-0.015em] text-slate-900">
+          {title}
+        </h1>
+        <InfoHelp
+          text={
+            helpText ||
+            subtitle ||
+            "This section shows the information needed for this step. Review it before continuing."
+          }
+          label={`About ${title}`}
+        />
+      </div>
       {subtitle && (
         <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:mt-1.5">
           {subtitle}
@@ -219,11 +279,15 @@ export function Chip({
   );
 }
 
-export function FieldLabel({ children }: { children: ReactNode }) {
+export function FieldLabel({ children, helpText }: { children: ReactNode; helpText?: string }) {
+  const explanation =
+    helpText ||
+    "Enter this detail using your tax documents or records. If you are unsure, check the related document before continuing.";
   return (
-    <label className="mb-1.5 block text-sm font-semibold text-slate-800">
-      {children}
-    </label>
+    <span className="mb-1.5 flex items-center gap-2">
+      <label className="block text-sm font-semibold text-slate-800">{children}</label>
+      <InfoHelp text={explanation} label={`Help for ${String(children)}`} />
+    </span>
   );
 }
 
@@ -275,7 +339,15 @@ export function SelectInput({
 }) {
   return (
     <div className="w-full">
-      {label && <label className="mb-1.5 block text-sm font-semibold text-slate-800">{label}</label>}
+      {label && (
+        <span className="mb-1.5 flex items-center gap-2">
+          <label className="block text-sm font-semibold text-slate-800">{label}</label>
+          <InfoHelp
+            text="Choose the option that matches your records. This choice may change which later questions are shown."
+            label={`Help for ${label}`}
+          />
+        </span>
+      )}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -307,25 +379,29 @@ export function ModeCard({
   small?: string;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <div
       className={`flex h-full min-h-11 w-full flex-col rounded-2xl border p-4 text-left transition-all sm:p-5 ${
         selected
           ? "border-primary/40 bg-primary/5 shadow-md ring-2 ring-primary/10"
           : "border-slate-200/80 bg-white shadow-sm hover:border-slate-300 hover:shadow-md"
       }`}
     >
-      <h3 className="text-base font-semibold text-slate-900">{title}</h3>
-      {description && (
-        <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted-foreground">
-          {description}
-        </p>
-      )}
-      {small && (
-        <p className="mt-2 text-xs leading-relaxed text-slate-500">{small}</p>
-      )}
-    </button>
+      <div className="flex items-start justify-between gap-2">
+        <button type="button" onClick={onClick} className="min-w-0 flex-1 text-left">
+          <h3 className="text-base font-semibold text-slate-900">{title}</h3>
+          {description && (
+            <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted-foreground">
+              {description}
+            </p>
+          )}
+          {small && <p className="mt-2 text-xs leading-relaxed text-slate-500">{small}</p>}
+        </button>
+        <InfoHelp
+          text={description || small || `Choose ${title} if it matches your situation.`}
+          label={`About ${title}`}
+        />
+      </div>
+    </div>
   );
 }
 
