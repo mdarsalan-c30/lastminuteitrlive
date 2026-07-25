@@ -104,23 +104,27 @@ export function resolveCheckoutGate(input: CheckoutGateInput): CheckoutGateResul
     };
   }
 
-  if (confidence.missing_documents.length > 0) {
+  if (loading) {
     return {
       canCheckout: false,
       completenessScore: confidence.completeness_score,
-      blockingHref: "/file/import/documents",
-      blockingLabel: `Upload ${confidence.missing_documents[0]}`,
+      blockingHref: "",
+      blockingLabel: "Checking your draft",
       engineOverride: false,
       estimateOverride: false,
     };
   }
 
+  // Document collection belongs to the earlier Add Documents step. Checkout
+  // is a plan/payment decision and must never send a user backwards for a
+  // supporting document.
   return {
-    canCheckout: false,
+    canCheckout: true,
     completenessScore: confidence.completeness_score,
-    blockingHref: "/file/review/risk#final-check",
-    blockingLabel: "Complete the pre-submit checklist",
+    blockingHref: "",
+    blockingLabel: "",
     engineOverride: false,
-    estimateOverride: false,
+    estimateOverride:
+      !confidence.filing_ready || confidence.missing_documents.length > 0,
   };
 }

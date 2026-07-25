@@ -56,7 +56,7 @@ describe("resolveCheckoutGate", () => {
     expect(result.blockingHref).toBe("");
   });
 
-  it("blocks checkout for missing documents when not filing ready", () => {
+  it("does not send the user backwards from checkout for missing documents", () => {
     const result = resolveCheckoutGate({
       mismatchResolved: true,
       mismatchProceedWithExplanation: false,
@@ -68,9 +68,9 @@ describe("resolveCheckoutGate", () => {
       loading: false,
     });
 
-    expect(result.canCheckout).toBe(false);
-    expect(result.blockingHref).toBe("/file/import/documents");
-    expect(result.blockingLabel).toContain("Form 16");
+    expect(result.canCheckout).toBe(true);
+    expect(result.blockingHref).toBe("");
+    expect(result.estimateOverride).toBe(true);
   });
 
   it("does not block on mismatch when no open mismatch exists", () => {
@@ -136,6 +136,6 @@ describe("resolveCheckoutGate", () => {
 
     expect(result.canCheckout).toBe(false);
     expect(result.engineOverride).toBe(false);
-    expect(result.blockingHref).toBe("/file/review/risk#final-check");
+    expect(result.blockingHref).toBe("");
   });
 });

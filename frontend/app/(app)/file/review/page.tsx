@@ -753,24 +753,10 @@ function IncomeTab({ result }: { result?: ITRResult | null }) {
 
 function DeductionsTab({ result }: { result: ITRResult | null }) {
   const deductions = useDraftStore((s) => s.deductions);
-  const houseProperty = useDraftStore((s) => s.houseProperty);
-  const income = useDraftStore((s) => s.income);
   const regime = useDraftStore((s) => s.regime);
   const setDeductions = useDraftStore((s) => s.setDeductions);
   const [paymentMode80D, setPaymentMode80D] = useState("upi");
   const cashBlocked = is80DCashPaymentBlocked(paymentMode80D);
-
-  const items = useMemo(
-    () =>
-      buildDeductionChecklist({
-        deductions,
-        houseProperty,
-        income,
-        regime,
-      }),
-    [deductions, houseProperty, income, regime]
-  );
-  const summary = useMemo(() => summarizeDeductionChecklist(items), [items]);
 
   return (
     <div className="space-y-3">
@@ -816,51 +802,6 @@ function DeductionsTab({ result }: { result: ITRResult | null }) {
             {SECTION_80D_CASH_MESSAGE}
           </Banner>
         )}
-      </Card>
-
-      <Card>
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-slate-900">Deduction checklist</h3>
-        </div>
-        <p className="mt-1 text-sm text-slate-600">
-          {summary.claimed} claimed · {summary.needsProof} need proof ·{" "}
-          {summary.notApplicable} not applicable. Total claimed{" "}
-          {formatINR(summary.totalClaimedAmount)}.
-        </p>
-        <ul className="mt-3 space-y-2">
-          {items.map((item) => {
-            const style = DEDUCTION_STATUS_STYLE[item.status];
-            return (
-              <li
-                key={item.id}
-                className="flex flex-wrap items-start justify-between gap-2 rounded-xl border border-slate-200 px-3 py-2.5"
-              >
-                <span className="min-w-0">
-                  <span className="text-sm font-semibold text-slate-900">
-                    {item.label}{" "}
-                    <span className="font-normal text-slate-500">({item.section})</span>
-                  </span>
-                  <span className="block text-xs text-slate-600">{item.note}</span>
-                </span>
-                <span className="flex items-center gap-2">
-                  {item.amount > 0 && item.status !== "not-applicable" && (
-                    <span className="text-sm font-semibold tabular-nums text-slate-900">
-                      {formatINR(item.amount)}
-                    </span>
-                  )}
-                  <span
-                    className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${style.className}`}
-                  >
-                    {style.label}
-                  </span>
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-        <p className="mt-3 text-xs text-slate-500">
-          Labels are factual — only claim deductions that actually happened and that you can prove.
-        </p>
       </Card>
 
       <FilingActions>
