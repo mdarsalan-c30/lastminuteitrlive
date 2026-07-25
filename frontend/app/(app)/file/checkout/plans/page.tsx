@@ -48,6 +48,13 @@ function PlansContent() {
   const capitalGains = useDraftStore((s) => s.capitalGains);
   const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
   const aisGrossSalary = useDraftStore((s) => s.aisFigures?.grossSalary);
+  const questionAnswers = useDraftStore((s) => s.questionAnswers);
+
+  const documentsResolvedEarlier =
+    (connectedConnectors.includes("ais") ||
+      questionAnswers.document_ais_unavailable === true) &&
+    (connectedConnectors.includes("form26as") ||
+      questionAnswers.document_form26as_unavailable === true);
 
   const { loading, confidence, regimeSavings, engineUnavailable } =
     useDraftTaxCompute();
@@ -64,6 +71,7 @@ function PlansContent() {
     engineUnavailable,
     loading,
     hasOpenMismatch,
+    documentsResolvedEarlier,
   });
 
   const mismatchesResolved =

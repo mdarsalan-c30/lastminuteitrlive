@@ -386,9 +386,13 @@ function IncomeTab({ result }: { result?: ITRResult | null }) {
   const houseProperty = useDraftStore((s) => s.houseProperty);
   const regime = useDraftStore((s) => s.regime) ?? "new";
   const setIncome = useDraftStore((s) => s.setIncome);
+  const setHouseProperty = useDraftStore((s) => s.setHouseProperty);
   const incomeChips = useDraftStore((s) => s.incomeChips);
   const capitalGains = useDraftStore((s) => s.capitalGains);
   const matrix = useDraftStore((s) => s.matrix);
+  const [editingSalary, setEditingSalary] = useState(false);
+  const [editingHouseProperty, setEditingHouseProperty] = useState(false);
+  const [editingOtherIncome, setEditingOtherIncome] = useState(false);
   const employers = income.employers ?? [];
   const hasBusinessIncome =
     incomeChips.includes("freelance") ||
@@ -436,9 +440,13 @@ function IncomeTab({ result }: { result?: ITRResult | null }) {
       <Card>
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-slate-900">Salary</h3>
-          <Link href="/file/income" className="text-sm font-medium text-primary hover:underline">
-            Edit
-          </Link>
+          <button
+            type="button"
+            onClick={() => setEditingSalary((open) => !open)}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            {editingSalary ? "Done" : "Edit"}
+          </button>
         </div>
         <p className="mt-2 text-sm text-slate-700">
           <strong>Gross salary:</strong> {formatINR(income.grossSalary)}
@@ -454,6 +462,36 @@ function IncomeTab({ result }: { result?: ITRResult | null }) {
               </li>
             ))}
           </ul>
+        )}
+        {editingSalary && (
+          <div className="mt-4 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-2">
+            <label className="text-xs font-medium text-slate-700">
+              Gross salary
+              <input
+                type="number"
+                min="0"
+                value={income.grossSalary || ""}
+                onChange={(event) =>
+                  setIncome({
+                    grossSalary: Math.max(0, Number(event.target.value) || 0),
+                  })
+                }
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="text-xs font-medium text-slate-700">
+              TDS deducted
+              <input
+                type="number"
+                min="0"
+                value={income.tds || ""}
+                onChange={(event) =>
+                  setIncome({ tds: Math.max(0, Number(event.target.value) || 0) })
+                }
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </label>
+          </div>
         )}
       </Card>
 
@@ -549,27 +587,161 @@ function IncomeTab({ result }: { result?: ITRResult | null }) {
       <Card>
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-slate-900">House property</h3>
-          <Link href="/file/house-property" className="text-sm font-medium text-primary hover:underline">
-            Edit
-          </Link>
+          <button
+            type="button"
+            onClick={() => setEditingHouseProperty((open) => !open)}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            {editingHouseProperty ? "Done" : "Edit"}
+          </button>
         </div>
         <p className="mt-2 text-sm text-slate-700">
           {houseProperty.propertyType === "none"
             ? "None declared."
             : `${houseProperty.propertyType === "let_out" ? "Let out" : "Self-occupied"} · loan interest ${formatINR(houseProperty.homeLoanInterest)}`}
         </p>
+        {editingHouseProperty && (
+          <div className="mt-4 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-2">
+            <label className="text-xs font-medium text-slate-700 sm:col-span-2">
+              Property situation
+              <select
+                value={houseProperty.propertyType}
+                onChange={(event) =>
+                  setHouseProperty({
+                    propertyType: event.target.value as
+                      | "none"
+                      | "self_occupied"
+                      | "let_out",
+                  })
+                }
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              >
+                <option value="none">No house property income or loan interest</option>
+                <option value="self_occupied">Self-occupied property</option>
+                <option value="let_out">Let-out property</option>
+              </select>
+            </label>
+            {houseProperty.propertyType === "let_out" && (
+              <>
+                <label className="text-xs font-medium text-slate-700">
+                  Annual rent received
+                  <input
+                    type="number"
+                    min="0"
+                    value={houseProperty.annualRent || ""}
+                    onChange={(event) =>
+                      setHouseProperty({
+                        annualRent: Math.max(0, Number(event.target.value) || 0),
+                      })
+                    }
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  />
+                </label>
+                <label className="text-xs font-medium text-slate-700">
+                  Municipal tax paid
+                  <input
+                    type="number"
+                    min="0"
+                    value={houseProperty.municipalTax || ""}
+                    onChange={(event) =>
+                      setHouseProperty({
+                        municipalTax: Math.max(0, Number(event.target.value) || 0),
+                      })
+                    }
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  />
+                </label>
+              </>
+            )}
+            {houseProperty.propertyType !== "none" && (
+              <>
+                <label className="text-xs font-medium text-slate-700">
+                  Home-loan interest
+                  <input
+                    type="number"
+                    min="0"
+                    value={houseProperty.homeLoanInterest || ""}
+                    onChange={(event) =>
+                      setHouseProperty({
+                        homeLoanInterest: Math.max(
+                          0,
+                          Number(event.target.value) || 0
+                        ),
+                      })
+                    }
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  />
+                </label>
+                <label className="text-xs font-medium text-slate-700">
+                  Your ownership share (%)
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={houseProperty.coOwnerPercent}
+                    onChange={(event) =>
+                      setHouseProperty({
+                        coOwnerPercent: Math.min(
+                          100,
+                          Math.max(1, Number(event.target.value) || 100)
+                        ),
+                      })
+                    }
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  />
+                </label>
+              </>
+            )}
+          </div>
+        )}
       </Card>
 
       <Card>
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-slate-900">Other sources</h3>
-          <Link href="/file/other" className="text-sm font-medium text-primary hover:underline">
-            Edit
-          </Link>
+          <button
+            type="button"
+            onClick={() => setEditingOtherIncome((open) => !open)}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            {editingOtherIncome ? "Done" : "Edit"}
+          </button>
         </div>
         <p className="mt-2 text-sm text-slate-700">
           <strong>Interest income:</strong> {formatINR(income.fdInterest)}
         </p>
+        {editingOtherIncome && (
+          <div className="mt-4 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-2">
+            <label className="text-xs font-medium text-slate-700">
+              Bank / FD interest
+              <input
+                type="number"
+                min="0"
+                value={income.fdInterest || ""}
+                onChange={(event) =>
+                  setIncome({
+                    fdInterest: Math.max(0, Number(event.target.value) || 0),
+                  })
+                }
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="text-xs font-medium text-slate-700">
+              Other taxable income
+              <input
+                type="number"
+                min="0"
+                value={income.otherIncome || ""}
+                onChange={(event) =>
+                  setIncome({
+                    otherIncome: Math.max(0, Number(event.target.value) || 0),
+                  })
+                }
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </label>
+          </div>
+        )}
       </Card>
 
       <FilingActions>

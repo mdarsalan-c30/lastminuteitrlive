@@ -13,6 +13,12 @@ export interface CheckoutGateInput {
    * compatibility with call sites that only track the resolved flag.
    */
   hasOpenMismatch?: boolean;
+  /**
+   * The document step already collected every required upload-or-manual
+   * decision. Checkout must respect that decision instead of sending the user
+   * backwards for the same document.
+   */
+  documentsResolvedEarlier?: boolean;
 }
 
 export interface CheckoutGateResult {
@@ -33,6 +39,7 @@ export function resolveCheckoutGate(input: CheckoutGateInput): CheckoutGateResul
     engineUnavailable,
     loading,
     hasOpenMismatch = true,
+    documentsResolvedEarlier = false,
   } = input;
 
   const mismatchOk =
@@ -83,6 +90,17 @@ export function resolveCheckoutGate(input: CheckoutGateInput): CheckoutGateResul
       blockingLabel: "",
       engineOverride: false,
       estimateOverride: true,
+    };
+  }
+
+  if (documentsResolvedEarlier) {
+    return {
+      canCheckout: true,
+      completenessScore: confidence.completeness_score,
+      blockingHref: "",
+      blockingLabel: "",
+      engineOverride: false,
+      estimateOverride: confidence.missing_documents.length > 0,
     };
   }
 

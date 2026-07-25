@@ -105,6 +105,26 @@ describe("resolveCheckoutGate", () => {
     expect(result.estimateOverride).toBe(true);
   });
 
+  it("does not ask for documents again after the collection step resolved them", () => {
+    const result = resolveCheckoutGate({
+      mismatchResolved: false,
+      mismatchProceedWithExplanation: false,
+      confidence: confidence({
+        completeness_score: 47,
+        filing_ready: false,
+        missing_documents: ["Form 26AS", "Annual Information Statement (AIS)"],
+      }),
+      engineUnavailable: false,
+      loading: false,
+      hasOpenMismatch: false,
+      documentsResolvedEarlier: true,
+    });
+
+    expect(result.canCheckout).toBe(true);
+    expect(result.blockingHref).toBe("");
+    expect(result.estimateOverride).toBe(true);
+  });
+
   it("does not apply engine override while loading", () => {
     const result = resolveCheckoutGate({
       mismatchResolved: true,
