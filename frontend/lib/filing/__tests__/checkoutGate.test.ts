@@ -56,7 +56,7 @@ describe("resolveCheckoutGate", () => {
     expect(result.blockingHref).toBe("");
   });
 
-  it("does not send the user backwards from checkout for missing documents", () => {
+  it("uses the strict document verification step as a safety net", () => {
     const result = resolveCheckoutGate({
       mismatchResolved: true,
       mismatchProceedWithExplanation: false,
@@ -68,9 +68,11 @@ describe("resolveCheckoutGate", () => {
       loading: false,
     });
 
-    expect(result.canCheckout).toBe(true);
-    expect(result.blockingHref).toBe("");
-    expect(result.estimateOverride).toBe(true);
+    expect(result.canCheckout).toBe(false);
+    expect(result.blockingHref).toBe(
+      "/file/import/documents?source=form16&step=requirements"
+    );
+    expect(result.blockingLabel).toContain("Form 16");
   });
 
   it("does not block on mismatch when no open mismatch exists", () => {

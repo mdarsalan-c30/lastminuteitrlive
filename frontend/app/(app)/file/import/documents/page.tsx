@@ -324,18 +324,14 @@ function DocumentsContent() {
       {
         id: "ais",
         label: "AIS / TIS",
-        complete:
-          connectedConnectors.includes("ais") ||
-          questionAnswers.document_ais_unavailable === true,
-        allowManual: true,
+        complete: connectedConnectors.includes("ais"),
+        allowManual: false,
       },
       {
         id: "form26as",
         label: "Form 26AS",
-        complete:
-          connectedConnectors.includes("form26as") ||
-          questionAnswers.document_form26as_unavailable === true,
-        allowManual: true,
+        complete: connectedConnectors.includes("form26as"),
+        allowManual: false,
       },
     ];
 
@@ -679,11 +675,10 @@ function DocumentsContent() {
                   </li>
                 ))}
               </ul>
-              {(questionAnswers.document_ais_unavailable === true ||
-                questionAnswers.document_form26as_unavailable === true) && (
+              {!collectionComplete && (
                 <p className="text-xs">
-                  Missing AIS/26AS means the result remains an estimate. We will
-                  not unexpectedly send you back to this page later.
+                  AIS and Form 26AS are required here to verify reported income
+                  and tax credits before your tax comparison is calculated.
                 </p>
               )}
             </div>

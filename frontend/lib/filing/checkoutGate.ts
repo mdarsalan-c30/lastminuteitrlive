@@ -115,16 +115,23 @@ export function resolveCheckoutGate(input: CheckoutGateInput): CheckoutGateResul
     };
   }
 
-  // Document collection belongs to the earlier Add Documents step. Checkout
-  // is a plan/payment decision and must never send a user backwards for a
-  // supporting document.
+  if (confidence.missing_documents.length > 0) {
+    return {
+      canCheckout: false,
+      completenessScore: confidence.completeness_score,
+      blockingHref: "/file/import/documents?source=form16&step=requirements",
+      blockingLabel: `Complete ${confidence.missing_documents[0]} verification`,
+      engineOverride: false,
+      estimateOverride: false,
+    };
+  }
+
   return {
-    canCheckout: true,
+    canCheckout: false,
     completenessScore: confidence.completeness_score,
-    blockingHref: "",
-    blockingLabel: "",
+    blockingHref: "/file/review/risk#final-check",
+    blockingLabel: "Complete the final verification",
     engineOverride: false,
-    estimateOverride:
-      !confidence.filing_ready || confidence.missing_documents.length > 0,
+    estimateOverride: false,
   };
 }

@@ -51,10 +51,8 @@ function PlansContent() {
   const questionAnswers = useDraftStore((s) => s.questionAnswers);
 
   const documentsResolvedEarlier =
-    (connectedConnectors.includes("ais") ||
-      questionAnswers.document_ais_unavailable === true) &&
-    (connectedConnectors.includes("form26as") ||
-      questionAnswers.document_form26as_unavailable === true);
+    connectedConnectors.includes("ais") &&
+    connectedConnectors.includes("form26as");
 
   const { loading, confidence, regimeSavings, engineUnavailable } =
     useDraftTaxCompute();
