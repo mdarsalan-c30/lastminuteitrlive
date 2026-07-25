@@ -10,7 +10,6 @@ import {
   RiskBadge,
   ScreenTitle,
 } from "@/components/filing/ui";
-import { ConfidencePanel } from "@/components/filing/ConfidencePanel";
 import { EngineComputeFallback } from "@/components/filing/EngineComputeFallback";
 import { OptimizationTips } from "@/components/filing/OptimizationTips";
 import { TaxTraceExplainer } from "@/components/filing/TaxTraceExplainer";
@@ -41,7 +40,6 @@ export default function RegimePage() {
     engineUnavailable,
     result,
     lastSnapshot,
-    confidence,
     userInput,
     compute,
   } = useDraftTaxCompute();
@@ -228,15 +226,6 @@ export default function RegimePage() {
           comparison={rc}
           selectedRegime={selected}
           className="mb-4"
-        />
-      )}
-
-      {!loading && (
-        <ConfidencePanel
-          confidence={confidence}
-          variant="compact"
-          className="mb-4"
-          showChecksDetail={false}
         />
       )}
 
