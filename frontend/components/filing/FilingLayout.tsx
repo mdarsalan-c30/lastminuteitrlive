@@ -30,7 +30,6 @@ import {
   Wrench,
   LogOut,
   Sparkles,
-  UsersRound,
   Lock,
 } from "lucide-react";
 
@@ -44,7 +43,6 @@ type SidebarStep = {
 };
 
 const SIDEBAR_STEPS: SidebarStep[] = [
-  { id: "family", label: "Filing For", href: "/file/family", match: ["/file/family"], icon: UsersRound },
   { id: "onboarding", label: "About You", href: "/file/start", match: ["/file/start", "/file/onboarding"], icon: UserCheck },
   { id: "import", label: "Add Documents", href: "/file/import/documents", match: ["/file/import"], icon: UploadCloud },
   {
@@ -103,7 +101,7 @@ function getBreadcrumbs(pathname: string) {
   else if (pathname.startsWith("/file/import")) parts.push({ label: "Import Documents", href: "/file/import/documents" });
   else if (pathname.startsWith("/file/comprehensive")) parts.push({ label: "Comprehensive Profile", href: "/file/comprehensive" });
   else if (pathname.startsWith("/file/regime")) parts.push({ label: "Regime Choice", href: "/file/regime" });
-  else if (pathname.startsWith("/file/review")) parts.push({ label: "Audit & Review", href: "/file/review" });
+  else if (pathname.startsWith("/file/review")) parts.push({ label: "Review Your Return", href: "/file/review" });
   else if (pathname.startsWith("/file/checkout/payment")) {
     parts.push({ label: "Checkout & Plans", href: "/file/checkout/plans" });
     parts.push({ label: "Payment", href: "/file/checkout/payment" });

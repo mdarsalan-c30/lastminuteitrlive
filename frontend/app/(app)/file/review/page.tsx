@@ -15,6 +15,7 @@ import {
   Button,
   Card,
   FilingActions,
+  InfoHelp,
   ScreenTitle,
 } from "@/components/filing/ui";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
@@ -845,12 +846,8 @@ function ReconcileHero({
   const isRefund = savingsCoach.isRefund;
   const hasResult = Boolean(result && slab);
   const openItems = rowSummary.attention + rowSummary.missing;
-  const regimeSavings =
-    rc && savingsCoach.regimeDelta > 0
-      ? `${rc.recommended_regime === "old" ? "Old" : "New"} regime saves ${
-          isPaid ? formatINR(savingsCoach.regimeDelta) : "₹***"
-        } on your numbers.`
-      : null;
+  const recommendedRegimeLabel =
+    rc?.recommended_regime === "old" ? "Old Tax Regime" : "New Tax Regime";
 
   return (
     <Card className="overflow-hidden bg-gradient-to-br from-white to-slate-50/80">
@@ -869,7 +866,7 @@ function ReconcileHero({
           )}
           <div className={!isPaid ? "pointer-events-none select-none opacity-40 blur-[4px]" : ""}>
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-              {selectedRegime === "new" ? "New regime" : "Old regime"} · estimate
+              {selectedRegime === "new" ? "New tax regime" : "Old tax regime"} · estimated result
             </p>
             {hasResult ? (
               <div className="mt-1 flex items-center gap-2">
@@ -878,7 +875,7 @@ function ReconcileHero({
                     isRefund ? "text-emerald-700" : "text-slate-900"
                   }`}
                 >
-                  {isRefund ? "Estimated refund " : "Estimated tax to pay "}
+                  {isRefund ? "Estimated Refund: " : "Estimated Tax Payable: "}
                   <span>{isPaid ? formatINR(Math.abs(netPayable)) : "₹***"}</span>
                 </p>
               </div>
@@ -887,36 +884,44 @@ function ReconcileHero({
                 Add income to see your estimate
               </p>
             )}
-            {regimeSavings && (
-              <p className="mt-1 text-sm font-medium text-emerald-700">{regimeSavings}</p>
+            {rc && savingsCoach.regimeDelta > 0 && (
+              <p className="mt-1 text-xs text-emerald-700 sm:text-sm">
+                Based on the details, {recommendedRegimeLabel} will save you{" "}
+                <strong>{isPaid ? formatINR(savingsCoach.regimeDelta) : "₹***"}</strong>.
+              </p>
             )}
             {savingsCoach.remainingUpside > 0 && (
               <p className="mt-1 text-xs font-medium leading-relaxed text-emerald-700 sm:text-sm">
-                Your checklist found up to{" "}
-                <strong>{isPaid ? formatINR(savingsCoach.remainingUpside) : "₹***"}</strong> more legal
-                savings if you have proof.
+                You will be able to claim up to{" "}
+                <strong>{isPaid ? formatINR(savingsCoach.remainingUpside) : "₹***"}</strong>{" "}
+                more in deductions.
               </p>
             )}
             {savingsCoach.totalPossibleUpside > savingsCoach.regimeDelta && (
-              <p className="mt-1 text-sm font-semibold text-slate-800">
-                Total possible upside: up to {isPaid ? formatINR(savingsCoach.totalPossibleUpside) : "₹***"}.
+              <p className="mt-1 text-sm text-slate-800">
+                Total Estimated Tax Benefit: up to{" "}
+                <strong>{isPaid ? formatINR(savingsCoach.totalPossibleUpside) : "₹***"}</strong>.
               </p>
             )}
-            {savingsCoach.breakevenGap > 0 && (
-              <p className="mt-1 text-xs text-slate-500">
-                Old regime would need about {isPaid ? formatINR(savingsCoach.breakevenGap) : "₹***"} more
-                eligible deductions to beat the new regime.
-              </p>
-            )}
-            <p className="mt-1 text-xs text-slate-500">
-              An estimate, not a promise — the CPC (Centralised Processing Centre) decides
-              your final refund after you file and e-verify on incometax.gov.in.
-            </p>
+            <div className="mt-2 flex items-center gap-2">
+              {savingsCoach.breakevenGap > 0 && (
+                <InfoHelp
+                  label="Why the new tax regime is recommended"
+                  text={`Old Tax Regime would need about ${
+                    isPaid ? formatINR(savingsCoach.breakevenGap) : "₹***"
+                  } more eligible deductions to beat the New Tax Regime.`}
+                />
+              )}
+              <InfoHelp
+                label="About this estimated result"
+                text="This is an estimate, not a promise. The Centralised Processing Centre decides your final refund after you file and e-verify on incometax.gov.in."
+              />
+            </div>
           </div>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white/80 p-3.5">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Document check
+            Document comparison
           </p>
           <p className="mt-1 text-xs leading-relaxed text-slate-700 sm:text-sm">
             {openItems === 0 ? (
@@ -926,21 +931,21 @@ function ReconcileHero({
             ) : (
               <>
                 <span className="font-semibold text-amber-700">{openItems}</span>{" "}
-                {openItems === 1 ? "line" : "lines"} where your documents show
-                different numbers.
+                {openItems === 1 ? "entry needs" : "entries need"} to be checked
+                across your documents.
               </>
             )}
           </p>
           <p className="mt-1 text-xs text-slate-500">
-            {rowSummary.matched} matched · {rowSummary.attention} attention ·{" "}
-            {rowSummary.missing} to add
+            {rowSummary.matched} matched · {rowSummary.attention} need review ·{" "}
+            {rowSummary.missing} Documents Missing
           </p>
           {openItems > 0 && (
             <Link
               href="/file/import/mismatch"
               className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
             >
-              Fix number differences
+              Review differences
               <ArrowRight className="size-3.5" aria-hidden />
             </Link>
           )}
@@ -1018,7 +1023,7 @@ function ReviewDashboard() {
 
   return (
     <FilingLayout mirrorText={RECONCILE.hubMirror}>
-      <ScreenTitle title="Your filing snapshot" />
+      <ScreenTitle title="Your Tax Filing Summary" />
 
       <ReconcileHero
         result={effectiveResult}
@@ -1050,7 +1055,7 @@ export default function ReviewPage() {
     <Suspense
       fallback={
         <FilingLayout>
-          <ScreenTitle title="Your filing snapshot" subtitle="Loading your draft…" />
+          <ScreenTitle title="Your Tax Filing Summary" subtitle="Loading your draft…" />
           <SkeletonRows />
         </FilingLayout>
       }

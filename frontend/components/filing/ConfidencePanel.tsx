@@ -237,12 +237,12 @@ export function ConfidencePanel({
         </RiskBadge>
       </div>
 
-      {confidence.is_estimate_mode && (
+      {confidence.is_estimate_mode && confidence.missing_documents.length > 0 && (
         <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" />
           <p>
-            <strong>These are estimates.</strong> Upload your Form 16 and AIS
-            before you file on the portal, so the numbers you copy are exact.
+            <strong>These are estimates.</strong> Add the remaining documents
+            listed below before filing, so the numbers you copy are exact.
           </p>
         </div>
       )}

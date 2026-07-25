@@ -14,7 +14,6 @@ import { ConfidencePanel } from "@/components/filing/ConfidencePanel";
 import { EngineComputeFallback } from "@/components/filing/EngineComputeFallback";
 import { OptimizationTips } from "@/components/filing/OptimizationTips";
 import { TaxTraceExplainer } from "@/components/filing/TaxTraceExplainer";
-import { WhyWeNeedThis } from "@/components/filing/OnboardingForm";
 import { WHY_WE_ASK } from "@/lib/copy/trust";
 import { FILING_REGIME } from "@/lib/copy/filing";
 import {
@@ -91,6 +90,7 @@ export default function RegimePage() {
 
       <ScreenTitle
         title={FILING_REGIME.title}
+        helpText={`${WHY_WE_ASK.regime} ${REGIME_COPY.defaultNew} Our recommendation is an estimate from your draft. You can pick either regime on the income-tax portal if you prefer.`}
         subtitle={
           loading
             ? FILING_REGIME.subtitleLoading
@@ -99,15 +99,6 @@ export default function RegimePage() {
               : FILING_REGIME.subtitleFallback
         }
       />
-
-      <WhyWeNeedThis defaultOpen>
-        <p>{WHY_WE_ASK.regime}</p>
-        <p>{REGIME_COPY.defaultNew}</p>
-        <p>
-          Our recommendation is an estimate from your draft — you can pick either regime
-          on the portal if you prefer.
-        </p>
-      </WhyWeNeedThis>
 
       {error && !engineUnavailable && (
         <Banner variant="warning">
