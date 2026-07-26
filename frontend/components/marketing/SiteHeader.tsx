@@ -37,7 +37,8 @@ const MOBILE_EXTRA = [
 
 export function SiteHeader() {
   const { scrolled } = useScrollNav();
-  const text = "Prepare with guided checks • Review every number • Submit on incometax.gov.in";
+  const text =
+    "Easy Filing • Understand your ITR • Review every detail • Maximise your Returns";
   return (
     <header
       className={cn(

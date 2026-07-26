@@ -281,20 +281,30 @@ export function GateContent() {
           {/* Mobile Field with Live Error */}
           <div className="w-full">
             <FieldLabel>Mobile Number</FieldLabel>
-            <input
-              type="text"
-              value={mobile}
-              onChange={handleMobileChange}
-              onBlur={() => setTouchedMobile(true)}
-              maxLength={10}
-              placeholder="9876543210"
+            <div
               className={cn(
-                "w-full rounded-xl border px-3.5 py-2.5 text-sm tracking-wider font-mono outline-none transition-all",
+                "flex w-full overflow-hidden rounded-xl border bg-white transition-all",
                 mobileError
-                  ? "border-red-500 bg-red-50/30 focus:border-red-600 focus:ring-2 focus:ring-red-100"
-                  : "border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  ? "border-red-500 bg-red-50/30 focus-within:border-red-600 focus-within:ring-2 focus-within:ring-red-100"
+                  : "border-slate-200 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100"
               )}
-            />
+            >
+              <span className="flex items-center border-r border-slate-200 bg-slate-50 px-3.5 text-sm font-semibold text-slate-600">
+                +91
+              </span>
+              <input
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel-national"
+                value={mobile}
+                onChange={handleMobileChange}
+                onBlur={() => setTouchedMobile(true)}
+                maxLength={10}
+                placeholder="XXXXXXXXXX"
+                aria-label="10-digit mobile number"
+                className="min-w-0 flex-1 bg-transparent px-3.5 py-2.5 text-sm font-mono tracking-wider outline-none"
+              />
+            </div>
             {mobileError && (
               <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-500 animate-in fade-in">
                 <AlertCircle className="h-3.5 w-3.5 shrink-0" />
