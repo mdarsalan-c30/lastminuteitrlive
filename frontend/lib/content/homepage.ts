@@ -27,23 +27,27 @@ export const HOW_IT_WORKS = {
   steps: [
     {
       step: "1",
-      title: "Upload Form 16 & AIS",
-      detail: "Securely upload your documents. We automatically parse salary, TDS, and interest, setting up your user persona perfectly.",
+      title: "Upload Tax Documents",
+      detail:
+        "Upload your Form 16, AIS, mutual fund, F&O, or capital gains documents — or start with estimates.",
     },
     {
       step: "2",
       title: "Real-time AI Calculations",
-      detail: "Our robust backend AI reconciles your data against AIS & 26AS, identifying any mismatches instantly.",
+      detail:
+        "Review your tax status, salary, TDS, investments, interest, and other income. Compare the Old and New Tax Regimes using the details you provide.",
     },
     {
       step: "3",
-      title: "AI Guided ITR Filing",
-      detail: "Compare the Old vs New regime interactively based on your numbers. Fix any discrepancies with our AI assistant.",
+      title: "Answer a Few Questions for Your ITR",
+      detail:
+        "Answer simple questions based on your ITR and selected tax regime. Review your information before filing and resolve document mismatches with guided assistance.",
     },
     {
       step: "4",
-      title: "ITR Portal Guide Support",
-      detail: "Follow our interactive, copy-ready companion guide to submit and e-verify directly on incometax.gov.in.",
+      title: "File on the Income Tax Portal",
+      detail:
+        "Option A: Download the JSON file and upload it on incometax.gov.in. Option B: Follow our screen-by-screen guide to enter the details, submit your return, and complete e-verification on incometax.gov.in.",
     },
   ],
 } as const;
