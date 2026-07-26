@@ -72,7 +72,10 @@ function round2(n: number): number {
 function parseNum(raw: unknown): number | undefined {
   if (typeof raw === "number" && Number.isFinite(raw)) return round2(raw);
   if (typeof raw !== "string") return undefined;
-  const cleaned = raw.replace(/[,₹\s]/g, "").replace(/\((.*)\)/, "-$1");
+  const cleaned = raw
+    .replace(/₹|â‚¹|inr|rs\.?/gi, "")
+    .replace(/[,\s]/g, "")
+    .replace(/\((.*)\)/, "-$1");
   if (!cleaned || cleaned === "-" || /^n\/?a$/i.test(cleaned)) return undefined;
   if (!/^-?\d+(\.\d+)?$/.test(cleaned)) return undefined;
   const n = Number(cleaned);
@@ -283,9 +286,12 @@ function parseBrokerTaxPnlSummaries(
     gainKey: keyof GrowwXlsxParseResult["capitalGains"],
     lossKey: keyof GrowwXlsxParseResult["capitalGains"]
   ) => {
-    if (net > 0) capitalGains[gainKey] = round2(net);
-    else if (net < 0) capitalGains[lossKey] = round2(Math.abs(net));
-    else capitalGains[gainKey] = 0;
+    if (net > 0) capitalGains[gainKey] = round2((capitalGains[gainKey] ?? 0) + net);
+    else if (net < 0) {
+      capitalGains[lossKey] = round2((capitalGains[lossKey] ?? 0) + Math.abs(net));
+    } else if (capitalGains[gainKey] === undefined) {
+      capitalGains[gainKey] = 0;
+    }
   };
 
   let equitySt = 0;
@@ -295,6 +301,35 @@ function parseBrokerTaxPnlSummaries(
   for (let index = 0; index < sheetNames.length; index++) {
     const name = normHeader(sheetNames[index]);
     const matrix = matrices[index];
+    const categoryHeaderIndex = matrix.findIndex((row) => {
+      const normalized = row.map(normHeader);
+      return (
+        normalized.includes("asset_class_category") &&
+        normalized.includes("taxable_short_term") &&
+        normalized.includes("taxable_long_term")
+      );
+    });
+    if (categoryHeaderIndex >= 0) {
+      const normalized = matrix[categoryHeaderIndex].map(normHeader);
+      const categoryIndex = normalized.indexOf("asset_class_category");
+      const shortIndex = normalized.indexOf("taxable_short_term");
+      const longIndex = normalized.indexOf("taxable_long_term");
+      for (let rowIndex = categoryHeaderIndex + 1; rowIndex < matrix.length; rowIndex++) {
+        const category = normHeader(matrix[rowIndex][categoryIndex] ?? "");
+        if (!category) break;
+        const shortTerm = parseNum(matrix[rowIndex][shortIndex]);
+        const longTerm = parseNum(matrix[rowIndex][longIndex]);
+        if (shortTerm === undefined && longTerm === undefined) continue;
+        found = true;
+        if (category === "equity") {
+          equitySt += shortTerm ?? 0;
+          equityLt += longTerm ?? 0;
+        } else if (category.includes("debt") || category.includes("other_than_equity")) {
+          otherSt += shortTerm ?? 0;
+          otherLt += longTerm ?? 0;
+        }
+      }
+    }
     if (name === "equity_and_non_equity") {
       const shortTerm = valueFor(matrix, "short_term_profit");
       const longTerm = valueFor(matrix, "long_term_profit");

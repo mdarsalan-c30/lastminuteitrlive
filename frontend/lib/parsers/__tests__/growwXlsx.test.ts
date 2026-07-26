@@ -127,4 +127,58 @@ describe("parseGrowwWorkbookBuffer", () => {
     expect(result.businessIncome?.fnoTurnover).toBe(314905.25);
     expect(result.businessIncome?.fnoSpeculativeProfit).toBe(-250);
   });
+
+  it("parses Groww mutual-fund category summaries with currency-formatted values", () => {
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet([
+      ["", "", "Asset Class / Category", "Taxable Short Term", "Taxable Long Term"],
+      ["", "", "Equity", "₹1,250.50", "₹2,500.25"],
+      ["", "", "Debt (Specified - Other than Equity)", "(₹300.00)", "₹400.00"],
+      ["", "", "Debt (Unspecified - Other than Equity)", "₹100.00", "(₹50.00)"],
+      [],
+      [
+        "Scheme Name",
+        "Scheme Code",
+        "Category",
+        "Folio Number",
+        "Purchase Transaction Id",
+        "Purchase Date",
+        "Matched Quantity",
+        "Purchase Price",
+        "Redeem Transaction Id",
+        "Redeem Date",
+        "Grandfathered Nav",
+        "Redeem Price",
+        "Short Term-Capital Gain",
+        "Long Term-Capital Gain",
+      ],
+      [
+        "Example Fund",
+        "1",
+        "Equity",
+        "123",
+        "1",
+        "2025-01-01",
+        "1",
+        "100",
+        "2",
+        "2025-04-01",
+        "0",
+        "120",
+        "20",
+        "0",
+      ],
+    ]);
+    XLSX.utils.book_append_sheet(workbook, sheet, "Capital gains");
+
+    const result = parseGrowwWorkbookBuffer(
+      XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
+    );
+
+    expect(result.parseMode).toBe("extracted");
+    expect(result.capitalGains.stcg_111a).toBe(1250.5);
+    expect(result.capitalGains.ltcg_112a).toBe(2500.25);
+    expect(result.capitalGains.stcl_equity).toBe(200);
+    expect(result.capitalGains.ltcg_other).toBe(350);
+  });
 });
