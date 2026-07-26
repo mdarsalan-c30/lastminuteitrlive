@@ -353,7 +353,23 @@ export default function ConnectorGrid({
       }
 
       if (connectorId === "cams" || BROKER_CONNECTOR_IDS.has(connectorId)) {
-        ensureIncomeChip("capital_gains");
+        const fnoTurnover = num("fnoTurnover") ?? num("fno_turnover");
+        const fnoNonSpeculativeProfit =
+          num("fnoNonSpeculativeProfit") ?? num("fno_non_speculative_profit");
+        const fnoSpeculativeProfit =
+          num("fnoSpeculativeProfit") ?? num("fno_speculative_profit");
+        if (
+          fnoTurnover != null ||
+          fnoNonSpeculativeProfit != null ||
+          fnoSpeculativeProfit != null
+        ) {
+          ensureIncomeChip("business");
+          setIncome({
+            ...(fnoTurnover != null ? { fnoTurnover } : {}),
+            ...(fnoNonSpeculativeProfit != null ? { fnoNonSpeculativeProfit } : {}),
+            ...(fnoSpeculativeProfit != null ? { fnoSpeculativeProfit } : {}),
+          });
+        }
         const stcg_111a = num("stcg_111a");
         const ltcg_112a = num("ltcg_112a");
         const stcg_other = num("stcg_other");
@@ -368,6 +384,7 @@ export default function ConnectorGrid({
           stcl_equity != null ||
           ltcl != null
         ) {
+          ensureIncomeChip("capital_gains");
           setCapitalGains({
             ...(stcg_111a != null ? { stcg_111a } : {}),
             ...(ltcg_112a != null ? { ltcg_112a } : {}),

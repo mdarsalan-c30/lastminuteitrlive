@@ -45,6 +45,11 @@ export interface GrowwXlsxParseResult {
     stcl_equity?: number;
     ltcl?: number;
   };
+  businessIncome?: {
+    fnoTurnover?: number;
+    fnoNonSpeculativeProfit?: number;
+    fnoSpeculativeProfit?: number;
+  };
   facts: Array<{
     key: string;
     label: string;
@@ -257,6 +262,87 @@ function splitGainLoss(net: number): { gain?: number; loss?: number } {
   return {};
 }
 
+function parseBrokerTaxPnlSummaries(
+  sheetNames: string[],
+  matrices: string[][][]
+): {
+  capitalGains: GrowwXlsxParseResult["capitalGains"];
+  businessIncome: NonNullable<GrowwXlsxParseResult["businessIncome"]>;
+  found: boolean;
+} {
+  const capitalGains: GrowwXlsxParseResult["capitalGains"] = {};
+  const businessIncome: NonNullable<GrowwXlsxParseResult["businessIncome"]> = {};
+  let found = false;
+
+  const valueFor = (matrix: string[][], wanted: string): number | undefined => {
+    const row = matrix.find((item) => normHeader(item[0] ?? "") === wanted);
+    return row ? parseNum(row[1]) : undefined;
+  };
+  const assignNet = (
+    net: number,
+    gainKey: keyof GrowwXlsxParseResult["capitalGains"],
+    lossKey: keyof GrowwXlsxParseResult["capitalGains"]
+  ) => {
+    if (net > 0) capitalGains[gainKey] = round2(net);
+    else if (net < 0) capitalGains[lossKey] = round2(Math.abs(net));
+    else capitalGains[gainKey] = 0;
+  };
+
+  let equitySt = 0;
+  let equityLt = 0;
+  let otherSt = 0;
+  let otherLt = 0;
+  for (let index = 0; index < sheetNames.length; index++) {
+    const name = normHeader(sheetNames[index]);
+    const matrix = matrices[index];
+    if (name === "equity_and_non_equity") {
+      const shortTerm = valueFor(matrix, "short_term_profit");
+      const longTerm = valueFor(matrix, "long_term_profit");
+      const intraday = valueFor(matrix, "intraday_speculative_profit");
+      if (shortTerm !== undefined || longTerm !== undefined || intraday !== undefined) found = true;
+      equitySt += shortTerm ?? 0;
+      equityLt += longTerm ?? 0;
+      if (intraday !== undefined) businessIncome.fnoSpeculativeProfit = intraday;
+    }
+    if (name === "mutual_funds") {
+      const eqSt = valueFor(matrix, "short_term_profit_equity");
+      const eqLt = valueFor(matrix, "long_term_profit_equity");
+      const debtSt = valueFor(matrix, "short_term_profit_debt");
+      const debtLt = valueFor(matrix, "long_term_profit_debt");
+      if ([eqSt, eqLt, debtSt, debtLt].some((value) => value !== undefined)) found = true;
+      equitySt += eqSt ?? 0;
+      equityLt += eqLt ?? 0;
+      otherSt += debtSt ?? 0;
+      otherLt += debtLt ?? 0;
+    }
+    if (name === "f_o" || name === "f_o_") {
+      const optionsProfit = valueFor(matrix, "options_realized_profit");
+      const futuresProfit = valueFor(matrix, "futures_realized_profit");
+      const optionsTurnover = valueFor(matrix, "options_turnover");
+      const futuresTurnover = valueFor(matrix, "futures_turnover");
+      if ([optionsProfit, futuresProfit, optionsTurnover, futuresTurnover].some(
+        (value) => value !== undefined
+      )) {
+        found = true;
+        businessIncome.fnoNonSpeculativeProfit = round2(
+          (optionsProfit ?? 0) + (futuresProfit ?? 0)
+        );
+        businessIncome.fnoTurnover = round2(
+          (optionsTurnover ?? 0) + (futuresTurnover ?? 0)
+        );
+      }
+    }
+  }
+
+  if (found) {
+    assignNet(equitySt, "stcg_111a", "stcl_equity");
+    assignNet(equityLt, "ltcg_112a", "ltcl");
+    assignNet(otherSt, "stcg_other", "stcl_equity");
+    assignNet(otherLt, "ltcg_other", "ltcl");
+  }
+  return { capitalGains, businessIncome, found };
+}
+
 /**
  * Sum STCG/LTCG columns from a capital-gains style sheet.
  * Supports summary totals and per-scheme / per-trade rows.
@@ -450,7 +536,8 @@ function parseCapitalGainsMatrix(matrix: string[][]): {
 function toFacts(
   fields: GrowwXlsxFields,
   cg: GrowwXlsxParseResult["capitalGains"],
-  kind: GrowwWorkbookKind
+  kind: GrowwWorkbookKind,
+  businessIncome: GrowwXlsxParseResult["businessIncome"] = {}
 ): GrowwXlsxParseResult["facts"] {
   const facts: GrowwXlsxParseResult["facts"] = [];
   const push = (
@@ -481,6 +568,17 @@ function toFacts(
   push("ltcl", "LTCL for set-off", cg.ltcl);
   push("stcg_other", "Non-equity STCG", cg.stcg_other);
   push("ltcg_other", "Non-equity LTCG", cg.ltcg_other);
+  push("fno_turnover", "F&O turnover", businessIncome.fnoTurnover);
+  push(
+    "fno_non_speculative_profit",
+    "F&O non-speculative profit or loss",
+    businessIncome.fnoNonSpeculativeProfit
+  );
+  push(
+    "fno_speculative_profit",
+    "Intraday speculative profit or loss",
+    businessIncome.fnoSpeculativeProfit
+  );
   return facts;
 }
 
@@ -549,16 +647,24 @@ export function parseGrowwWorkbookBuffer(buffer: Buffer): GrowwXlsxParseResult {
     };
   }
 
+  // Zerodha Tax P&L uses authoritative summary sheets. Prefer these over its
+  // repeated, differently shaped trade tables to avoid reading turnover as gain.
+  const taxPnlSummary = parseBrokerTaxPnlSummaries(workbook.SheetNames, matrices);
+
   // Capital gains (or unknown that still has CG-looking columns)
   let mergedCg: GrowwXlsxParseResult["capitalGains"] = {};
   let totalRows = 0;
-  for (const matrix of matrices) {
-    const { capitalGains, rowCount } = parseCapitalGainsMatrix(matrix);
-    totalRows += rowCount;
-    for (const [k, v] of Object.entries(capitalGains)) {
-      if (typeof v !== "number") continue;
-      const key = k as keyof typeof mergedCg;
-      mergedCg[key] = round2((mergedCg[key] ?? 0) + v);
+  if (taxPnlSummary.found) {
+    mergedCg = taxPnlSummary.capitalGains;
+  } else {
+    for (const matrix of matrices) {
+      const { capitalGains, rowCount } = parseCapitalGainsMatrix(matrix);
+      totalRows += rowCount;
+      for (const [k, v] of Object.entries(capitalGains)) {
+        if (typeof v !== "number") continue;
+        const key = k as keyof typeof mergedCg;
+        mergedCg[key] = round2((mergedCg[key] ?? 0) + v);
+      }
     }
   }
 
@@ -610,9 +716,12 @@ export function parseGrowwWorkbookBuffer(buffer: Buffer): GrowwXlsxParseResult {
     kind: "capital_gains",
     fields,
     capitalGains: mergedCg,
-    facts: toFacts(fields, mergedCg, "capital_gains"),
+    businessIncome: taxPnlSummary.businessIncome,
+    facts: toFacts(fields, mergedCg, "capital_gains", taxPnlSummary.businessIncome),
     summary: [
-      `Parsed Groww / broker capital gains Excel (${totalRows} data row${totalRows === 1 ? "" : "s"}).`,
+      taxPnlSummary.found
+        ? "Parsed broker Tax P&L summary sheets."
+        : `Parsed Groww / broker capital gains Excel (${totalRows} data row${totalRows === 1 ? "" : "s"}).`,
       summaryBits.join(" · "),
     ],
     warnings: [

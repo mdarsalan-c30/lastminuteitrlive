@@ -307,6 +307,7 @@ export async function POST(request: NextRequest) {
         warnings: parsed.warnings,
         fields: {
           ...parsed.capitalGains,
+          ...parsed.businessIncome,
           ...(parsed.fields.pan ? { pan: parsed.fields.pan } : {}),
         },
         parseMode: parsed.parseMode,

@@ -84,4 +84,47 @@ describe("parseGrowwWorkbookBuffer", () => {
     expect(result.capitalGains.stcg_111a).toBe(800);
     expect(result.capitalGains.ltcg_112a).toBe(600);
   });
+
+  it("uses Zerodha Tax P&L summary sheets and keeps F&O separate", () => {
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.aoa_to_sheet([
+        ["Short Term profit", 0],
+        ["Long Term profit", 0],
+        ["Intraday/Speculative profit", -250],
+      ]),
+      "Equity and Non Equity"
+    );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.aoa_to_sheet([
+        ["Short Term profit Equity", 0],
+        ["Long Term profit Equity", 0],
+        ["Short Term profit Debt", 0],
+        ["Long Term profit Debt", 0],
+      ]),
+      "Mutual Funds"
+    );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.aoa_to_sheet([
+        ["Options Realized Profit", -96258.25],
+        ["Futures Realized Profit", 0],
+        ["Options Turnover", 314905.25],
+        ["Futures Turnover", 0],
+      ]),
+      "F&O"
+    );
+
+    const result = parseGrowwWorkbookBuffer(
+      XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
+    );
+
+    expect(result.parseMode).toBe("extracted");
+    expect(result.capitalGains.stcg_111a).toBe(0);
+    expect(result.businessIncome?.fnoNonSpeculativeProfit).toBe(-96258.25);
+    expect(result.businessIncome?.fnoTurnover).toBe(314905.25);
+    expect(result.businessIncome?.fnoSpeculativeProfit).toBe(-250);
+  });
 });
