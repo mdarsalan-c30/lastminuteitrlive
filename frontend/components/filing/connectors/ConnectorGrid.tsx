@@ -147,11 +147,6 @@ function ConnectorCard({
           isConnected={isConnected}
           label={connector.name}
           passwordHint={PASSWORD_HINTS[connector.id]}
-          preferPassword={
-            connector.id === "ais" ||
-            connector.id === "form26as" ||
-            connector.id === "cams"
-          }
           helperText={
             BROKER_CONNECTOR_IDS.has(connector.id)
               ? brokerHelperText(connector.id)
@@ -457,7 +452,15 @@ export default function ConnectorGrid({
           body: form,
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "Upload failed");
+        if (!res.ok) {
+          const err = new Error(data.error ?? "Upload failed") as Error & {
+            needsPassword?: boolean;
+            code?: string;
+          };
+          err.needsPassword = Boolean(data.needsPassword);
+          err.code = data.code;
+          throw err;
+        }
 
         applyParsedResponse(connector.id, data, file.name);
       } catch (error) {
@@ -489,7 +492,15 @@ export default function ConnectorGrid({
           body: form,
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "Upload failed");
+        if (!res.ok) {
+          const err = new Error(data.error ?? "Upload failed") as Error & {
+            needsPassword?: boolean;
+            code?: string;
+          };
+          err.needsPassword = Boolean(data.needsPassword);
+          err.code = data.code;
+          throw err;
+        }
 
         const displayName =
           files.length === 1

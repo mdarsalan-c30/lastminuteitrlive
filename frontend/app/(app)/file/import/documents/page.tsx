@@ -417,7 +417,7 @@ function DocumentsContent() {
     >
       {/* Mode Selection Grid */}
       {!form16FastPath && (
-        <div className="mt-4 mb-6 grid grid-cols-1 gap-3 rounded-2xl border border-emerald-100 bg-[#edf7f2] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] sm:p-4 md:grid-cols-3">
+        <div className="mt-4 mb-6 grid grid-cols-1 gap-3 rounded-2xl border border-[#0e5f63] bg-[#0e5f63] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] sm:p-4 md:grid-cols-3">
           <button
             type="button"
             onClick={() => handleModeSelect("form16")}

@@ -98,6 +98,8 @@ export async function POST(request: NextRequest) {
           {
             error:
               "Could not open PDF — check password (usually PAN in capitals)",
+            needsPassword: true,
+            code: "password_required",
           },
           { status: 400 }
         );
@@ -149,7 +151,14 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     if (error instanceof Form16PdfOpenError) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: error.message,
+          needsPassword: error.code === "password_required",
+          code: error.code,
+        },
+        { status: 400 }
+      );
     }
 
     const rawMessage =

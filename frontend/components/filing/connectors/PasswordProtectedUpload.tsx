@@ -12,8 +12,6 @@ interface PasswordProtectedUploadProps {
   /** Hint under the password field */
   passwordHint?: string;
   onUpload: (file: File, password?: string) => Promise<void>;
-  /** When true, show password field immediately after file pick (AIS/TIS) */
-  preferPassword?: boolean;
   /** Extra helper under the upload button */
   helperText?: string;
 }
@@ -28,7 +26,6 @@ export function PasswordProtectedUpload({
   label,
   passwordHint = "Often PAN + date of birth as shown on the ITD download page",
   onUpload,
-  preferPassword = true,
   helperText,
 }: PasswordProtectedUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -54,7 +51,9 @@ export function PasswordProtectedUpload({
       } catch (error) {
         const message = error instanceof Error ? error.message : "Upload failed";
         const lower = message.toLowerCase();
+        const uploadError = error as Error & { needsPassword?: boolean };
         if (
+          uploadError.needsPassword === true ||
           lower.includes("password") ||
           lower.includes("encrypted") ||
           lower.includes("locked")
@@ -73,15 +72,12 @@ export function PasswordProtectedUpload({
       if (!file) return;
       setSelectedFile(file);
       setLocalError(null);
-      if (preferPassword) {
-        setNeedsPassword(true);
-        return;
-      }
+      setNeedsPassword(false);
       void runUpload(file).catch(() => {
         /* error shown via localError */
       });
     },
-    [preferPassword, runUpload]
+    [runUpload]
   );
 
   return (
@@ -134,7 +130,7 @@ export function PasswordProtectedUpload({
             </button>
           </div>
 
-          {(needsPassword || preferPassword) && (
+          {needsPassword && (
             <label className="mt-3 block">
               <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                 <Lock className="size-3" />

@@ -27,6 +27,7 @@ export function Form16UploadZone({
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [password, setPassword] = useState("");
+  const [needsPassword, setNeedsPassword] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [autoUploadPending, setAutoUploadPending] = useState(false);
   const lastUploadedFingerprint = useRef<string>("");
@@ -39,6 +40,7 @@ export function Form16UploadZone({
         file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")
     );
     if (pdfs.length === 0) return;
+    setNeedsPassword(false);
 
     setSelectedFiles((current) => {
       const names = new Set(current.map((f) => f.name));
@@ -82,9 +84,20 @@ export function Form16UploadZone({
       lastUploadedFingerprint.current = fingerprint;
       setSelectedFiles([]);
       setPassword("");
+      setNeedsPassword(false);
       if (inputRef.current) inputRef.current.value = "";
-    } catch {
-      // Keep files selected; user can fix password and retry manually or via re-select
+    } catch (error) {
+      const uploadError = error as Error & { needsPassword?: boolean };
+      const message = uploadError.message.toLowerCase();
+      if (
+        uploadError.needsPassword === true ||
+        message.includes("password") ||
+        message.includes("encrypted") ||
+        message.includes("locked")
+      ) {
+        setNeedsPassword(true);
+      }
+      // Keep files selected so password-protected PDFs can be retried.
     } finally {
       uploadInFlight.current = false;
       setAutoUploadPending(false);
@@ -93,6 +106,7 @@ export function Form16UploadZone({
 
   useEffect(() => {
     if (selectedFiles.length === 0) return;
+    if (needsPassword) return;
 
     const fingerprint = `${filesFingerprint(selectedFiles)}::${password.trim()}`;
     if (fingerprint === lastAutoAttemptFingerprint.current) return;
@@ -102,7 +116,7 @@ export function Form16UploadZone({
     }, AUTO_UPLOAD_DELAY_MS);
 
     return () => window.clearTimeout(timer);
-  }, [selectedFiles, password, runUpload]);
+  }, [needsPassword, selectedFiles, password, runUpload]);
 
   const isProcessing = uploading || autoUploadPending;
 
@@ -201,11 +215,11 @@ export function Form16UploadZone({
             </div>
           )}
 
-          {!isProcessing && selectedFiles.length > 0 && (
+          {!isProcessing && selectedFiles.length > 0 && needsPassword && (
             <div className="mt-4 pt-4 border-t border-slate-100">
               <label className="block">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  PDF Password (If Locked)
+                  This PDF needs a password
                 </span>
                 <div className="flex gap-2 mt-2">
                   <input
@@ -230,7 +244,7 @@ export function Form16UploadZone({
                       void runUpload();
                     }}
                   >
-                    Re-Parse
+                    Unlock &amp; read
                   </button>
                 </div>
               </label>
