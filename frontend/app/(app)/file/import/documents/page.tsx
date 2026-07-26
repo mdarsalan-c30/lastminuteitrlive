@@ -417,18 +417,24 @@ function DocumentsContent() {
     >
       {/* Mode Selection Grid */}
       {!form16FastPath && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6 mt-4">
+        <div className="mt-4 mb-6 grid grid-cols-1 gap-3 rounded-2xl border border-emerald-100 bg-[#edf7f2] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] sm:p-4 md:grid-cols-3">
           <button
             type="button"
             onClick={() => handleModeSelect("form16")}
+            aria-pressed={importMode === "form16"}
             className={cn(
-              "flex flex-col text-left rounded-xl border-2 p-4 transition-all cursor-pointer",
+              "relative flex cursor-pointer flex-col rounded-xl border-2 p-4 text-left shadow-[0_2px_10px_rgba(14,95,99,0.07)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#0e5f63]/55 hover:shadow-[0_7px_18px_rgba(14,95,99,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0e5f63]/35",
               importMode === "form16" 
-                ? "border-blue-600 bg-blue-50/80 shadow-sm" 
-                : "border-slate-100 bg-white hover:border-blue-200"
+                ? "-translate-y-0.5 border-[#0e5f63] bg-emerald-50 ring-2 ring-[#0e5f63]/20 shadow-[0_8px_20px_rgba(14,95,99,0.18)]"
+                : "border-emerald-200/90 bg-white"
             )}
           >
-            <div className={cn("rounded-lg p-2 inline-block mb-3", importMode === "form16" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500")}>
+            {importMode === "form16" && (
+              <span className="absolute right-3 top-3 flex size-5 items-center justify-center rounded-full bg-[#0e5f63] text-white shadow-sm">
+                <Check className="size-3.5" strokeWidth={3} />
+              </span>
+            )}
+            <div className={cn("rounded-lg p-2 inline-block mb-3", importMode === "form16" ? "bg-[#0e5f63] text-white" : "bg-slate-100 text-slate-500")}>
               <FilePlus2 className="size-5" />
             </div>
             <h3 className="font-bold text-slate-900 text-[14px]">Upload Form 16</h3>
@@ -438,14 +444,20 @@ function DocumentsContent() {
           <button
             type="button"
             onClick={() => handleModeSelect("capital_gains")}
+            aria-pressed={importMode === "capital_gains"}
             className={cn(
-              "flex flex-col text-left rounded-xl border-2 p-4 transition-all cursor-pointer",
+              "relative flex cursor-pointer flex-col rounded-xl border-2 p-4 text-left shadow-[0_2px_10px_rgba(14,95,99,0.07)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#0e5f63]/55 hover:shadow-[0_7px_18px_rgba(14,95,99,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0e5f63]/35",
               importMode === "capital_gains"
-                ? "border-blue-600 bg-blue-50/80 shadow-sm"
-                : "border-slate-100 bg-white hover:border-blue-200"
+                ? "-translate-y-0.5 border-[#0e5f63] bg-emerald-50 ring-2 ring-[#0e5f63]/20 shadow-[0_8px_20px_rgba(14,95,99,0.18)]"
+                : "border-emerald-200/90 bg-white"
             )}
           >
-            <div className={cn("rounded-lg p-2 inline-block mb-3", importMode === "capital_gains" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500")}>
+            {importMode === "capital_gains" && (
+              <span className="absolute right-3 top-3 flex size-5 items-center justify-center rounded-full bg-[#0e5f63] text-white shadow-sm">
+                <Check className="size-3.5" strokeWidth={3} />
+              </span>
+            )}
+            <div className={cn("rounded-lg p-2 inline-block mb-3", importMode === "capital_gains" ? "bg-[#0e5f63] text-white" : "bg-slate-100 text-slate-500")}>
               <TrendingUp className="size-5" />
             </div>
             <h3 className="font-bold text-slate-900 text-[14px]">Capital gains / F&amp;O</h3>
@@ -455,14 +467,20 @@ function DocumentsContent() {
           <button
             type="button"
             onClick={() => handleModeSelect("manual")}
+            aria-pressed={importMode === "manual"}
             className={cn(
-              "flex flex-col text-left rounded-xl border-2 p-4 transition-all cursor-pointer",
+              "relative flex cursor-pointer flex-col rounded-xl border-2 p-4 text-left shadow-[0_2px_10px_rgba(14,95,99,0.07)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#0e5f63]/55 hover:shadow-[0_7px_18px_rgba(14,95,99,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0e5f63]/35",
               importMode === "manual" 
-                ? "border-blue-600 bg-blue-50/80 shadow-sm" 
-                : "border-slate-100 bg-white hover:border-blue-200"
+                ? "-translate-y-0.5 border-[#0e5f63] bg-emerald-50 ring-2 ring-[#0e5f63]/20 shadow-[0_8px_20px_rgba(14,95,99,0.18)]"
+                : "border-emerald-200/90 bg-white"
             )}
           >
-            <div className={cn("rounded-lg p-2 inline-block mb-3", importMode === "manual" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500")}>
+            {importMode === "manual" && (
+              <span className="absolute right-3 top-3 flex size-5 items-center justify-center rounded-full bg-[#0e5f63] text-white shadow-sm">
+                <Check className="size-3.5" strokeWidth={3} />
+              </span>
+            )}
+            <div className={cn("rounded-lg p-2 inline-block mb-3", importMode === "manual" ? "bg-[#0e5f63] text-white" : "bg-slate-100 text-slate-500")}>
               <HelpCircle className="size-5" />
             </div>
             <h3 className="font-bold text-slate-900 text-[14px]">Start with estimates</h3>
