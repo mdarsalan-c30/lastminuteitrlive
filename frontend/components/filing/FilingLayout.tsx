@@ -100,7 +100,7 @@ function getBreadcrumbs(pathname: string) {
   else if (pathname.startsWith("/file/start") || pathname.startsWith("/file/onboarding")) parts.push({ label: "Get Started", href: "/file/start" });
   else if (pathname.startsWith("/file/import")) parts.push({ label: "Import Documents", href: "/file/import/documents" });
   else if (pathname.startsWith("/file/comprehensive")) parts.push({ label: "Comprehensive Profile", href: "/file/comprehensive" });
-  else if (pathname.startsWith("/file/regime")) parts.push({ label: "Regime Choice", href: "/file/regime" });
+  else if (pathname.startsWith("/file/regime")) parts.push({ label: "Compare Tax Regimes", href: "/file/regime" });
   else if (pathname.startsWith("/file/review")) parts.push({ label: "Review Your Return", href: "/file/review" });
   else if (pathname.startsWith("/file/checkout/payment")) {
     parts.push({ label: "Checkout & Plans", href: "/file/checkout/plans" });
@@ -127,6 +127,7 @@ export function FilingLayout({
   noPadding?: boolean;
 }) {
   const pathname = usePathname();
+  const isRegimePage = pathname.startsWith("/file/regime");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const draftName = useDraftStore((s) => s.name);
@@ -316,7 +317,7 @@ export function FilingLayout({
           <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3 relative overflow-hidden">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                Tax Summary
+                {isRegimePage && netPayable === null ? "Tax estimate" : "Tax Summary"}
               </span>
               {!taxLoading && score > 0 && <span className="text-xs font-medium text-slate-500">{score}%</span>}
             </div>
@@ -347,7 +348,11 @@ export function FilingLayout({
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-slate-400 leading-normal">Add income details to see tax estimate.</p>
+              <p className="text-xs text-slate-400 leading-normal">
+                {isRegimePage
+                  ? "Add your income details to calculate your estimated tax."
+                  : "Add income details to see tax estimate."}
+              </p>
             )}
 
             <div className="space-y-1.5">
@@ -361,10 +366,16 @@ export function FilingLayout({
                 />
               </div>
               <div className="flex items-center justify-between text-[10px] text-slate-400">
-                <span>{taxConfidence.filing_ready ? FILING_READY.ready : "Incomplete"}</span>
+                <span>
+                  {taxConfidence.filing_ready
+                    ? FILING_READY.ready
+                    : isRegimePage
+                      ? "Details pending"
+                      : "Incomplete"}
+                </span>
                 {!taxConfidence.filing_ready && (
                   <Link href="/file/import/documents" className="text-[#0e5f63] font-semibold hover:underline">
-                    Upload
+                    {isRegimePage ? "Add documents" : "Upload"}
                   </Link>
                 )}
               </div>
@@ -375,7 +386,7 @@ export function FilingLayout({
         <div className="flex items-center justify-center px-2 text-xs">
           <Link href="/" className="flex items-center gap-1.5 font-medium text-white/70 hover:text-white transition-colors">
             <LogOut className="size-3.5" />
-            <span>Exit to home</span>
+            <span>{isRegimePage ? "Save and exit" : "Exit to home"}</span>
           </Link>
         </div>
       </div>

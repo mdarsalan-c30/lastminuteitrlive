@@ -13,7 +13,6 @@ import {
 import { EngineComputeFallback } from "@/components/filing/EngineComputeFallback";
 import { OptimizationTips } from "@/components/filing/OptimizationTips";
 import { TaxTraceExplainer } from "@/components/filing/TaxTraceExplainer";
-import { WHY_WE_ASK } from "@/lib/copy/trust";
 import { FILING_REGIME } from "@/lib/copy/filing";
 import {
   REGIME_COPY,
@@ -24,7 +23,7 @@ import { useDraftStore } from "@/lib/store/draft";
 import { trackEvent } from "@/lib/analytics";
 import { formatINR } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, TrendingDown } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 export default function RegimePage() {
   const router = useRouter();
@@ -56,6 +55,7 @@ export default function RegimePage() {
   const savings = rc?.tax_saving ?? Math.abs(oldPay - newPay);
   const selectedPay = selected === "old" ? oldPay : newPay;
   const isRefund = selectedPay < 0;
+  const sameEstimatedTax = Boolean(rc && oldPay === newPay);
   const needs10Iea = requiresForm10IeaAttestation(incomeChips, selected);
   const blockedBy10Iea = needs10Iea && !form10IeaAttested;
 
@@ -82,13 +82,13 @@ export default function RegimePage() {
       showNavRail
       activeNavSection="regime"
       variant="wide"
-      mirrorText="Old regime lets you claim 80C, 80D, and HRA. New regime uses lower slabs but fewer deductions. You pick once per year."
+      mirrorText="Your tax regime decides which tax rates, deductions, and exemptions apply to your return."
     >
-      <RiskBadge variant="green">Tax analysis</RiskBadge>
+      <RiskBadge variant="green">TAX Comparison</RiskBadge>
 
       <ScreenTitle
-        title={FILING_REGIME.title}
-        helpText={`${WHY_WE_ASK.regime} ${REGIME_COPY.defaultNew} Our recommendation is an estimate from your draft. You can pick either regime on the income-tax portal if you prefer.`}
+        title="Old vs New Tax Regime"
+        helpText="Why you need to choose: Your tax regime decides the tax rates and deductions that will apply to your return. The New Tax Regime is selected by default. However, the Old Tax Regime may result in lower tax if you have enough eligible deductions and exemptions. Our recommendation is based on the information added so far. You can review and change your selection before filing."
         subtitle={
           loading
             ? FILING_REGIME.subtitleLoading
@@ -154,14 +154,13 @@ export default function RegimePage() {
             <Banner variant="success">
               Refund of {formatINR(Math.abs(selectedPay))} under the {selected} regime.
             </Banner>
-          ) : (
-            <Banner variant="warning">
-              Tax payable: {formatINR(selectedPay)} before filing. Plan payment after review.
-            </Banner>
-          )
+          ) : null
         ) : (
           <Banner variant="success">
-            ✓ Both regimes computed — {recommended === "old" ? "Old" : "New"} regime saves you more. Pay to see exact amounts.
+            {sameEstimatedTax
+              ? "Both regimes currently show the same estimated tax."
+              : `Recommended: ${recommended === "old" ? "Old" : "New"} Tax Regime based on the details added so far.`}{" "}
+            Pay to unlock the detailed calculation.
           </Banner>
         )
       )}
@@ -175,23 +174,36 @@ export default function RegimePage() {
         ) : (
           <>
             <RegimeOption
-              title="Old regime"
-              netLabel={oldPay < 0 ? "refund" : "payable"}
+              title="Old Tax Regime"
+              netLabel={oldPay < 0 ? "Estimated Refund:" : "Estimated Tax Payable:"}
               amount={Math.abs(oldPay)}
-              detail={isPaid ? `Tax ${formatINR(rc?.old.total_tax ?? 0)} · VI-A ${formatINR(effectiveResult?.deductions.total_chapter_via ?? 0)}` : "Pay to see exact breakdown"}
+              detail={isPaid ? `Tax ${formatINR(rc?.old.total_tax ?? 0)} · VI-A ${formatINR(effectiveResult?.deductions.total_chapter_via ?? 0)}` : "Pay to unlock the detailed calculation"}
               selected={selected === "old"}
-              recommended={recommended === "old"}
+              badgeLabel={
+                sameEstimatedTax
+                  ? "Same Estimated Tax"
+                  : recommended === "old"
+                    ? "Recommended"
+                    : undefined
+              }
               disabled={!rc && !computeFailed}
               onClick={() => setRegime("old")}
               blurAmount={!isPaid}
             />
             <RegimeOption
-              title="New regime"
-              netLabel={newPay < 0 ? "refund" : "payable"}
+              title="New Tax Regime"
+              netLabel={newPay < 0 ? "Estimated Refund:" : "Estimated Tax Payable:"}
               amount={Math.abs(newPay)}
-              detail={isPaid ? `Tax ${formatINR(rc?.new.total_tax ?? 0)} · std ded + 80CCD(2) only` : "Pay to see exact breakdown"}
+              detail={isPaid ? `Tax ${formatINR(rc?.new.total_tax ?? 0)} · standard deduction and 80CCD(2) only` : "Pay to unlock the detailed calculation"}
+              description="Offers different tax slabs with fewer deductions and exemptions to claim."
               selected={selected === "new"}
-              recommended={recommended === "new"}
+              badgeLabel={
+                sameEstimatedTax
+                  ? "Same Estimated Tax"
+                  : recommended === "new"
+                    ? "Recommended"
+                    : undefined
+              }
               disabled={!rc && !computeFailed}
               onClick={() => setRegime("new")}
               blurAmount={!isPaid}
@@ -199,6 +211,21 @@ export default function RegimePage() {
           </>
         )}
       </div>
+
+      {sameEstimatedTax && (
+        <Banner variant="info">
+          Both regimes currently show the same estimated tax. Add all your income
+          and deduction details for a more accurate comparison.
+        </Banner>
+      )}
+
+      {isEstimated && (
+        <Banner variant="info">
+          <strong>Estimate Mode.</strong> These results are based on the details
+          currently available. Upload your Form 16, AIS, and Capital Gains
+          documents before filing to improve the accuracy of your tax calculation.
+        </Banner>
+      )}
 
       {needs10Iea && (
         <div className="mb-4 rounded-2xl border border-amber-500/40 bg-amber-500/5 p-4 space-y-2">
@@ -249,8 +276,8 @@ export default function RegimePage() {
       <FilingActions
         hint={
           <p className="text-tier-feature">
-            <strong>What happens next:</strong> We run a final risk review, then you
-            pick a plan to unlock the portal filing guide.
+            <strong>What happens next:</strong> We will review your return for
+            missing details. Select a plan and continue to the filing guide.
           </p>
         }
       >
@@ -258,15 +285,20 @@ export default function RegimePage() {
           onClick={() => handleChoose(selected)}
           disabled={loading || (!rc && !computeFailed) || blockedBy10Iea}
         >
-          I choose {selected === "new" ? "New" : "Old"} regime
+          Choose {selected === "new" ? "New" : "Old"} Tax Regime
         </Button>
       </FilingActions>
 
       {!mismatchResolved && (
-        <p className="mt-3 text-xs text-amber-700">
-          Some numbers in your documents don&apos;t match yet — sort them out
-          before you file on the portal.
-        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-amber-700">
+          <p>
+            Details might differ across your documents. Review them before filing
+            your return.
+          </p>
+          <Button href="/file/import/mismatch" variant="secondary">
+            Review Document Differences
+          </Button>
+        </div>
       )}
     </FilingLayout>
   );
@@ -290,8 +322,9 @@ function RegimeOption({
   netLabel,
   amount,
   detail,
+  description,
   selected,
-  recommended,
+  badgeLabel,
   disabled,
   blurAmount,
   onClick,
@@ -300,8 +333,9 @@ function RegimeOption({
   netLabel: string;
   amount: number;
   detail: string;
+  description?: string;
   selected: boolean;
-  recommended: boolean;
+  badgeLabel?: string;
   disabled: boolean;
   blurAmount?: boolean;
   onClick: () => void;
@@ -316,18 +350,19 @@ function RegimeOption({
         selected
           ? "border-primary/40 bg-primary/5 shadow-md ring-2 ring-primary/10"
           : "border-slate-200/80 bg-white shadow-sm hover:shadow-md",
-        recommended && selected && "regime-winner"
+        badgeLabel === "Recommended" && selected && "regime-winner"
       )}
     >
-      {recommended && (
+      {badgeLabel && (
         <span className="absolute -top-2.5 right-4 inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-          {recommended ? <TrendingDown className="size-3" /> : <CheckCircle2 className="size-3" />}
-          Cheaper
+          <CheckCircle2 className="size-3" />
+          {badgeLabel}
         </span>
       )}
       <h4 className="font-bold text-slate-900">{title}</h4>
+      {description && <p className="mt-1 text-xs text-slate-500">{description}</p>}
       <p className="mt-2 text-sm text-slate-600">
-        Net {netLabel}{" "}
+        {netLabel}{" "}
         <strong className={cn("text-lg tabular-nums text-foreground", blurAmount && "blur-sm select-none opacity-50")}>
           {formatINR(amount)}
         </strong>
