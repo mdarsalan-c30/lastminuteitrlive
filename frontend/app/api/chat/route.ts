@@ -49,10 +49,6 @@ export async function POST(request: NextRequest) {
 
     const answer = await answerGenieQuestion(question, body.context);
 
-    // #region agent log
-    fetch('http://127.0.0.1:7563/ingest/b08ac730-6614-46b3-bb0c-a50e7f63316c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'2c61ed'},body:JSON.stringify({sessionId:'2c61ed',location:'chat/route.ts:POST',message:'genie answer',data:{source:answer.source,confidence:answer.confidence,hasDocs:!!body.context?.documents,connectors:body.context?.documents?.connectedConnectors??[]},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
-    // #endregion
-
     const supportMessage: ChatMessage = {
       id: `chat_${Date.now()}_reply`,
       role: "support",

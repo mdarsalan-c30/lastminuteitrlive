@@ -132,9 +132,6 @@ export function buildGenieDocumentSnapshot(input: {
     input;
 
   if (connectedConnectors.length === 0 && !documentFacts?.length) {
-    // #region agent log
-    fetch('http://127.0.0.1:7563/ingest/b08ac730-6614-46b3-bb0c-a50e7f63316c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'2c61ed'},body:JSON.stringify({sessionId:'2c61ed',location:'genieDocumentContext.ts:buildSnapshot',message:'snapshot undefined — no connectors or facts',data:{connectors:connectedConnectors.length,facts:documentFacts?.length??0},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
     return undefined;
   }
 
@@ -210,9 +207,6 @@ export function buildGenieDocumentSnapshot(input: {
 }
 
 function logSnapshotBuilt(snapshot: GenieDocumentSnapshot) {
-  // #region agent log
-  fetch('http://127.0.0.1:7563/ingest/b08ac730-6614-46b3-bb0c-a50e7f63316c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'2c61ed'},body:JSON.stringify({sessionId:'2c61ed',location:'genieDocumentContext.ts:buildSnapshot',message:'snapshot built',data:{connectors:snapshot.connectedConnectors,hasForm16:!!snapshot.form16,hasCams:!!snapshot.capitalGains,grossSalary:snapshot.form16?.grossSalary??null},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
-  // #endregion
 }
 
 export function formatDocumentContextBlock(docs?: GenieDocumentSnapshot): string {
@@ -303,6 +297,9 @@ export function isDocumentPersonalQuestion(question: string): boolean {
   const n = question.toLowerCase();
   const signals = [
     "my form 16",
+    "my form16",
+    "form 16 data",
+    "form16 data",
     "my salary",
     "my tds",
     "my employer",

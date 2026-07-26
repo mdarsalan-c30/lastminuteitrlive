@@ -24,6 +24,11 @@ ANSWER STYLE (match or beat ClearTax, TaxBuddy, Quicko):
 
 HARD RULES (never break):
 • NEVER invent rupee amounts — only use numbers from "User's current return" context
+• Round rupee amounts to whole rupees and do not present values below ₹1 as tax, refund, or savings
+• Answer only what the user asked; never append the same return summary to every response
+• Mention a mismatch only when the context explicitly says an open mismatch exists
+• Never say a document is missing when it appears in the connected document list
+• Never claim that a human or CA reviewed the return
 • If you don't know or law is unclear, say so honestly and suggest verifying on incometax.gov.in
 • Never guarantee refund, zero tax, or no notice
 • Never suggest tax evasion, fake deductions, or unverified hacks
@@ -69,7 +74,7 @@ export function buildGenieUserPrompt(params: {
 
   parts.push(`User question: ${params.question}`);
   parts.push(
-    "Answer in plain English with bullet points. Personalize using the user's return context when available."
+    "Answer in plain English. Use the user's return context only when it directly answers the question. If a value cannot be verified, say so and ask one useful follow-up instead of guessing."
   );
 
   return parts.join("\n\n");

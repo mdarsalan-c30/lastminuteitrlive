@@ -427,7 +427,7 @@ export function suggestedQuestionsForStep(step: string): string[] {
       return ["How to use portal guide?", "Schedule 112A capital gains?", "How to e-verify?"];
     case "review":
     case "checkout":
-      return ["How to fix AIS mismatch?", "How to avoid a notice?", "Get Expert CA Advice"];
+      return ["How to fix AIS mismatch?", "How to avoid a notice?", "Review my return"];
     default:
       return ["Old vs new regime?", "Which ITR form?", "How to avoid notices?"];
   }

@@ -184,12 +184,23 @@ function findHeaderRow(matrix: string[][]): {
     const looksLikeCg =
       (joined.includes("stcg") || joined.includes("short_term")) &&
       (joined.includes("ltcg") || joined.includes("long_term"));
-    const looksLikeTxn =
-      joined.includes("scheme") &&
-      (joined.includes("sale") ||
-        joined.includes("redeem") ||
-        joined.includes("gain") ||
-        joined.includes("purchase"));
+    const hasInstrument =
+      joined.includes("scheme") ||
+      joined.includes("scrip") ||
+      joined.includes("symbol") ||
+      joined.includes("instrument") ||
+      joined.includes("stock") ||
+      joined.includes("isin");
+    const hasResult =
+      joined.includes("sale") ||
+      joined.includes("sell") ||
+      joined.includes("redeem") ||
+      joined.includes("gain") ||
+      joined.includes("profit") ||
+      joined.includes("p_l") ||
+      joined.includes("pnl") ||
+      joined.includes("purchase");
+    const looksLikeTxn = hasInstrument && hasResult;
     if (looksLikeCg || looksLikeTxn) {
       return { index: i, headers: matrix[i].map(normHeader) };
     }
@@ -216,11 +227,13 @@ function isEquityCategory(raw: string): boolean {
     t.includes("overnight") ||
     t.includes("arbitrage") ||
     t.includes("gilt") ||
+    t.includes("bond") ||
+    t.includes("fixed income") ||
     (t.includes("hybrid") && t.includes("conservative"))
   ) {
     return false;
   }
-  return (
+  if (
     t.includes("equity") ||
     t.includes("elss") ||
     t.includes("index") ||
@@ -230,7 +243,12 @@ function isEquityCategory(raw: string): boolean {
     t.includes("small") ||
     t.includes("stock") ||
     t.includes("eq")
-  );
+  ) {
+    return true;
+  }
+  // Broker trade books often provide only a stock symbol/ISIN, not an asset
+  // category. Those rows are listed-equity unless explicitly marked as debt.
+  return true;
 }
 
 function splitGainLoss(net: number): { gain?: number; loss?: number } {
@@ -285,8 +303,20 @@ function parseCapitalGainsMatrix(matrix: string[][]): {
   }
 
   const { index, headers } = header;
-  const iScheme = colIndex(headers, "scheme_name", "scheme", "scrip", "stock_name", "name");
-  const iCat = colIndex(headers, "category", "sub_category", "asset_class", "type");
+  const iScheme = colIndex(
+    headers,
+    "scheme_name",
+    "scheme",
+    "scrip",
+    "tradingsymbol",
+    "trading_symbol",
+    "symbol",
+    "instrument",
+    "stock_name",
+    "isin",
+    "name"
+  );
+  const iCat = colIndex(headers, "category", "sub_category", "asset_class", "security_type");
   const iStcg = colIndex(
     headers,
     "stcg",
@@ -303,8 +333,33 @@ function parseCapitalGainsMatrix(matrix: string[][]): {
     "long_term",
     "lt_gain"
   );
-  const iGain = colIndex(headers, "capital_gain", "gain_loss", "net_gain", "profit_loss", "returns");
-  const iHolding = colIndex(headers, "holding_period", "holding_days", "period");
+  const iGain = colIndex(
+    headers,
+    "capital_gain",
+    "gain_loss",
+    "net_gain",
+    "realised_p_l",
+    "realized_p_l",
+    "realised_profit_loss",
+    "realized_profit_loss",
+    "net_p_l",
+    "p_l",
+    "pnl",
+    "profit_loss",
+    "net_profit",
+    "profit",
+    "returns"
+  );
+  const iHolding = colIndex(
+    headers,
+    "holding_period",
+    "holding_days",
+    "trade_type",
+    "capital_gain_type",
+    "gain_type",
+    "term",
+    "period"
+  );
 
   let eqSt = 0;
   let eqLt = 0;
@@ -507,7 +562,7 @@ export function parseGrowwWorkbookBuffer(buffer: Buffer): GrowwXlsxParseResult {
     }
   }
 
-  if (Object.keys(mergedCg).length === 0) {
+  if (Object.keys(mergedCg).length === 0 && totalRows === 0) {
     return {
       kind: kind === "capital_gains" ? "capital_gains" : "unknown",
       fields,
@@ -523,6 +578,11 @@ export function parseGrowwWorkbookBuffer(buffer: Buffer): GrowwXlsxParseResult {
       ],
       parseMode: "failed",
     };
+  }
+
+  // A correctly structured broker P&L can legitimately contain only zero-value rows.
+  if (Object.keys(mergedCg).length === 0 && totalRows > 0) {
+    mergedCg.stcg_111a = 0;
   }
 
   const summaryBits = [

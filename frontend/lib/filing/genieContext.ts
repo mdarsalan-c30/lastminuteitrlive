@@ -20,6 +20,7 @@ export interface GenieChatContext {
   filingReady?: boolean;
   missingDocuments?: string[];
   mismatchResolved?: boolean;
+  hasOpenMismatch?: boolean;
   incomeTypes?: string[];
   deductions?: {
     section80C?: number;
@@ -33,7 +34,6 @@ export interface GenieChatContext {
   /** Parsed Form 16, CAMS, AIS, broker uploads */
   documents?: GenieDocumentSnapshot;
 }
-
 export function formatGenieContextBlock(context?: GenieChatContext): string {
   if (!context) return "";
 
@@ -46,18 +46,19 @@ export function formatGenieContextBlock(context?: GenieChatContext): string {
   if (context.recommendedRegime && context.recommendedRegime !== context.regime) {
     lines.push(`• Engine recommends: ${context.recommendedRegime} regime`);
   }
-  if (context.grossSalary != null && context.grossSalary > 0) {
-    lines.push(`• Gross salary: ₹${context.grossSalary.toLocaleString("en-IN")}`);
+  const money = (value: number) => Math.round(Math.abs(value)).toLocaleString("en-IN");
+  if (context.grossSalary != null && context.grossSalary >= 1) {
+    lines.push(`• Gross salary: ₹${money(context.grossSalary)}`);
   }
-  if (context.taxableIncome != null) {
-    lines.push(`• Taxable income: ₹${context.taxableIncome.toLocaleString("en-IN")}`);
+  if (context.taxableIncome != null && Math.abs(context.taxableIncome) >= 1) {
+    lines.push(`• Taxable income: ₹${money(context.taxableIncome)}`);
   }
-  if (context.netPayable != null) {
+  if (context.netPayable != null && Math.abs(context.netPayable) >= 1) {
     const label = context.isRefund || context.netPayable < 0 ? "Est. refund" : "Est. tax due";
-    lines.push(`• ${label}: ₹${Math.abs(context.netPayable).toLocaleString("en-IN")}`);
+    lines.push(`• ${label}: ₹${money(context.netPayable)}`);
   }
-  if (context.taxSaving != null && context.taxSaving > 0) {
-    lines.push(`• Regime tax saving: ₹${context.taxSaving.toLocaleString("en-IN")}`);
+  if (context.taxSaving != null && context.taxSaving >= 1) {
+    lines.push(`• Regime tax saving: ₹${money(context.taxSaving)}`);
   }
   if (context.completenessScore != null) {
     lines.push(`• Draft completeness: ${Math.round(context.completenessScore)}%`);
@@ -65,7 +66,7 @@ export function formatGenieContextBlock(context?: GenieChatContext): string {
   if (context.filingReady != null) {
     lines.push(`• Filing ready: ${context.filingReady ? "yes" : "not yet"}`);
   }
-  if (context.mismatchResolved === false) {
+  if (context.hasOpenMismatch) {
     lines.push(`• ⚠ Salary/AIS mismatch not resolved yet`);
   }
   if (context.missingDocuments?.length) {
@@ -98,34 +99,4 @@ export function formatGenieContextBlock(context?: GenieChatContext): string {
   }
 
   return lines.length > 1 ? lines.join("\n") : "";
-}
-
-export function buildPersonalizationFooter(context?: GenieChatContext): string {
-  if (!context) return "";
-  const lines: string[] = [];
-
-  if (context.recommendedForm) {
-    lines.push(`Your draft suggests **${context.recommendedForm}**`);
-  }
-  if (context.recommendedRegime && context.taxSaving != null && context.taxSaving > 0) {
-    lines.push(
-      `${context.recommendedRegime === "old" ? "Old" : "New"} regime looks lower by ₹${context.taxSaving.toLocaleString("en-IN")} on your numbers`
-    );
-  }
-  if (context.netPayable != null) {
-    if (context.netPayable < 0) {
-      lines.push(`Estimated refund: ₹${Math.abs(context.netPayable).toLocaleString("en-IN")}`);
-    } else if (context.netPayable > 0) {
-      lines.push(`Estimated tax due: ₹${context.netPayable.toLocaleString("en-IN")}`);
-    }
-  }
-  if (context.mismatchResolved === false) {
-    lines.push("Fix AIS/Form 16 mismatches on Review before paying");
-  }
-  if (context.missingDocuments?.length) {
-    lines.push(`Still need: ${context.missingDocuments[0]}`);
-  }
-
-  if (lines.length === 0) return "";
-  return `\n\nFor your return:\n${lines.map((l) => `• ${l.replace(/\*\*/g, "")}`).join("\n")}`;
 }

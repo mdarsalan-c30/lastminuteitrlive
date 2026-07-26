@@ -48,7 +48,7 @@ export function ActiveAiCompanion() {
   const lastStepRef = useRef<string>("");
 
   const currentStep = stepFromPathname(pathname);
-  const { handoff, result } = useDraftTaxCompute({ readOnly: true });
+  const { result } = useDraftTaxCompute({ readOnly: true });
 
   const netPayable = useMemo(() => {
     if (!result?.regime_comparison) return undefined;
@@ -71,6 +71,19 @@ export function ActiveAiCompanion() {
       capitalGains,
       documentFacts,
     });
+    const hasOpenMismatch =
+      connectedConnectors.includes("ais") &&
+      typeof aisFigures?.grossSalary === "number" &&
+      income.grossSalary > 0 &&
+      Math.abs(aisFigures.grossSalary - income.grossSalary) > 100 &&
+      !mismatchResolved;
+    const missingDocuments = result?.confidence?.missing_documents?.filter((document) => {
+      const normalized = document.toLowerCase().replace(/\s+/g, "");
+      if (normalized.includes("form16")) return !connectedConnectors.includes("form16");
+      if (normalized.includes("26as")) return !connectedConnectors.includes("form26as");
+      if (normalized.includes("ais")) return !connectedConnectors.includes("ais");
+      return true;
+    });
 
     return {
       step: currentStep,
@@ -86,8 +99,9 @@ export function ActiveAiCompanion() {
       filingFor: name || undefined,
       completenessScore: result?.confidence?.completeness_score,
       filingReady: result?.confidence?.filing_ready,
-      missingDocuments: result?.confidence?.missing_documents,
+      missingDocuments,
       mismatchResolved,
+      hasOpenMismatch,
       incomeTypes: incomeChips.length ? [...incomeChips] : undefined,
       deductions: {
         section80C: deductions.section80C || undefined,
@@ -175,56 +189,7 @@ export function ActiveAiCompanion() {
       setInputText("");
       setLoading(true);
 
-      const normalized = question.toLowerCase().trim();
-
-      if (normalized === "get expert ca advice") {
-        if (!handoff) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: `genie_${Date.now()}`,
-              role: "assistant",
-              text:
-                "• Fill in your income details first on the Review screen\n• Then ask again — I'll analyse your draft\n• Or go to Regime to run the tax engine",
-            },
-          ]);
-          setLoading(false);
-          return;
-        }
-        try {
-          const res = await fetch("/api/layer2", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(handoff),
-          });
-          const data = await res.json();
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: `genie_${Date.now()}`,
-              role: "assistant",
-              text: data.advice || "No advice returned.",
-            },
-          ]);
-        } catch {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: `genie_${Date.now()}`,
-              role: "assistant",
-              text: "• CA advice is temporarily unavailable\n• Try again in a minute\n• Your draft is saved",
-            },
-          ]);
-        } finally {
-          setLoading(false);
-        }
-        return;
-      }
-
       try {
-        // #region agent log
-        fetch('http://127.0.0.1:7563/ingest/b08ac730-6614-46b3-bb0c-a50e7f63316c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'2c61ed'},body:JSON.stringify({sessionId:'2c61ed',location:'ActiveAiCompanion.tsx:send',message:'chat request context',data:{connectors:genieContext.documents?.connectedConnectors??[],grossSalary:genieContext.documents?.form16?.grossSalary??null,question:question.trim().slice(0,80)},timestamp:Date.now(),hypothesisId:'H5'})}).catch(()=>{});
-        // #endregion
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -256,14 +221,14 @@ export function ActiveAiCompanion() {
             id: `genie_${Date.now()}`,
             role: "assistant",
             text:
-              "• Network issue — try again\n• Common tips: 80C max ₹1.5L, gross salary is Form 16 Box 17(1)\n• Use Refresh in the header if your numbers look wrong",
+              "I couldn't connect to the Filing Assistant just now. Your draft is still saved. Please try again in a moment—I won't guess an answer without checking your details.",
           },
         ]);
       } finally {
         setLoading(false);
       }
     },
-    [genieContext, handoff, loading]
+    [genieContext, loading]
   );
 
   const currentFieldGuidance = activeField ? FIELD_GUIDANCE[activeField] : null;

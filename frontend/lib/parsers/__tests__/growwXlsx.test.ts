@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import * as XLSX from "xlsx";
 import {
   isSpreadsheetFile,
   parseGrowwWorkbookBuffer,
@@ -46,5 +47,41 @@ describe("parseGrowwWorkbookBuffer", () => {
       )
     ).toBe(true);
     expect(isSpreadsheetFile("report.pdf", "application/pdf")).toBe(false);
+  });
+
+  it("extracts Zerodha trade-wise realised P&L columns", () => {
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet([
+      ["Symbol", "ISIN", "Trade Type", "Realized P&L"],
+      ["INFY", "INE009A01021", "Short Term", 1250],
+      ["TCS", "INE467B01029", "Long Term", -400],
+    ]);
+    XLSX.utils.book_append_sheet(workbook, sheet, "Equity P&L");
+
+    const result = parseGrowwWorkbookBuffer(
+      XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
+    );
+
+    expect(result.parseMode).toBe("extracted");
+    expect(result.capitalGains.stcg_111a).toBe(1250);
+    expect(result.capitalGains.ltcl).toBe(400);
+  });
+
+  it("extracts Groww realised P&L with symbol instead of scheme", () => {
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet([
+      ["Trading Symbol", "Holding Period", "Realised P/L"],
+      ["HDFCBANK", "180", 800],
+      ["RELIANCE", "Long term", 600],
+    ]);
+    XLSX.utils.book_append_sheet(workbook, sheet, "Stocks P&L");
+
+    const result = parseGrowwWorkbookBuffer(
+      XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
+    );
+
+    expect(result.parseMode).toBe("extracted");
+    expect(result.capitalGains.stcg_111a).toBe(800);
+    expect(result.capitalGains.ltcg_112a).toBe(600);
   });
 });

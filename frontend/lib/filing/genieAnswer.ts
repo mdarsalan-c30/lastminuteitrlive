@@ -1,27 +1,20 @@
 import { completeGeminiText } from "@/lib/ai/providers/geminiText";
 import { isGeminiConfigured } from "@/lib/ai/providers/gemini";
+import { completeFilingAssistantText } from "@/lib/ai/groqAdvisor";
 import { lookupLocalAnswer } from "@/lib/filing/genieKnowledge";
-import {
-  buildPersonalizationFooter,
-  formatGenieContextBlock,
-  type GenieChatContext,
-} from "@/lib/filing/genieContext";
+import { formatGenieContextBlock, type GenieChatContext } from "@/lib/filing/genieContext";
 import {
   bestRetrievalScore,
   retrieveGenieChunks,
   type RetrievedChunk,
 } from "@/lib/filing/genieRetrieval";
-import {
-  buildGenieSystemPrompt,
-  buildGenieUserPrompt,
-} from "@/lib/filing/geniePrompt";
+import { buildGenieSystemPrompt, buildGenieUserPrompt } from "@/lib/filing/geniePrompt";
 import {
   answerFromDocuments,
   isDocumentPersonalQuestion,
 } from "@/lib/filing/genieDocumentContext";
 
 export type GenieAnswerSource = "local" | "retrieved" | "llm" | "fallback" | "documents";
-
 export interface GenieAnswerResult {
   text: string;
   source: GenieAnswerSource;
@@ -30,187 +23,139 @@ export interface GenieAnswerResult {
 }
 
 const RETRIEVAL_COMPOSE_THRESHOLD = 8;
-const HIGH_CONFIDENCE_LOCAL = 1;
+const FALLBACK_ANSWER =
+  "I couldn't verify enough information to answer that safely, so I won't guess. Tell me the document or field you want to check—for example, “salary in my Form 16” or “why is AIS different?”";
 
-function formatCitations(chunks: RetrievedChunk[]): Array<{ title: string; href: string }> {
+function formatCitations(chunks: RetrievedChunk[]) {
   return chunks
-    .filter((c) => c.href)
+    .filter((chunk) => chunk.href)
     .slice(0, 2)
-    .map((c) => ({ title: c.title, href: c.href! }));
+    .map((chunk) => ({ title: chunk.title, href: chunk.href! }));
 }
 
-function citationsText(citations: Array<{ title: string; href: string }>): string {
-  if (!citations.length) return "";
-  return citations.map((c) => `• ${c.title}: ${c.href}`).join("\n");
+function citationsText(citations: Array<{ title: string; href: string }>) {
+  return citations.map((citation) => `• ${citation.title}: ${citation.href}`).join("\n");
 }
 
-/** Turn retrieved chunks into a composed bullet answer (no LLM). */
-function composeFromRetrieval(
-  question: string,
-  chunks: RetrievedChunk[],
-  context?: GenieChatContext
-): string {
+function composeFromRetrieval(chunks: RetrievedChunk[]): string {
   const top = chunks[0];
-  const lines: string[] = [];
-
-  // Extract bullet lines from top chunk
-  const bulletLines = top.text
+  const lines = top.text
     .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l.startsWith("•") || l.startsWith("-") || l.startsWith("Q:"));
-
-  if (bulletLines.length >= 2) {
-    lines.push(...bulletLines.slice(0, 7));
-  } else {
-    // Summarize first chunk into bullets
-    const sentences = top.text
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith("•") || line.startsWith("-") || line.startsWith("Q:"))
+    .slice(0, 7);
+  if (lines.length < 2) {
+    lines.length = 0;
+    for (const sentence of top.text
       .replace(/\n+/g, " ")
       .split(/(?<=[.!?])\s+/)
-      .filter((s) => s.length > 20)
-      .slice(0, 5);
-    for (const s of sentences) {
-      lines.push(`• ${s.trim()}`);
+      .filter((item) => item.length > 20)
+      .slice(0, 5)) {
+      lines.push(`• ${sentence.trim()}`);
     }
   }
-
-  // Add second chunk insight if different topic
-  if (chunks[1] && chunks[1].score >= RETRIEVAL_COMPOSE_THRESHOLD) {
-    const extra = chunks[1].text
-      .split("\n")
-      .find((l) => l.trim().startsWith("•"));
-    if (extra && !lines.includes(extra)) {
-      lines.push(extra.trim());
-    }
-  }
-
   const citations = formatCitations(chunks);
-  if (citations.length) {
-    lines.push(`• Read more: ${citations[0].title}`);
-  }
-
-  const footer = buildPersonalizationFooter(context);
-  return lines.join("\n") + footer;
+  if (citations.length) lines.push(`• Read more: ${citations[0].title}`);
+  return lines.join("\n");
 }
 
 function formatRetrievedExcerpts(chunks: RetrievedChunk[]): string {
   return chunks
     .slice(0, 3)
     .map(
-      (c, i) =>
-        `[${i + 1}] ${c.title} (${c.source})\n${c.text.slice(0, 600)}${c.text.length > 600 ? "…" : ""}`
+      (chunk, index) =>
+        `[${index + 1}] ${chunk.title} (${chunk.source})\n${chunk.text.slice(0, 600)}${
+          chunk.text.length > 600 ? "…" : ""
+        }`
     )
     .join("\n\n");
 }
 
-const FALLBACK_ANSWER =
-  "• I want to give you the right answer — try rephrasing with more detail\n• Examples: \"Can I claim HRA in new regime?\", \"ITR-2 vs ITR-3 for F&O\", \"How to fix AIS mismatch\"\n• Or tap a suggested question below\n• For your exact tax numbers, check the Review screen";
-
-/**
- * Main Genie answer pipeline: local KB → content retrieval → Gemini LLM.
- */
 export async function answerGenieQuestion(
   question: string,
   context?: GenieChatContext
 ): Promise<GenieAnswerResult> {
   const trimmed = question.trim();
-  if (!trimmed) {
-    return { text: FALLBACK_ANSWER, source: "fallback", confidence: 0 };
+  if (!trimmed) return { text: FALLBACK_ANSWER, source: "fallback", confidence: 0 };
+
+  if (/^(ok|okay|thanks|thank you|got it|cool|great)[\s!.]*$/i.test(trimmed)) {
+    return {
+      text: "You're welcome. Ask me about any field, uploaded document, or tax calculation whenever you need help.",
+      source: "local",
+      confidence: 1,
+    };
   }
 
-  // Layer 0: Answer from uploaded Form 16 / CAMS / AIS / broker files
   const docLayerActive =
     (context?.documents?.connectedConnectors.length ?? 0) > 0 ||
     isDocumentPersonalQuestion(trimmed);
-  // #region agent log
-  fetch('http://127.0.0.1:7563/ingest/b08ac730-6614-46b3-bb0c-a50e7f63316c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'2c61ed'},body:JSON.stringify({sessionId:'2c61ed',location:'genieAnswer.ts:layer0',message:'document layer check',data:{docLayerActive,connectorCount:context?.documents?.connectedConnectors.length??0,question:trimmed.slice(0,80),isPersonal:isDocumentPersonalQuestion(trimmed)},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
-  // #endregion
   if (docLayerActive) {
     const docAnswer = answerFromDocuments(trimmed, context?.documents);
-    // #region agent log
-    fetch('http://127.0.0.1:7563/ingest/b08ac730-6614-46b3-bb0c-a50e7f63316c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'2c61ed'},body:JSON.stringify({sessionId:'2c61ed',location:'genieAnswer.ts:layer0',message:'document answer result',data:{hasAnswer:!!docAnswer,preview:docAnswer?.slice(0,120)??null},timestamp:Date.now(),hypothesisId:'H3'})}).catch(()=>{});
-    // #endregion
     if (docAnswer) {
-      const footer = buildPersonalizationFooter(context);
-      const text =
-        footer && !docAnswer.includes("For your return")
-          ? docAnswer + footer
-          : docAnswer;
       return {
-        text,
+        text: docAnswer,
         source: "documents",
         confidence: context?.documents?.connectedConnectors.length ? 0.95 : 0.5,
       };
     }
   }
 
-  // Layer 1: Exact local keyword match (fast path)
   const local = lookupLocalAnswer(trimmed);
-  if (local) {
-    const footer = buildPersonalizationFooter(context);
-    return {
-      text: local + footer,
-      source: "local",
-      confidence: HIGH_CONFIDENCE_LOCAL,
-    };
-  }
+  if (local) return { text: local, source: "local", confidence: 1 };
 
-  // Layer 2: Retrieve from learn articles, help, glossary, rules (~150+ chunks)
   const retrieved = retrieveGenieChunks(trimmed, context, 5);
   const topScore = bestRetrievalScore(retrieved);
   const citations = formatCitations(retrieved);
-
   if (topScore >= RETRIEVAL_COMPOSE_THRESHOLD) {
     return {
-      text: composeFromRetrieval(trimmed, retrieved, context),
+      text: composeFromRetrieval(retrieved),
       source: "retrieved",
       confidence: Math.min(0.95, topScore / 20),
       citations,
     };
   }
 
-  // Layer 3: Gemini with full context + retrieved excerpts
-  if (isGeminiConfigured()) {
-    const contextBlock = formatGenieContextBlock(context);
-    const retrievedExcerpts = formatRetrievedExcerpts(retrieved);
-    const citeBlock = citationsText(citations);
+  const contextBlock = formatGenieContextBlock(context);
+  const retrievedExcerpts = formatRetrievedExcerpts(retrieved);
+  const citeBlock = citationsText(citations);
+  const prompt = buildGenieUserPrompt({
+    question: trimmed,
+    contextBlock,
+    retrievedExcerpts,
+    citations: citeBlock,
+  });
 
+  try {
+    const content = await completeFilingAssistantText({
+      systemPrompt: buildGenieSystemPrompt(trimmed),
+      userPrompt: prompt,
+    });
+    if (content.trim()) {
+      return { text: content.trim(), source: "llm", confidence: 0.75, citations };
+    }
+  } catch {
+    // Continue to the legacy Gemini provider or a grounded local answer.
+  }
+
+  if (isGeminiConfigured()) {
     const result = await completeGeminiText({
       systemPrompt: buildGenieSystemPrompt(trimmed),
-      userPrompt: buildGenieUserPrompt({
-        question: trimmed,
-        contextBlock,
-        retrievedExcerpts,
-        citations: citeBlock,
-      }),
+      userPrompt: prompt,
       maxOutputTokens: 800,
-      temperature: 0.35,
+      temperature: 0.25,
     });
-
     if (!("error" in result)) {
-      const footer = buildPersonalizationFooter(context);
-      const llmText = result.content + (footer && !result.content.includes("For your return") ? footer : "");
-      return {
-        text: llmText,
-        source: "llm",
-        confidence: 0.7,
-        citations,
-      };
+      return { text: result.content, source: "llm", confidence: 0.7, citations };
     }
   }
 
-  // Layer 4: Weak retrieval without LLM — still better than generic fallback
   if (retrieved.length > 0 && topScore >= 3) {
     return {
-      text: composeFromRetrieval(trimmed, retrieved, context),
+      text: composeFromRetrieval(retrieved),
       source: "retrieved",
       confidence: topScore / 30,
       citations,
     };
   }
-
-  return {
-    text: FALLBACK_ANSWER,
-    source: "fallback",
-    confidence: 0.1,
-  };
+  return { text: FALLBACK_ANSWER, source: "fallback", confidence: 0.1 };
 }
