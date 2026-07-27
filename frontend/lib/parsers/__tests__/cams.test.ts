@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   isCamsCapitalGainStatement,
+  isCamsConsolidatedAccountStatement,
   parseCamsCgText,
 } from "../cams";
 
@@ -35,5 +36,21 @@ describe("parseCamsCgText", () => {
   it("fails clearly on non-CAMS text", () => {
     const result = parseCamsCgText("FORM NO. 16\nGross Salary 100000");
     expect(result.parseMode).toBe("failed");
+  });
+
+  it("identifies a CAMS/KFintech consolidated account statement separately", () => {
+    const cas = `
+      KFINTECH CAMS
+      Consolidated Account Statement
+      PORTFOLIO SUMMARY
+      This statement lists transactions, balances and valuation of Mutual Funds.
+    `;
+    expect(isCamsCapitalGainStatement(cas)).toBe(false);
+    expect(isCamsConsolidatedAccountStatement(cas)).toBe(true);
+
+    const result = parseCamsCgText(cas);
+    expect(result.parseMode).toBe("failed");
+    expect(result.warnings[0]).toContain("Consolidated Account Statement");
+    expect(result.warnings[1]).toContain("tax-ready STCG/LTCG");
   });
 });

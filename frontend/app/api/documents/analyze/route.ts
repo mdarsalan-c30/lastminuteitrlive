@@ -4,6 +4,7 @@ import { isKnownConnector, isLiveConnector } from "@/lib/connectors/registry";
 import { parseAisOrTisText } from "@/lib/parsers/ais";
 import {
   isCamsCapitalGainStatement,
+  isCamsConsolidatedAccountStatement,
   parseCamsCgText,
 } from "@/lib/parsers/cams";
 import {
@@ -197,13 +198,22 @@ export async function POST(request: NextRequest) {
         if (isCamsCapitalGainStatement(text) || connectorId === "cams") {
           const parsed = parseCamsCgText(text);
           if (parsed.parseMode === "failed") {
+            const isCas = isCamsConsolidatedAccountStatement(text);
             return NextResponse.json(
               {
                 error:
                   parsed.warnings[0] ??
                   "Could not extract capital gains from this PDF. Check the password.",
-                code: "parse_failed",
+                code: isCas ? "wrong_cams_document" : "parse_failed",
                 warnings: parsed.warnings,
+                guidance: isCas
+                  ? [
+                      "Open CAMS/KFintech and request a Capital Gain/Loss Statement, not a Consolidated Account Statement.",
+                      "Select the financial year used for this ITR, download the PDF, and upload it here.",
+                    ]
+                  : [
+                      "Upload a report that clearly shows Short Term and Long Term Capital Gain/Loss totals.",
+                    ],
               },
               { status: 422 }
             );

@@ -85,6 +85,16 @@ export function isCamsCapitalGainStatement(text: string): boolean {
   );
 }
 
+export function isCamsConsolidatedAccountStatement(text: string): boolean {
+  const t = text.toLowerCase();
+  return (
+    (t.includes("consolidated account statement") ||
+      t.includes("portfolio summary")) &&
+    (t.includes("cams") || t.includes("kfintech")) &&
+    !isCamsCapitalGainStatement(text)
+  );
+}
+
 function extractPan(text: string): string | undefined {
   const m = text.match(/\bPAN\s*:\s*([A-Z]{5}\d{4}[A-Z])\b/i);
   if (m) return m[1].toUpperCase();
@@ -289,6 +299,7 @@ export function parseCamsCgText(text: string): CamsParseResult {
   }
 
   if (!isCamsCapitalGainStatement(text)) {
+    const isCas = isCamsConsolidatedAccountStatement(text);
     return {
       kind: "cams_cg",
       fields: {},
@@ -296,7 +307,12 @@ export function parseCamsCgText(text: string): CamsParseResult {
       facts: [],
       summary: [],
       warnings: [
-        "This does not look like a CAMS Capital Gain / Loss statement. Upload the CG statement (not CAS holdings-only).",
+        isCas
+          ? "This is a CAMS/KFintech Consolidated Account Statement (CAS), not a Capital Gain/Loss report. Download the Capital Gain/Loss Statement for the correct financial year and upload that file."
+          : "This is not a supported CAMS Capital Gain/Loss report. Download the Capital Gain/Loss Statement for the correct financial year and upload that file.",
+        isCas
+          ? "A CAS shows holdings and transactions, but it does not provide the final tax-ready STCG/LTCG split needed for a reliable import."
+          : "The report should clearly include Short Term Capital Gain and Long Term Capital Gain totals.",
       ],
       parseMode: "failed",
     };
