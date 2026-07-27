@@ -350,6 +350,45 @@ function parseBrokerTaxPnlSummaries(
       otherSt += debtSt ?? 0;
       otherLt += debtLt ?? 0;
     }
+    if (name === "summary") {
+      const deliverySt =
+        (valueFor(matrix, "taxable_delivery_p_l_stcg_excluding_buyback") ?? 0) +
+        (valueFor(matrix, "taxable_delivery_p_l_stcg_for_buyback") ?? 0);
+      const deliveryLt =
+        (valueFor(matrix, "taxable_delivery_p_l_ltcg_excluding_buyback") ?? 0) +
+        (valueFor(matrix, "taxable_delivery_p_l_ltcg_for_buyback") ?? 0);
+      const intraday = valueFor(matrix, "taxable_intraday_p_l_speculative");
+      const futuresProfit = valueFor(matrix, "taxable_futures_p_l_non_speculative");
+      const optionsProfit = valueFor(matrix, "taxable_options_p_l_non_speculative");
+      const futuresTurnover = valueFor(matrix, "future_turnover");
+      const optionsTurnover = valueFor(matrix, "options_turnover");
+      if (
+        [
+          deliverySt,
+          deliveryLt,
+          intraday,
+          futuresProfit,
+          optionsProfit,
+          futuresTurnover,
+          optionsTurnover,
+        ].some((value) => value !== undefined)
+      ) {
+        found = true;
+        equitySt += deliverySt;
+        equityLt += deliveryLt;
+        if (intraday !== undefined) businessIncome.fnoSpeculativeProfit = intraday;
+        if (futuresProfit !== undefined || optionsProfit !== undefined) {
+          businessIncome.fnoNonSpeculativeProfit = round2(
+            (futuresProfit ?? 0) + (optionsProfit ?? 0)
+          );
+        }
+        if (futuresTurnover !== undefined || optionsTurnover !== undefined) {
+          businessIncome.fnoTurnover = round2(
+            (futuresTurnover ?? 0) + (optionsTurnover ?? 0)
+          );
+        }
+      }
+    }
     if (name === "f_o" || name === "f_o_") {
       const optionsProfit = valueFor(matrix, "options_realized_profit");
       const futuresProfit = valueFor(matrix, "futures_realized_profit");

@@ -181,4 +181,44 @@ describe("parseGrowwWorkbookBuffer", () => {
     expect(result.capitalGains.stcl_equity).toBe(200);
     expect(result.capitalGains.ltcg_other).toBe(350);
   });
+
+  it("parses Angel One Summary without summing detailed trade sheets", () => {
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.aoa_to_sheet([
+        ["Financial Year", "2025-2026"],
+        ["Total Taxable P&L", -1000],
+        ["Taxable Delivery P&L (LTCG) Excluding Buyback", -600],
+        ["Taxable Delivery P&L (STCG) Excluding Buyback", 800],
+        ["Taxable Delivery P&L (LTCG) for Buyback", 0],
+        ["Taxable Delivery P&L (STCG) for Buyback", 50],
+        ["Taxable Intraday  P&L (Speculative)", 200],
+        ["Taxable Futures P&L (Non Speculative)", -300],
+        ["Taxable Options P&L (Non Speculative)", -400],
+        ["Future Turnover", 1000],
+        ["Options Turnover", 5000],
+      ]),
+      "Summary"
+    );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.aoa_to_sheet([
+        ["Taxable P&L", "Turnover"],
+        [999999, 999999],
+      ]),
+      "Derivatives Trade Details"
+    );
+
+    const result = parseGrowwWorkbookBuffer(
+      XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
+    );
+
+    expect(result.parseMode).toBe("extracted");
+    expect(result.capitalGains.stcg_111a).toBe(850);
+    expect(result.capitalGains.ltcl).toBe(600);
+    expect(result.businessIncome?.fnoSpeculativeProfit).toBe(200);
+    expect(result.businessIncome?.fnoNonSpeculativeProfit).toBe(-700);
+    expect(result.businessIncome?.fnoTurnover).toBe(6000);
+  });
 });
