@@ -10,7 +10,7 @@ if [[ "$(pwd)" != "$APP_DIR" || ! -f package.json ]]; then
 fi
 
 stamp="$(date +%Y%m%d%H%M%S)"
-build_dir=".next-build-${stamp}"
+build_dir=".next-build"
 previous_dir=".next-previous-${stamp}"
 
 cleanup_failed_build() {
@@ -26,7 +26,7 @@ NEXT_DIST_DIR="$build_dir" npm run build
 # Keep the preceding release's hashed assets so already-open browser tabs do not
 # lose their CSS/JS immediately after a deployment.
 if [[ -d .next/static ]]; then
-  cp -a -n .next/static/. "$build_dir/static/"
+  cp -a --update=none .next/static/. "$build_dir/static/"
 fi
 
 mv -- .next "$previous_dir"
