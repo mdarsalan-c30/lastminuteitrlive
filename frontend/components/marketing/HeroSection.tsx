@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { RegimeComparatorHero } from "@/components/marketing/RegimeComparatorHero";
 import { CaRegistrationForm } from "@/components/marketing/CaRegistrationForm";
 import { HERO_HEADLINE_ACCENT } from "@/lib/brand";
@@ -23,6 +24,22 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
       className="relative overflow-hidden"
       style={{ padding: "32px 0 16px", background: "#FAFAFB" }}
     >
+      {mode === "b2c" && (
+        <div
+          className="pointer-events-none absolute right-2 top-2 z-20 hidden w-64 rotate-3 drop-shadow-[0_12px_18px_rgba(14,95,99,0.18)] min-[1100px]:block"
+          aria-hidden
+        >
+          <Image
+            src="/coupon-narnia.png"
+            alt=""
+            width={1600}
+            height={1200}
+            priority
+            className="h-auto w-full"
+          />
+        </div>
+      )}
+
       {/* Background orbs */}
       <div
         className="hero-orb"
