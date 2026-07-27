@@ -8,7 +8,7 @@ import { PLAN_LIST, PLANS } from "@/lib/payments/plans";
 import { FilingLayout } from "@/components/filing/FilingLayout";
 import { PaywallValueStack } from "@/components/filing/PaywallValueStack";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
-import { CHECKOUT_PLANS, FILING_COMPANION } from "@/lib/copy/filing";
+import { CHECKOUT_PLANS } from "@/lib/copy/filing";
 import { CA_REVIEW_COMING_SOON } from "@/lib/copy/trust";
 import { companionStepCountForForm } from "@/lib/filing/confidence";
 import { resolveCheckoutGate } from "@/lib/filing/checkoutGate";
@@ -306,11 +306,7 @@ function PlansContent() {
           })}
         </div>
 
-        <div className="mx-auto mt-6 max-w-4xl rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-5">
-          <p className="text-sm leading-relaxed text-slate-600">
-            <strong className="text-slate-900">What happens next:</strong>{" "}
-            {CHECKOUT_PLANS.nextStep}
-          </p>
+        <div className="mx-auto mt-8 flex max-w-4xl flex-col items-center px-4 text-center">
           <Button
             href={
               gate.canCheckout && !checkoutBlocked
@@ -318,10 +314,13 @@ function PlansContent() {
                 : undefined
             }
             disabled={!gate.canCheckout || checkoutBlocked}
-            className="mt-4 w-full shrink-0 rounded-full bg-[#0e5f63] px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#0e5f63]/20 hover:bg-[#0b5458] sm:mt-0 sm:w-auto"
+            className="w-full rounded-full bg-[#0e5f63] px-10 py-4 text-base font-bold text-white shadow-lg shadow-[#0e5f63]/20 hover:bg-[#0b5458] sm:w-auto sm:min-w-[320px]"
           >
-            {FILING_COMPANION.paywallHeadline}
+            Continue to Secure Payment
           </Button>
+          <p className="mt-3 text-xs leading-relaxed text-slate-500">
+            Secure payment via Razorpay. Your filing guide unlocks after successful payment.
+          </p>
         </div>
       </div>
 
