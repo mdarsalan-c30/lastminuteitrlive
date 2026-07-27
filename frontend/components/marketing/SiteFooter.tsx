@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { PRICING_PLANS, SITE_NAME } from "@/lib/constants";
-import { getDisplayPricing, formatPlanPriceLabel } from "@/lib/marketing/pricing";
+import { formatPlanPriceLabel } from "@/lib/marketing/pricing";
+import { usePublishedPricingMap } from "@/lib/hooks/usePublishedPricing";
 
 const SUPPORT_EMAIL = "contact@lastminuteitr.in";
 
@@ -17,6 +18,7 @@ interface FooterLinkData {
 }
 
 export function SiteFooter() {
+  const publishedPricing = usePublishedPricingMap();
   const [dbLinks, setDbLinks] = useState<FooterLinkData[]>([]);
 
   useEffect(() => {
@@ -163,11 +165,11 @@ export function SiteFooter() {
           </span>
           <span className="flex flex-wrap gap-x-3 gap-y-1">
             {PRICING_PLANS.map((plan) => {
-              const pricing = getDisplayPricing(plan.id);
+              const pricing = publishedPricing[plan.id];
               return (
                 <span key={plan.id}>
                   {plan.name}:{" "}
-                  {formatPlanPriceLabel(pricing.current)}
+                  {pricing ? formatPlanPriceLabel(pricing.current) : plan.priceLabel}
                 </span>
               );
             })}

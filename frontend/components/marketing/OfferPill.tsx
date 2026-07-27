@@ -1,5 +1,8 @@
+"use client";
+
 import { LAUNCH_OFFER, OFFER_PILL_LABEL } from "@/lib/marketing/offer";
-import { getDisplayPricing, formatPlanPriceLabel } from "@/lib/marketing/pricing";
+import { formatPlanPriceLabel } from "@/lib/marketing/pricing";
+import { usePublishedPricing } from "@/lib/hooks/usePublishedPricing";
 import { cn } from "@/lib/utils";
 
 export interface OfferPillProps {
@@ -7,7 +10,7 @@ export interface OfferPillProps {
 }
 
 export function OfferPill({ className }: OfferPillProps) {
-  const pricing = getDisplayPricing(LAUNCH_OFFER.planId);
+  const pricing = usePublishedPricing(LAUNCH_OFFER.planId);
 
   if (!pricing.showOffer) {
     return null;

@@ -14,8 +14,8 @@ describe("launch offer pricing", () => {
     expect(isLaunchOfferActive(beforeExpiry)).toBe(true);
   });
 
-  it("is inactive after launchOfferEndsAt", () => {
-    expect(isLaunchOfferActive(afterExpiry)).toBe(false);
+  it("stays active until changed from admin pricing", () => {
+    expect(isLaunchOfferActive(afterExpiry)).toBe(true);
   });
 
   it("charges launch price for pro during offer", () => {
@@ -24,8 +24,8 @@ describe("launch offer pricing", () => {
     );
   });
 
-  it("uses catalog price for pro after expiry", () => {
-    expect(getEffectivePrice("pro", afterExpiry)).toBe(599);
+  it("uses the configured offer price for pro", () => {
+    expect(getEffectivePrice("pro", afterExpiry)).toBe(349);
   });
 
   it("keeps starter and free at catalog prices", () => {
@@ -45,7 +45,7 @@ describe("launch offer pricing", () => {
 
   it("hides offer styling after expiry when catalog has no original", () => {
     const display = getDisplayPricing("pro", afterExpiry);
-    expect(display.current).toBe(599);
+    expect(display.current).toBe(349);
     expect(display.showOffer).toBe(true);
     expect(display.original).toBe(1999);
   });

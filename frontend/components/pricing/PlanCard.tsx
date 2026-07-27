@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { Plan } from "@/lib/payments/plans";
-import { getDisplayPricing, formatPlanPriceLabel } from "@/lib/marketing/pricing";
+import { formatPlanPriceLabel } from "@/lib/marketing/pricing";
+import { usePublishedPricing } from "@/lib/hooks/usePublishedPricing";
 import { cn } from "@/lib/utils";
 
 export interface PlanCardProps {
@@ -35,7 +36,7 @@ export function PlanCard({
   const isCheckout = variant === "checkout";
   const isComingSoon = plan.comingSoon === true;
   const comingSoonFeatureSet = new Set(plan.comingSoonFeatures ?? []);
-  const displayPricing = getDisplayPricing(plan.id);
+  const displayPricing = usePublishedPricing(plan.id);
 
   const formatFeature = (feature: string) => {
     if (comingSoonFeatureSet.has(feature)) {

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
+import { usePublishedPricingMap } from "@/lib/hooks/usePublishedPricing";
 
 export default function PlansPage() {
   return (
@@ -34,6 +35,7 @@ export default function PlansPage() {
 function PlansContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const publishedPricing = usePublishedPricingMap();
 
   const {
     plan,
@@ -197,8 +199,10 @@ function PlansContent() {
             const isPopular = isRecommended || p.id === "pro";
 
             // Price formatting
-            const price = p.price ?? 0;
-            const originalPrice = p.originalPrice || Math.round(price * 1.45);
+            const displayPricing = publishedPricing[p.id];
+            const price = displayPricing?.current ?? p.price ?? 0;
+            const originalPrice =
+              displayPricing?.original ?? p.originalPrice;
             const features = p.features || [
               "Unlimited draft profile calculations",
               "AI document parsing & Form 16 upload",
@@ -240,11 +244,11 @@ function PlansContent() {
                   <div className="mb-6">
                     <div className="flex items-baseline gap-2">
                       <span className="text-4xl font-extrabold tracking-tight text-slate-900">
-                        ₹{price}
+                        ₹{price.toLocaleString("en-IN")}
                       </span>
-                      {originalPrice > price && (
+                      {originalPrice !== undefined && originalPrice > price && (
                         <span className="text-lg font-semibold text-slate-400 line-through">
-                          ₹{originalPrice}
+                          ₹{originalPrice.toLocaleString("en-IN")}
                         </span>
                       )}
                     </div>

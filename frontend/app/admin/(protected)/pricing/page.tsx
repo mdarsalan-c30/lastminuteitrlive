@@ -20,8 +20,9 @@ export default async function PricingPage() {
     return {
       planId: plan.id,
       name: getPlan(plan.id).name,
-      basePriceInr: row?.basePriceInr ?? plan.price,
-      offerPriceInr: row?.offerPriceInr ?? null,
+      basePriceInr: row?.basePriceInr ?? plan.originalPrice ?? plan.price,
+      offerPriceInr:
+        row?.offerPriceInr ?? (plan.originalPrice ? plan.price : null),
       offerEndsAt: row?.offerEndsAt ?? null,
     };
   });

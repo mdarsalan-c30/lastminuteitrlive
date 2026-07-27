@@ -13,7 +13,8 @@ import { COMPANION_ITD_DISCLAIMER } from "@/lib/copy/companion";
 import { FILING_COMPANION } from "@/lib/copy/filing";
 import type { PlanId } from "@/lib/filing/types";
 import { PLANS } from "@/lib/payments/plans";
-import { getDisplayPricing, formatPlanPriceLabel } from "@/lib/marketing/pricing";
+import { formatPlanPriceLabel } from "@/lib/marketing/pricing";
+import { usePublishedPricing } from "@/lib/hooks/usePublishedPricing";
 import { formatINR } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -45,7 +46,7 @@ export function PaywallValueStack({
   className,
 }: PaywallValueStackProps) {
   const plan = PLANS[recommendedPlan];
-  const displayPricing = getDisplayPricing(recommendedPlan);
+  const displayPricing = usePublishedPricing(recommendedPlan);
   const filingReady = completenessScore >= 90 && missingDocCount === 0;
 
   const items: ValueItem[] = [

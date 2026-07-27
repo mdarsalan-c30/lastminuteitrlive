@@ -35,6 +35,7 @@ export const PLANS: Record<PlanId, Plan> = {
     id: "normal",
     name: "Essential",
     price: 349,
+    originalPrice: 999,
     priceLabel: "₹349",
     description: "For salaried filers who want guided checks and a portal filing companion.",
     recommended: false,
@@ -49,8 +50,9 @@ export const PLANS: Record<PlanId, Plan> = {
   pro: {
     id: "pro",
     name: "Guided",
-    price: 599,
-    priceLabel: "₹599",
+    price: 349,
+    originalPrice: 1999,
+    priceLabel: "₹349",
     description:
       "Additional guided checks and priority support for more involved filing situations.",
     recommended: true,
@@ -102,8 +104,9 @@ export const PLANS: Record<PlanId, Plan> = {
   ai_smart: {
     id: "ai_smart",
     name: "Guided (Legacy)",
-    price: 599,
-    priceLabel: "₹599",
+    price: 349,
+    originalPrice: 1999,
+    priceLabel: "₹349",
     description: "Legacy plan id — maps to Guided pricing.",
     features: [],
   },

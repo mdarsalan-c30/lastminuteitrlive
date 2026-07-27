@@ -52,6 +52,16 @@ describe("pricing config propagation", () => {
     expect(await getPublishedPrice("ai_smart")).toBe(999);
   });
 
+  it("an offer without an end date stays active", async () => {
+    await upsertPricingRow({
+      planId: "normal",
+      basePriceInr: 999,
+      offerPriceInr: 349,
+      offerEndsAt: null,
+    });
+    expect(await getPublishedPrice("normal")).toBe(349);
+  });
+
   it("an expired offer falls back to the base price", async () => {
     const past = new Date(Date.now() - 86_400_000).toISOString();
     await upsertPricingRow({

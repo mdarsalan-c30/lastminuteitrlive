@@ -9,7 +9,7 @@ export interface DisplayPricing {
 
 export function isLaunchOfferActive(now: Date = new Date()): boolean {
   void now;
-  return false;
+  return true;
 }
 
 export function getEffectivePrice(planId: PlanId, now: Date = new Date()): number {
@@ -21,7 +21,13 @@ export function getDisplayPricing(
   planId: PlanId,
   now: Date = new Date()
 ): DisplayPricing {
-  return { current: getEffectivePrice(planId, now), showOffer: false };
+  const plan = PLANS[planId];
+  return {
+    current: getEffectivePrice(planId, now),
+    original: plan.originalPrice,
+    showOffer:
+      plan.originalPrice !== undefined && plan.originalPrice > plan.price,
+  };
 }
 
 export function formatPlanPriceLabel(amount: number): string {

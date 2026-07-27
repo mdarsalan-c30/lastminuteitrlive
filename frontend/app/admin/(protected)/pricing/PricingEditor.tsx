@@ -33,12 +33,12 @@ export function PricingEditor({ initial }: { initial: EditorRow[] }) {
     [rows, initial]
   );
 
-  const aiSmart = rows.find((r) => r.planId === "ai_smart");
+  const guided = rows.find((r) => r.planId === "pro");
   const now = Date.now();
   const offerActive =
-    aiSmart?.offerPriceInr != null &&
-    aiSmart.offerEndsAt != null &&
-    new Date(aiSmart.offerEndsAt).getTime() > now;
+    guided?.offerPriceInr != null &&
+    (guided.offerEndsAt == null ||
+      new Date(guided.offerEndsAt).getTime() > now);
 
   function patch(planId: PlanId, patch: Partial<EditorRow>) {
     setRows((rs) => rs.map((r) => (r.planId === planId ? { ...r, ...patch } : r)));
@@ -145,22 +145,22 @@ export function PricingEditor({ initial }: { initial: EditorRow[] }) {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
-            Marketing card preview — AI Smart
+            Marketing card preview — Guided
           </p>
-          {aiSmart && (
+          {guided && (
             <p className="text-lg font-semibold text-foreground">
               {offerActive ? (
                 <>
-                  {formatInr(aiSmart.offerPriceInr as number)}{" "}
+                  {formatInr(guided.offerPriceInr as number)}{" "}
                   <span className="text-sm font-normal text-muted-foreground line-through">
-                    {formatInr(aiSmart.basePriceInr)}
+                    {formatInr(guided.basePriceInr)}
                   </span>{" "}
                   <span className="text-xs font-medium text-emerald-600">
                     Launch offer
                   </span>
                 </>
               ) : (
-                formatInr(aiSmart.basePriceInr)
+                formatInr(guided.basePriceInr)
               )}
             </p>
           )}
@@ -171,15 +171,15 @@ export function PricingEditor({ initial }: { initial: EditorRow[] }) {
 
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
-            Checkout amount — AI Smart
+            Checkout amount — Guided
           </p>
-          {aiSmart && (
+          {guided && (
             <p className="text-lg font-semibold text-foreground">
               Razorpay order:{" "}
               {formatInr(
                 offerActive
-                  ? (aiSmart.offerPriceInr as number)
-                  : aiSmart.basePriceInr
+                  ? (guided.offerPriceInr as number)
+                  : guided.basePriceInr
               )}
             </p>
           )}

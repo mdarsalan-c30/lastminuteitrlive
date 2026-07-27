@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDraftStore } from "@/lib/store/draft";
 import { getPlan } from "@/lib/payments/plans";
-import { getEffectivePrice, getDisplayPricing, formatPlanPriceLabel } from "@/lib/marketing/pricing";
+import { formatPlanPriceLabel } from "@/lib/marketing/pricing";
+import { usePublishedPricing } from "@/lib/hooks/usePublishedPricing";
 import { FilingLayout } from "@/components/filing/FilingLayout";
 import RazorpayButton from "@/components/filing/checkout/RazorpayButton";
 import { usePaymentSession } from "@/lib/hooks/usePaymentSession";
@@ -34,8 +35,8 @@ export default function PaymentPage() {
   const { refresh: refreshPaymentSession } = usePaymentSession();
   
   const selectedPlan = getPlan(plan);
-  const basePrice = getEffectivePrice(plan);
-  const displayPricing = getDisplayPricing(plan);
+  const displayPricing = usePublishedPricing(plan);
+  const basePrice = displayPricing.current;
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const [couponCode, setCouponCode] = useState("");
@@ -216,7 +217,7 @@ export default function PaymentPage() {
           <div className="mb-6 pb-6 border-b border-slate-200">
             <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Amount Due</p>
             <div className="flex items-baseline justify-between">
-              <div className={validatedDiscount || isFree ? "" : "blur-sm opacity-40 flex-1"}>
+              <div className="flex-1">
                 {validatedDiscount ? (
                   <div className="space-y-1">
                     <p className="text-sm text-slate-500 line-through">
@@ -229,14 +230,19 @@ export default function PaymentPage() {
                 ) : isFree ? (
                   <p className="text-4xl font-black text-emerald-600">FREE</p>
                 ) : (
-                  <p className="text-4xl font-black text-slate-900">
-                    {formatPlanPriceLabel(basePrice)}
-                  </p>
+                  <div className="space-y-1">
+                    {displayPricing.showOffer &&
+                      displayPricing.original !== undefined && (
+                        <p className="text-sm text-slate-500 line-through">
+                          {formatPlanPriceLabel(displayPricing.original)}
+                        </p>
+                      )}
+                    <p className="text-4xl font-black text-slate-900">
+                      {formatPlanPriceLabel(basePrice)}
+                    </p>
+                  </div>
                 )}
               </div>
-              {!validatedDiscount && !isFree && (
-                <p className="text-xs text-slate-500 text-right">Apply coupon to unlock discount</p>
-              )}
             </div>
           </div>
 

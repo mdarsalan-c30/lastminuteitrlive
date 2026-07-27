@@ -37,8 +37,8 @@ export async function getPublishedPricing(
 
   const offerActive =
     row.offerPriceInr != null &&
-    row.offerEndsAt != null &&
-    now.getTime() < new Date(row.offerEndsAt).getTime();
+    (row.offerEndsAt == null ||
+      now.getTime() < new Date(row.offerEndsAt).getTime());
 
   if (offerActive) {
     return {
