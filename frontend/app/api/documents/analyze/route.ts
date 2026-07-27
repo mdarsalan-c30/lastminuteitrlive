@@ -301,7 +301,7 @@ export async function POST(request: NextRequest) {
         facts: parsed.facts,
         capitalGains: parsed.capitalGains,
         questions: [
-          "Confirm STCG / LTCG match your Groww Capital Gains report for the FY.",
+          "Confirm the imported figures match your broker Tax P&L or Capital Gains report for the FY.",
           "We keep one capital-gains statement at a time to avoid double counting — uploading another will replace these figures.",
         ],
         warnings: parsed.warnings,

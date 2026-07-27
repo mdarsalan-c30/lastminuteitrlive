@@ -799,8 +799,8 @@ export function parseGrowwWorkbookBuffer(buffer: Buffer): GrowwXlsxParseResult {
       summaryBits.join(" · "),
     ],
     warnings: [
-      "Confirm STCG/LTCG with your broker statement before filing.",
-      "Equity MF gains map to 111A / 112A; debt/other to slab / other LTCG buckets.",
+      "Confirm imported STCG, LTCG, intraday and F&O figures with the source report before filing.",
+      "Capital gains and business-income figures are kept in separate tax buckets.",
     ],
     parseMode: "extracted",
   };
