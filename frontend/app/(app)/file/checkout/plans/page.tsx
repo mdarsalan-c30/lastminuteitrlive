@@ -13,7 +13,7 @@ import { CA_REVIEW_COMING_SOON } from "@/lib/copy/trust";
 import { companionStepCountForForm } from "@/lib/filing/confidence";
 import { resolveCheckoutGate } from "@/lib/filing/checkoutGate";
 import { recommendPlanFromConfidence } from "@/lib/filing/planRecommendation";
-import { Banner, Button, FilingActions, ScreenTitle } from "@/components/filing/ui";
+import { Banner, Button, ScreenTitle } from "@/components/filing/ui";
 import {
   Accordion,
   AccordionContent,
@@ -305,6 +305,24 @@ function PlansContent() {
             );
           })}
         </div>
+
+        <div className="mx-auto mt-6 max-w-4xl rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-5">
+          <p className="text-sm leading-relaxed text-slate-600">
+            <strong className="text-slate-900">What happens next:</strong>{" "}
+            {CHECKOUT_PLANS.nextStep}
+          </p>
+          <Button
+            href={
+              gate.canCheckout && !checkoutBlocked
+                ? "/file/checkout/payment"
+                : undefined
+            }
+            disabled={!gate.canCheckout || checkoutBlocked}
+            className="mt-4 w-full shrink-0 rounded-full bg-[#0e5f63] px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#0e5f63]/20 hover:bg-[#0b5458] sm:mt-0 sm:w-auto"
+          >
+            {FILING_COMPANION.paywallHeadline}
+          </Button>
+        </div>
       </div>
 
       <p className="mb-6 text-center text-xs text-slate-500">
@@ -347,26 +365,6 @@ function PlansContent() {
         </Accordion>
       </div>
 
-      {/* Bottom Sticky Action Bar */}
-      <FilingActions
-        hint={
-          <p className="text-xs text-slate-500">
-            <strong>What happens next:</strong> {CHECKOUT_PLANS.nextStep}
-          </p>
-        }
-      >
-        <Button
-          href={
-            gate.canCheckout && !checkoutBlocked
-              ? "/file/checkout/payment"
-              : undefined
-          }
-          disabled={!gate.canCheckout || checkoutBlocked}
-          className="w-full rounded-full bg-[#0e5f63] py-3.5 px-8 text-sm font-bold text-white shadow-lg shadow-[#0e5f63]/20 hover:bg-[#0b5458] sm:w-auto"
-        >
-          {FILING_COMPANION.paywallHeadline}
-        </Button>
-      </FilingActions>
     </FilingLayout>
   );
 }
