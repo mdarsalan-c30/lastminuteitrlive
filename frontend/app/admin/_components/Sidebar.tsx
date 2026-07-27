@@ -41,6 +41,7 @@ const NAV: NavGroup[] = [
       { href: "/admin/blogs", label: "Blogs" },
       { href: "/admin/pages", label: "Pages" },
       { href: "/admin/reviews", label: "Reviews" },
+      { href: "/admin/hero-ribbon", label: "Hero Ribbon" },
       { href: "/admin/footer", label: "Footer Links" },
     ],
   },

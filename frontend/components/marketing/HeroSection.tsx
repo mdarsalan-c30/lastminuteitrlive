@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { RegimeComparatorHero } from "@/components/marketing/RegimeComparatorHero";
 import { CaRegistrationForm } from "@/components/marketing/CaRegistrationForm";
 import { HERO_HEADLINE_ACCENT } from "@/lib/brand";
@@ -13,30 +12,76 @@ import {
 } from "@/lib/copy/b2b";
 import { ASSESSMENT_YEAR } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
-import { useState } from "react";
+interface HeroRibbonConfig {
+  enabled: boolean;
+  imageUrl: string;
+  linkUrl: string | null;
+  altText: string;
+  showOnMobile: boolean;
+}
+
+const DEFAULT_HERO_RIBBON: HeroRibbonConfig = {
+  enabled: true,
+  imageUrl: "/coupon-narnia.png",
+  linkUrl: null,
+  altText: "₹349 offer — use code NARNIA for 10% discount",
+  showOnMobile: false,
+};
 
 export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (m: "b2c" | "b2b") => void }) {
+  const [ribbon, setRibbon] = useState(DEFAULT_HERO_RIBBON);
 
+  useEffect(() => {
+    let active = true;
+    fetch("/api/public/hero-ribbon", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Ribbon config unavailable");
+        return (await response.json()) as HeroRibbonConfig;
+      })
+      .then((config) => {
+        if (active) setRibbon(config);
+      })
+      .catch(() => {
+        // Keep the built-in ribbon if the public config cannot be read.
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <header
       className="relative overflow-hidden"
       style={{ padding: "32px 0 16px", background: "#FAFAFB" }}
     >
-      {mode === "b2c" && (
+      {mode === "b2c" && ribbon.enabled && (
         <div
-          className="pointer-events-none absolute right-2 top-2 z-20 hidden w-64 rotate-3 drop-shadow-[0_12px_18px_rgba(14,95,99,0.18)] min-[1100px]:block"
-          aria-hidden
+          className={cn(
+            "absolute right-2 top-2 z-20 rotate-3 drop-shadow-[0_12px_18px_rgba(14,95,99,0.18)]",
+            ribbon.showOnMobile
+              ? "block w-36 min-[700px]:w-48 min-[1100px]:w-64"
+              : "hidden w-64 min-[1100px]:block",
+            !ribbon.linkUrl && "pointer-events-none"
+          )}
         >
-          <Image
-            src="/coupon-narnia.png"
-            alt=""
-            width={1600}
-            height={1200}
-            priority
-            className="h-auto w-full"
-          />
+          {ribbon.linkUrl ? (
+            <a href={ribbon.linkUrl} aria-label={ribbon.altText}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={ribbon.imageUrl}
+                alt={ribbon.altText}
+                className="h-auto w-full transition-transform hover:scale-[1.03]"
+              />
+            </a>
+          ) : (
+            <img
+              src={ribbon.imageUrl}
+              alt={ribbon.altText}
+              className="h-auto w-full"
+            />
+          )}
         </div>
       )}
 

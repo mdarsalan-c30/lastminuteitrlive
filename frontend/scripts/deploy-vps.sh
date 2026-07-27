@@ -22,6 +22,7 @@ trap cleanup_failed_build ERR
 
 echo "Building release in $build_dir while the current site stays online..."
 NEXT_DIST_DIR="$build_dir" npm run build
+npx prisma migrate deploy
 
 # Keep the preceding release's hashed assets so already-open browser tabs do not
 # lose their CSS/JS immediately after a deployment.
