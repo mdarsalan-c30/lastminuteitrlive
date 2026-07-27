@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // VPS deploys build into a separate directory, then swaps it into place.
+  // This prevents the live server from losing CSS/JS while `next build` runs.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   eslint: {
     ignoreDuringBuilds: true,
   },
