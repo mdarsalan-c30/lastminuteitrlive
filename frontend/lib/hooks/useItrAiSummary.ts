@@ -6,7 +6,7 @@ import type {
   ItrSummaryPayload,
   ItrSummaryRequest,
 } from "@/lib/itr/summaryTypes";
-import type { LastParseResult } from "@/lib/store/draft";
+import type { CapitalGainsDraft, LastParseResult } from "@/lib/store/draft";
 import type { DeductionDraft, IncomeDraft } from "@/lib/store/draft";
 
 export interface UseItrAiSummaryInput {
@@ -14,6 +14,7 @@ export interface UseItrAiSummaryInput {
   deductions: DeductionDraft;
   lastParseResult: LastParseResult | null;
   connectedConnectors: string[];
+  capitalGains?: CapitalGainsDraft | null;
   taxSnapshot?: ItrSummaryRequest["taxSnapshot"];
   enabled?: boolean;
 }
@@ -23,6 +24,7 @@ export function useItrAiSummary({
   deductions,
   lastParseResult,
   connectedConnectors,
+  capitalGains,
   taxSnapshot,
   enabled = true,
 }: UseItrAiSummaryInput) {
@@ -38,8 +40,9 @@ export function useItrAiSummary({
         deductions,
         lastParseResult,
         connectedConnectors,
+        capitalGains,
       }),
-    [income, deductions, lastParseResult, connectedConnectors]
+    [income, deductions, lastParseResult, connectedConnectors, capitalGains]
   );
 
   const fetchKey = useMemo(

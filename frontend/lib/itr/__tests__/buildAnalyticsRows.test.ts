@@ -38,4 +38,43 @@ describe("buildAnalyticsRows", () => {
     expect(totals.Income).toBe(1_200_000 + 18_400);
     expect(totals.Deductions).toBe(150_000 + 25_000 + 50_000);
   });
+
+  it("shows broker capital gains and F&O without treating turnover as income", () => {
+    const rows = buildAnalyticsRows({
+      income: {
+        grossSalary: 0,
+        tds: 0,
+        fdInterest: 0,
+        employer: "",
+        advanceTax: 0,
+        selfAssessmentTax: 0,
+        hraReceived: 0,
+        actualRentPaid: 0,
+        cityTier: "metro",
+        fnoTurnover: 500_000,
+        fnoNonSpeculativeProfit: -80_000,
+        fnoSpeculativeProfit: 5_000,
+      },
+      deductions: {
+        section80C: 0,
+        section80D: 0,
+        section80GG: 0,
+        npsExtra: 0,
+      },
+      lastParseResult: null,
+      connectedConnectors: ["angelone"],
+      capitalGains: {
+        stcl_equity: 10_000,
+        ltcg_112a: 2_000,
+        sourceConnectorId: "angelone",
+      },
+    });
+
+    expect(rows.find((item) => item.particular.includes("F&O profit"))?.amount).toBe(-80_000);
+    expect(rows.find((item) => item.particular === "F&O turnover")?.includeInSubtotal).toBe(false);
+    expect(rows.find((item) => item.particular === "Short-term capital loss")?.amount).toBe(-10_000);
+    const totals = sectionSubtotals(rows);
+    expect(totals["Business income"]).toBe(-75_000);
+    expect(totals["Trading details"]).toBeUndefined();
+  });
 });

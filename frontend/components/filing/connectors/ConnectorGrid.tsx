@@ -363,7 +363,7 @@ export default function ConnectorGrid({
           fnoNonSpeculativeProfit != null ||
           fnoSpeculativeProfit != null
         ) {
-          ensureIncomeChip("business");
+          ensureIncomeChip("fno");
           setIncome({
             ...(fnoTurnover != null ? { fnoTurnover } : {}),
             ...(fnoNonSpeculativeProfit != null ? { fnoNonSpeculativeProfit } : {}),

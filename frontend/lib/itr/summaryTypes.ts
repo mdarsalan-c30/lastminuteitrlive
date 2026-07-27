@@ -7,6 +7,7 @@ export interface AnalyticsRow {
   source: string;
   confidence?: FieldConfidence;
   insight?: string;
+  includeInSubtotal?: boolean;
 }
 
 export interface ItrSummaryFlag {

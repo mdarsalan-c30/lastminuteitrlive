@@ -9,6 +9,7 @@ import {
 import type { ItrSummaryPayload } from "@/lib/itr/summaryTypes";
 import type {
   DeductionDraft,
+  CapitalGainsDraft,
   FieldConfidence,
   IncomeDraft,
   LastParseResult,
@@ -29,6 +30,7 @@ export interface ItrAnalyticsPanelProps {
   deductions: DeductionDraft;
   lastParseResult: LastParseResult | null;
   connectedConnectors: string[];
+  capitalGains?: CapitalGainsDraft | null;
   aiSummary: ItrSummaryPayload | null;
   aiLoading: boolean;
   aiEnabled: boolean;
@@ -67,6 +69,7 @@ export function ItrAnalyticsPanel({
   deductions,
   lastParseResult,
   connectedConnectors,
+  capitalGains,
   aiSummary,
   aiLoading,
   aiEnabled,
@@ -79,8 +82,9 @@ export function ItrAnalyticsPanel({
         deductions,
         lastParseResult,
         connectedConnectors,
+        capitalGains,
       }),
-    [income, deductions, lastParseResult, connectedConnectors]
+    [income, deductions, lastParseResult, connectedConnectors, capitalGains]
   );
 
   const subtotals = useMemo(() => sectionSubtotals(rows), [rows]);

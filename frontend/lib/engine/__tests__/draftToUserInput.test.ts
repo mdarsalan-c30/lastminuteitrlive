@@ -404,4 +404,24 @@ describe("draftToUserInput", () => {
     expect(input.business?.depreciation_blocks?.[0]?.opening_wdv).toBe(1_000_000);
     expect(input.business?.depreciation_blocks?.[0]?.rate).toBe(0.15);
   });
+
+  it("maps imported F&O values even when an older draft lacks the fno chip", () => {
+    const input = draftToUserInput(
+      baseDraft({
+        incomeChips: ["business"],
+        income: {
+          ...baseDraft().income,
+          grossSalary: 0,
+          fnoTurnover: 500_000,
+          fnoNonSpeculativeProfit: -80_000,
+          fnoSpeculativeProfit: 5_000,
+        },
+      })
+    );
+
+    expect(input.business?.business_type).toBe("regular_books");
+    expect(input.business?.fno_turnover).toBe(500_000);
+    expect(input.business?.fno_non_speculative_profit).toBe(-80_000);
+    expect(input.business?.fno_speculative_profit).toBe(5_000);
+  });
 });

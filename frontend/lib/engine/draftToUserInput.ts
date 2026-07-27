@@ -89,7 +89,11 @@ function businessFromChips(
   income: DraftState["income"],
   depreciationBlocks?: DepreciationBlockDraft[]
 ): BusinessInput | undefined {
-  if (incomeChips.includes("fno")) {
+  const hasFnoData =
+    (income.fnoTurnover ?? 0) > 0 ||
+    (income.fnoNonSpeculativeProfit ?? 0) !== 0 ||
+    (income.fnoSpeculativeProfit ?? 0) !== 0;
+  if (incomeChips.includes("fno") || hasFnoData) {
     const turnover = income.fnoTurnover ?? 0;
     const nonSpec = income.fnoNonSpeculativeProfit ?? 0;
     const spec = income.fnoSpeculativeProfit ?? 0;

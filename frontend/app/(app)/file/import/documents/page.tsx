@@ -143,6 +143,7 @@ function DocumentsContent() {
   const form16Connected = connectedConnectors.includes("form16");
   
   const incomeChips = useDraftStore((s) => s.incomeChips);
+  const capitalGains = useDraftStore((s) => s.capitalGains);
   const hasBusinessChips =
     incomeChips.includes("freelance") ||
     incomeChips.includes("business_presumptive");
@@ -193,6 +194,7 @@ function DocumentsContent() {
   const { aiSummary, aiLoading, aiEnabled } = useItrAiSummary({
     income,
     deductions,
+    capitalGains,
     lastParseResult,
     connectedConnectors,
     taxSnapshot,
@@ -626,6 +628,7 @@ function DocumentsContent() {
           <ItrAnalyticsPanel
             income={income}
             deductions={deductions}
+            capitalGains={capitalGains}
             lastParseResult={lastParseResult}
             connectedConnectors={connectedConnectors}
             aiSummary={aiSummary}
