@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ExternalLink, Linkedin, Quote, ShieldCheck, Star } from "lucide-react";
+import { ExternalLink, Quote, ShieldCheck, Star } from "lucide-react";
 
 interface PublicReview {
   id: string;
@@ -33,6 +33,14 @@ function isLinkedIn(url?: string | null) {
   } catch {
     return false;
   }
+}
+
+function LinkedInIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-4 fill-current" aria-hidden>
+      <path d="M5.4 3.5A2.4 2.4 0 1 1 5.4 8.3a2.4 2.4 0 0 1 0-4.8ZM3.3 9.7h4.2V21H3.3V9.7Zm6.8 0h4v1.6h.1c.6-1.1 1.9-2.2 4-2.2 4.3 0 5.1 2.8 5.1 6.5V21h-4.2v-4.8c0-1.2 0-2.7-1.7-2.7s-1.9 1.3-1.9 2.6V21h-4.2V9.7Z" />
+    </svg>
+  );
 }
 
 export function ReviewsCarousel() {
@@ -129,7 +137,7 @@ export function ReviewsCarousel() {
                         className="shrink-0 text-[#0e5f63] transition hover:scale-110"
                       >
                         {isLinkedIn(review.profileUrl) ? (
-                          <Linkedin className="size-4 fill-current" aria-hidden />
+                          <LinkedInIcon />
                         ) : (
                           <ExternalLink className="size-4" aria-hidden />
                         )}
