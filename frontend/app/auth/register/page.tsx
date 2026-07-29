@@ -193,6 +193,17 @@ function RegisterForm() {
               </>
             )}
           </button>
+
+          <Link
+            href="/file/start"
+            className="flex min-h-11 items-center justify-center rounded-xl text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50 hover:text-[#0e5f63]"
+          >
+            Skip for now
+          </Link>
+          <p className="-mt-2 text-center text-xs leading-relaxed text-slate-400">
+            Continue your draft without an account. Registration is required
+            only before payment.
+          </p>
         </form>
 
         {/* Security Badge */}

@@ -4,16 +4,8 @@ import { useState } from "react";
 import { useDraftStore } from "@/lib/store/draft";
 import { formatINR } from "@/lib/filing/types";
 import { FilingLayout } from "@/components/filing/FilingLayout";
-import { ConfidencePanel } from "@/components/filing/ConfidencePanel";
 import { EngineComputeFallback } from "@/components/filing/EngineComputeFallback";
-import { OptimizationTips } from "@/components/filing/OptimizationTips";
-import {
-  Banner,
-  Button,
-  Card,
-  RiskBadge,
-  ScreenTitle,
-} from "@/components/filing/ui";
+import { Banner, Button, Card, ScreenTitle } from "@/components/filing/ui";
 import { PresubmitChecklist } from "@/components/filing/PresubmitChecklist";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
 
@@ -21,7 +13,6 @@ export default function RiskReviewPage() {
   const {
     mismatchResolved,
     income,
-    deductions,
     recommendedForm,
     regime,
     connectedConnectors,
@@ -47,8 +38,6 @@ export default function RiskReviewPage() {
   } = useDraftTaxCompute();
 
   const effectiveResult = result ?? (useSnapshot ? lastSnapshot : null);
-  // Prefer the engine's gross total income — it includes business, capital
-  // gains, and house property, not just salary + interest.
   const totalIncome =
     effectiveResult?.income_heads.gross_total_income ??
     income.grossSalary + income.fdInterest;
@@ -59,12 +48,10 @@ export default function RiskReviewPage() {
     : null;
 
   return (
-    <FilingLayout
-      mirrorText="This summary shows what the tax department is likely to question. Green means you're in good shape to file."
-    >
+    <FilingLayout mirrorText="Review the remaining items and confirm the details before choosing a plan.">
       <ScreenTitle
-        title="Risk & proof review"
-        subtitle="Your filing summary before final checks — from your tax analysis."
+        title="Final Review"
+        subtitle="Check what is still needed, then confirm the details below."
       />
 
       {error && !engineUnavailable && (
@@ -86,70 +73,64 @@ export default function RiskReviewPage() {
         onContinueWithSnapshot={() => setUseSnapshot(true)}
       />
 
-      {loading ? (
-        <div className="mb-4 rounded-xl border border-slate-200 bg-white p-4 animate-pulse">
-          <div className="h-4 w-40 rounded bg-slate-100" />
-          <div className="mt-4 h-2 rounded-full bg-slate-100" />
-        </div>
-      ) : (
-        <ConfidencePanel confidence={confidence} variant="full" className="mb-4" />
+      {!loading && confidence.missing_documents.length > 0 && (
+        <Card className="mb-4 border-amber-200 bg-amber-50/60">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="font-semibold text-slate-900">
+                Complete {confidence.missing_documents.length} missing item
+                {confidence.missing_documents.length === 1 ? "" : "s"}
+              </h2>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
+                {confidence.missing_documents.map((document) => (
+                  <li key={document}>{document}</li>
+                ))}
+              </ul>
+            </div>
+            <Button href="/file/import/documents" variant="secondary">
+              Add documents
+            </Button>
+          </div>
+        </Card>
       )}
 
-      {!loading && effectiveResult && (
-        <OptimizationTips
-          recommendations={effectiveResult.recommendations}
-          netPayable={selectedPay}
-          recommendedRegime={activeRegime}
-          className="mb-4"
-        />
-      )}
-
-      <Card>
-        <p className="text-sm text-slate-700">
-          <strong>Total income:</strong> {formatINR(totalIncome)}
-        </p>
-        <p className="text-sm text-slate-700 mt-1">
-          <strong>Deductions:</strong> 80C {formatINR(deductions.section80C)} · 80D{" "}
-          {formatINR(deductions.section80D)}
-        </p>
-        {selectedPay !== null && (
-          <p className="text-sm text-slate-700 mt-1">
-            <strong>Expected {selectedPay < 0 ? "refund" : "tax payable"}:</strong>{" "}
-            <span className="tabular-nums">            {formatINR(Math.abs(selectedPay))}</span> (
-            {activeRegime} regime)
+      <Card className="mb-4">
+        <h2 className="font-semibold text-slate-900">Tax summary</h2>
+        <div className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+          <p>
+            <span className="text-slate-500">ITR form</span>
+            <strong className="block">{recommendedForm}</strong>
           </p>
+          <p>
+            <span className="text-slate-500">Tax regime</span>
+            <strong className="block capitalize">{activeRegime}</strong>
+          </p>
+          <p>
+            <span className="text-slate-500">Total income</span>
+            <strong className="block">{formatINR(totalIncome)}</strong>
+          </p>
+          <p>
+            <span className="text-slate-500">
+              {selectedPay !== null && selectedPay < 0
+                ? "Estimated refund"
+                : "Estimated tax payable"}
+            </span>
+            <strong className="block">
+              {selectedPay === null
+                ? "Calculation pending"
+                : formatINR(Math.abs(selectedPay))}
+            </strong>
+          </p>
+        </div>
+        {salaryMismatchOpen && (
+          <Banner variant="warning" className="mt-4">
+            Your Form 16 and AIS show different salary figures. Review the
+            difference before continuing.
+          </Banner>
         )}
-        {effectiveResult?.regime_comparison?.[activeRegime]?.late_filing_fee !== undefined &&
-          effectiveResult.regime_comparison[activeRegime].late_filing_fee > 0 && (
-            <p className="text-sm text-slate-700 mt-1">
-              <strong>Late Filing Fee (Sec 234F):</strong>{" "}
-              <span className="tabular-nums">{formatINR(effectiveResult.regime_comparison[activeRegime].late_filing_fee)}</span>
-            </p>
-          )}
-        <p className="text-sm text-slate-700 mt-1">
-          <strong>Number differences:</strong>{" "}
-          {salaryMismatchOpen
-            ? "1 open — your documents show different numbers; fix before filing"
-            : hasAis
-              ? "None open"
-              : "None open · AIS not imported yet (cross-check recommended)"}
-        </p>
-        <p className="text-sm text-slate-700 mt-1 flex items-center gap-2">
-          <strong>ITR form:</strong> {recommendedForm}
-          <RiskBadge variant={salaryMismatchOpen ? "yellow" : "green"}>
-            {salaryMismatchOpen ? "Needs attention" : "Low risk"}
-          </RiskBadge>
-        </p>
       </Card>
 
-      <PresubmitChecklist
-        className="mt-8 pt-8 border-t border-slate-200"
-        secondaryAction={
-          <Button variant="ghost" onClick={() => window.print()}>
-            Print proof checklist
-          </Button>
-        }
-      />
+      <PresubmitChecklist />
     </FilingLayout>
   );
 }
