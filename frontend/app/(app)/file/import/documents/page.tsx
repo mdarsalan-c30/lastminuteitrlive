@@ -148,7 +148,9 @@ function DocumentsContent() {
     incomeChips.includes("freelance") ||
     incomeChips.includes("business_presumptive");
 
-  const [importMode, setImportMode] = useState<ImportStartMode | null>(null);
+  const [importMode, setImportMode] = useState<ImportStartMode | null>(
+    form16FastPath ? "form16" : null
+  );
   const [estimateValues, setEstimateValues] = useState<QuickEstimateValues>({
     grossSalary: income.grossSalary,
     tds: income.tds,
@@ -223,10 +225,21 @@ function DocumentsContent() {
     setItrConfirmed,
   ]);
 
-  const handleModeSelect = useCallback((mode: ImportStartMode) => {
-    setImportMode(mode);
-    trackEvent("import_mode_selected", { mode });
-  }, []);
+  const handleModeSelect = useCallback(
+    (mode: ImportStartMode) => {
+      setImportMode(mode);
+      if (mode === "manual") {
+        setQuestionAnswer("document_form16_manual", true);
+        setQuestionAnswer("document_ais_manual", true);
+        setQuestionAnswer("document_form26as_manual", true);
+        setFilingMode("estimate");
+      } else if (mode === "form16") {
+        setQuestionAnswer("document_form16_manual", false);
+      }
+      trackEvent("import_mode_selected", { mode });
+    },
+    [setFilingMode, setQuestionAnswer]
+  );
 
   const handleClearImportMode = useCallback(() => {
     setImportMode(null);
@@ -265,7 +278,7 @@ function DocumentsContent() {
     setItrConfirmed,
   ]);
 
-  const effectiveImportMode: ImportStartMode | null = form16FastPath ? "form16" : importMode;
+  const effectiveImportMode: ImportStartMode | null = importMode;
   const selectedAdditionalSources = useMemo(
     () =>
       [
@@ -378,10 +391,8 @@ function DocumentsContent() {
 
   const handleContinue = useCallback(() => {
     if (effectiveImportMode === "manual") {
-      if (estimateValues.grossSalary <= 0 && estimateValues.businessReceipts <= 0)
-        return;
       applyEstimateDraft();
-      router.push("/file/review");
+      router.push("/file/review?tab=income");
       return;
     }
     if (effectiveImportMode === "capital_gains") {
@@ -414,9 +425,9 @@ function DocumentsContent() {
   const continueDisabled =
     effectiveImportMode === null ||
     !collectionComplete ||
-    (effectiveImportMode === "manual" &&
-      estimateValues.grossSalary <= 0 &&
-      estimateValues.businessReceipts <= 0) ||
+    (effectiveImportMode === "form16" &&
+      !requirementsStep &&
+      !form16Connected) ||
     (effectiveImportMode === "capital_gains" && brokers.length === 0 && !lossesCarryingForward && !fnoProfit && !mfProfit);
 
   return (
@@ -424,8 +435,17 @@ function DocumentsContent() {
       mirrorText="Upload your documents once, and our AI securely extracts every figure you need. No more manual data entry."
     >
       {/* Mode Selection Grid */}
-      {!form16FastPath && (
-        <div className="mt-4 mb-6 grid grid-cols-1 gap-3 rounded-2xl border border-[#0e5f63] bg-[#0e5f63] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] sm:p-4 md:grid-cols-3">
+      {!requirementsStep && (
+        <div className="mb-6 mt-4">
+          <div className="mb-3">
+            <h2 className="text-lg font-bold text-slate-900">
+              How would you like to add your tax details?
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Choose one option to get started. You can add documents later.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 rounded-2xl border border-[#0e5f63] bg-[#0e5f63] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] sm:p-4 md:grid-cols-3">
           <button
             type="button"
             onClick={() => handleModeSelect("form16")}
@@ -446,7 +466,7 @@ function DocumentsContent() {
               <FilePlus2 className="size-5" />
             </div>
             <h3 className="font-bold text-slate-900 text-[14px]">Upload Form 16</h3>
-            <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">Fastest. AI parses your PDF from your employer.</p>
+            <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">Choose this if your employer gave you Form 16.</p>
           </button>
 
           <button
@@ -491,14 +511,15 @@ function DocumentsContent() {
             <div className={cn("rounded-lg p-2 inline-block mb-3", importMode === "manual" ? "bg-[#0e5f63] text-white" : "bg-slate-100 text-slate-500")}>
               <HelpCircle className="size-5" />
             </div>
-            <h3 className="font-bold text-slate-900 text-[14px]">Start with estimates</h3>
-            <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">No documents needed now. Enter rough numbers.</p>
+            <h3 className="font-bold text-slate-900 text-[14px]">Enter details manually</h3>
+            <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">No documents? Enter your income and tax details yourself.</p>
           </button>
 
+          </div>
         </div>
       )}
 
-      {importMode !== null && !form16FastPath && (
+      {importMode !== null && !requirementsStep && (
         <div className="flex justify-end mb-4">
           <button type="button" onClick={handleClearImportMode} className="text-xs font-semibold text-slate-500 hover:text-slate-800 underline">
             Change selection
@@ -507,9 +528,14 @@ function DocumentsContent() {
       )}
 
       {/* Manual Estimate Section */}
-      {!form16FastPath && importMode === "manual" && (
+      {!requirementsStep && importMode === "manual" && (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 border-t border-slate-100 pt-6">
-          <h3 className="text-base font-bold text-slate-900 mb-3">Enter rough estimates</h3>
+          <h3 className="mb-1 text-base font-bold text-slate-900">
+            Add estimates now, or continue to income details
+          </h3>
+          <p className="mb-3 text-sm text-slate-600">
+            These fields are optional. You can enter complete figures on the next screen.
+          </p>
           <QuickEstimateForm
             values={estimateValues}
             onChange={setEstimateValues}
@@ -519,7 +545,7 @@ function DocumentsContent() {
       )}
 
       {/* Capital Gains / F&O Dashboard Section */}
-      {!form16FastPath && importMode === "capital_gains" && (
+      {!requirementsStep && importMode === "capital_gains" && (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 border-t border-slate-100 pt-6">
           <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 sm:p-5">
             <div className="flex items-center justify-between mb-3">
@@ -617,7 +643,7 @@ function DocumentsContent() {
       )}
 
       {/* Form 16 Upload Section */}
-      {(form16FastPath || importMode === "form16") && (
+      {importMode === "form16" && (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,400px)] lg:items-start border-t border-slate-100 pt-6">
           <div className="min-w-0">
             {addEmployerMode && (
@@ -732,28 +758,47 @@ function DocumentsContent() {
 
       {/* Continue Action */}
       {(importMode !== null || requirementsStep) && (
-        <div className="mt-6 flex justify-center border-t border-slate-100 pt-5">
-          {continueHref &&
-          effectiveImportMode !== "manual" &&
-          effectiveImportMode !== "capital_gains" ? (
-            <Button
-              onClick={handleContinue}
-              disabled={continueDisabled}
-              className="w-full sm:w-auto sm:min-w-[280px]"
-            >
-              {requirementsStep ? "Continue to Income Details" : "Next Step"}
-              <ChevronRight className="ml-1 size-4" />
-            </Button>
-          ) : (
-            <Button
-              onClick={handleContinue}
-              disabled={continueDisabled}
-              className="w-full sm:w-auto sm:min-w-[280px]"
-            >
-              Continue to Income Details
-              <ChevronRight className="ml-1 size-4" />
-            </Button>
-          )}
+        <div className="mt-6 border-t border-slate-100 pt-5">
+          {effectiveImportMode === "form16" &&
+            !requirementsStep &&
+            !form16Connected && (
+              <div className="mx-auto mb-4 max-w-xl rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm text-amber-950">
+                <p>
+                  Upload Form 16 to continue, or choose manual entry if you do
+                  not have it.
+                </p>
+                <button
+                  type="button"
+                  className="mt-2 font-semibold text-primary underline underline-offset-2"
+                  onClick={() => handleModeSelect("manual")}
+                >
+                  Continue without Form 16
+                </button>
+              </div>
+            )}
+          <div className="flex justify-center">
+            {continueHref &&
+            effectiveImportMode !== "manual" &&
+            effectiveImportMode !== "capital_gains" ? (
+              <Button
+                onClick={handleContinue}
+                disabled={continueDisabled}
+                className="w-full sm:w-auto sm:min-w-[280px]"
+              >
+                {requirementsStep ? "Continue to Income Details" : "Next Step"}
+                <ChevronRight className="ml-1 size-4" />
+              </Button>
+            ) : (
+              <Button
+                onClick={handleContinue}
+                disabled={continueDisabled}
+                className="w-full sm:w-auto sm:min-w-[280px]"
+              >
+                Continue to Income Details
+                <ChevronRight className="ml-1 size-4" />
+              </Button>
+            )}
+          </div>
         </div>
       )}
     </FilingLayout>

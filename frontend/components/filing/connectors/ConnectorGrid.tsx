@@ -550,8 +550,8 @@ export default function ConnectorGrid({
       <div>
         <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
           Your Form 16{" "}
-          <span className="bg-rose-100 text-rose-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded-md">
-            Required
+          <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-800">
+            If available
           </span>
         </h2>
         <Form16UploadZone
