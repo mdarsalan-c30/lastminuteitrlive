@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { trackEvent } from "@/lib/analytics";
 import { isClientPaymentBypassEnabled } from "@/lib/payments/bypass";
 import { useDraftStore } from "@/lib/store/draft";
@@ -21,6 +22,7 @@ export function PresubmitChecklist({
   secondaryAction,
   className = "",
 }: PresubmitChecklistProps) {
+  const router = useRouter();
   const {
     recommendedForm,
     mismatchResolved,
@@ -145,10 +147,13 @@ export function PresubmitChecklist({
       {showCheckoutCta && (
         <FilingActions className="mt-5">
           <Button
-            href={checkoutHref}
             disabled={!paymentBypass && !canProceed}
             onClick={() => {
-              if (canProceed) markFinalReviewComplete();
+              if (!checkoutHref) return;
+              if (canProceed) {
+                markFinalReviewComplete();
+              }
+              router.push(checkoutHref);
             }}
             className="flex-1"
           >
