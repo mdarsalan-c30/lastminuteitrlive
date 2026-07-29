@@ -103,7 +103,7 @@ export function RegimeComparatorHero() {
             className="inline-block h-1.5 w-1.5 rounded-full bg-[#74A81F]"
             style={{ animation: "pulse 2s infinite" }}
           />
-          Live now · {liveStat.toLocaleString("en-IN")}
+          {liveStat.toLocaleString("en-IN")}+ people have filed
         </div>
       </div>
 

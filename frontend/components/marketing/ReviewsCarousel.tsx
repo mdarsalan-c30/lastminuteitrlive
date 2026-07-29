@@ -1,60 +1,93 @@
-import { BriefcaseBusiness, Building2, ChartNoAxesCombined, FileSearch } from "lucide-react";
+"use client";
 
-const SITUATIONS = [
-  {
-    title: "One or more employers",
-    detail: "Bring salary details together and review Form 16 information before filing.",
-    icon: BriefcaseBusiness,
-  },
-  {
-    title: "Interest or other income",
-    detail: "Check income reported outside Form 16 so important details are not missed.",
-    icon: Building2,
-  },
-  {
-    title: "Capital gains",
-    detail: "Organise investment information and identify the schedules that may apply.",
-    icon: ChartNoAxesCombined,
-  },
-  {
-    title: "AIS or Form 26AS checks",
-    detail: "Compare available records and resolve differences before portal submission.",
-    icon: FileSearch,
-  },
-] as const;
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Star } from "lucide-react";
+
+interface PublicReview {
+  id: string;
+  name: string;
+  role?: string | null;
+  city?: string | null;
+  quote: string;
+  rating: number;
+  plan?: string | null;
+  outcomeTag?: string | null;
+}
 
 export function ReviewsCarousel() {
+  const [reviews, setReviews] = useState<PublicReview[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/public/reviews", { cache: "no-store" })
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load reviews");
+        return response.json() as Promise<{ reviews?: PublicReview[] }>;
+      })
+      .then((data) => {
+        if (active && Array.isArray(data.reviews)) setReviews(data.reviews);
+      })
+      .catch(() => {
+        if (active) setReviews([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (reviews.length === 0) return null;
+
   return (
-    <section id="trust" className="section-pad-lg bg-[#f8fafc]/60 px-4 py-16 sm:px-6 lg:px-8">
+    <section id="reviews" className="section-pad-lg px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1180px]">
-        <div className="mb-9">
-          <span className="eyebrow-label rounded-full bg-[#0e5f63]/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#0e5f63]">
-            Common situations
-          </span>
-          <h2 className="font-manrope mt-3 text-[clamp(24px,3vw,32px)] font-extrabold tracking-[-0.02em] text-slate-900">
-            Guidance that adapts to your filing details
-          </h2>
-          <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-slate-600">
-            Your questions and checks depend on the income sources and documents you provide.
-          </p>
+        <div className="mb-9 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <span className="eyebrow-label rounded-full bg-[#0e5f63]/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#0e5f63]">
+              Customer reviews
+            </span>
+            <h2 className="font-manrope mt-3 text-[clamp(24px,3vw,32px)] font-extrabold tracking-[-0.02em] text-slate-900">
+              What our customers say
+            </h2>
+          </div>
+          <Link href="/reviews" className="text-sm font-bold text-[#0e5f63] hover:underline">
+            View all reviews →
+          </Link>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {SITUATIONS.map(({ title, detail, icon: Icon }) => (
-            <article key={title} className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
-              <div className="mb-4 flex size-10 items-center justify-center rounded-xl bg-[#0e5f63]/10 text-[#0e5f63]">
-                <Icon className="size-5" aria-hidden />
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {reviews.slice(0, 6).map((review) => (
+            <article
+              key={review.id}
+              className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_14px_36px_-28px_rgba(15,23,42,0.45)]"
+            >
+              <div className="mb-4 flex gap-1" aria-label={`${review.rating} out of 5 stars`}>
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star
+                    key={index}
+                    className={`size-4 ${
+                      index < review.rating
+                        ? "fill-amber-400 text-amber-400"
+                        : "fill-slate-100 text-slate-200"
+                    }`}
+                    aria-hidden
+                  />
+                ))}
               </div>
-              <h3 className="text-[15px] font-bold text-slate-900">{title}</h3>
-              <p className="mt-2 text-[13px] leading-relaxed text-slate-600">{detail}</p>
+              <blockquote className="flex-1 text-[14px] leading-7 text-slate-700">
+                “{review.quote}”
+              </blockquote>
+              <div className="mt-6 border-t border-slate-100 pt-4">
+                <p className="text-sm font-bold text-slate-900">{review.name}</p>
+                {(review.role || review.city) && (
+                  <p className="mt-1 text-xs text-slate-500">
+                    {[review.role, review.city].filter(Boolean).join(" · ")}
+                  </p>
+                )}
+              </div>
             </article>
           ))}
         </div>
-
-        <p className="mt-6 text-[12.5px] text-slate-500">
-          Guidance is based on the information you enter. Review all values before submitting on
-          the Income Tax Department portal.
-        </p>
       </div>
     </section>
   );

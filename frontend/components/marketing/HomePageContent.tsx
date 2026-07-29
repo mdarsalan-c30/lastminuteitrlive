@@ -10,6 +10,7 @@ import { QuickStart } from "@/components/marketing/QuickStart";
 import { WhyUsSection } from "@/components/marketing/WhyUsSection";
 import { HeroSection } from "@/components/marketing/HeroSection";
 import { ReviewsCarousel } from "@/components/marketing/ReviewsCarousel";
+import { CommonSituations } from "@/components/marketing/CommonSituations";
 import { ToolsSection } from "@/components/marketing/ToolsSection";
 import { B2BHowItWorks, B2BTools, B2BPricing, B2BFAQ } from "@/components/marketing/B2BMarketing";
 
@@ -30,6 +31,7 @@ export function HomePageContent() {
             <ToolsSection />
             <QuickStart />
             <WhyUsSection />
+            <CommonSituations />
             <ReviewsCarousel />
             <PricingSection />
             <FinalCta />
