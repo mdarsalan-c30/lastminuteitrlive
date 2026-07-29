@@ -42,7 +42,7 @@ describe("resolveCheckoutGate", () => {
     expect(result.blockingHref).toBe("");
   });
 
-  it("allows checkout when tax engine is unavailable (engine override)", () => {
+  it("blocks checkout when tax calculation is unavailable", () => {
     const result = resolveCheckoutGate({
       mismatchResolved: true,
       mismatchProceedWithExplanation: false,
@@ -51,9 +51,9 @@ describe("resolveCheckoutGate", () => {
       loading: false,
     });
 
-    expect(result.canCheckout).toBe(true);
+    expect(result.canCheckout).toBe(false);
     expect(result.engineOverride).toBe(true);
-    expect(result.blockingHref).toBe("");
+    expect(result.blockingHref).toBe("/file/regime");
   });
 
   it("uses the strict document verification step as a safety net", () => {
@@ -107,7 +107,7 @@ describe("resolveCheckoutGate", () => {
     expect(result.estimateOverride).toBe(true);
   });
 
-  it("does not ask for documents again after the collection step resolved them", () => {
+  it("still blocks missing required documents after the collection step", () => {
     const result = resolveCheckoutGate({
       mismatchResolved: false,
       mismatchProceedWithExplanation: false,
@@ -122,9 +122,11 @@ describe("resolveCheckoutGate", () => {
       documentsResolvedEarlier: true,
     });
 
-    expect(result.canCheckout).toBe(true);
-    expect(result.blockingHref).toBe("");
-    expect(result.estimateOverride).toBe(true);
+    expect(result.canCheckout).toBe(false);
+    expect(result.blockingHref).toBe(
+      "/file/import/documents?source=form16&step=requirements"
+    );
+    expect(result.estimateOverride).toBe(false);
   });
 
   it("does not apply engine override while loading", () => {

@@ -173,9 +173,8 @@ function PlansContent() {
       {!loading && gate.engineOverride && (
         <div className="mb-6">
           <Banner variant="info">
-            Tax calculation is temporarily unavailable, but you can still
-            checkout. Your filing guide will use saved draft figures -
-            double-check amounts before filing on the portal.
+            Tax calculation is temporarily unavailable. Payment will remain
+            locked until your tax comparison has been calculated.
           </Banner>
         </div>
       )}

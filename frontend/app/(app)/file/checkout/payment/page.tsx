@@ -7,6 +7,8 @@ import { useDraftStore } from "@/lib/store/draft";
 import { getPlan } from "@/lib/payments/plans";
 import { formatPlanPriceLabel } from "@/lib/marketing/pricing";
 import { usePublishedPricing } from "@/lib/hooks/usePublishedPricing";
+import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
+import { resolveCheckoutGate } from "@/lib/filing/checkoutGate";
 import { FilingLayout } from "@/components/filing/FilingLayout";
 import RazorpayButton from "@/components/filing/checkout/RazorpayButton";
 import { usePaymentSession } from "@/lib/hooks/usePaymentSession";
@@ -31,7 +33,31 @@ import { ShieldCheck, Tag, Sparkles } from "lucide-react";
 
 export default function PaymentPage() {
   const router = useRouter();
-  const { plan, setPaymentVerified } = useDraftStore();
+  const {
+    plan,
+    setPaymentVerified,
+    mismatchResolved,
+    mismatchProceedWithExplanation,
+  } = useDraftStore();
+  const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
+  const aisGrossSalary = useDraftStore((s) => s.aisFigures?.grossSalary);
+  const grossSalary = useDraftStore((s) => s.income.grossSalary);
+  const { loading, confidence, engineUnavailable } = useDraftTaxCompute({
+    readOnly: true,
+  });
+  const hasOpenMismatch =
+    connectedConnectors.includes("ais") &&
+    typeof aisGrossSalary === "number" &&
+    Math.abs(aisGrossSalary - grossSalary) > 100;
+  const checkoutGate = resolveCheckoutGate({
+    mismatchResolved,
+    mismatchProceedWithExplanation,
+    confidence,
+    engineUnavailable,
+    loading,
+    hasOpenMismatch,
+    documentsResolvedEarlier: false,
+  });
   const { refresh: refreshPaymentSession } = usePaymentSession();
   
   const selectedPlan = getPlan(plan);
@@ -71,6 +97,17 @@ export default function PaymentPage() {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (!loading && !checkoutGate.canCheckout) {
+      router.replace(checkoutGate.blockingHref || "/file/checkout/plans");
+    }
+  }, [
+    checkoutGate.blockingHref,
+    checkoutGate.canCheckout,
+    loading,
+    router,
+  ]);
 
   const finishPayment = async () => {
     const profileId = activeProfileId ?? getActiveProfileId();
@@ -187,6 +224,16 @@ export default function PaymentPage() {
       setPaymentError(err instanceof Error ? err.message : "Checkout failed");
     }
   };
+
+  if (loading || !checkoutGate.canCheckout) {
+    return (
+      <FilingLayout mirrorText="Checking your filing details before payment.">
+        <div className="mx-auto max-w-xl p-8 text-center text-sm font-medium text-slate-600">
+          Checking that your details and tax calculation are complete…
+        </div>
+      </FilingLayout>
+    );
+  }
 
   return (
     <FilingLayout mirrorText="You're paying for the step-by-step portal guide — not government filing.">

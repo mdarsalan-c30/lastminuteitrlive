@@ -70,10 +70,10 @@ export function resolveCheckoutGate(input: CheckoutGateInput): CheckoutGateResul
 
   if (engineOverride) {
     return {
-      canCheckout: true,
+      canCheckout: false,
       completenessScore: confidence.completeness_score,
-      blockingHref: "",
-      blockingLabel: "",
+      blockingHref: "/file/regime",
+      blockingLabel: "Complete the tax calculation before payment",
       engineOverride: true,
       estimateOverride: false,
     };
@@ -90,17 +90,6 @@ export function resolveCheckoutGate(input: CheckoutGateInput): CheckoutGateResul
       blockingLabel: "",
       engineOverride: false,
       estimateOverride: true,
-    };
-  }
-
-  if (documentsResolvedEarlier) {
-    return {
-      canCheckout: true,
-      completenessScore: confidence.completeness_score,
-      blockingHref: "",
-      blockingLabel: "",
-      engineOverride: false,
-      estimateOverride: confidence.missing_documents.length > 0,
     };
   }
 

@@ -174,7 +174,7 @@ function PaywallOverlay({ title, message }: { title?: string; message?: string }
       <p className="mt-2 max-w-sm text-sm text-slate-600">
         {message || "Choose a plan to see your full tax breakdown and fix any mismatches."}
       </p>
-      <Button href="/file/checkout/payment" className="mt-6">
+      <Button href="/file/checkout/plans" className="mt-6">
         View plans & unlock
       </Button>
     </div>
@@ -859,7 +859,7 @@ function ReconcileHero({
                 <Lock className="h-5 w-5 text-slate-500" aria-hidden />
               </div>
               <p className="text-sm font-bold text-slate-900">Unlock your snapshot</p>
-              <Button href="/file/checkout/payment" className="mt-3 min-h-8 text-xs px-4">
+              <Button href="/file/checkout/plans" className="mt-3 min-h-8 text-xs px-4">
                 View plans & unlock
               </Button>
             </div>
