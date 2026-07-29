@@ -9,6 +9,7 @@ import { formatPlanPriceLabel } from "@/lib/marketing/pricing";
 import { usePublishedPricing } from "@/lib/hooks/usePublishedPricing";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
 import { resolveCheckoutGate } from "@/lib/filing/checkoutGate";
+import { evaluateJourney } from "@/lib/filing/journeyGuard";
 import { FilingLayout } from "@/components/filing/FilingLayout";
 import RazorpayButton from "@/components/filing/checkout/RazorpayButton";
 import { usePaymentSession } from "@/lib/hooks/usePaymentSession";
@@ -58,6 +59,7 @@ export default function PaymentPage() {
     hasOpenMismatch,
     documentsResolvedEarlier: false,
   });
+  const journey = evaluateJourney(useDraftStore());
   const { refresh: refreshPaymentSession } = usePaymentSession();
   
   const selectedPlan = getPlan(plan);
@@ -99,12 +101,18 @@ export default function PaymentPage() {
   }, []);
 
   useEffect(() => {
-    if (!loading && !checkoutGate.canCheckout) {
-      router.replace(checkoutGate.blockingHref || "/file/checkout/plans");
+    if (!loading && (!checkoutGate.canCheckout || !journey.complete)) {
+      router.replace(
+        checkoutGate.canCheckout
+          ? journey.firstIncomplete?.href || "/file/checkout/plans"
+          : checkoutGate.blockingHref || "/file/checkout/plans"
+      );
     }
   }, [
     checkoutGate.blockingHref,
     checkoutGate.canCheckout,
+    journey.complete,
+    journey.firstIncomplete?.href,
     loading,
     router,
   ]);
@@ -131,6 +139,7 @@ export default function PaymentPage() {
     setUsingCredit(true);
     setPaymentError(null);
     try {
+      await saveDraftToProfile(profileId);
       await useFilingCredit(profileId, plan);
       await finishPayment();
     } catch (err) {
@@ -208,10 +217,15 @@ export default function PaymentPage() {
       return;
     }
     try {
+      await saveDraftToProfile(profileId);
       const res = await fetch("/api/coupons/redeem", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: validatedDiscount?.code, planId: plan }),
+        body: JSON.stringify({
+          code: validatedDiscount?.code,
+          planId: plan,
+          familyProfileId: profileId,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Checkout failed");
@@ -225,11 +239,11 @@ export default function PaymentPage() {
     }
   };
 
-  if (loading || !checkoutGate.canCheckout) {
+  if (loading || !checkoutGate.canCheckout || !journey.complete) {
     return (
       <FilingLayout mirrorText="Checking your filing details before payment.">
         <div className="mx-auto max-w-xl p-8 text-center text-sm font-medium text-slate-600">
-          Checking that your details and tax calculation are complete…
+          Checking that every required filing step is complete…
         </div>
       </FilingLayout>
     );

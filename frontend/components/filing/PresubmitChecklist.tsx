@@ -34,11 +34,23 @@ export function PresubmitChecklist({
     mismatchResolved,
     mismatchProceedWithExplanation,
     bankValidated,
+    connectedConnectors,
+    income,
     regime,
     eVerifyMethod,
     setEVerifyMethod,
+    setBankValidated,
+    markFinalReviewComplete,
   } = useDraftStore();
   const { loading, confidence, engineUnavailable } = useDraftTaxCompute({ readOnly: true });
+
+  const aisGrossSalary = useDraftStore((s) => s.aisFigures?.grossSalary);
+  const hasOpenMismatch =
+    connectedConnectors.includes("ais") &&
+    typeof aisGrossSalary === "number" &&
+    Math.abs(aisGrossSalary - income.grossSalary) > 100;
+  const mismatchOk =
+    !hasOpenMismatch || mismatchResolved || mismatchProceedWithExplanation;
 
   const checks = CHECKLIST.map((c) => {
     if (c.id === "form") {
@@ -48,7 +60,7 @@ export function PresubmitChecklist({
       return {
         ...c,
         status:
-          mismatchResolved || mismatchProceedWithExplanation
+          mismatchOk
             ? ("pass" as const)
             : ("pending" as const),
       };
@@ -62,7 +74,6 @@ export function PresubmitChecklist({
     return c;
   });
 
-  const mismatchOk = mismatchResolved || mismatchProceedWithExplanation;
   const checklistGreen = mismatchOk && bankValidated && regime && eVerifyMethod;
   const filingReadyForCheckout =
     confidence.filing_ready || (!loading && engineUnavailable);
@@ -152,6 +163,19 @@ export function PresubmitChecklist({
         </div>
       )}
 
+      <label className="mb-4 flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-700">
+        <input
+          type="checkbox"
+          checked={bankValidated}
+          onChange={(event) => setBankValidated(event.target.checked)}
+          className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#0e5f63]"
+        />
+        <span>
+          <strong className="block text-slate-900">Bank account checked</strong>
+          I have reviewed the bank account that will receive any refund.
+        </span>
+      </label>
+
       <Banner variant="info">
         After you file on incometax.gov.in, you must e-verify on the portal within 30 days.
       </Banner>
@@ -161,6 +185,9 @@ export function PresubmitChecklist({
           <Button
             href={checkoutHref}
             disabled={ctaDisabled}
+            onClick={() => {
+              if (canProceed) markFinalReviewComplete();
+            }}
             className="flex-1"
           >
             {checkoutLabel}

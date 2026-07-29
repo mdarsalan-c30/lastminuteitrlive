@@ -12,6 +12,7 @@ import type { PlanId } from "@/lib/payments/plans";
 import { cookies } from "next/headers";
 import { B2C_SESSION_COOKIE, readB2CSession } from "@/lib/auth/b2c";
 import { spendCoins } from "@/lib/admin/referrals";
+import { validateSavedJourney } from "@/lib/filing/serverJourneyGuard";
 
 const VALID_PLANS = Object.keys(PLANS) as PlanId[];
 
@@ -35,7 +36,18 @@ export async function POST(request: NextRequest) {
       planId?: string;
       sessionId?: string;
       useCoins?: number;
+      familyProfileId?: string;
     };
+    const journey = await validateSavedJourney(
+      session.userId,
+      body.familyProfileId ?? ""
+    );
+    if (!journey.ok) {
+      return NextResponse.json(
+        { error: journey.error, nextUrl: journey.nextUrl },
+        { status: journey.status }
+      );
+    }
     if (!body.code && !body.useCoins) {
       return NextResponse.json({ error: "Enter a code or use coins" }, { status: 400 });
     }

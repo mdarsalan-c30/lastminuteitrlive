@@ -14,12 +14,14 @@ import { validateCoupon } from "@/lib/admin/coupons";
 import { validateReferralCode } from "@/lib/admin/referrals";
 import { CA_SESSION_COOKIE, readCASession } from "@/lib/auth/ca";
 import { B2C_SESSION_COOKIE, readB2CSession } from "@/lib/auth/b2c";
+import { validateSavedJourney } from "@/lib/filing/serverJourneyGuard";
 
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as {
       planId?: string;
       couponCode?: string;
+      familyProfileId?: string;
     };
     const planId = normalizePlanId(body.planId);
 
@@ -38,6 +40,19 @@ export async function POST(request: NextRequest) {
         },
         { status: 401 }
       );
+    }
+
+    if (!isCaCheckout && b2cSession) {
+      const journey = await validateSavedJourney(
+        b2cSession.userId,
+        body.familyProfileId ?? ""
+      );
+      if (!journey.ok) {
+        return NextResponse.json(
+          { error: journey.error, nextUrl: journey.nextUrl },
+          { status: journey.status }
+        );
+      }
     }
 
     const planAllowed =

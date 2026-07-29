@@ -9,6 +9,7 @@ import {
   PAYMENT_SESSION_COOKIE,
 } from "@/lib/payments/session";
 import type { PlanId } from "@/lib/payments/plans";
+import { validateSavedJourney } from "@/lib/filing/serverJourneyGuard";
 
 /** Spend one wallet credit to unlock companion for a filing profile. */
 export async function POST(request: NextRequest) {
@@ -21,6 +22,14 @@ export async function POST(request: NextRequest) {
 
   if (!profileId) {
     return NextResponse.json({ error: "profileId is required" }, { status: 400 });
+  }
+
+  const journey = await validateSavedJourney(auth.user.id, profileId);
+  if (!journey.ok) {
+    return NextResponse.json(
+      { error: journey.error, nextUrl: journey.nextUrl },
+      { status: journey.status }
+    );
   }
 
   const consumed = await consumeB2CFilingCredit(auth.user.id);

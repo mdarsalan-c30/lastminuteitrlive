@@ -1,0 +1,148 @@
+export type JourneyStepId =
+  | "about"
+  | "documents"
+  | "income"
+  | "calculation"
+  | "regime"
+  | "guided_check"
+  | "final_review"
+  | "plan";
+
+export interface JourneyStep {
+  id: JourneyStepId;
+  label: string;
+  href: string;
+  complete: boolean;
+  missing: string[];
+}
+
+type AnyDraft = Record<string, any>;
+
+export function evaluateJourney(draft: unknown) {
+  const d =
+    draft && typeof draft === "object" ? (draft as AnyDraft) : ({} as AnyDraft);
+  const income = d.income ?? {};
+  const connectors: string[] = Array.isArray(d.connectedConnectors)
+    ? d.connectedConnectors
+    : [];
+  const chips: string[] = Array.isArray(d.incomeChips) ? d.incomeChips : [];
+  const exact = d.filingMode !== "estimate";
+  const salarySelected = chips.includes("salary");
+  const capitalGainsSelected = chips.includes("capital_gains");
+  const houseSelected = chips.includes("house_property");
+  const businessSelected =
+    chips.includes("freelance") || chips.includes("business_presumptive");
+
+  const steps: JourneyStep[] = [
+    {
+      id: "about",
+      label: "About You",
+      href: "/file/start",
+      complete: Boolean(String(d.name ?? "").trim()) && d.itrConfirmed === true,
+      missing: [
+        ...(!String(d.name ?? "").trim() ? ["your name"] : []),
+        ...(d.itrConfirmed !== true ? ["ITR form confirmation"] : []),
+      ],
+    },
+    {
+      id: "documents",
+      label: "Add Documents",
+      href: "/file/import/documents",
+      complete:
+        !exact ||
+        connectors.includes("form16") ||
+        connectors.some((id) =>
+          ["ais", "form26as", "groww", "zerodha", "cams", "kfintech"].includes(id)
+        ),
+      missing: exact ? ["required document or manual/estimate choice"] : [],
+    },
+    {
+      id: "income",
+      label: "Income & Tax Savings",
+      href: "/file/review",
+      complete:
+        chips.length > 0 &&
+        (!salarySelected ||
+          Number(income.grossSalary ?? 0) > 0 ||
+          connectors.includes("form16")) &&
+        (!capitalGainsSelected || Boolean(d.capitalGains)) &&
+        (!houseSelected || d.houseProperty?.propertyType !== "none") &&
+        (!businessSelected ||
+          Number(income.businessRevenue ?? 0) > 0 ||
+          Number(income.freelanceRevenue ?? 0) > 0),
+      missing: [
+        ...(chips.length === 0 ? ["income source selection"] : []),
+        ...(salarySelected &&
+        Number(income.grossSalary ?? 0) <= 0 &&
+        !connectors.includes("form16")
+          ? ["salary details"]
+          : []),
+        ...(capitalGainsSelected && !d.capitalGains
+          ? ["capital gains details"]
+          : []),
+        ...(houseSelected && d.houseProperty?.propertyType === "none"
+          ? ["house property details"]
+          : []),
+        ...(businessSelected &&
+        Number(income.businessRevenue ?? 0) <= 0 &&
+        Number(income.freelanceRevenue ?? 0) <= 0
+          ? ["business or freelance income"]
+          : []),
+      ],
+    },
+    {
+      id: "calculation",
+      label: "Calculate Tax",
+      href: "/file/regime",
+      complete: Number(d.calculationCompletedAt ?? 0) > 0,
+      missing: ["completed tax calculation"],
+    },
+    {
+      id: "regime",
+      label: "Compare Tax Option",
+      href: "/file/regime",
+      complete: d.regime === "old" || d.regime === "new",
+      missing: ["tax regime selection"],
+    },
+    {
+      id: "guided_check",
+      label: "Guided Tax Check",
+      href: "/file/advisor",
+      complete: Number(d.guidedCheckCompletedAt ?? 0) > 0,
+      missing: ["guided tax check"],
+    },
+    {
+      id: "final_review",
+      label: "Final Review",
+      href: "/file/review/risk#final-check",
+      complete:
+        Number(d.finalReviewCompletedAt ?? 0) > 0 &&
+        Boolean(d.bankValidated) &&
+        Boolean(d.eVerifyMethod),
+      missing: [
+        ...(Number(d.finalReviewCompletedAt ?? 0) <= 0
+          ? ["final review confirmation"]
+          : []),
+        ...(!d.bankValidated ? ["bank account confirmation"] : []),
+        ...(!d.eVerifyMethod ? ["e-verify method"] : []),
+      ],
+    },
+    {
+      id: "plan",
+      label: "Choose a Plan",
+      href: "/file/checkout/plans",
+      complete:
+        ["normal", "pro"].includes(String(d.plan ?? "")) &&
+        Number(d.planSelectedAt ?? 0) > 0,
+      missing: ["filing plan selection"],
+    },
+  ];
+
+  const firstIncomplete = steps.find((step) => !step.complete) ?? null;
+  return {
+    complete: firstIncomplete === null,
+    firstIncomplete,
+    steps,
+    completedCount: steps.filter((step) => step.complete).length,
+  };
+}

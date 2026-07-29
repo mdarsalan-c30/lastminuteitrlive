@@ -9,6 +9,7 @@ import { FILING_HELP, FILING_TERMS } from "@/lib/copy/filingTerms";
 
 export default function AdvisorPage() {
   const router = useRouter();
+  const markGuidedCheckComplete = useDraftStore((s) => s.markGuidedCheckComplete);
 
   return (
     <FilingLayout
@@ -26,7 +27,14 @@ export default function AdvisorPage() {
       </div>
 
       <FilingActions>
-        <Button onClick={() => router.push("/file/checkout/plans")}>Continue to Plans & Pay</Button>
+        <Button
+          onClick={() => {
+            markGuidedCheckComplete();
+            router.push("/file/review/risk#final-check");
+          }}
+        >
+          Continue to Final Review
+        </Button>
       </FilingActions>
     </FilingLayout>
   );

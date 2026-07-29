@@ -6,6 +6,7 @@ import type { PlanId } from "@/lib/payments/plans";
 import { getPlan } from "@/lib/payments/plans";
 import { getEffectivePrice, getPlanPriceLabel, formatPlanPriceLabel } from "@/lib/marketing/pricing";
 import { getBrowserSessionId } from "@/lib/store/sessionInit";
+import { saveDraftToProfile } from "@/lib/family/client";
 
 declare global {
   interface Window {
@@ -141,11 +142,15 @@ export default function RazorpayButton({
     if (disabled || loading) return;
     setLoading(true);
     try {
+      if (!familyProfileId) {
+        throw new Error("Choose who you are filing for before payment.");
+      }
+      await saveDraftToProfile(familyProfileId);
       const orderRes = await fetch("/api/payments/create-order", {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId, couponCode }),
+        body: JSON.stringify({ planId, couponCode, familyProfileId }),
       });
       const order = (await orderRes.json()) as CreateOrderResponse & {
         error?: string;
@@ -212,6 +217,7 @@ export default function RazorpayButton({
     priceLabel,
     verifyPayment,
     couponCode,
+    familyProfileId,
   ]);
 
   const label =

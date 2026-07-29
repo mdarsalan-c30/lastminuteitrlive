@@ -185,6 +185,10 @@ export interface DraftState {
   plan: PlanId;
   paidPlanId: PlanId | null;
   paymentVerifiedAt: number | null;
+  calculationCompletedAt: number | null;
+  guidedCheckCompletedAt: number | null;
+  finalReviewCompletedAt: number | null;
+  planSelectedAt: number | null;
   mismatchResolved: boolean;
   mismatchProceedWithExplanation: boolean;
   consentGiven: boolean;
@@ -247,6 +251,9 @@ export interface DraftState {
   setQuestionAnswer: (questionId: string, answer: unknown) => void;
   appendComputeHistory: (entry: ComputeHistoryEntry) => void;
   setEnginePhase: (phase: EnginePhase) => void;
+  markCalculationComplete: () => void;
+  markGuidedCheckComplete: () => void;
+  markFinalReviewComplete: () => void;
   setFilingOutcome: (outcome: Partial<FilingOutcome>) => void;
   markReturnSubmitted: (acknowledgementNumber: string) => void;
   markReturnEVerified: () => void;
@@ -369,6 +376,10 @@ const initialState = {
   plan: "normal" as PlanId,
   paidPlanId: null as PlanId | null,
   paymentVerifiedAt: null as number | null,
+  calculationCompletedAt: null as number | null,
+  guidedCheckCompletedAt: null as number | null,
+  finalReviewCompletedAt: null as number | null,
+  planSelectedAt: null as number | null,
   mismatchResolved: false,
   mismatchProceedWithExplanation: false,
   consentGiven: false,
@@ -391,6 +402,13 @@ if (typeof window !== "undefined") {
   ensureFreshBrowserSession();
 }
 
+const invalidateCalculatedJourney = {
+  calculationCompletedAt: null,
+  guidedCheckCompletedAt: null,
+  finalReviewCompletedAt: null,
+  planSelectedAt: null,
+} as const;
+
 export const useDraftStore = create<DraftState>()(
   persist(
     (set) => ({
@@ -398,29 +416,41 @@ export const useDraftStore = create<DraftState>()(
 
       setActiveField: (activeField) => set({ activeField }),
       setName: (name) => set({ name }),
-      setFilingMode: (filingMode) => set({ filingMode }),
+      setFilingMode: (filingMode) =>
+        set({ filingMode, ...invalidateCalculatedJourney }),
       setFilingPath: (filingPath) => set({ filingPath }),
       setProfile: (profile) =>
-        set((s) => ({ profile: { ...s.profile, ...profile } })),
+        set((s) => ({
+          profile: { ...s.profile, ...profile },
+          ...invalidateCalculatedJourney,
+        })),
       setMatrix: (matrix) =>
-        set((s) => ({ matrix: { ...s.matrix, ...matrix } })),
+        set((s) => ({
+          matrix: { ...s.matrix, ...matrix },
+          ...invalidateCalculatedJourney,
+        })),
       toggleIncomeChip: (chip) =>
         set((s) => ({
           incomeChips: s.incomeChips.includes(chip)
             ? s.incomeChips.filter((c) => c !== chip)
             : [...s.incomeChips, chip],
+          ...invalidateCalculatedJourney,
         })),
       ensureIncomeChip: (chip) =>
         set((s) => ({
           incomeChips: s.incomeChips.includes(chip)
             ? s.incomeChips
             : [...s.incomeChips, chip],
+          ...invalidateCalculatedJourney,
         })),
       setRecommendedForm: (recommendedForm, caseId) =>
         set({ recommendedForm, caseId }),
       setItrConfirmed: (itrConfirmed) => set({ itrConfirmed }),
       setIncome: (income) =>
-        set((s) => ({ income: { ...s.income, ...income } })),
+        set((s) => ({
+          income: { ...s.income, ...income },
+          ...invalidateCalculatedJourney,
+        })),
       seedPrimaryEmployer: () =>
         set((s) => {
           if ((s.income.employers ?? []).length > 0) return {};
@@ -477,6 +507,7 @@ export const useDraftStore = create<DraftState>()(
       setHouseProperty: (houseProperty) =>
         set((s) => ({
           houseProperty: { ...s.houseProperty, ...houseProperty },
+          ...invalidateCalculatedJourney,
         })),
       setExtraProperties: (extraProperties) => set({ extraProperties }),
       addExtraProperty: (property) =>
@@ -503,10 +534,19 @@ export const useDraftStore = create<DraftState>()(
         })),
       setDepreciationBlocks: (depreciationBlocks) => set({ depreciationBlocks }),
       setDeductions: (deductions) =>
-        set((s) => ({ deductions: { ...s.deductions, ...deductions } })),
-      setRegime: (regime) => set({ regime }),
+        set((s) => ({
+          deductions: { ...s.deductions, ...deductions },
+          ...invalidateCalculatedJourney,
+        })),
+      setRegime: (regime) =>
+        set({
+          regime,
+          guidedCheckCompletedAt: null,
+          finalReviewCompletedAt: null,
+          planSelectedAt: null,
+        }),
       setProfession: (profession) => set({ profession }),
-      setPlan: (plan) => set({ plan }),
+      setPlan: (plan) => set({ plan, planSelectedAt: Date.now() }),
       setPaymentVerified: (planId) =>
         set({
           paidPlanId: planId,
@@ -525,9 +565,12 @@ export const useDraftStore = create<DraftState>()(
           connectedConnectors: s.connectedConnectors.includes(connectorId)
             ? s.connectedConnectors
             : [...s.connectedConnectors, connectorId],
+          ...invalidateCalculatedJourney,
         })),
-      setAisFigures: (aisFigures) => set({ aisFigures }),
-      setCapitalGains: (capitalGains) => set({ capitalGains }),
+      setAisFigures: (aisFigures) =>
+        set({ aisFigures, ...invalidateCalculatedJourney }),
+      setCapitalGains: (capitalGains) =>
+        set({ capitalGains, ...invalidateCalculatedJourney }),
       setDocumentFacts: (documentFacts) => set({ documentFacts }),
       mergeDocumentFacts: (facts) =>
         set((s) => {
@@ -544,12 +587,17 @@ export const useDraftStore = create<DraftState>()(
       setQuestionAnswer: (questionId, answer) =>
         set((s) => ({
           questionAnswers: { ...s.questionAnswers, [questionId]: answer },
+          finalReviewCompletedAt: null,
+          planSelectedAt: null,
         })),
       appendComputeHistory: (entry) =>
         set((s) => ({
           computeHistory: [...s.computeHistory, entry].slice(-20),
         })),
       setEnginePhase: (enginePhase) => set({ enginePhase }),
+      markCalculationComplete: () => set({ calculationCompletedAt: Date.now() }),
+      markGuidedCheckComplete: () => set({ guidedCheckCompletedAt: Date.now() }),
+      markFinalReviewComplete: () => set({ finalReviewCompletedAt: Date.now() }),
       setFilingOutcome: (filingOutcome) =>
         set((s) => ({
           filingOutcome: { ...s.filingOutcome, ...filingOutcome },

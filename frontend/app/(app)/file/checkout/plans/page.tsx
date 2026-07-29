@@ -23,6 +23,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { usePublishedPricingMap } from "@/lib/hooks/usePublishedPricing";
+import { evaluateJourney } from "@/lib/filing/journeyGuard";
 
 export default function PlansPage() {
   return (
@@ -36,6 +37,9 @@ function PlansContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const publishedPricing = usePublishedPricingMap();
+  const journey = evaluateJourney(useDraftStore());
+  const journeyBlocker =
+    journey.steps.find((step) => step.id !== "plan" && !step.complete) ?? null;
 
   const {
     plan,
@@ -122,7 +126,7 @@ function PlansContent() {
         : "resident salaried";
 
   const handlePlanSelect = (planId: typeof plan) => {
-    if (!gate.canCheckout || PLANS[planId].comingSoon) return;
+    if (!gate.canCheckout || journeyBlocker || PLANS[planId].comingSoon) return;
     setPlan(planId);
     trackEvent("plan_select", { plan_id: planId });
   };
@@ -175,6 +179,23 @@ function PlansContent() {
           <Banner variant="info">
             Tax calculation is temporarily unavailable. Payment will remain
             locked until your tax comparison has been calculated.
+          </Banner>
+        </div>
+      )}
+
+      {!loading && gate.canCheckout && journeyBlocker && (
+        <div className="mb-6">
+          <Banner variant="info">
+            You&apos;re almost ready. Complete{" "}
+            <button
+              type="button"
+              className="font-semibold underline"
+              onClick={() => router.push(journeyBlocker.href)}
+            >
+              {journeyBlocker.label}
+            </button>{" "}
+            first: {journeyBlocker.missing.join(", ")}. Your saved details will
+            stay here.
           </Banner>
         </div>
       )}
@@ -280,13 +301,13 @@ function PlansContent() {
                     e.stopPropagation();
                     handlePlanSelect(p.id);
                   }}
-                  disabled={!gate.canCheckout || p.comingSoon}
+                  disabled={!gate.canCheckout || Boolean(journeyBlocker) || p.comingSoon}
                   className={cn(
                     "w-full rounded-full py-3.5 px-6 font-bold text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2",
                     isSelected || isPopular
                       ? "bg-[#0e5f63] text-white hover:bg-[#0b4b4e] active:scale-[0.99]"
                       : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300 hover:bg-slate-50",
-                    (!gate.canCheckout || p.comingSoon) && "opacity-60 cursor-not-allowed"
+                    (!gate.canCheckout || journeyBlocker || p.comingSoon) && "opacity-60 cursor-not-allowed"
                   )}
                 >
                   {p.comingSoon ? (
@@ -308,11 +329,11 @@ function PlansContent() {
         <div className="mx-auto mt-8 flex max-w-4xl flex-col items-center px-4 text-center">
           <Button
             href={
-              gate.canCheckout && !checkoutBlocked
+              gate.canCheckout && !journeyBlocker && !checkoutBlocked
                 ? "/file/checkout/payment"
                 : undefined
             }
-            disabled={!gate.canCheckout || checkoutBlocked}
+            disabled={!gate.canCheckout || Boolean(journeyBlocker) || checkoutBlocked}
             className="w-full rounded-full bg-[#0e5f63] px-10 py-4 text-base font-bold text-white shadow-lg shadow-[#0e5f63]/20 hover:bg-[#0b5458] sm:w-auto sm:min-w-[320px]"
           >
             Continue to Secure Payment

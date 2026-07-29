@@ -9,6 +9,7 @@ import { formatINR } from "@/lib/format";
 import { FILING_READY } from "@/lib/copy/strings";
 import { cn } from "@/lib/utils";
 import { getIncomeSectionStatuses, statusDotClass, type IncomeSectionId } from "@/lib/filing/navStatus";
+import { evaluateJourney, type JourneyStepId } from "@/lib/filing/journeyGuard";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { ProfileNavLink } from "@/components/marketing/ProfileNavLink";
 import { ActiveAiCompanion } from "./ActiveAiCompanion";
@@ -129,6 +130,8 @@ export function FilingLayout({
   const pathname = usePathname();
   const isRegimePage = pathname.startsWith("/file/regime");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [blockedMessage, setBlockedMessage] = useState<string | null>(null);
+  const journey = evaluateJourney(useDraftStore());
 
   const draftName = useDraftStore((s) => s.name);
   const regime = useDraftStore((s) => s.regime);
@@ -216,13 +219,45 @@ export function FilingLayout({
               const status = getStepStatus(step.id);
               const Icon = step.icon;
               const hasSubItems = step.subItems && step.subItems.length > 0;
+              const journeyIdBySidebar: Partial<Record<string, JourneyStepId>> = {
+                onboarding: "about",
+                import: "documents",
+                review: "income",
+                regime: "regime",
+                advisor: "guided_check",
+                checkout: "plan",
+              };
+              const targetJourneyId = journeyIdBySidebar[step.id];
+              const targetIndex = targetJourneyId
+                ? journey.steps.findIndex((item) => item.id === targetJourneyId)
+                : -1;
+              const firstIncompleteIndex = journey.firstIncomplete
+                ? journey.steps.findIndex(
+                    (item) => item.id === journey.firstIncomplete?.id
+                  )
+                : journey.steps.length;
+              const locked =
+                step.id === "companion"
+                  ? !isUnlocked
+                  : targetIndex >= 0 && targetIndex > firstIncompleteIndex;
+              const effectiveHref =
+                locked && journey.firstIncomplete
+                  ? journey.firstIncomplete.href
+                  : step.href;
 
               return (
                 <li key={step.id} className="space-y-1">
                   <div>
                     <Link
-                      href={step.href}
-                      onClick={() => setIsSidebarOpen(false)}
+                      href={effectiveHref}
+                      onClick={() => {
+                        setIsSidebarOpen(false);
+                        if (locked && journey.firstIncomplete) {
+                          setBlockedMessage(
+                            `Complete ${journey.firstIncomplete.label} first: ${journey.firstIncomplete.missing.join(", ")}. Your saved information is safe.`
+                          );
+                        }
+                      }}
                       className={cn(
                       "flex min-w-0 w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-all relative group",
                       active
@@ -240,7 +275,9 @@ export function FilingLayout({
                       {step.label}
                     </span>
 
-                    {status === "complete" ? (
+                    {locked ? (
+                      <Lock className="size-3.5 shrink-0 text-white/45" />
+                    ) : status === "complete" ? (
                       <span className="flex size-4.5 shrink-0 items-center justify-center rounded-full bg-white text-[#0e5f63] ring-1 ring-white/20">
                         <Check className="size-2.5" strokeWidth={3} />
                       </span>
@@ -450,6 +487,26 @@ export function FilingLayout({
               !noPadding ? "rounded-2xl border border-slate-100/80 shadow-[0_1px_2px_rgba(0,0,0,0.02)] p-4 sm:p-5" : "h-full"
             )}
           >
+            {blockedMessage && (
+              <div className="mb-4 rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-950">
+                <strong>One step at a time.</strong> {blockedMessage}
+              </div>
+            )}
+            {!pathname.startsWith("/file/companion") &&
+              !pathname.startsWith("/file/done") && (
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                  <p className="text-sm font-semibold text-slate-800">
+                    Step {Math.min(journey.completedCount + 1, journey.steps.length)} of{" "}
+                    {journey.steps.length}
+                    {journey.firstIncomplete
+                      ? ` · ${journey.firstIncomplete.label}`
+                      : " · Ready for payment"}
+                  </p>
+                  <p className="text-xs text-slate-600">
+                    {journey.completedCount} completed · progress saved automatically
+                  </p>
+                </div>
+              )}
             {children}
           </main>
 

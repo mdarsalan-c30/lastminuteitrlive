@@ -27,7 +27,7 @@ import { CheckCircle2 } from "lucide-react";
 
 export default function RegimePage() {
   const router = useRouter();
-  const { regime, setRegime, mismatchResolved, filingPath, incomeChips, paidPlanId } =
+  const { regime, setRegime, mismatchResolved, filingPath, incomeChips, paidPlanId, markCalculationComplete } =
     useDraftStore();
   const isPaid = Boolean(paidPlanId);
   const [useSnapshot, setUseSnapshot] = useState(false);
@@ -64,6 +64,7 @@ export default function RegimePage() {
       return;
     }
     setRegime(r);
+    if (rc) markCalculationComplete();
     trackEvent("regime_compare_completion", {
       selected_regime: r,
       recommended_regime: recommended,
