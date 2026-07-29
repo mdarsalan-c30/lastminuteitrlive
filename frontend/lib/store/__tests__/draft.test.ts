@@ -37,4 +37,12 @@ describe("useDraftStore reset helpers", () => {
     expect(next.consentGiven).toBe(false);
     expect(next.profile.ageBand).toBe("under_60");
   });
+
+  it("keeps PAN and mobile in the active filing draft", () => {
+    const store = useDraftStore.getState();
+    store.setProfile({ pan: "ABCDE1234F", mobile: "9876543210" });
+
+    expect(useDraftStore.getState().profile.pan).toBe("ABCDE1234F");
+    expect(useDraftStore.getState().profile.mobile).toBe("9876543210");
+  });
 });

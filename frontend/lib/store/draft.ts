@@ -19,6 +19,9 @@ export interface Profile {
   residentialStatus: "resident" | "non_resident" | "rnor";
   ageBand: "under_60" | "senior" | "super_senior";
   lateFiling?: boolean;
+  /** Taxpayer identity retained with this filing draft. */
+  pan?: string;
+  mobile?: string;
 }
 
 export interface IncomeDraft {
@@ -285,6 +288,8 @@ const defaultProfile: Profile = {
   residentialStatus: "resident",
   ageBand: "under_60",
   lateFiling: false,
+  pan: "",
+  mobile: "",
 };
 
 const defaultIncome: IncomeDraft = {

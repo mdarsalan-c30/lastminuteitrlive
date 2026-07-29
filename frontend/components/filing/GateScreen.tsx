@@ -65,9 +65,11 @@ export function GateContent() {
   
   const {
     matrix,
+    profile,
     incomeChips,
     itrConfirmed,
     setName,
+    setProfile,
     setMatrix,
     toggleIncomeChip,
     ensureIncomeChip,
@@ -76,8 +78,8 @@ export function GateContent() {
     setSeniorMode,
   } = useDraftStore();
 
-  const [pan, setPan] = useState("");
-  const [mobile, setMobile] = useState("");
+  const pan = profile.pan ?? "";
+  const mobile = profile.mobile ?? "";
   const [localAgeBand, setLocalAgeBand] = useState("25-35");
   const [touchedPan, setTouchedPan] = useState(false);
   const [touchedMobile, setTouchedMobile] = useState(false);
@@ -122,14 +124,14 @@ export function GateContent() {
   // Input Handler for PAN: Auto UpperCase & Max 10 Chars
   const handlePanChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
-    setPan(formatted);
+    setProfile({ pan: formatted });
     if (!touchedPan) setTouchedPan(true);
   };
 
   // Input Handler for Mobile: Digits only & Max 10 Digits
   const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = e.target.value.replace(/\D/g, "").slice(0, 10);
-    setMobile(formatted);
+    setProfile({ mobile: formatted });
     if (!touchedMobile) setTouchedMobile(true);
   };
 

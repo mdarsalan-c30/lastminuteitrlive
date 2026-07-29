@@ -15,9 +15,18 @@ export function draftSnapshotForLog(state: {
   paymentVerifiedAt: number | null;
   enginePhase: string;
 }): Record<string, unknown> {
+  const safeProfile =
+    state.profile && typeof state.profile === "object"
+      ? Object.fromEntries(
+          Object.entries(state.profile).filter(
+            ([key]) => key !== "pan" && key !== "mobile"
+          )
+        )
+      : state.profile;
+
   return {
     name: state.name,
-    profile: state.profile,
+    profile: safeProfile,
     income: state.income,
     deductions: state.deductions,
     houseProperty: state.houseProperty,
