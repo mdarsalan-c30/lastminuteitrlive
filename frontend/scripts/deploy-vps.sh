@@ -21,7 +21,12 @@ cleanup_failed_build() {
 trap cleanup_failed_build ERR
 
 echo "Building release in $build_dir while the current site stays online..."
-NEXT_DIST_DIR="$build_dir" npm run build
+# Keep Next's build below the VPS memory ceiling. Without a worker/heap cap the
+# optimizer can consume nearly all RAM and be terminated by the Linux OOM killer.
+NEXT_PRIVATE_BUILD_WORKER=1 \
+NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096}" \
+NEXT_DIST_DIR="$build_dir" \
+npm run build
 npx prisma migrate deploy
 
 # Keep the preceding release's hashed assets so already-open browser tabs do not
