@@ -11,6 +11,8 @@ export default function ReviewEditor({ params }: { params: Promise<{ id: string 
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [fetchingPhoto, setFetchingPhoto] = useState(false);
   const [error, setError] = useState("");
 
   const [formData, setFormData] = useState({
@@ -21,6 +23,8 @@ export default function ReviewEditor({ params }: { params: Promise<{ id: string 
     rating: 5,
     plan: "",
     outcomeTag: "",
+    avatarUrl: "",
+    profileUrl: "",
     published: true,
     order: 0,
   });
@@ -33,7 +37,21 @@ export default function ReviewEditor({ params }: { params: Promise<{ id: string 
     fetch(`/api/admin/reviews?id=${id}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.review) setFormData(data.review);
+        if (data.review) {
+          setFormData({
+            name: data.review.name ?? "",
+            role: data.review.role ?? "",
+            city: data.review.city ?? "",
+            quote: data.review.quote ?? "",
+            rating: data.review.rating ?? 5,
+            plan: data.review.plan ?? "",
+            outcomeTag: data.review.outcomeTag ?? "",
+            avatarUrl: data.review.avatarUrl ?? "",
+            profileUrl: data.review.profileUrl ?? "",
+            published: data.review.published !== false,
+            order: data.review.order ?? 0,
+          });
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -57,6 +75,47 @@ export default function ReviewEditor({ params }: { params: Promise<{ id: string 
     } catch (err: any) {
       setError(err.message);
       setSaving(false);
+    }
+  }
+
+  async function handleAvatarUpload(file: File) {
+    setUploading(true);
+    setError("");
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const response = await fetch("/api/admin/reviews/upload-avatar", {
+        method: "POST",
+        body,
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Upload failed");
+      setFormData((current) => ({ ...current, avatarUrl: data.url }));
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function fetchProfilePhoto() {
+    setFetchingPhoto(true);
+    setError("");
+    try {
+      const response = await fetch("/api/admin/reviews/fetch-avatar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profileUrl: formData.profileUrl }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Unable to fetch profile photo");
+      setFormData((current) => ({ ...current, avatarUrl: data.url }));
+    } catch (fetchError) {
+      setError(
+        fetchError instanceof Error ? fetchError.message : "Unable to fetch profile photo"
+      );
+    } finally {
+      setFetchingPhoto(false);
     }
   }
 
@@ -98,6 +157,94 @@ export default function ReviewEditor({ params }: { params: Promise<{ id: string 
               className="w-full rounded-md border border-slate-300 p-2 text-sm"
               placeholder="e.g. Software Engineer"
             />
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <h3 className="text-sm font-semibold text-slate-900">Profile and photo</h3>
+          <p className="mt-1 text-xs leading-relaxed text-slate-500">
+            Add a LinkedIn or other public professional profile. LinkedIn photo import is
+            best-effort; manual upload is the reliable option.
+          </p>
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-[96px_minmax(0,1fr)]">
+            <div className="flex size-24 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-[#0e5f63]/10 shadow-sm">
+              {formData.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={formData.avatarUrl}
+                  alt=""
+                  className="size-full object-cover"
+                />
+              ) : (
+                <span className="text-xl font-bold text-[#0e5f63]">
+                  {formData.name
+                    .split(" ")
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .map((part) => part[0]?.toUpperCase())
+                    .join("") || "?"}
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  LinkedIn or professional profile URL
+                </label>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <input
+                    type="url"
+                    value={formData.profileUrl}
+                    onChange={(event) =>
+                      setFormData({ ...formData, profileUrl: event.target.value })
+                    }
+                    className="min-w-0 flex-1 rounded-md border border-slate-300 p-2 text-sm"
+                    placeholder="https://www.linkedin.com/in/username"
+                  />
+                  <button
+                    type="button"
+                    disabled={fetchingPhoto || !formData.profileUrl}
+                    onClick={() => void fetchProfilePhoto()}
+                    className="rounded-md border border-[#0e5f63]/30 bg-white px-3 py-2 text-sm font-semibold text-[#0e5f63] disabled:opacity-50"
+                  >
+                    {fetchingPhoto ? "Fetching…" : "Fetch LinkedIn photo"}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  Upload profile photo
+                </label>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  disabled={uploading}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (file) void handleAvatarUpload(file);
+                    event.currentTarget.value = "";
+                  }}
+                  className="block w-full rounded-md border border-slate-300 bg-white p-2 text-sm"
+                />
+                <p className="mt-1 text-xs text-slate-500">
+                  PNG, JPG or WebP · maximum 3 MB.
+                  {uploading ? " Uploading…" : ""}
+                </p>
+              </div>
+
+              {formData.avatarUrl && (
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, avatarUrl: "" })}
+                  className="text-left text-xs font-semibold text-red-600 hover:underline"
+                >
+                  Remove profile photo
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
