@@ -56,64 +56,66 @@ function RegisterForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#eef4f3] font-sans lg:grid lg:grid-cols-[minmax(0,1.12fr)_minmax(440px,0.88fr)]">
-      <section className="relative hidden min-h-screen overflow-hidden bg-[#0e5f63] lg:flex lg:items-end">
-        <div
-          className="absolute inset-[-18px] scale-105 bg-cover bg-center opacity-45 blur-[3px]"
-          style={{
-            backgroundImage: "url('/registration-workspace-preview.png')",
-          }}
-          aria-hidden
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#073f42]/90 via-[#0e5f63]/72 to-[#0e5f63]/92" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_15%,rgba(255,255,255,0.2),transparent_36%)]" />
+    <div className="min-h-screen bg-[#eef4f3] font-sans lg:grid lg:grid-cols-[minmax(0,1.05fr)_minmax(430px,0.95fr)]">
+      <section className="relative hidden min-h-screen overflow-hidden bg-gradient-to-br from-[#073f42] via-[#0e5f63] to-[#14777b] lg:flex lg:items-center">
+        <div className="absolute -left-20 top-[-10%] h-80 w-80 rounded-full bg-emerald-300/10 blur-3xl" />
+        <div className="absolute -bottom-32 right-[-8%] h-96 w-96 rounded-full bg-white/10 blur-3xl" />
 
-        <div className="relative z-10 w-full p-10 xl:p-14">
-          <div className="max-w-xl rounded-[28px] border border-white/20 bg-[#073f42]/55 p-7 text-white shadow-2xl backdrop-blur-md">
-            <div className="mb-5 flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white">
-                <BrandLogo size="xs" variant="icon" />
-              </span>
-              <div>
-                <p className="text-lg font-bold">Your filing stays with you</p>
-                <p className="text-sm text-white/70">
-                  Continue exactly where you stopped.
-                </p>
-              </div>
-            </div>
+        <div className="relative z-10 mx-auto flex w-full max-w-[820px] flex-col justify-center px-8 py-8 xl:px-12">
+          <div className="mb-5 max-w-2xl text-white">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-emerald-200">
+              Your filing workspace
+            </p>
+            <h2 className="text-3xl font-bold leading-tight xl:text-4xl">
+              Continue your ITR without losing your progress
+            </h2>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/75 xl:text-base">
+              Register once to securely continue from the same step on any device.
+            </p>
+          </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
-              {[
-                ["Progress saved", "Your entered details stay in this browser."],
-                ["No payment now", "Review the journey before choosing a plan."],
-                ["You stay in control", "Nothing is filed automatically."],
-              ].map(([title, body]) => (
-                <div
-                  key={title}
-                  className="rounded-2xl border border-white/15 bg-white/10 p-4"
-                >
-                  <ShieldCheck className="mb-2 h-4 w-4 text-emerald-200" />
+          <div className="rounded-[24px] border border-white/25 bg-white/10 p-2 shadow-2xl">
+            <div
+              className="aspect-[16/8.5] w-full rounded-[18px] bg-white bg-cover bg-left-top"
+              style={{
+                backgroundImage: "url('/registration-workspace-preview.png')",
+              }}
+              role="img"
+              aria-label="Preview of the LastminuteITR guided filing workspace"
+            />
+          </div>
+
+          <div className="mt-5 grid gap-3 text-white sm:grid-cols-3">
+            {[
+              ["Progress saved", "Continue where you stopped"],
+              ["No payment now", "Review before choosing a plan"],
+              ["You stay in control", "Nothing files automatically"],
+            ].map(([title, body]) => (
+              <div
+                key={title}
+                className="flex items-start gap-2.5 rounded-xl border border-white/15 bg-white/10 p-3"
+              >
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-200" />
+                <div>
                   <p className="text-sm font-semibold">{title}</p>
-                  <p className="mt-1 text-xs leading-relaxed text-white/65">
-                    {body}
-                  </p>
+                  <p className="mt-0.5 text-xs leading-snug text-white/65">{body}</p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8 sm:px-8 lg:py-12">
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-5 sm:px-8 sm:py-6 lg:py-5">
         <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[#0e5f63]/12 to-transparent lg:hidden" />
         <div className="absolute -right-24 top-12 h-64 w-64 rounded-full bg-emerald-400/10 blur-3xl" />
 
         {/* Main Register Card */}
-        <div className="relative w-full max-w-[460px] rounded-[28px] border border-white/90 bg-white/95 p-7 shadow-[0_24px_70px_-28px_rgba(14,95,99,0.35)] backdrop-blur sm:p-9">
+        <div className="relative w-full max-w-[440px] rounded-[24px] border border-white/90 bg-white/95 p-5 shadow-[0_24px_70px_-28px_rgba(14,95,99,0.35)] backdrop-blur sm:p-7">
         
         {/* Brand Header & Custom Logo */}
-        <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center gap-2 mb-4">
+        <div className="mb-5 text-center">
+          <div className="mb-3 inline-flex items-center justify-center gap-2">
             <BrandLogo size="xs" variant="icon" />
             <span className="text-lg font-bold tracking-tight text-slate-950">
               LastminuteITR
@@ -123,13 +125,13 @@ function RegisterForm() {
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
             {initialName ? `Continue, ${initialName}` : "Create an account"}
           </h1>
-          <p className="mt-2 text-[14px] text-slate-500">
+          <p className="mt-1 text-[14px] text-slate-500">
             Let&apos;s get started with your tax filing journey
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           {/* Name Field */}
           <div>
             <label htmlFor="name" className="mb-1.5 block text-[13px] font-semibold text-slate-700">
@@ -224,7 +226,7 @@ function RegisterForm() {
             type="submit"
             disabled={loading}
             className={cn(
-              "group relative flex w-full items-center justify-center gap-2 rounded-xl bg-[#0e5f63] px-5 py-3.5 text-[15px] font-semibold text-white shadow-md shadow-[#0e5f63]/25 transition-all hover:bg-[#0b4b4e] active:scale-[0.99] mt-2",
+              "group relative mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-[#0e5f63] px-5 py-3 text-[15px] font-semibold text-white shadow-md shadow-[#0e5f63]/25 transition-all hover:bg-[#0b4b4e] active:scale-[0.99]",
               loading && "opacity-75 cursor-not-allowed"
             )}
           >
@@ -243,7 +245,7 @@ function RegisterForm() {
 
           <Link
             href="/file/start"
-            className="flex min-h-11 items-center justify-center rounded-xl text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50 hover:text-[#0e5f63]"
+            className="flex min-h-9 items-center justify-center rounded-xl text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50 hover:text-[#0e5f63]"
           >
             Skip for now
           </Link>
@@ -254,13 +256,13 @@ function RegisterForm() {
         </form>
 
         {/* Security Badge */}
-        <div className="mt-5 flex items-center justify-center gap-1.5 text-[12px] font-medium text-slate-400">
+        <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] font-medium text-slate-400">
           <ShieldCheck className="h-3.5 w-3.5 text-[#0e5f63]" />
           <span>256-Bit SSL Encrypted & Tax Department Compliant</span>
         </div>
 
         {/* Footer Link */}
-        <p className="mt-5 text-center text-sm text-slate-500 border-t border-slate-100 pt-5">
+        <p className="mt-3 border-t border-slate-100 pt-3 text-center text-sm text-slate-500">
           Already have an account?{" "}
           <Link
             href={`/auth/login?${new URLSearchParams({
