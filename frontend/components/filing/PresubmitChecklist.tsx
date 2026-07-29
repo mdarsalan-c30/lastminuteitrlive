@@ -8,6 +8,7 @@ import { useDraftStore } from "@/lib/store/draft";
 import { draftSnapshotForLog, logSessionEvent } from "@/lib/sessionLogClient";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
 import { Button, FilingActions } from "@/components/filing/ui";
+import { resolveCheckoutGate } from "@/lib/filing/checkoutGate";
 
 interface PresubmitChecklistProps {
   showCheckoutCta?: boolean;
@@ -46,9 +47,15 @@ export function PresubmitChecklist({
   const checklistGreen = Boolean(
     mismatchOk && bankValidated && regime && eVerifyMethod
   );
-  const filingReadyForCheckout =
-    confidence.filing_ready && !loading && !engineUnavailable;
-  const canProceed = checklistGreen && filingReadyForCheckout;
+  const checkoutGate = resolveCheckoutGate({
+    mismatchResolved,
+    mismatchProceedWithExplanation,
+    confidence,
+    engineUnavailable,
+    loading,
+    hasOpenMismatch,
+  });
+  const canProceed = checklistGreen && checkoutGate.canCheckout;
   const trackedGreen = useRef(false);
 
   useEffect(() => {
@@ -80,12 +87,11 @@ export function PresubmitChecklist({
         Complete only the items shown below. Your progress is saved.
       </p>
 
-      {!filingReadyForCheckout && !loading && (
+      {checkoutGate.estimateOverride && !loading && (
         <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-          <strong>Still needed:</strong>{" "}
-          {confidence.missing_documents.length > 0
-            ? confidence.missing_documents.join(", ")
-            : "complete the tax calculation and review any differences"}
+          <strong>Estimate ready.</strong> You can continue now. Before filing
+          on the Income Tax Portal, compare the manually entered income and TDS
+          with AIS or Form 26AS when available.
         </div>
       )}
 
@@ -154,9 +160,9 @@ export function PresubmitChecklist({
         </FilingActions>
       )}
 
-      {!canProceed && checklistGreen && !filingReadyForCheckout && (
+      {!canProceed && checklistGreen && !checkoutGate.canCheckout && (
         <p className="mt-2 text-xs text-slate-600">
-          Complete the missing items shown above to continue.
+          Complete the tax calculation or review the open difference to continue.
         </p>
       )}
     </div>

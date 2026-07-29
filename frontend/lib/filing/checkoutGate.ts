@@ -106,12 +106,12 @@ export function resolveCheckoutGate(input: CheckoutGateInput): CheckoutGateResul
 
   if (confidence.missing_documents.length > 0) {
     return {
-      canCheckout: false,
+      canCheckout: true,
       completenessScore: confidence.completeness_score,
-      blockingHref: "/file/import/documents?source=form16&step=requirements",
-      blockingLabel: `Complete ${confidence.missing_documents[0]} verification`,
+      blockingHref: "",
+      blockingLabel: "",
       engineOverride: false,
-      estimateOverride: false,
+      estimateOverride: true,
     };
   }
 

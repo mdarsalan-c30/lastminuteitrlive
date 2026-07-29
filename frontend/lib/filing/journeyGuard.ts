@@ -32,6 +32,11 @@ export function evaluateJourney(draft: unknown) {
   const houseSelected = chips.includes("house_property");
   const businessSelected =
     chips.includes("freelance") || chips.includes("business_presumptive");
+  const answers = d.questionAnswers ?? {};
+  const manualDocumentPath =
+    answers.document_form16_manual === true ||
+    answers.document_ais_manual === true ||
+    answers.document_form26as_manual === true;
 
   const steps: JourneyStep[] = [
     {
@@ -50,11 +55,15 @@ export function evaluateJourney(draft: unknown) {
       href: "/file/import/documents",
       complete:
         !exact ||
+        manualDocumentPath ||
         connectors.includes("form16") ||
         connectors.some((id) =>
           ["ais", "form26as", "groww", "zerodha", "cams", "kfintech"].includes(id)
         ),
-      missing: exact ? ["required document or manual/estimate choice"] : [],
+      missing:
+        exact && !manualDocumentPath
+          ? ["upload a document or choose manual entry"]
+          : [],
     },
     {
       id: "income",

@@ -78,9 +78,12 @@ export default function RiskReviewPage() {
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="font-semibold text-slate-900">
-                Complete {confidence.missing_documents.length} missing item
-                {confidence.missing_documents.length === 1 ? "" : "s"}
+                Optional documents not added yet
               </h2>
+              <p className="mt-1 text-sm text-slate-700">
+                You can continue with your manual figures. Add these later to
+                cross-check income and tax credits before filing:
+              </p>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
                 {confidence.missing_documents.map((document) => (
                   <li key={document}>{document}</li>
@@ -88,7 +91,7 @@ export default function RiskReviewPage() {
               </ul>
             </div>
             <Button href="/file/import/documents" variant="secondary">
-              Add documents
+              Add documents (optional)
             </Button>
           </div>
         </Card>

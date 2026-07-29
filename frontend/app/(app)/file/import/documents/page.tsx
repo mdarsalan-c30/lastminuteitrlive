@@ -320,20 +320,26 @@ function DocumentsContent() {
       {
         id: "form16",
         label: "Form 16",
-        complete: form16Connected,
-        allowManual: false,
+        complete:
+          form16Connected ||
+          questionAnswers.document_form16_manual === true,
+        allowManual: true,
       },
       {
         id: "ais",
         label: "AIS / TIS",
-        complete: connectedConnectors.includes("ais"),
-        allowManual: false,
+        complete:
+          connectedConnectors.includes("ais") ||
+          questionAnswers.document_ais_manual === true,
+        allowManual: true,
       },
       {
         id: "form26as",
         label: "Form 26AS",
-        complete: connectedConnectors.includes("form26as"),
-        allowManual: false,
+        complete:
+          connectedConnectors.includes("form26as") ||
+          questionAnswers.document_form26as_manual === true,
+        allowManual: true,
       },
     ];
 
@@ -651,8 +657,27 @@ function DocumentsContent() {
                 </strong>{" "}
                 {collectionComplete
                   ? "You will not be sent back here for a hidden document requirement."
-                  : "Upload the document above, or clearly choose manual entry when the document is unavailable."}
+                  : "Upload what you have, or choose manual entry. Documents can be added later for verification."}
               </div>
+              {!collectionComplete &&
+                collectionRequirements.some(
+                  (requirement) =>
+                    ["form16", "ais", "form26as"].includes(requirement.id) &&
+                    !requirement.complete
+                ) && (
+                  <button
+                    type="button"
+                    className="w-fit rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-950 shadow-sm hover:bg-amber-50"
+                    onClick={() => {
+                      setQuestionAnswer("document_form16_manual", true);
+                      setQuestionAnswer("document_ais_manual", true);
+                      setQuestionAnswer("document_form26as_manual", true);
+                      setFilingMode("estimate");
+                    }}
+                  >
+                    I don&apos;t have these documents — continue manually
+                  </button>
+                )}
               <ul className="space-y-2">
                 {collectionRequirements.map((requirement) => (
                   <li
@@ -677,15 +702,13 @@ function DocumentsContent() {
                       <button
                         type="button"
                         className="text-xs font-semibold text-primary underline underline-offset-2"
-                        onClick={() =>
+                        onClick={() => {
                           setQuestionAnswer(
-                            requirement.id === "ais" ||
-                              requirement.id === "form26as"
-                              ? `document_${requirement.id}_unavailable`
-                              : `document_${requirement.id}_manual`,
+                            `document_${requirement.id}_manual`,
                             true
-                          )
-                        }
+                          );
+                          setFilingMode("estimate");
+                        }}
                       >
                         {requirement.id === "ais" ||
                         requirement.id === "form26as"
@@ -698,8 +721,8 @@ function DocumentsContent() {
               </ul>
               {!collectionComplete && (
                 <p className="text-xs">
-                  AIS and Form 26AS are required here to verify reported income
-                  and tax credits before your tax comparison is calculated.
+                  Your calculation will be marked as an estimate until the
+                  entered income and TDS are checked against available records.
                 </p>
               )}
             </div>

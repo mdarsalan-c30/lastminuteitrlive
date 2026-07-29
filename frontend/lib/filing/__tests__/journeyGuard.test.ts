@@ -45,4 +45,17 @@ describe("evaluateJourney", () => {
     expect(result.firstIncomplete?.id).toBe("income");
     expect(result.firstIncomplete?.missing).toContain("capital gains details");
   });
+
+  it("accepts manual document entry when no tax document is available", () => {
+    const result = evaluateJourney({
+      ...completeDraft,
+      connectedConnectors: [],
+      questionAnswers: { document_form16_manual: true },
+    });
+
+    expect(result.steps.find((step) => step.id === "documents")?.complete).toBe(
+      true
+    );
+    expect(result.complete).toBe(true);
+  });
 });

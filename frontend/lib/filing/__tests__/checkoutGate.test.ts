@@ -56,7 +56,7 @@ describe("resolveCheckoutGate", () => {
     expect(result.blockingHref).toBe("/file/regime");
   });
 
-  it("uses the strict document verification step as a safety net", () => {
+  it("allows checkout with missing documents and marks the result estimated", () => {
     const result = resolveCheckoutGate({
       mismatchResolved: true,
       mismatchProceedWithExplanation: false,
@@ -68,11 +68,9 @@ describe("resolveCheckoutGate", () => {
       loading: false,
     });
 
-    expect(result.canCheckout).toBe(false);
-    expect(result.blockingHref).toBe(
-      "/file/import/documents?source=form16&step=requirements"
-    );
-    expect(result.blockingLabel).toContain("Form 16");
+    expect(result.canCheckout).toBe(true);
+    expect(result.blockingHref).toBe("");
+    expect(result.estimateOverride).toBe(true);
   });
 
   it("does not block on mismatch when no open mismatch exists", () => {
@@ -107,7 +105,7 @@ describe("resolveCheckoutGate", () => {
     expect(result.estimateOverride).toBe(true);
   });
 
-  it("still blocks missing required documents after the collection step", () => {
+  it("does not send users back after they completed the document decision", () => {
     const result = resolveCheckoutGate({
       mismatchResolved: false,
       mismatchProceedWithExplanation: false,
@@ -122,11 +120,9 @@ describe("resolveCheckoutGate", () => {
       documentsResolvedEarlier: true,
     });
 
-    expect(result.canCheckout).toBe(false);
-    expect(result.blockingHref).toBe(
-      "/file/import/documents?source=form16&step=requirements"
-    );
-    expect(result.estimateOverride).toBe(false);
+    expect(result.canCheckout).toBe(true);
+    expect(result.blockingHref).toBe("");
+    expect(result.estimateOverride).toBe(true);
   });
 
   it("does not apply engine override while loading", () => {

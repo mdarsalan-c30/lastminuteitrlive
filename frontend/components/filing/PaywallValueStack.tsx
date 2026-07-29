@@ -70,10 +70,10 @@ export function PaywallValueStack({
     },
     {
       icon: <Sparkles className="size-4 text-blue-600" />,
-      label: "Filing confidence",
+      label: filingReady ? "Calculation checked" : "Estimated calculation ready",
       detail: filingReady
         ? `${Math.round(completenessScore)}% filing-ready`
-        : `${Math.round(completenessScore)}% complete · ${missingDocCount} doc${missingDocCount !== 1 ? "s" : ""} left`,
+        : "Continue now and verify manual figures before filing on the portal",
     },
   ].filter((item) => !item.hidden);
 
