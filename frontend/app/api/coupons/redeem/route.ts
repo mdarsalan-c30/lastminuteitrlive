@@ -17,6 +17,19 @@ const VALID_PLANS = Object.keys(PLANS) as PlanId[];
 
 export async function POST(request: NextRequest) {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(B2C_SESSION_COOKIE)?.value;
+    const session = readB2CSession(token);
+    if (!session) {
+      return NextResponse.json(
+        {
+          error: "Create an account or log in before checkout.",
+          registerUrl: "/auth/register?next=%2Ffile%2Fcheckout%2Fpayment",
+        },
+        { status: 401 }
+      );
+    }
+
     const body = (await request.json()) as {
       code?: string;
       planId?: string;
@@ -48,17 +61,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (body.useCoins && body.useCoins > 0) {
-      const cookieStore = await cookies();
-      const token = cookieStore.get(B2C_SESSION_COOKIE)?.value;
-      const session = readB2CSession(token);
-      if (session) {
-        try {
-          await spendCoins(session.email, body.useCoins);
-        } catch (e: any) {
-          return NextResponse.json({ error: e.message }, { status: 400 });
-        }
-      } else {
-        return NextResponse.json({ error: "Must be logged in to use coins" }, { status: 401 });
+      try {
+        await spendCoins(session.email, body.useCoins);
+      } catch (e: any) {
+        return NextResponse.json({ error: e.message }, { status: 400 });
       }
     }
 
@@ -99,7 +105,7 @@ export async function POST(request: NextRequest) {
     }
 
     const response = NextResponse.json({ unlocked: true, planId });
-    const token = createPaymentSessionToken(
+    const paymentToken = createPaymentSessionToken(
       buildPaymentSessionPayload({
         planId,
         orderId: `order_custom_${Date.now()}`,
@@ -110,7 +116,7 @@ export async function POST(request: NextRequest) {
     );
     response.cookies.set(
       PAYMENT_SESSION_COOKIE,
-      token,
+      paymentToken,
       paymentSessionCookieOptions()
     );
     return response;

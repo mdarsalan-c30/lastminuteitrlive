@@ -11,6 +11,11 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialName = searchParams.get("name") || "";
+  const requestedNext = searchParams.get("next");
+  const nextPath =
+    requestedNext?.startsWith("/") && !requestedNext.startsWith("//")
+      ? requestedNext
+      : "/file/onboarding/eligibility?step=about-you";
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,8 +49,7 @@ function RegisterForm() {
         });
       }
 
-      // Redirect to getting started
-      router.push("/file/onboarding/eligibility?step=about-you");
+      router.push(nextPath);
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
@@ -202,7 +206,10 @@ function RegisterForm() {
         <p className="mt-5 text-center text-sm text-slate-500 border-t border-slate-100 pt-5">
           Already have an account?{" "}
           <Link
-            href={initialName ? `/auth/login?name=${encodeURIComponent(initialName)}` : "/auth/login"}
+            href={`/auth/login?${new URLSearchParams({
+              ...(initialName ? { name: initialName } : {}),
+              ...(requestedNext ? { next: nextPath } : {}),
+            }).toString()}`}
             className="font-bold text-[#0e5f63] hover:underline"
           >
             Log in

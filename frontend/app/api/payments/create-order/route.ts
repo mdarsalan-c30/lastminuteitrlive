@@ -13,6 +13,7 @@ import { getPublishedPrice } from "@/lib/pricing/config";
 import { validateCoupon } from "@/lib/admin/coupons";
 import { validateReferralCode } from "@/lib/admin/referrals";
 import { CA_SESSION_COOKIE, readCASession } from "@/lib/auth/ca";
+import { B2C_SESSION_COOKIE, readB2CSession } from "@/lib/auth/b2c";
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,6 +26,19 @@ export async function POST(request: NextRequest) {
     const caToken = request.cookies.get(CA_SESSION_COOKIE)?.value;
     const caSession = readCASession(caToken);
     const isCaCheckout = Boolean(caSession);
+    const b2cSession = readB2CSession(
+      request.cookies.get(B2C_SESSION_COOKIE)?.value
+    );
+
+    if (!isCaCheckout && !b2cSession) {
+      return NextResponse.json(
+        {
+          error: "Create an account or log in before payment.",
+          registerUrl: "/auth/register?next=%2Ffile%2Fcheckout%2Fpayment",
+        },
+        { status: 401 }
+      );
+    }
 
     const planAllowed =
       planId &&

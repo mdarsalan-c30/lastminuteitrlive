@@ -189,9 +189,11 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                   onSubmit={(e) => {
                     e.preventDefault();
                     const formData = new FormData(e.currentTarget);
-                    const name = formData.get("name") as string;
-                    // Since it's B2C filing, send to register with name query param
-                    window.location.href = `/auth/register?name=${encodeURIComponent(name)}`;
+                    const name = String(formData.get("name") ?? "").trim();
+                    const params = new URLSearchParams();
+                    if (name) params.set("name", name);
+                    const query = params.toString();
+                    window.location.href = `/auth/register${query ? `?${query}` : ""}`;
                   }}
                 >
                   <div>
@@ -202,7 +204,6 @@ export function HeroSection({ mode, setMode }: { mode: "b2c" | "b2b"; setMode: (
                       id="b2c-name"
                       name="name"
                       type="text"
-                      required
                       placeholder="What should we call you? (e.g. Rahul)"
                       className="w-full rounded-[10px] border border-[#E6E8EC] px-4 py-3 text-[15px] outline-none transition-colors focus:border-[#0e5f63] focus:ring-1 focus:ring-[#0e5f63]"
                     />
