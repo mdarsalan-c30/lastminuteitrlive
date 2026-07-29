@@ -496,7 +496,7 @@ export function FilingLayout({
               !pathname.startsWith("/file/done") && (
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
                   <p className="text-sm font-semibold text-slate-800">
-                    Step {Math.min(journey.completedCount + 1, journey.steps.length)} of{" "}
+                    Step {journey.currentStepNumber} of{" "}
                     {journey.steps.length}
                     {journey.firstIncomplete
                       ? ` · ${journey.firstIncomplete.label}`

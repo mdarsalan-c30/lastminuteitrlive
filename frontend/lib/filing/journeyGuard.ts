@@ -139,10 +139,14 @@ export function evaluateJourney(draft: unknown) {
   ];
 
   const firstIncomplete = steps.find((step) => !step.complete) ?? null;
+  const firstIncompleteIndex = firstIncomplete
+    ? steps.findIndex((step) => step.id === firstIncomplete.id)
+    : steps.length;
   return {
     complete: firstIncomplete === null,
     firstIncomplete,
     steps,
-    completedCount: steps.filter((step) => step.complete).length,
+    completedCount: firstIncompleteIndex,
+    currentStepNumber: Math.min(firstIncompleteIndex + 1, steps.length),
   };
 }
