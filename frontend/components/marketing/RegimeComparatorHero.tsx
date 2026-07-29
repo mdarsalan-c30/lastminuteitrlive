@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 function fmtINR(n: number): string {
   return "₹" + Math.round(n).toLocaleString("en-IN");
@@ -46,6 +46,29 @@ function newRegimeTax(income: number): number {
 
 export function RegimeComparatorHero() {
   const [income, setIncome] = useState(1_200_000);
+  const [liveStat, setLiveStat] = useState(6578);
+
+  useEffect(() => {
+    let active = true;
+
+    async function refreshLiveStat() {
+      try {
+        const response = await fetch("/api/public/hero-live-stat", { cache: "no-store" });
+        if (!response.ok) return;
+        const data = (await response.json()) as { value?: number };
+        if (active && Number.isFinite(data.value)) setLiveStat(Number(data.value));
+      } catch {
+        // Keep the safe initial value when the endpoint is unavailable.
+      }
+    }
+
+    void refreshLiveStat();
+    const timer = setInterval(() => void refreshLiveStat(), 60 * 1000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, []);
 
   const ot = oldRegimeTax(income);
   const nt = newRegimeTax(income);
@@ -80,7 +103,7 @@ export function RegimeComparatorHero() {
             className="inline-block h-1.5 w-1.5 rounded-full bg-[#74A81F]"
             style={{ animation: "pulse 2s infinite" }}
           />
-          Live · ₹{fmtLakh(income)}
+          Live now · {liveStat.toLocaleString("en-IN")}
         </div>
       </div>
 

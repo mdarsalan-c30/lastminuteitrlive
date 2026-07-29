@@ -57,6 +57,16 @@ model HeroRibbonConfig {
   updatedBy    String?
 }
 
+model HeroLiveStatConfig {
+  id            String   @id @default("hero-live-stat")
+  baseValue     Int      @default(6578)
+  incrementBy   Int      @default(200)
+  intervalHours Int      @default(4)
+  baseAt        DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  updatedBy     String?
+}
+
 model PricingConfig {
   id            String    @id @default(uuid())
   planId        String
