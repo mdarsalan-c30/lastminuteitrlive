@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Keep production builds within the VPS memory ceiling. The app has hundreds
+  // of generated routes, so Next's default worker count can exhaust RAM.
+  experimental: {
+    cpus: 1,
+  },
   serverExternalPackages: ["pdf-parse"],
   images: {
     remotePatterns: [
