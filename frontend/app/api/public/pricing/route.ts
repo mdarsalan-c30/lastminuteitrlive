@@ -1,15 +1,18 @@
 import { NextResponse } from "next/server";
 import { PLAN_LIST } from "@/lib/payments/plans";
-import { getPublishedPricing } from "@/lib/pricing/config";
+import { getPublishedPricing, isPublishedPlanVisible } from "@/lib/pricing/config";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const entries = await Promise.all(
-    PLAN_LIST.map(async (plan) => [
-      plan.id,
-      await getPublishedPricing(plan.id),
-    ] as const)
+    PLAN_LIST.map(async (plan) => {
+      const [pricing, isVisible] = await Promise.all([
+        getPublishedPricing(plan.id),
+        isPublishedPlanVisible(plan.id),
+      ]);
+      return [plan.id, { ...pricing, isVisible }] as const;
+    })
   );
 
   return NextResponse.json(

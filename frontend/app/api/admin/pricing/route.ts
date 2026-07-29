@@ -16,6 +16,7 @@ interface PricingRowInput {
   basePriceInr: number;
   offerPriceInr?: number | null;
   offerEndsAt?: string | null;
+  isVisible?: boolean;
 }
 
 export async function POST(request: NextRequest) {
@@ -25,6 +26,19 @@ export async function POST(request: NextRequest) {
   const body = (await request.json()) as { rows?: PricingRowInput[] };
   if (!Array.isArray(body.rows) || body.rows.length === 0) {
     return NextResponse.json({ error: "No pricing rows" }, { status: 400 });
+  }
+
+  const consumerRows = body.rows.filter(
+    (row) => row.planId === "normal" || row.planId === "pro"
+  );
+  if (
+    consumerRows.length === 2 &&
+    consumerRows.every((row) => row.isVisible === false)
+  ) {
+    return NextResponse.json(
+      { error: "Keep at least one consumer plan visible." },
+      { status: 400 }
+    );
   }
 
   for (const row of body.rows) {
@@ -59,6 +73,7 @@ export async function POST(request: NextRequest) {
       basePriceInr: row.basePriceInr,
       offerPriceInr: row.offerPriceInr ?? null,
       offerEndsAt: row.offerEndsAt ?? null,
+      isVisible: row.isVisible ?? true,
     });
   }
 
@@ -72,6 +87,7 @@ export async function POST(request: NextRequest) {
   });
 
   revalidatePath("/");
+  revalidatePath("/file/checkout/plans");
   revalidatePath("/file/checkout/payment");
 
   return NextResponse.json({ ok: true });

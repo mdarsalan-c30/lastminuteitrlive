@@ -5,8 +5,14 @@ import { PlanCard } from "@/components/pricing/PlanCard";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { PRICING_SECTION } from "@/lib/copy/marketing";
 import { ASSESSMENT_YEAR, PRICING_PLANS } from "@/lib/constants";
+import { usePublishedPricingMap } from "@/lib/hooks/usePublishedPricing";
 
 export function PricingSection() {
+  const publishedPricing = usePublishedPricingMap();
+  const visiblePlans = PRICING_PLANS.filter(
+    (plan) => publishedPricing[plan.id]?.isVisible !== false
+  );
+
   return (
     <section
       id="pricing"
@@ -26,8 +32,12 @@ export function PricingSection() {
         </ScrollReveal>
 
         {/* Pricing cards */}
-        <div className="mx-auto max-w-4xl grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {PRICING_PLANS.map((plan, i) => (
+        <div
+          className={`mx-auto grid grid-cols-1 gap-6 ${
+            visiblePlans.length === 1 ? "max-w-md" : "max-w-4xl sm:grid-cols-2"
+          }`}
+        >
+          {visiblePlans.map((plan) => (
             <ScrollReveal key={plan.id} delay={3}>
               <div className={`relative flex h-full flex-col rounded-[16px] p-7 transition-all duration-300 hover:-translate-y-1 ${
                 plan.id === "ai_smart"

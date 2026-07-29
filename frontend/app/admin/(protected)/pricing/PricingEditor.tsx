@@ -10,6 +10,7 @@ export interface EditorRow {
   basePriceInr: number;
   offerPriceInr: number | null;
   offerEndsAt: string | null;
+  isVisible: boolean;
 }
 
 function toDateInput(iso: string | null): string {
@@ -39,6 +40,10 @@ export function PricingEditor({ initial }: { initial: EditorRow[] }) {
     guided?.offerPriceInr != null &&
     (guided.offerEndsAt == null ||
       new Date(guided.offerEndsAt).getTime() > now);
+  const visibleConsumerCount = rows.filter(
+    (row) =>
+      (row.planId === "normal" || row.planId === "pro") && row.isVisible
+  ).length;
 
   function patch(planId: PlanId, patch: Partial<EditorRow>) {
     setRows((rs) => rs.map((r) => (r.planId === planId ? { ...r, ...patch } : r)));
@@ -58,6 +63,7 @@ export function PricingEditor({ initial }: { initial: EditorRow[] }) {
             basePriceInr: r.basePriceInr,
             offerPriceInr: r.offerPriceInr,
             offerEndsAt: r.offerEndsAt,
+            isVisible: r.isVisible,
           })),
         }),
       });
@@ -78,7 +84,7 @@ export function PricingEditor({ initial }: { initial: EditorRow[] }) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/40 text-left">
-              {["Plan", "Base price", "Offer price", "Offer ends"].map((h) => (
+              {["Plan", "Show on website", "Base price", "Offer price", "Offer ends"].map((h) => (
                 <th
                   key={h}
                   className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
@@ -93,6 +99,22 @@ export function PricingEditor({ initial }: { initial: EditorRow[] }) {
               <tr key={row.planId} className="border-b border-border/60">
                 <td className="px-4 py-3 font-medium text-foreground">
                   {row.name}
+                </td>
+                <td className="px-4 py-3">
+                  <label className="inline-flex cursor-pointer items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={row.isVisible}
+                      disabled={row.isVisible && visibleConsumerCount === 1}
+                      onChange={(e) =>
+                        patch(row.planId, { isVisible: e.target.checked })
+                      }
+                      className="h-4 w-4 accent-[#0e5f63] disabled:cursor-not-allowed disabled:opacity-50"
+                    />
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {row.isVisible ? "Visible" : "Hidden"}
+                    </span>
+                  </label>
                 </td>
                 <td className="px-4 py-3">
                   <input
@@ -141,6 +163,10 @@ export function PricingEditor({ initial }: { initial: EditorRow[] }) {
           </tbody>
         </table>
       </div>
+      <p className="-mt-4 text-xs text-muted-foreground">
+        At least one consumer plan must remain visible. Hidden plans are also
+        blocked from new payments.
+      </p>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4">

@@ -80,7 +80,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const { getPublishedPrice } = await import("@/lib/pricing/config");
+    const { getPublishedPrice, isPublishedPlanVisible } = await import(
+      "@/lib/pricing/config"
+    );
+    if (!(await isPublishedPlanVisible(planId))) {
+      return NextResponse.json(
+        { error: "This plan is currently unavailable. Choose an available plan." },
+        { status: 409 }
+      );
+    }
     let effectivePrice = await getPublishedPrice(planId);
 
     if (isReferral && refResult) {

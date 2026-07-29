@@ -131,7 +131,15 @@ function PlansContent() {
     trackEvent("plan_select", { plan_id: planId });
   };
 
-  const paidPlans = PLAN_LIST.filter((p) => p.id !== "free");
+  const paidPlans = PLAN_LIST.filter(
+    (p) => p.id !== "free" && publishedPricing[p.id]?.isVisible !== false
+  );
+
+  useEffect(() => {
+    if (paidPlans.length > 0 && publishedPricing[plan]?.isVisible === false) {
+      setPlan(paidPlans[0].id);
+    }
+  }, [paidPlans, plan, publishedPricing, setPlan]);
 
   return (
     <FilingLayout
@@ -212,7 +220,12 @@ function PlansContent() {
         </div>
 
         {/* Clean Pill Cards Grid Matching Screenshot */}
-        <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+        <div
+          className={cn(
+            "mx-auto grid gap-6",
+            paidPlans.length === 1 ? "max-w-xl" : "max-w-4xl md:grid-cols-2"
+          )}
+        >
           {paidPlans.map((p) => {
             const isSelected = plan === p.id;
             const isRecommended = recommendedPlan === p.id;

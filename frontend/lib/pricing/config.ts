@@ -58,12 +58,27 @@ export async function getPublishedPrice(
   return (await getPublishedPricing(planId, now)).current;
 }
 
+function canonicalConsumerPlanId(planId: PlanId): PlanId {
+  if (planId === "diy") return "normal";
+  if (planId === "ai_smart") return "pro";
+  return planId;
+}
+
+/** Whether an admin has enabled this consumer plan for new purchases. */
+export async function isPublishedPlanVisible(planId: PlanId): Promise<boolean> {
+  const canonicalId = canonicalConsumerPlanId(planId);
+  if (canonicalId !== "normal" && canonicalId !== "pro") return true;
+  const rows = await getPricingConfig();
+  return rowFor(rows, canonicalId)?.isVisible ?? true;
+}
+
 /** Update the draft pricing rows for one plan (admin, CEO only). */
 export async function upsertPricingRow(input: {
   planId: PlanId;
   basePriceInr: number;
   offerPriceInr?: number | null;
   offerEndsAt?: string | null;
+  isVisible?: boolean;
 }): Promise<PricingConfigRow> {
   const rows = await getPricingConfig();
   const existing = rowFor(rows, input.planId);
@@ -73,6 +88,7 @@ export async function upsertPricingRow(input: {
       basePriceInr: input.basePriceInr,
       offerPriceInr: input.offerPriceInr ?? null,
       offerEndsAt: input.offerEndsAt ?? null,
+      isVisible: input.isVisible ?? true,
       publishedAt: now,
     });
     return updated as PricingConfigRow;
@@ -83,6 +99,7 @@ export async function upsertPricingRow(input: {
     basePriceInr: input.basePriceInr,
     offerPriceInr: input.offerPriceInr ?? null,
     offerEndsAt: input.offerEndsAt ?? null,
+    isVisible: input.isVisible ?? true,
     publishedAt: now,
   };
   await insert("pricingConfig", row);

@@ -10,6 +10,7 @@ import {
 } from "@/lib/payments/session";
 import type { PlanId } from "@/lib/payments/plans";
 import { validateSavedJourney } from "@/lib/filing/serverJourneyGuard";
+import { isPublishedPlanVisible } from "@/lib/pricing/config";
 
 /** Spend one wallet credit to unlock companion for a filing profile. */
 export async function POST(request: NextRequest) {
@@ -22,6 +23,13 @@ export async function POST(request: NextRequest) {
 
   if (!profileId) {
     return NextResponse.json({ error: "profileId is required" }, { status: 400 });
+  }
+
+  if (!(await isPublishedPlanVisible(planId))) {
+    return NextResponse.json(
+      { error: "This plan is currently unavailable. Choose an available plan." },
+      { status: 409 }
+    );
   }
 
   const journey = await validateSavedJourney(auth.user.id, profileId);

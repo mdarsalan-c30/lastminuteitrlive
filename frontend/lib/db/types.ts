@@ -53,6 +53,7 @@ export interface PricingConfigRow {
   basePriceInr: number;
   offerPriceInr?: number | null;
   offerEndsAt?: string | null;
+  isVisible: boolean;
   publishedAt: string;
 }
 

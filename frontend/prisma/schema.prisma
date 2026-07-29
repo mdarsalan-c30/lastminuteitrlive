@@ -73,6 +73,7 @@ model PricingConfig {
   basePriceInr  Int
   offerPriceInr Int?
   offerEndsAt   DateTime?
+  isVisible     Boolean   @default(true)
   publishedAt   DateTime  @default(now())
 }
 

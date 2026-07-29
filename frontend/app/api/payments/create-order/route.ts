@@ -9,7 +9,10 @@ import {
   createRazorpayOrder,
   hasRazorpayKeys,
 } from "@/lib/payments/razorpay";
-import { getPublishedPrice } from "@/lib/pricing/config";
+import {
+  getPublishedPrice,
+  isPublishedPlanVisible,
+} from "@/lib/pricing/config";
 import { validateCoupon } from "@/lib/admin/coupons";
 import { validateReferralCode } from "@/lib/admin/referrals";
 import { CA_SESSION_COOKIE, readCASession } from "@/lib/auth/ca";
@@ -69,6 +72,17 @@ export async function POST(request: NextRequest) {
             : "Invalid plan. Choose free, normal, pro, diy, or ai_smart. CA Review is launching soon.",
         },
         { status: 400 }
+      );
+    }
+
+    if (!isCaCheckout && !(await isPublishedPlanVisible(planId))) {
+      return NextResponse.json(
+        {
+          error:
+            "This plan is currently unavailable. Please choose an available plan.",
+          nextUrl: "/file/checkout/plans",
+        },
+        { status: 409 }
       );
     }
 

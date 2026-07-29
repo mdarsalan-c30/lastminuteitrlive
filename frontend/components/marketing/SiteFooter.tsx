@@ -164,7 +164,9 @@ export function SiteFooter() {
             <Link href="/disclaimer" className="hover:text-[#6B7280]">Disclaimer</Link>
           </span>
           <span className="flex flex-wrap gap-x-3 gap-y-1">
-            {PRICING_PLANS.map((plan) => {
+            {PRICING_PLANS.filter(
+              (plan) => publishedPricing[plan.id]?.isVisible !== false
+            ).map((plan) => {
               const pricing = publishedPricing[plan.id];
               return (
                 <span key={plan.id}>

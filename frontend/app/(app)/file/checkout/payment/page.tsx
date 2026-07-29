@@ -85,6 +85,12 @@ export default function PaymentPage() {
   const [usingCredit, setUsingCredit] = useState(false);
 
   useEffect(() => {
+    if (!loading && displayPricing.isVisible === false) {
+      router.replace("/file/checkout/plans");
+    }
+  }, [displayPricing.isVisible, loading, router]);
+
+  useEffect(() => {
     void (async () => {
       try {
         const ws = await restoreWorkspace();

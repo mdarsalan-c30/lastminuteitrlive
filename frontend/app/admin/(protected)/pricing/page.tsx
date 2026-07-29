@@ -24,6 +24,7 @@ export default async function PricingPage() {
       offerPriceInr:
         row?.offerPriceInr ?? (plan.originalPrice ? plan.price : null),
       offerEndsAt: row?.offerEndsAt ?? null,
+      isVisible: row?.isVisible ?? true,
     };
   });
 
