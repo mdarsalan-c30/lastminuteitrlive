@@ -644,7 +644,10 @@ function DocumentsContent() {
 
       {/* Form 16 Upload Section */}
       {importMode === "form16" && (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,400px)] lg:items-start border-t border-slate-100 pt-6">
+        <div
+          id="form16-upload-section"
+          className="animate-in fade-in slide-in-from-bottom-4 duration-500 grid scroll-mt-24 gap-6 border-t border-slate-100 pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,400px)] lg:items-start"
+        >
           <div className="min-w-0">
             {addEmployerMode && (
               <Banner variant="info">
@@ -760,23 +763,38 @@ function DocumentsContent() {
       {(importMode !== null || requirementsStep) && (
         <div className="mt-6 border-t border-slate-100 pt-5">
           {effectiveImportMode === "form16" &&
-            !requirementsStep &&
-            !form16Connected && (
-              <div className="mx-auto mb-4 max-w-xl rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm text-amber-950">
-                <p>
-                  Upload Form 16 to continue, or choose manual entry if you do
-                  not have it.
-                </p>
-                <button
-                  type="button"
-                  className="mt-2 font-semibold text-primary underline underline-offset-2"
+          !requirementsStep &&
+          !form16Connected ? (
+            <div className="mx-auto max-w-2xl rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-center sm:p-5">
+              <h3 className="font-semibold text-slate-900">
+                How would you like to continue?
+              </h3>
+              <p className="mt-1 text-sm text-slate-600">
+                Upload Form 16 if you have it, or enter the same details
+                manually on the next screen.
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <Button
+                  variant="secondary"
+                  onClick={() =>
+                    document
+                      .getElementById("form16-upload-section")
+                      ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                  }
+                  className="w-full"
+                >
+                  Upload Form 16
+                </Button>
+                <Button
                   onClick={() => handleModeSelect("manual")}
+                  className="w-full"
                 >
                   Continue without Form 16
-                </button>
+                </Button>
               </div>
-            )}
-          <div className="flex justify-center">
+            </div>
+          ) : (
+            <div className="flex justify-center">
             {continueHref &&
             effectiveImportMode !== "manual" &&
             effectiveImportMode !== "capital_gains" ? (
@@ -798,7 +816,8 @@ function DocumentsContent() {
                 <ChevronRight className="ml-1 size-4" />
               </Button>
             )}
-          </div>
+            </div>
+          )}
         </div>
       )}
     </FilingLayout>
