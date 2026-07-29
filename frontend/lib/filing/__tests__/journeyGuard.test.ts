@@ -25,6 +25,15 @@ describe("evaluateJourney", () => {
     expect(evaluateJourney(completeDraft).complete).toBe(true);
   });
 
+  it("keeps About You complete when the optional draft name is absent", () => {
+    const result = evaluateJourney({ ...completeDraft, name: "" });
+
+    expect(result.steps.find((step) => step.id === "about")?.complete).toBe(
+      true
+    );
+    expect(result.complete).toBe(true);
+  });
+
   it("returns the first incomplete step in order", () => {
     const result = evaluateJourney({
       ...completeDraft,

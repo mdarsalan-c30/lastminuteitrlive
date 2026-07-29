@@ -43,9 +43,8 @@ export function evaluateJourney(draft: unknown) {
       id: "about",
       label: "About You",
       href: "/file/start",
-      complete: Boolean(String(d.name ?? "").trim()) && d.itrConfirmed === true,
+      complete: d.itrConfirmed === true,
       missing: [
-        ...(!String(d.name ?? "").trim() ? ["your name"] : []),
         ...(d.itrConfirmed !== true ? ["ITR form confirmation"] : []),
       ],
     },

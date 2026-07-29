@@ -732,16 +732,26 @@ function DocumentsContent() {
 
       {/* Continue Action */}
       {(importMode !== null || requirementsStep) && (
-        <div className="mt-6 pt-5 border-t border-slate-100 flex justify-end">
+        <div className="mt-6 flex justify-center border-t border-slate-100 pt-5">
           {continueHref &&
           effectiveImportMode !== "manual" &&
           effectiveImportMode !== "capital_gains" ? (
-            <Button onClick={handleContinue} disabled={continueDisabled}>
-              Next Step <ChevronRight className="size-4 ml-1" />
+            <Button
+              onClick={handleContinue}
+              disabled={continueDisabled}
+              className="w-full sm:w-auto sm:min-w-[280px]"
+            >
+              {requirementsStep ? "Continue to Income Details" : "Next Step"}
+              <ChevronRight className="ml-1 size-4" />
             </Button>
           ) : (
-            <Button onClick={handleContinue} disabled={continueDisabled}>
-              Continue to Filing <ChevronRight className="size-4 ml-1" />
+            <Button
+              onClick={handleContinue}
+              disabled={continueDisabled}
+              className="w-full sm:w-auto sm:min-w-[280px]"
+            >
+              Continue to Income Details
+              <ChevronRight className="ml-1 size-4" />
             </Button>
           )}
         </div>
