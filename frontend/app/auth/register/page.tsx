@@ -56,13 +56,60 @@ function RegisterForm() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-[#f4f7f6] px-4 py-12 overflow-hidden font-sans">
-      {/* Background Ambient Glow */}
-      <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[#0e5f63]/10 blur-[100px] pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-emerald-500/10 blur-[100px] pointer-events-none" />
+    <div className="min-h-screen bg-[#eef4f3] font-sans lg:grid lg:grid-cols-[minmax(0,1.12fr)_minmax(440px,0.88fr)]">
+      <section className="relative hidden min-h-screen overflow-hidden bg-[#0e5f63] lg:flex lg:items-end">
+        <div
+          className="absolute inset-[-18px] scale-105 bg-cover bg-center opacity-45 blur-[3px]"
+          style={{
+            backgroundImage: "url('/registration-workspace-preview.png')",
+          }}
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#073f42]/90 via-[#0e5f63]/72 to-[#0e5f63]/92" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_15%,rgba(255,255,255,0.2),transparent_36%)]" />
 
-      {/* Main Register Card */}
-      <div className="relative w-full max-w-[440px] rounded-[28px] bg-white p-8 sm:p-10 shadow-[0_20px_60px_-15px_rgba(14,95,99,0.14)] border border-slate-200/80">
+        <div className="relative z-10 w-full p-10 xl:p-14">
+          <div className="max-w-xl rounded-[28px] border border-white/20 bg-[#073f42]/55 p-7 text-white shadow-2xl backdrop-blur-md">
+            <div className="mb-5 flex items-center gap-3">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white">
+                <BrandLogo size="xs" variant="icon" />
+              </span>
+              <div>
+                <p className="text-lg font-bold">Your filing stays with you</p>
+                <p className="text-sm text-white/70">
+                  Continue exactly where you stopped.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                ["Progress saved", "Your entered details stay in this browser."],
+                ["No payment now", "Review the journey before choosing a plan."],
+                ["You stay in control", "Nothing is filed automatically."],
+              ].map(([title, body]) => (
+                <div
+                  key={title}
+                  className="rounded-2xl border border-white/15 bg-white/10 p-4"
+                >
+                  <ShieldCheck className="mb-2 h-4 w-4 text-emerald-200" />
+                  <p className="text-sm font-semibold">{title}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-white/65">
+                    {body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8 sm:px-8 lg:py-12">
+        <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[#0e5f63]/12 to-transparent lg:hidden" />
+        <div className="absolute -right-24 top-12 h-64 w-64 rounded-full bg-emerald-400/10 blur-3xl" />
+
+        {/* Main Register Card */}
+        <div className="relative w-full max-w-[460px] rounded-[28px] border border-white/90 bg-white/95 p-7 shadow-[0_24px_70px_-28px_rgba(14,95,99,0.35)] backdrop-blur sm:p-9">
         
         {/* Brand Header & Custom Logo */}
         <div className="mb-8 text-center">
@@ -225,7 +272,8 @@ function RegisterForm() {
             Log in
           </Link>
         </p>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
