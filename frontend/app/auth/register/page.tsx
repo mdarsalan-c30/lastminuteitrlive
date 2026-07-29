@@ -2,13 +2,12 @@
 
 import { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/lib/store/profile";
 import { User, Mail, Lock, Tag, ArrowRight, ShieldCheck, Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 function RegisterForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const initialName = searchParams.get("name") || "";
   const requestedNext = searchParams.get("next");
@@ -49,7 +48,7 @@ function RegisterForm() {
         });
       }
 
-      router.push(nextPath);
+      window.location.assign(nextPath);
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
