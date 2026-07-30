@@ -33,6 +33,7 @@ import { usePaymentSession } from "@/lib/hooks/usePaymentSession";
 import { isClientPaymentBypassEnabled } from "@/lib/payments/bypass";
 import { draftSnapshotForLog, logSessionEvent } from "@/lib/sessionLogClient";
 import { useDraftStore } from "@/lib/store/draft";
+import { evaluatePostPaymentJourney } from "@/lib/filing/journeyGuard";
 import {
   Accordion,
   AccordionContent,
@@ -158,8 +159,10 @@ export default function CompanionPage() {
 }
 
 function CompanionContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const draft = useDraftStore();
+  const postPaymentJourney = evaluatePostPaymentJourney(draft);
   const { session, loading: sessionLoading } = usePaymentSession();
   const userInput = useMemo(() => draftToUserInput(draft), [draft]);
   const { result, compute, loading: computing, error: computeError, engineUnavailable, lastSnapshot } = useTaxCompute();
@@ -192,6 +195,27 @@ function CompanionContent() {
   const exportUnlocked =
     paymentBypass ||
     (!sessionLoading && session?.verified === true && session.companionAccess === true);
+
+  useEffect(() => {
+    if (
+      sessionLoading ||
+      paymentBypass ||
+      !exportUnlocked ||
+      postPaymentJourney.complete
+    ) {
+      return;
+    }
+    router.replace(
+      postPaymentJourney.firstIncomplete?.href ?? "/file/review"
+    );
+  }, [
+    exportUnlocked,
+    paymentBypass,
+    postPaymentJourney.complete,
+    postPaymentJourney.firstIncomplete?.href,
+    router,
+    sessionLoading,
+  ]);
 
   const justUnlocked = searchParams.get("unlocked") === "1" && exportUnlocked;
   const isDemoMode = searchParams.get("demo") === "1";
@@ -303,6 +327,18 @@ function CompanionContent() {
         <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
           <p className="text-sm font-medium text-slate-900">
             Checking payment access…
+          </p>
+        </div>
+      </FilingLayout>
+    );
+  }
+
+  if (exportUnlocked && !paymentBypass && !postPaymentJourney.complete) {
+    return (
+      <FilingLayout mirrorText="Your payment is safe. Complete the remaining filing checks to open the portal guide.">
+        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
+          <p className="text-sm font-medium text-slate-900">
+            Opening your next filing step…
           </p>
         </div>
       </FilingLayout>

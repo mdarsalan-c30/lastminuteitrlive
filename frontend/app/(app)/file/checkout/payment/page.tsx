@@ -7,9 +7,10 @@ import { useDraftStore } from "@/lib/store/draft";
 import { getPlan } from "@/lib/payments/plans";
 import { formatPlanPriceLabel } from "@/lib/marketing/pricing";
 import { usePublishedPricing } from "@/lib/hooks/usePublishedPricing";
-import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
-import { resolveCheckoutGate } from "@/lib/filing/checkoutGate";
-import { evaluateJourney } from "@/lib/filing/journeyGuard";
+import {
+  evaluatePaymentJourney,
+  evaluatePostPaymentJourney,
+} from "@/lib/filing/journeyGuard";
 import { FilingLayout } from "@/components/filing/FilingLayout";
 import RazorpayButton from "@/components/filing/checkout/RazorpayButton";
 import { usePaymentSession } from "@/lib/hooks/usePaymentSession";
@@ -37,29 +38,8 @@ export default function PaymentPage() {
   const {
     plan,
     setPaymentVerified,
-    mismatchResolved,
-    mismatchProceedWithExplanation,
   } = useDraftStore();
-  const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
-  const aisGrossSalary = useDraftStore((s) => s.aisFigures?.grossSalary);
-  const grossSalary = useDraftStore((s) => s.income.grossSalary);
-  const { loading, confidence, engineUnavailable } = useDraftTaxCompute({
-    readOnly: true,
-  });
-  const hasOpenMismatch =
-    connectedConnectors.includes("ais") &&
-    typeof aisGrossSalary === "number" &&
-    Math.abs(aisGrossSalary - grossSalary) > 100;
-  const checkoutGate = resolveCheckoutGate({
-    mismatchResolved,
-    mismatchProceedWithExplanation,
-    confidence,
-    engineUnavailable,
-    loading,
-    hasOpenMismatch,
-    documentsResolvedEarlier: false,
-  });
-  const journey = evaluateJourney(useDraftStore());
+  const paymentJourney = evaluatePaymentJourney(useDraftStore());
   const { refresh: refreshPaymentSession } = usePaymentSession();
   
   const selectedPlan = getPlan(plan);
@@ -85,10 +65,10 @@ export default function PaymentPage() {
   const [usingCredit, setUsingCredit] = useState(false);
 
   useEffect(() => {
-    if (!loading && displayPricing.isVisible === false) {
+    if (displayPricing.isVisible === false) {
       router.replace("/file/checkout/plans");
     }
-  }, [displayPricing.isVisible, loading, router]);
+  }, [displayPricing.isVisible, router]);
 
   useEffect(() => {
     void (async () => {
@@ -107,19 +87,14 @@ export default function PaymentPage() {
   }, []);
 
   useEffect(() => {
-    if (!loading && (!checkoutGate.canCheckout || !journey.complete)) {
+    if (!paymentJourney.complete) {
       router.replace(
-        checkoutGate.canCheckout
-          ? journey.firstIncomplete?.href || "/file/checkout/plans"
-          : checkoutGate.blockingHref || "/file/checkout/plans"
+        paymentJourney.firstIncomplete?.href || "/file/checkout/plans"
       );
     }
   }, [
-    checkoutGate.blockingHref,
-    checkoutGate.canCheckout,
-    journey.complete,
-    journey.firstIncomplete?.href,
-    loading,
+    paymentJourney.complete,
+    paymentJourney.firstIncomplete?.href,
     router,
   ]);
 
@@ -133,7 +108,10 @@ export default function PaymentPage() {
     await refreshPaymentSession();
     // Best-effort save; never block the unlock redirect on it (can be slow).
     void saveDraftToProfile(profileId).catch(() => {});
-    router.push("/file/companion?unlocked=1");
+    const remaining = evaluatePostPaymentJourney(useDraftStore.getState());
+    router.push(
+      remaining.firstIncomplete?.href ?? "/file/companion?unlocked=1"
+    );
   };
 
   const handleUseCredit = async () => {
@@ -245,7 +223,7 @@ export default function PaymentPage() {
     }
   };
 
-  if (loading || !checkoutGate.canCheckout || !journey.complete) {
+  if (!paymentJourney.complete) {
     return (
       <FilingLayout mirrorText="Checking your filing details before payment.">
         <div className="mx-auto max-w-xl p-8 text-center text-sm font-medium text-slate-600">
@@ -384,7 +362,7 @@ export default function PaymentPage() {
               className="w-full min-h-14 rounded-xl text-base font-semibold shadow-lg"
               onClick={handleFreeCheckout}
             >
-              Unlock Guide Now
+              Continue
             </Button>
           ) : (
             <RazorpayButton

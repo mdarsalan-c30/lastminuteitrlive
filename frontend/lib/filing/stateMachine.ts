@@ -90,7 +90,7 @@ export function filingStateFromPath(pathname: string): FilingState {
 export const FELT_STEPS = [
   { id: "answer", label: "Answer", states: ["GATE", "BLOCKED"] as FilingState[] },
   { id: "upload", label: "Upload", states: ["COLLECT", "EXTRACT"] as FilingState[] },
-  { id: "fix", label: "Fix", states: ["RECONCILE", "CONFIRM"] as FilingState[] },
-  { id: "number", label: "See your number", states: ["COMPUTE", "RISK"] as FilingState[] },
-  { id: "file", label: "File it", states: ["ENTITLE", "COMPANION", "FILED", "VERIFIED", "LAPSED"] as FilingState[] },
+  { id: "pay", label: "Choose & pay", states: ["ENTITLE"] as FilingState[] },
+  { id: "check", label: "Calculate & check", states: ["RECONCILE", "CONFIRM", "COMPUTE", "RISK"] as FilingState[] },
+  { id: "file", label: "File it", states: ["COMPANION", "FILED", "VERIFIED", "LAPSED"] as FilingState[] },
 ] as const;

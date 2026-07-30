@@ -29,7 +29,7 @@ import {
   FORM16_FAST_PATH_SOURCE,
   isForm16FastPath,
 } from "@/lib/filing/routes";
-import { getImportContinueHref, type ImportStartMode } from "@/lib/filing/importModes";
+import type { ImportStartMode } from "@/lib/filing/importModes";
 import { BROKER_DOWNLOAD_GUIDES } from "@/lib/connectors/brokerGuides";
 import { AiSectionChecklist } from "@/components/filing/wizards/AiSectionChecklist";
 import { FileDown, FilePlus2, CloudDownload, HelpCircle, ChevronRight, TrendingUp, UploadCloud, Check } from "lucide-react";
@@ -380,19 +380,13 @@ function DocumentsContent() {
   const collectionComplete =
     !requirementsStep || incompleteRequirements.length === 0;
 
-  const continueHref = requirementsStep
-    ? "/file/review?tab=income"
-    : effectiveImportMode !== null
-      ? getImportContinueHref(effectiveImportMode, {
-          form16Connected,
-          form16FastPath,
-        })
-      : null;
+  const continueHref =
+    effectiveImportMode !== null ? "/file/checkout/plans" : null;
 
   const handleContinue = useCallback(() => {
     if (effectiveImportMode === "manual") {
       applyEstimateDraft();
-      router.push("/file/review?tab=income");
+      router.push("/file/checkout/plans");
       return;
     }
     if (effectiveImportMode === "capital_gains") {
@@ -414,7 +408,7 @@ function DocumentsContent() {
           sourceConnectorId: "manual_estimate",
         });
       }
-      router.push("/file/review");
+      router.push("/file/checkout/plans");
       return;
     }
     if (continueHref) {
@@ -803,7 +797,7 @@ function DocumentsContent() {
                 disabled={continueDisabled}
                 className="w-full sm:w-auto sm:min-w-[280px]"
               >
-                {requirementsStep ? "Continue to Income Details" : "Next Step"}
+                Continue to Choose a Plan
                 <ChevronRight className="ml-1 size-4" />
               </Button>
             ) : (

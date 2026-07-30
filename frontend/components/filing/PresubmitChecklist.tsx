@@ -30,6 +30,7 @@ export function PresubmitChecklist({
     connectedConnectors,
     income,
     regime,
+    paymentVerifiedAt,
     markFinalReviewComplete,
   } = useDraftStore();
   const { loading, confidence, engineUnavailable } = useDraftTaxCompute({
@@ -68,11 +69,12 @@ export function PresubmitChecklist({
   }, [canProceed, confidence.completeness_score, recommendedForm]);
 
   const paymentBypass = isClientPaymentBypassEnabled();
-  const checkoutHref = paymentBypass
-    ? "/file/companion"
-    : canProceed
-      ? "/file/checkout/plans"
-      : undefined;
+  const checkoutHref =
+    paymentBypass || paymentVerifiedAt
+      ? "/file/companion"
+      : canProceed
+        ? "/file/checkout/plans"
+        : undefined;
 
   return (
     <div className={className} id="final-check">
@@ -100,7 +102,7 @@ export function PresubmitChecklist({
             }}
             className="flex-1"
           >
-            {paymentBypass
+            {paymentBypass || paymentVerifiedAt
               ? "Open filing guide"
               : "Continue to choose a plan"}
           </Button>

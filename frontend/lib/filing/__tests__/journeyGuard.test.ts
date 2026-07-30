@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { evaluateJourney } from "../journeyGuard";
+import {
+  evaluateJourney,
+  evaluatePaymentJourney,
+  evaluatePostPaymentJourney,
+} from "../journeyGuard";
 
 const completeDraft = {
   name: "Test User",
@@ -20,6 +24,8 @@ const completeDraft = {
   eVerifyMethod: "aadhaar_otp",
   plan: "normal",
   planSelectedAt: 1,
+  paidPlanId: "normal",
+  paymentVerifiedAt: 1,
 };
 
 describe("evaluateJourney", () => {
@@ -76,6 +82,46 @@ describe("evaluateJourney", () => {
     expect(result.steps.find((step) => step.id === "documents")?.complete).toBe(
       true
     );
+    expect(result.complete).toBe(true);
+  });
+
+  it("allows payment after setup and documents without tax calculation", () => {
+    const draft = {
+      ...completeDraft,
+      income: { grossSalary: 0 },
+      calculationCompletedAt: null,
+      regime: null,
+      guidedCheckCompletedAt: null,
+      finalReviewCompletedAt: null,
+      paidPlanId: null,
+      paymentVerifiedAt: null,
+    };
+
+    expect(evaluatePaymentJourney(draft).complete).toBe(true);
+    expect(evaluateJourney(draft).firstIncomplete?.id).toBe("payment");
+  });
+
+  it("sends a paid user to the first incomplete post-payment filing step", () => {
+    const result = evaluatePostPaymentJourney({
+      ...completeDraft,
+      income: { grossSalary: 0 },
+      calculationCompletedAt: null,
+      regime: null,
+      guidedCheckCompletedAt: null,
+      finalReviewCompletedAt: null,
+    });
+
+    expect(result.firstIncomplete?.id).toBe("income");
+    expect(result.firstIncomplete?.href).toBe("/file/review");
+  });
+
+  it("does not require removed bank and e-verify confirmations", () => {
+    const result = evaluatePostPaymentJourney({
+      ...completeDraft,
+      bankValidated: false,
+      eVerifyMethod: null,
+    });
+
     expect(result.complete).toBe(true);
   });
 });

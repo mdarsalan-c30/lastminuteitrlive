@@ -46,6 +46,7 @@ type SidebarStep = {
 const SIDEBAR_STEPS: SidebarStep[] = [
   { id: "onboarding", label: "About You", href: "/file/start", match: ["/file/start", "/file/onboarding"], icon: UserCheck },
   { id: "import", label: "Add Documents", href: "/file/import/documents", match: ["/file/import"], icon: UploadCloud },
+  { id: "checkout", label: "Choose Plan & Pay", href: "/file/checkout/plans", match: ["/file/checkout"], icon: CreditCard },
   {
     id: "review",
     label: "Income & Tax Savings",
@@ -61,7 +62,6 @@ const SIDEBAR_STEPS: SidebarStep[] = [
   },
   { id: "regime", label: "Compare Tax Option", href: "/file/regime", match: ["/file/regime"], icon: Calculator },
   { id: "advisor", label: "Guided Tax Check", href: "/file/advisor", match: ["/file/advisor", "/file/cabrain"], icon: Sparkles },
-  { id: "checkout", label: "Choose a Plan", href: "/file/checkout/plans", match: ["/file/checkout"], icon: CreditCard },
   { id: "companion", label: "File on Tax Portal", href: "/file/companion", match: ["/file/companion", "/file/support"], icon: ExternalLink },
 ];
 
@@ -180,6 +180,7 @@ export function FilingLayout({
     }
 
     if (stepId === "checkout") {
+      if (paymentVerifiedAt) return "complete";
       if (pathname.startsWith("/file/checkout/payment")) return "partial";
       if (pathname.startsWith("/file/checkout")) return "partial";
       return "missing";
@@ -238,7 +239,7 @@ export function FilingLayout({
                 : journey.steps.length;
               const locked =
                 step.id === "companion"
-                  ? !isUnlocked
+                  ? !isUnlocked || !journey.complete
                   : targetIndex >= 0 && targetIndex > firstIncompleteIndex;
               const effectiveHref =
                 locked && journey.firstIncomplete

@@ -1,12 +1,13 @@
 export type JourneyStepId =
   | "about"
   | "documents"
+  | "plan"
+  | "payment"
   | "income"
   | "calculation"
   | "regime"
   | "guided_check"
-  | "final_review"
-  | "plan";
+  | "final_review";
 
 export interface JourneyStep {
   id: JourneyStepId;
@@ -18,7 +19,7 @@ export interface JourneyStep {
 
 type AnyDraft = Record<string, any>;
 
-export function evaluateJourney(draft: unknown) {
+function buildJourneySteps(draft: unknown): JourneyStep[] {
   const d =
     draft && typeof draft === "object" ? (draft as AnyDraft) : ({} as AnyDraft);
   const income = d.income ?? {};
@@ -46,14 +47,14 @@ export function evaluateJourney(draft: unknown) {
     answers.document_ais_manual === true ||
     answers.document_form26as_manual === true;
 
-  const steps: JourneyStep[] = [
+  return [
     {
       id: "about",
       label: "About You",
       href: "/file/start",
-      complete: d.itrConfirmed === true || aboutDetailsComplete,
+      complete: aboutDetailsComplete,
       missing: [
-        ...(d.itrConfirmed !== true && !aboutDetailsComplete
+        ...(!aboutDetailsComplete
           ? ["complete profile and ITR form selection"]
           : []),
       ],
@@ -73,6 +74,24 @@ export function evaluateJourney(draft: unknown) {
         exact && !manualDocumentPath
           ? ["upload a document or choose manual entry"]
           : [],
+    },
+    {
+      id: "plan",
+      label: "Choose a Plan",
+      href: "/file/checkout/plans",
+      complete:
+        ["normal", "pro"].includes(String(d.plan ?? "")) &&
+        Number(d.planSelectedAt ?? 0) > 0,
+      missing: ["filing plan selection"],
+    },
+    {
+      id: "payment",
+      label: "Secure Payment",
+      href: "/file/checkout/payment",
+      complete:
+        Number(d.paymentVerifiedAt ?? 0) > 0 ||
+        Boolean(d.paidPlanId),
+      missing: ["verified payment"],
     },
     {
       id: "income",
@@ -133,29 +152,17 @@ export function evaluateJourney(draft: unknown) {
       id: "final_review",
       label: "Final Review",
       href: "/file/review/risk#final-check",
-      complete:
-        Number(d.finalReviewCompletedAt ?? 0) > 0 &&
-        Boolean(d.bankValidated) &&
-        Boolean(d.eVerifyMethod),
+      complete: Number(d.finalReviewCompletedAt ?? 0) > 0,
       missing: [
         ...(Number(d.finalReviewCompletedAt ?? 0) <= 0
           ? ["final review confirmation"]
           : []),
-        ...(!d.bankValidated ? ["bank account confirmation"] : []),
-        ...(!d.eVerifyMethod ? ["e-verify method"] : []),
       ],
     },
-    {
-      id: "plan",
-      label: "Choose a Plan",
-      href: "/file/checkout/plans",
-      complete:
-        ["normal", "pro"].includes(String(d.plan ?? "")) &&
-        Number(d.planSelectedAt ?? 0) > 0,
-      missing: ["filing plan selection"],
-    },
   ];
+}
 
+function summarizeJourney(steps: JourneyStep[]) {
   const firstIncomplete = steps.find((step) => !step.complete) ?? null;
   const firstIncompleteIndex = firstIncomplete
     ? steps.findIndex((step) => step.id === firstIncomplete.id)
@@ -167,4 +174,29 @@ export function evaluateJourney(draft: unknown) {
     completedCount: firstIncompleteIndex,
     currentStepNumber: Math.min(firstIncompleteIndex + 1, steps.length),
   };
+}
+
+/** Complete ordered journey, including commerce and filing readiness. */
+export function evaluateJourney(draft: unknown) {
+  return summarizeJourney(buildJourneySteps(draft));
+}
+
+/** Minimum safe setup required before an order may be created. */
+export function evaluatePaymentJourney(draft: unknown) {
+  return summarizeJourney(
+    buildJourneySteps(draft).filter((step) =>
+      ["about", "documents", "plan"].includes(step.id)
+    )
+  );
+}
+
+/** Work that remains after payment before copy-ready portal access is allowed. */
+export function evaluatePostPaymentJourney(draft: unknown) {
+  return summarizeJourney(
+    buildJourneySteps(draft).filter((step) =>
+      ["income", "calculation", "regime", "guided_check", "final_review"].includes(
+        step.id
+      )
+    )
+  );
 }

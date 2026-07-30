@@ -411,7 +411,6 @@ const invalidateCalculatedJourney = {
   calculationCompletedAt: null,
   guidedCheckCompletedAt: null,
   finalReviewCompletedAt: null,
-  planSelectedAt: null,
 } as const;
 
 export const useDraftStore = create<DraftState>()(
@@ -548,7 +547,6 @@ export const useDraftStore = create<DraftState>()(
           regime,
           guidedCheckCompletedAt: null,
           finalReviewCompletedAt: null,
-          planSelectedAt: null,
         }),
       setProfession: (profession) => set({ profession }),
       setPlan: (plan) => set({ plan, planSelectedAt: Date.now() }),
@@ -593,7 +591,6 @@ export const useDraftStore = create<DraftState>()(
         set((s) => ({
           questionAnswers: { ...s.questionAnswers, [questionId]: answer },
           finalReviewCompletedAt: null,
-          planSelectedAt: null,
         })),
       appendComputeHistory: (entry) =>
         set((s) => ({

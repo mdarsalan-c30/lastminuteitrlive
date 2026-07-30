@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db/store";
-import { evaluateJourney } from "@/lib/filing/journeyGuard";
+import { evaluatePaymentJourney } from "@/lib/filing/journeyGuard";
 
 export async function validateSavedJourney(userId: string, profileId: string) {
   if (!profileId) {
@@ -22,7 +22,9 @@ export async function validateSavedJourney(userId: string, profileId: string) {
       nextUrl: "/file/family",
     };
   }
-  const journey = evaluateJourney(profile.draftJson as Record<string, unknown>);
+  const journey = evaluatePaymentJourney(
+    profile.draftJson as Record<string, unknown>
+  );
   if (!journey.complete) {
     const step = journey.firstIncomplete!;
     return {

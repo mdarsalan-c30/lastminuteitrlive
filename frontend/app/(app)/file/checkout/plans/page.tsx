@@ -6,12 +6,9 @@ import { trackEvent } from "@/lib/analytics";
 import { useDraftStore } from "@/lib/store/draft";
 import { PLAN_LIST, PLANS } from "@/lib/payments/plans";
 import { FilingLayout } from "@/components/filing/FilingLayout";
-import { PaywallValueStack } from "@/components/filing/PaywallValueStack";
 import { useDraftTaxCompute } from "@/lib/hooks/useDraftTaxCompute";
 import { CHECKOUT_PLANS } from "@/lib/copy/filing";
 import { CA_REVIEW_COMING_SOON } from "@/lib/copy/trust";
-import { companionStepCountForForm } from "@/lib/filing/confidence";
-import { resolveCheckoutGate } from "@/lib/filing/checkoutGate";
 import { recommendPlanFromConfidence } from "@/lib/filing/planRecommendation";
 import { Banner, Button, ScreenTitle } from "@/components/filing/ui";
 import {
@@ -23,7 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { usePublishedPricingMap } from "@/lib/hooks/usePublishedPricing";
-import { evaluateJourney } from "@/lib/filing/journeyGuard";
+import { evaluatePaymentJourney } from "@/lib/filing/journeyGuard";
 
 export default function PlansPage() {
   return (
@@ -37,51 +34,23 @@ function PlansContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const publishedPricing = usePublishedPricingMap();
-  const journey = evaluateJourney(useDraftStore());
+  const paymentJourney = evaluatePaymentJourney(useDraftStore());
   const journeyBlocker =
-    journey.steps.find((step) => step.id !== "plan" && !step.complete) ?? null;
+    paymentJourney.steps.find(
+      (step) => step.id !== "plan" && !step.complete
+    ) ?? null;
+  const canChoosePlan = journeyBlocker === null;
 
   const {
     plan,
     setPlan,
     recommendedForm,
-    mismatchResolved,
-    mismatchProceedWithExplanation,
   } = useDraftStore();
 
   const income = useDraftStore((s) => s.income);
   const incomeChips = useDraftStore((s) => s.incomeChips);
   const capitalGains = useDraftStore((s) => s.capitalGains);
-  const connectedConnectors = useDraftStore((s) => s.connectedConnectors);
-  const aisGrossSalary = useDraftStore((s) => s.aisFigures?.grossSalary);
-  const questionAnswers = useDraftStore((s) => s.questionAnswers);
-
-  const documentsResolvedEarlier =
-    connectedConnectors.includes("ais") &&
-    connectedConnectors.includes("form26as");
-
-  const { loading, confidence, regimeSavings, engineUnavailable } =
-    useDraftTaxCompute();
-
-  const hasOpenMismatch =
-    connectedConnectors.includes("ais") &&
-    typeof aisGrossSalary === "number" &&
-    Math.abs(aisGrossSalary - income.grossSalary) > 100;
-
-  const gate = resolveCheckoutGate({
-    mismatchResolved,
-    mismatchProceedWithExplanation,
-    confidence,
-    engineUnavailable,
-    loading,
-    hasOpenMismatch,
-    documentsResolvedEarlier,
-  });
-
-  const mismatchesResolved =
-    mismatchResolved || mismatchProceedWithExplanation ? 2 : 0;
-
-  const companionSteps = companionStepCountForForm(recommendedForm);
+  const { loading, confidence } = useDraftTaxCompute();
   const recommendedPlan = recommendPlanFromConfidence(confidence);
   const companionRedirect = searchParams.get("reason") === "companion";
   const selectedPlan = PLANS[plan];
@@ -95,16 +64,16 @@ function PlansContent() {
 
   useEffect(() => {
     trackEvent("paywall_view", {
-      filing_ready: gate.canCheckout,
+      filing_ready: paymentJourney.complete,
       recommended_plan: recommendedPlan,
     });
-  }, [gate.canCheckout, recommendedPlan]);
+  }, [paymentJourney.complete, recommendedPlan]);
 
   useEffect(() => {
-    if (!loading && gate.canCheckout) {
+    if (!loading && canChoosePlan) {
       setPlan(recommendedPlan);
     }
-  }, [loading, gate.canCheckout, recommendedPlan, setPlan]);
+  }, [loading, canChoosePlan, recommendedPlan, setPlan]);
 
   const hasBusinessIncome =
     incomeChips.includes("freelance") ||
@@ -126,7 +95,7 @@ function PlansContent() {
         : "resident salaried";
 
   const handlePlanSelect = (planId: typeof plan) => {
-    if (!gate.canCheckout || journeyBlocker || PLANS[planId].comingSoon) return;
+    if (!canChoosePlan || PLANS[planId].comingSoon) return;
     setPlan(planId);
     trackEvent("plan_select", { plan_id: planId });
   };
@@ -157,44 +126,10 @@ function PlansContent() {
         </Banner>
       )}
 
-      <PaywallValueStack
-        regimeSavings={regimeSavings}
-        mismatchesResolved={mismatchesResolved}
-        companionStepCount={companionSteps}
-        completenessScore={confidence.completeness_score}
-        missingDocCount={confidence.missing_documents.length}
-        recommendedPlan={recommendedPlan}
-      />
-
-      {!loading && !gate.canCheckout && (
+      {journeyBlocker && (
         <div className="mb-6">
           <Banner variant="info">
-            You&apos;re {Math.round(gate.completenessScore)}% ready to checkout.{" "}
-            <button
-              type="button"
-              className="font-semibold underline"
-              onClick={() => router.push(gate.blockingHref)}
-            >
-              {gate.blockingLabel}
-            </button>{" "}
-            to unlock payment.
-          </Banner>
-        </div>
-      )}
-
-      {!loading && gate.engineOverride && (
-        <div className="mb-6">
-          <Banner variant="info">
-            Tax calculation is temporarily unavailable. Payment will remain
-            locked until your tax comparison has been calculated.
-          </Banner>
-        </div>
-      )}
-
-      {!loading && gate.canCheckout && journeyBlocker && (
-        <div className="mb-6">
-          <Banner variant="info">
-            You&apos;re almost ready. Complete{" "}
+            Complete{" "}
             <button
               type="button"
               className="font-semibold underline"
@@ -202,8 +137,8 @@ function PlansContent() {
             >
               {journeyBlocker.label}
             </button>{" "}
-            first: {journeyBlocker.missing.join(", ")}. Your saved details will
-            stay here.
+            first: {journeyBlocker.missing.join(", ")}. Then you can choose a
+            plan and pay securely. Your saved details will stay here.
           </Banner>
         </div>
       )}
@@ -252,7 +187,7 @@ function PlansContent() {
                   isPopular
                     ? "border-2 border-[#0e5f63] shadow-[0_20px_50px_rgba(14,95,99,0.12)]"
                     : "border border-slate-200/90 shadow-sm hover:border-slate-300 hover:shadow-md",
-                  !gate.canCheckout && "opacity-80"
+                  !canChoosePlan && "opacity-80"
                 )}
               >
                 {/* Popular / Recommended Pill Badge */}
@@ -314,13 +249,13 @@ function PlansContent() {
                     e.stopPropagation();
                     handlePlanSelect(p.id);
                   }}
-                  disabled={!gate.canCheckout || Boolean(journeyBlocker) || p.comingSoon}
+                  disabled={!canChoosePlan || p.comingSoon}
                   className={cn(
                     "w-full rounded-full py-3.5 px-6 font-bold text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2",
                     isSelected || isPopular
                       ? "bg-[#0e5f63] text-white hover:bg-[#0b4b4e] active:scale-[0.99]"
                       : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300 hover:bg-slate-50",
-                    (!gate.canCheckout || journeyBlocker || p.comingSoon) && "opacity-60 cursor-not-allowed"
+                    (!canChoosePlan || p.comingSoon) && "opacity-60 cursor-not-allowed"
                   )}
                 >
                   {p.comingSoon ? (
@@ -342,17 +277,18 @@ function PlansContent() {
         <div className="mx-auto mt-8 flex max-w-4xl flex-col items-center px-4 text-center">
           <Button
             href={
-              gate.canCheckout && !journeyBlocker && !checkoutBlocked
+              paymentJourney.complete && !checkoutBlocked
                 ? "/file/checkout/payment"
                 : undefined
             }
-            disabled={!gate.canCheckout || Boolean(journeyBlocker) || checkoutBlocked}
+            disabled={!paymentJourney.complete || checkoutBlocked}
             className="w-full rounded-full bg-[#0e5f63] px-10 py-4 text-base font-bold text-white shadow-lg shadow-[#0e5f63]/20 hover:bg-[#0b5458] sm:w-auto sm:min-w-[320px]"
           >
             Continue to Secure Payment
           </Button>
           <p className="mt-3 text-xs leading-relaxed text-slate-500">
-            Secure payment via Razorpay. Your filing guide unlocks after successful payment.
+            Secure payment via Razorpay. After payment, we&apos;ll continue with
+            your tax calculation and filing checks.
           </p>
         </div>
       </div>
