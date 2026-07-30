@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FileCheck2 } from "lucide-react";
+import { ChevronDown, FileCheck2, Files } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { buildEligibilityForm16Url } from "@/lib/filing/routes";
 import { useDraftStore, type FieldConfidence } from "@/lib/store/draft";
@@ -40,6 +40,14 @@ const SECONDARY_CONNECTORS: Connector[] = CONNECTOR_REGISTRY.filter(
   status: mapRegistryStatus(connector.status),
   accept: connector.accept,
 }));
+
+const PRIMARY_SUPPORTING_CONNECTORS = SECONDARY_CONNECTORS.filter((connector) =>
+  ["ais", "form26as"].includes(connector.id)
+);
+
+const OTHER_SUPPORTING_CONNECTORS = SECONDARY_CONNECTORS.filter(
+  (connector) => !["ais", "form26as"].includes(connector.id)
+);
 
 const PASSWORD_HINTS: Record<string, string> = {
   ais: "ITD download password (often PAN + DOB, e.g. ABCDE1234F01011990)",
@@ -564,11 +572,16 @@ export default function ConnectorGrid({
 
       {/* Secondary Uploads */}
       <div>
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-3">
-          Optional Supporting Documents
-        </h2>
+        <div className="mb-3">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">
+            Check tax records
+          </h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Add these when available to cross-check income and TDS.
+          </p>
+        </div>
         <div className="flex flex-col gap-3">
-          {SECONDARY_CONNECTORS.map((connector) => (
+          {PRIMARY_SUPPORTING_CONNECTORS.map((connector) => (
             <ConnectorCard
               key={connector.id}
               connector={connector}
@@ -578,6 +591,53 @@ export default function ConnectorGrid({
             />
           ))}
         </div>
+
+        <details
+          className="group mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/60"
+          defaultOpen={OTHER_SUPPORTING_CONNECTORS.some((connector) =>
+            connected.has(connector.id)
+          )}
+        >
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 transition-colors hover:bg-slate-100/80 [&::-webkit-details-marker]:hidden">
+            <span className="flex min-w-0 items-center gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#0e5f63] shadow-sm ring-1 ring-slate-200">
+                <Files className="size-5" />
+              </span>
+              <span className="min-w-0">
+                <span className="block font-semibold text-slate-900">
+                  Other documents
+                </span>
+                <span className="mt-0.5 block text-xs text-slate-500">
+                  Capital gains, broker P&amp;L, crypto and bank interest
+                </span>
+              </span>
+            </span>
+            <span className="flex shrink-0 items-center gap-2">
+              <span className="hidden rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200 sm:inline-flex">
+                {OTHER_SUPPORTING_CONNECTORS.length} options
+              </span>
+              <ChevronDown className="size-5 text-slate-500 transition-transform duration-200 group-open:rotate-180" />
+            </span>
+          </summary>
+
+          <div className="border-t border-slate-200 bg-white p-3 sm:p-4">
+            <p className="mb-3 text-xs text-slate-500">
+              Choose only documents relevant to your income. You do not need to
+              upload every option.
+            </p>
+            <div className="flex flex-col gap-3">
+              {OTHER_SUPPORTING_CONNECTORS.map((connector) => (
+                <ConnectorCard
+                  key={connector.id}
+                  connector={connector}
+                  isConnected={connected.has(connector.id)}
+                  uploading={uploading === connector.id}
+                  onUpload={handleUpload}
+                />
+              ))}
+            </div>
+          </div>
+        </details>
       </div>
 
       {/* Errors & Success Messages */}
