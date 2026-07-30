@@ -141,6 +141,8 @@ export function PaywallValueStack({
         ))}
       </ul>
 
+      {false && (
+      <>
       <div className="my-5 border-t border-slate-200" />
 
       <div className="rounded-xl border border-blue-200/60 bg-white p-4">
@@ -175,6 +177,8 @@ export function PaywallValueStack({
 
         </p>
       </div>
+      </>
+      )}
     </section>
   );
 }

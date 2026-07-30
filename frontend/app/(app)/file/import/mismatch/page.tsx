@@ -126,7 +126,7 @@ export default function MismatchPage() {
         </div>
       </div>
 
-      {income.fdInterest > 0 ? (
+      {income.fdInterest > 0 && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50/30 p-4 mb-3">
           <div className="flex items-center gap-2 mb-2">
             <RiskBadge variant="green">OK</RiskBadge>
@@ -135,19 +135,6 @@ export default function MismatchPage() {
           <div className="flex flex-wrap gap-3 text-xs text-slate-600 mb-3">
             <span>Draft: {formatINR(income.fdInterest)}</span>
           </div>
-        </div>
-      ) : (
-        <div className="rounded-xl border border-amber-200 bg-amber-50/30 p-4 mb-3">
-          <div className="flex items-center gap-2 mb-2">
-            <RiskBadge variant="yellow">Check</RiskBadge>
-            <strong className="text-sm">FD / other interest</strong>
-          </div>
-          <p className="text-xs text-slate-600 mb-3">
-            No interest income in your draft yet. If AIS or your bank shows FD interest, add it before filing.
-          </p>
-          <Button href="/file/review?tab=income" variant="primary" className="text-xs px-3 py-1.5">
-            Add income
-          </Button>
         </div>
       )}
 

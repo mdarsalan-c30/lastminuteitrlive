@@ -52,7 +52,6 @@ export function resolveRecommendedForm(
     chips.has("capital_gains") ||
     chips.has("foreign") ||
     chips.has("director") ||
-    business === "z" ||
     Number(effectiveIncome) >= 6 ||
     (grossSalary !== undefined && grossSalary > 50_00_000);
 

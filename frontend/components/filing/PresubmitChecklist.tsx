@@ -27,13 +27,9 @@ export function PresubmitChecklist({
     recommendedForm,
     mismatchResolved,
     mismatchProceedWithExplanation,
-    bankValidated,
     connectedConnectors,
     income,
     regime,
-    eVerifyMethod,
-    setEVerifyMethod,
-    setBankValidated,
     markFinalReviewComplete,
   } = useDraftStore();
   const { loading, confidence, engineUnavailable } = useDraftTaxCompute({
@@ -46,9 +42,7 @@ export function PresubmitChecklist({
     Math.abs(aisGrossSalary - income.grossSalary) > 100;
   const mismatchOk =
     !hasOpenMismatch || mismatchResolved || mismatchProceedWithExplanation;
-  const checklistGreen = Boolean(
-    mismatchOk && bankValidated && regime && eVerifyMethod
-  );
+  const checklistGreen = Boolean(mismatchOk && regime);
   const checkoutGate = resolveCheckoutGate({
     mismatchResolved,
     mismatchProceedWithExplanation,
@@ -82,23 +76,8 @@ export function PresubmitChecklist({
 
   return (
     <div className={className} id="final-check">
-      <h2 className="text-lg font-semibold text-slate-900">
-        Before you continue
-      </h2>
-      <p className="mt-1 text-sm text-slate-600">
-        Complete only the items shown below. Your progress is saved.
-      </p>
-
-      {checkoutGate.estimateOverride && !loading && (
-        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-          <strong>Estimate ready.</strong> You can continue now. Before filing
-          on the Income Tax Portal, compare the manually entered income and TDS
-          with AIS or Form 26AS when available.
-        </div>
-      )}
-
       {!mismatchOk && (
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm">
           <span className="text-amber-950">
             Review the Form 16 and AIS salary difference.
           </span>
@@ -108,44 +87,8 @@ export function PresubmitChecklist({
         </div>
       )}
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-700">
-            E-verify method
-          </label>
-          <select
-            className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
-            value={eVerifyMethod ?? ""}
-            onChange={(event) => setEVerifyMethod(event.target.value)}
-          >
-            <option value="">Choose method</option>
-            <option value="aadhaar_otp">Aadhaar OTP (recommended)</option>
-            <option value="netbanking">Net banking</option>
-            <option value="itr_v">ITR-V by post</option>
-          </select>
-          <p className="mt-1 text-xs text-slate-500">
-            Completed on incometax.gov.in after filing.
-          </p>
-        </div>
-
-        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-700">
-          <input
-            type="checkbox"
-            checked={bankValidated}
-            onChange={(event) => setBankValidated(event.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#0e5f63]"
-          />
-          <span>
-            <strong className="block text-slate-900">
-              Bank account checked
-            </strong>
-            I reviewed the bank account that will receive any refund.
-          </span>
-        </label>
-      </div>
-
       {showCheckoutCta && (
-        <FilingActions className="mt-5">
+        <FilingActions className={mismatchOk ? "" : "mt-5"}>
           <Button
             disabled={!paymentBypass && !canProceed}
             onClick={() => {
