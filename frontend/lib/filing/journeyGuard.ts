@@ -27,7 +27,6 @@ function buildJourneySteps(draft: unknown): JourneyStep[] {
     ? d.connectedConnectors
     : [];
   const chips: string[] = Array.isArray(d.incomeChips) ? d.incomeChips : [];
-  const exact = d.filingMode !== "estimate";
   const pan = String(d.profile?.pan ?? "").trim().toUpperCase();
   const mobile = String(d.profile?.mobile ?? "").replace(/\D/g, "");
   const recommendedForm = String(d.recommendedForm ?? "").trim().toUpperCase();
@@ -46,6 +45,12 @@ function buildJourneySteps(draft: unknown): JourneyStep[] {
     answers.document_form16_manual === true ||
     answers.document_ais_manual === true ||
     answers.document_form26as_manual === true;
+  const hasUploadedDocument =
+    connectors.includes("form16") ||
+    connectors.some((id) =>
+      ["ais", "form26as", "groww", "zerodha", "cams", "kfintech"].includes(id)
+    );
+  const documentChoiceComplete = manualDocumentPath || hasUploadedDocument;
 
   return [
     {
@@ -63,17 +68,10 @@ function buildJourneySteps(draft: unknown): JourneyStep[] {
       id: "documents",
       label: "Add Documents",
       href: "/file/import/documents",
-      complete:
-        !exact ||
-        manualDocumentPath ||
-        connectors.includes("form16") ||
-        connectors.some((id) =>
-          ["ais", "form26as", "groww", "zerodha", "cams", "kfintech"].includes(id)
-        ),
-      missing:
-        exact && !manualDocumentPath
-          ? ["upload a document or choose manual entry"]
-          : [],
+      complete: documentChoiceComplete,
+      missing: documentChoiceComplete
+        ? []
+        : ["upload a document or choose manual entry"],
     },
     {
       id: "plan",

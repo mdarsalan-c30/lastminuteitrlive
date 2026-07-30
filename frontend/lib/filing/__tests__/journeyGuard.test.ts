@@ -101,6 +101,17 @@ describe("evaluateJourney", () => {
     expect(evaluateJourney(draft).firstIncomplete?.id).toBe("payment");
   });
 
+  it("does not treat estimate mode alone as a document/manual decision", () => {
+    const result = evaluatePaymentJourney({
+      ...completeDraft,
+      filingMode: "estimate",
+      connectedConnectors: [],
+      questionAnswers: {},
+    });
+
+    expect(result.firstIncomplete?.id).toBe("documents");
+  });
+
   it("sends a paid user to the first incomplete post-payment filing step", () => {
     const result = evaluatePostPaymentJourney({
       ...completeDraft,
