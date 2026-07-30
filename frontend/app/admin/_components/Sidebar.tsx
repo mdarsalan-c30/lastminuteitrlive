@@ -20,6 +20,7 @@ const NAV: NavGroup[] = [
   {
     heading: "B2C",
     items: [
+      { href: "/admin/customers", label: "Customers" },
       { href: "/admin/crm", label: "CRM" },
       { href: "/admin/coupons", label: "Coupons" },
       { href: "/admin/referrals", label: "Referrals" },
