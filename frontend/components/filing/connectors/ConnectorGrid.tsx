@@ -592,12 +592,7 @@ export default function ConnectorGrid({
           ))}
         </div>
 
-        <details
-          className="group mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/60"
-          defaultOpen={OTHER_SUPPORTING_CONNECTORS.some((connector) =>
-            connected.has(connector.id)
-          )}
-        >
+        <details className="group mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/60">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 transition-colors hover:bg-slate-100/80 [&::-webkit-details-marker]:hidden">
             <span className="flex min-w-0 items-center gap-3">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#0e5f63] shadow-sm ring-1 ring-slate-200">
