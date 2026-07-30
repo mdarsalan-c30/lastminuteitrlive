@@ -104,6 +104,8 @@ describe("evaluateJourney", () => {
   it("sends a paid user to the first incomplete post-payment filing step", () => {
     const result = evaluatePostPaymentJourney({
       ...completeDraft,
+      connectedConnectors: [],
+      questionAnswers: { document_form16_manual: true },
       income: { grossSalary: 0 },
       calculationCompletedAt: null,
       regime: null,
