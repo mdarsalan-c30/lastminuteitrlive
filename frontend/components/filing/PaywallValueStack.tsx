@@ -156,7 +156,9 @@ export function PaywallValueStack({
               <>
                 {formatPlanPriceLabel(displayPricing.current)}{" "}
                 <span className="text-slate-500 line-through">
-                  {formatPlanPriceLabel(displayPricing.original)}
+                  {formatPlanPriceLabel(
+                    displayPricing.original ?? displayPricing.current
+                  )}
                 </span>
               </>
             ) : (
