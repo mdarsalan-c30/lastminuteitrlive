@@ -27,6 +27,14 @@ export function evaluateJourney(draft: unknown) {
     : [];
   const chips: string[] = Array.isArray(d.incomeChips) ? d.incomeChips : [];
   const exact = d.filingMode !== "estimate";
+  const pan = String(d.profile?.pan ?? "").trim().toUpperCase();
+  const mobile = String(d.profile?.mobile ?? "").replace(/\D/g, "");
+  const recommendedForm = String(d.recommendedForm ?? "").trim().toUpperCase();
+  const aboutDetailsComplete =
+    /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan) &&
+    /^[6-9][0-9]{9}$/.test(mobile) &&
+    /^ITR-[1-4]$/.test(recommendedForm) &&
+    chips.length > 0;
   const salarySelected = chips.includes("salary");
   const capitalGainsSelected = chips.includes("capital_gains");
   const houseSelected = chips.includes("house_property");
@@ -43,9 +51,11 @@ export function evaluateJourney(draft: unknown) {
       id: "about",
       label: "About You",
       href: "/file/start",
-      complete: d.itrConfirmed === true,
+      complete: d.itrConfirmed === true || aboutDetailsComplete,
       missing: [
-        ...(d.itrConfirmed !== true ? ["ITR form confirmation"] : []),
+        ...(d.itrConfirmed !== true && !aboutDetailsComplete
+          ? ["complete profile and ITR form selection"]
+          : []),
       ],
     },
     {

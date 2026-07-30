@@ -4,6 +4,7 @@ import { evaluateJourney } from "../journeyGuard";
 const completeDraft = {
   name: "Test User",
   itrConfirmed: true,
+  profile: { pan: "ABCDE1234F", mobile: "9876543210" },
   filingMode: "exact",
   connectedConnectors: ["form16"],
   incomeChips: ["salary"],
@@ -27,6 +28,15 @@ describe("evaluateJourney", () => {
 
   it("keeps About You complete when the optional draft name is absent", () => {
     const result = evaluateJourney({ ...completeDraft, name: "" });
+
+    expect(result.steps.find((step) => step.id === "about")?.complete).toBe(
+      true
+    );
+    expect(result.complete).toBe(true);
+  });
+
+  it("recognizes a completed About You form even if the legacy checkbox was not saved", () => {
+    const result = evaluateJourney({ ...completeDraft, itrConfirmed: false });
 
     expect(result.steps.find((step) => step.id === "about")?.complete).toBe(
       true

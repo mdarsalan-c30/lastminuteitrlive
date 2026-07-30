@@ -67,7 +67,6 @@ export function GateContent() {
     matrix,
     profile,
     incomeChips,
-    itrConfirmed,
     setName,
     setProfile,
     setMatrix,
@@ -235,6 +234,7 @@ export function GateContent() {
 
     setSeniorMode(localAgeBand === "60+");
     setRecommendedForm(form, rec.caseId);
+    setItrConfirmed(true);
 
     if (scope.verdict === "blocked") {
       router.push(`${STATE_ROUTES.BLOCKED}?${scopeGateToQuery(scope)}`);
@@ -486,22 +486,17 @@ export function GateContent() {
               </div>
 
               <div className="p-5 bg-white space-y-4">
-                <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4 hover:bg-slate-50 hover:border-blue-300 transition-colors cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={itrConfirmed}
-                    onChange={(e) => setItrConfirmed(e.target.checked)}
-                    className="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="text-sm font-semibold text-slate-700">
-                    I confirm to proceed with <strong className="text-slate-900">{form}</strong> for this filing.
-                  </span>
-                </label>
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 text-sm text-slate-700">
+                  By continuing, you confirm{" "}
+                  <strong className="text-slate-900">{form}</strong> based on
+                  the details selected above. You can review the form again
+                  before filing.
+                </div>
 
                 <div className="flex justify-end pt-2">
                   <button
                     onClick={handleContinue}
-                    disabled={!itrConfirmed || !isFormValid}
+                    disabled={!isFormValid}
                     className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Start Filing <ChevronRight className="size-4" />
