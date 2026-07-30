@@ -284,7 +284,7 @@ function PlansContent() {
             disabled={!paymentJourney.complete || checkoutBlocked}
             className="w-full rounded-full bg-[#0e5f63] px-10 py-4 text-base font-bold text-white shadow-lg shadow-[#0e5f63]/20 hover:bg-[#0b5458] sm:w-auto sm:min-w-[320px]"
           >
-            Continue to Secure Payment
+            Pay and Continue to Filing
           </Button>
           <p className="mt-3 text-xs leading-relaxed text-slate-500">
             Secure payment via Razorpay. After payment, we&apos;ll continue with

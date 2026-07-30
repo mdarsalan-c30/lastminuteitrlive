@@ -225,7 +225,7 @@ export default function RazorpayButton({
       ? "Continue free"
       : loading
         ? "Processing…"
-        : `Pay ${priceLabel} & continue`;
+        : `Pay ${priceLabel} & Continue to Next Step`;
 
   return (
     <button
