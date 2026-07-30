@@ -5,6 +5,7 @@ const completeDraft = {
   name: "Test User",
   itrConfirmed: true,
   profile: { pan: "ABCDE1234F", mobile: "9876543210" },
+  recommendedForm: "ITR-3",
   filingMode: "exact",
   connectedConnectors: ["form16"],
   incomeChips: ["salary"],
