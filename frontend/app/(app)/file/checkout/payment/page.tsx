@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDraftStore } from "@/lib/store/draft";
@@ -259,10 +260,10 @@ export default function PaymentPage() {
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-80" />
 
           {/* Amount Section */}
-          <div className="mb-6 pb-6 border-b border-slate-200">
-            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Amount Due</p>
-            <div className="flex items-baseline justify-between">
-              <div className="flex-1">
+          <div className="mb-6 grid items-center gap-6 border-b border-slate-200 pb-6 md:grid-cols-[minmax(0,1fr)_220px]">
+            <div>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-600">Amount Due</p>
+              <div>
                 {validatedDiscount ? (
                   <div className="space-y-1">
                     <p className="text-sm text-slate-500 line-through">
@@ -288,6 +289,16 @@ export default function PaymentPage() {
                   </div>
                 )}
               </div>
+            </div>
+            <div className="relative hidden h-52 overflow-hidden rounded-2xl bg-[#f7fbfa] md:block">
+              <Image
+                src="/images/payment/filing-assistant.png"
+                alt="Filing assistant holding a laptop"
+                fill
+                priority
+                sizes="220px"
+                className="object-cover object-top"
+              />
             </div>
           </div>
 
