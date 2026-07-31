@@ -43,6 +43,7 @@ const NAV: NavGroup[] = [
       { href: "/admin/pages", label: "Pages" },
       { href: "/admin/reviews", label: "Reviews" },
       { href: "/admin/hero-ribbon", label: "Hero Ribbon" },
+      { href: "/admin/payment-image", label: "Payment Image" },
       { href: "/admin/hero-live-stat", label: "Hero Live Stat" },
       { href: "/admin/footer", label: "Footer Links" },
     ],

@@ -34,6 +34,12 @@ import {
 import { triggerConfetti } from "@/components/filing/Confetti";
 import { ShieldCheck, Tag, Sparkles } from "lucide-react";
 
+const DEFAULT_PAYMENT_IMAGE = {
+  enabled: true,
+  imageUrl: "/images/payment/filing-assistant.png",
+  altText: "Filing assistant holding a laptop",
+};
+
 export default function PaymentPage() {
   const router = useRouter();
   const {
@@ -47,6 +53,8 @@ export default function PaymentPage() {
   const displayPricing = usePublishedPricing(plan);
   const basePrice = displayPricing.current;
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [paymentImage, setPaymentImage] = useState(DEFAULT_PAYMENT_IMAGE);
+  const [paymentImageFailed, setPaymentImageFailed] = useState(false);
 
   const [couponCode, setCouponCode] = useState("");
   const [applyingCoupon, setApplyingCoupon] = useState(false);
@@ -70,6 +78,33 @@ export default function PaymentPage() {
       router.replace("/file/checkout/plans");
     }
   }, [displayPricing.isVisible, router]);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/public/payment-image", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then((config) => {
+        if (
+          active &&
+          typeof config?.enabled === "boolean" &&
+          typeof config?.imageUrl === "string"
+        ) {
+          setPaymentImage({
+            enabled: config.enabled,
+            imageUrl: config.imageUrl || DEFAULT_PAYMENT_IMAGE.imageUrl,
+            altText:
+              typeof config.altText === "string" && config.altText.trim()
+                ? config.altText
+                : DEFAULT_PAYMENT_IMAGE.altText,
+          });
+          setPaymentImageFailed(false);
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     void (async () => {
@@ -260,7 +295,7 @@ export default function PaymentPage() {
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-80" />
 
           {/* Amount Section */}
-          <div className="mb-6 grid items-center gap-6 border-b border-slate-200 pb-6 md:grid-cols-[minmax(0,1fr)_220px]">
+          <div className={`mb-6 grid items-center gap-6 border-b border-slate-200 pb-6 ${paymentImage.enabled ? "md:grid-cols-[minmax(0,1fr)_220px]" : ""}`}>
             <div>
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-600">Amount Due</p>
               <div>
@@ -290,16 +325,19 @@ export default function PaymentPage() {
                 )}
               </div>
             </div>
-            <div className="relative hidden h-52 overflow-hidden rounded-2xl bg-[#f7fbfa] md:block">
-              <Image
-                src="/images/payment/filing-assistant.png"
-                alt="Filing assistant holding a laptop"
-                fill
-                priority
-                sizes="220px"
-                className="object-cover object-top"
-              />
-            </div>
+            {paymentImage.enabled && (
+              <div className="relative hidden h-52 overflow-hidden rounded-2xl bg-[#f7fbfa] md:block">
+                <Image
+                  src={paymentImageFailed ? DEFAULT_PAYMENT_IMAGE.imageUrl : paymentImage.imageUrl}
+                  alt={paymentImage.altText}
+                  fill
+                  priority
+                  sizes="220px"
+                  className="object-cover object-top"
+                  onError={() => setPaymentImageFailed(true)}
+                />
+              </div>
+            )}
           </div>
 
           {/* Coupon Code Section */}
