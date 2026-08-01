@@ -106,7 +106,7 @@ export function SiteHeader() {
               Upload Form 16
             </Link>
             <Link
-              href="/#b2c-name"
+              href="/auth/register"
               className="btn-pill-primary py-[10px] px-5 text-[14px]"
             >
               Start my return
@@ -133,7 +133,7 @@ export function SiteHeader() {
                 ))}
                 <div className="mt-3 flex flex-col gap-2.5 border-t border-border/60 pt-3">
                   <SheetCloseLink
-                    href="/#b2c-name"
+                    href="/auth/register"
                     className="btn-pill-primary block w-full text-center py-3"
                   >
                     Start my return
