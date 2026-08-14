@@ -171,6 +171,10 @@ class BusinessInput:
     actual_expenses: float = 0.0               # ITR-3 books — expenses (excl. depreciation)
     profession_name: str = ""                  # e.g. doctor, lawyer
     cash_receipts_pct: float = 0.0             # ≤5% cash → enhanced 44AD/44ADA limits
+    # Section 44AB enhanced ₹10 crore threshold requires BOTH ratios.  None
+    # means payment evidence has not been supplied and forces a review above
+    # the ordinary ₹1 crore business threshold.
+    cash_payments_pct: Optional[float] = None
     # ITR-3 books: WDV depreciation blocks (Sec 32). Depreciation is computed
     # by the engine and deducted from books profit.
     depreciation_blocks: list[DepreciationBlockInput] = field(default_factory=list)
@@ -374,6 +378,14 @@ class BusinessIncomeResult:
     net_business_income: float = 0.0
     section_used: str = ""                     # "44AD", "44ADA", "books", or ""
     presumptive_eligible: bool = False
+    # ITR-3-only compliance metadata. Additive defaults preserve ITR-1/2/4
+    # result contracts and existing computation totals.
+    audit_status: str = "not_applicable"
+    audit_applicable: Optional[bool] = None
+    audit_threshold: float = 0.0
+    audit_reason_code: str = ""
+    itr3_ruleset_id: str = ""
+    itr3_schema_id: str = ""
 
 
 @dataclass

@@ -19,6 +19,7 @@ mean the lower (non-enhanced) turnover/receipt limit applies.
 from __future__ import annotations
 
 from depreciation import compute_depreciation
+from itr3_engine import AY2026_27_ARTIFACTS, AuditFacts, classify_tax_audit
 from models import BusinessInput
 
 TURNOVER_LIMIT_44AD = 2_00_00_000
@@ -50,6 +51,22 @@ def compute_business_income(biz: BusinessInput) -> dict:
         }
 
     if biz.business_type == "regular_books":
+        turnover = biz.fno_turnover or biz.actual_gross_receipts
+        activity_type = "profession" if biz.profession_name.strip() else "business"
+        audit = classify_tax_audit(AuditFacts(
+            activity_type=activity_type,
+            gross_receipts_or_turnover=turnover,
+            cash_receipts_ratio=biz.cash_receipts_pct,
+            cash_payments_ratio=biz.cash_payments_pct,
+        ))
+        compliance = {
+            "audit_status": audit.status,
+            "audit_applicable": audit.audit_applicable,
+            "audit_threshold": audit.threshold,
+            "audit_reason_code": audit.reason_code,
+            "itr3_ruleset_id": AY2026_27_ARTIFACTS.ruleset_id,
+            "itr3_schema_id": AY2026_27_ARTIFACTS.json_schema_id,
+        }
         # Prefer explicit F&O Schedule BP buckets when provided (isolated set-off).
         if (
             biz.fno_turnover > 0
@@ -76,7 +93,8 @@ def compute_business_income(biz: BusinessInput) -> dict:
                 "depreciation_st_gain_50": 0.0,
                 "current_year_business_loss_cf": current_year_loss_cf,
                 "fno_turnover": biz.fno_turnover,
-                "audit_flag_10cr": biz.fno_turnover >= 10_00_00_000,
+                "audit_flag_10cr": audit.status == "required",
+                **compliance,
             }
 
         dep = compute_depreciation(biz.depreciation_blocks)
@@ -101,6 +119,7 @@ def compute_business_income(biz: BusinessInput) -> dict:
             "depreciation_schedule": dep["per_block"],
             "depreciation_st_gain_50": dep["st_gain_50"],
             "current_year_business_loss_cf": current_year_loss_cf,
+            **compliance,
         }
 
     if biz.business_type == "presumptive_business":

@@ -265,9 +265,34 @@ def compute_itr(user: UserInput) -> ITRResult:
         net_business_income=biz_dict["net_business_income"],
         section_used=biz_dict["section_used"],
         presumptive_eligible=biz_dict["presumptive_eligible"],
+        audit_status=biz_dict.get("audit_status", "not_applicable"),
+        audit_applicable=biz_dict.get("audit_applicable"),
+        audit_threshold=biz_dict.get("audit_threshold", 0.0),
+        audit_reason_code=biz_dict.get("audit_reason_code", ""),
+        itr3_ruleset_id=biz_dict.get("itr3_ruleset_id", ""),
+        itr3_schema_id=biz_dict.get("itr3_schema_id", ""),
     )
 
     risk_flags = run_risk_checks(user, profile, income_heads, deductions_result, comparison)
+
+    if business_result.audit_status == "required":
+        risk_flags.append(RiskFlag(
+            code="ITR3_TAX_AUDIT_REQUIRED",
+            severity="warning",
+            message=(
+                "Section 44AB tax audit is indicated by the supplied ITR-3 "
+                f"facts ({business_result.audit_reason_code})."
+            ),
+        ))
+    elif business_result.audit_status == "review_required":
+        risk_flags.append(RiskFlag(
+            code="ITR3_TAX_AUDIT_FACTS_REQUIRED",
+            severity="warning",
+            message=(
+                "Both cash-receipt and cash-payment ratios are required to "
+                "determine whether the ₹10 crore business audit threshold applies."
+            ),
+        ))
 
     # ── Flags from carry-forward / portfolio / depreciation paths ──
     if bf_old["lapsed_sec80"] > 0:

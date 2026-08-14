@@ -1,9 +1,9 @@
 # 15 — Tax Rules Baseline for the Engine (FY 2025-26 / AY 2026-27)
 
-> Phase 1, Deliverable 6. This is the authoritative rules snapshot the engine's golden scenarios must encode. Grounded July 2026 against incometax.gov.in AY 2026-27 pages, CBDT Notification 45/2026, and the Income-tax Act 2025 (in force 1 Apr 2026, amended by Finance Act 2026).
+> Phase 1, Deliverable 6. This is the authoritative rules snapshot the engine's golden scenarios must encode. Grounded August 2026 against incometax.gov.in AY 2026-27 pages, the notified AY 2026-27 forms, and the Income-tax Act, 1961 as applicable to FY 2025-26. The official transition guidance confirms that AY 2026-27 returns remain governed by the 1961 Act; the Income-tax Act, 2025 applies to income from Tax Year 2026-27 onward.
 > Rule of use: **every constant below becomes a named, versioned constant in the engine** (e.g. `REBATE_87A_NEW_CAP = 60_000 # AY2026-27`), never an inline literal.
 
-## 1. New regime (default, u/s 115BAC-equivalent under the 2025 Act)
+## 1. New regime (default, section 115BAC of the Income-tax Act, 1961)
 
 Slabs (all individuals, no age variation):
 
