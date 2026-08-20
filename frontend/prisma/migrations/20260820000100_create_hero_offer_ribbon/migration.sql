@@ -10,5 +10,3 @@ CREATE TABLE "HeroOfferRibbonConfig" (
 
   CONSTRAINT "HeroOfferRibbonConfig_pkey" PRIMARY KEY ("id")
 );
-
-DELETE FROM "HeroRibbonConfig" WHERE "id" = 'hero-offer';
