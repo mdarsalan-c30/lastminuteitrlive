@@ -57,6 +57,17 @@ model HeroRibbonConfig {
   updatedBy    String?
 }
 
+model HeroOfferRibbonConfig {
+  id           String   @id @default("hero-offer-v2")
+  enabled      Boolean  @default(false)
+  imageUrl     String
+  linkUrl      String?
+  altText      String
+  showOnMobile Boolean  @default(false)
+  updatedAt    DateTime @updatedAt
+  updatedBy    String?
+}
+
 model HeroLiveStatConfig {
   id            String   @id @default("hero-live-stat")
   baseValue     Int      @default(6578)
