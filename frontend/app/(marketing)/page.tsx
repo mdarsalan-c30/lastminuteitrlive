@@ -4,9 +4,6 @@ import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { SiteHeader } from "@/components/marketing/SiteHeader";
 import { pageMetadata } from "@/lib/seo";
 import { SITE_TAGLINE } from "@/lib/constants";
-import { getPublishedHeroRibbon } from "@/lib/marketing/heroRibbon.server";
-
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = pageMetadata({
   title: "Your Personal Income-Tax filing companion",
@@ -14,13 +11,11 @@ export const metadata: Metadata = pageMetadata({
   path: "/",
 });
 
-export default async function HomePage() {
-  const heroRibbon = await getPublishedHeroRibbon();
-
+export default function HomePage() {
   return (
     <>
       <SiteHeader />
-      <HomePageContent heroRibbon={heroRibbon} />
+      <HomePageContent />
       <SiteFooter />
     </>
   );

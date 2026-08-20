@@ -10,22 +10,31 @@ export async function POST(request: NextRequest) {
 
   const formData = await request.formData();
   const file = formData.get("file");
-  if (!(file instanceof File) || !ALLOWED_TYPES.has(file.type)) {
-    return NextResponse.json({ error: "Choose a PNG, JPG or WebP image." }, { status: 400 });
+  if (!(file instanceof File)) {
+    return NextResponse.json({ error: "Choose an image file." }, { status: 400 });
+  }
+  if (!ALLOWED_TYPES.has(file.type)) {
+    return NextResponse.json(
+      { error: "Upload a PNG, JPG, or WebP image." },
+      { status: 400 }
+    );
   }
   if (file.size <= 0 || file.size > MAX_BYTES) {
-    return NextResponse.json({ error: "Image must be smaller than 3 MB." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Image must be smaller than 3 MB." },
+      { status: 400 }
+    );
   }
 
-  const upload = new FormData();
-  upload.append("file", file);
-  upload.append("upload_preset", "LMITRBLOG");
-  upload.append("folder", "LMTR_HERO_OFFER_RIBBON_V2");
+  const cloudinaryData = new FormData();
+  cloudinaryData.append("file", file);
+  cloudinaryData.append("upload_preset", "LMITRBLOG");
+  cloudinaryData.append("folder", "LMTR_HERO_RIBBONS");
 
-  const response = await fetch("https://api.cloudinary.com/v1_1/g2ntyyz4/image/upload", {
-    method: "POST",
-    body: upload,
-  });
+  const response = await fetch(
+    "https://api.cloudinary.com/v1_1/g2ntyyz4/image/upload",
+    { method: "POST", body: cloudinaryData }
+  );
   const data = await response.json();
   if (!response.ok || typeof data.secure_url !== "string") {
     return NextResponse.json(
@@ -33,6 +42,10 @@ export async function POST(request: NextRequest) {
       { status: response.ok ? 502 : response.status }
     );
   }
-
-  return NextResponse.json({ ok: true, url: data.secure_url });
+  return NextResponse.json({
+    ok: true,
+    url: data.secure_url,
+    width: data.width,
+    height: data.height,
+  });
 }
